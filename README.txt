@@ -1,29 +1,25 @@
-DAGGER CADDIE 4.0 — KEITH / PUCKER FACTOR
-==========================================
+DAGGER CADDIE 4.1 — KEITH'S EMERGENCY SERVICES
+===============================================
+NEW: Four tabs (PLAY / MY BAG / RESET / CLUBHOUSE)
+NEW: 10-second Mental Reset with three specific situations
+NEW: Original Keith caddie illustration and private-club styling
+NEW: More varied, context-sensitive Keith commentary
+RETAINED: Pucker Factor, GPS to saved green centers, manual carry distances, CSV imports, local backups, shot feedback.
 
-IMPORTANT: The landing-page file MUST be named index.html, not index-FIXED.html or index (1).html.
+IMPORTANT: Back up your data inside the existing app BEFORE updating.
 
-WHAT IS INCLUDED
-- index.html: Full app. Play / My Bag / Clubhouse tabs, Pucker Factor, Keith's personality settings, manual club distances, CSV imports, shot feedback, quick wedges, GPS to manually saved green centers, data backup/restore.
-- profile.json: Starter club stats from the original 60-shot range session.
-- manifest.json and icon.svg: Home Screen metadata and icon.
+UPLOAD THESE SIX FILES TO THE ROOT OF YOUR EXISTING GITHUB REPOSITORY:
+index.html
+keith.svg
+icon.svg
+manifest.json
+profile.json
+README.txt
 
-PHONE UPDATE — SAFEST METHOD
-1. Open Dagger Caddie in Safari. Tap 'MY BAG' and use 'Back up data' before updating if you have entered your own distances.
-2. Download this ZIP in Files and tap the ZIP to unzip it.
-3. In the extracted folder, find index.html.
-4. Open https://github.com/austinevans33/dagger-caddie in Safari.
-5. Ensure there is exactly one index.html in the root of the repository. If the current file is named index-FIXED.html, remove/rename the incorrect file first.
-6. Upload the new index.html; GitHub's browser UI may not allow direct upload-overwrite. Use the pencil editor to replace contents, or delete the old index.html and commit, then upload the new index.html and commit. Avoid deleting the whole repository.
-7. OPTIONAL: Upload manifest.json and icon.svg if you want the updated Home Screen styling. profile.json need not change for existing users.
-8. Wait for GitHub Pages to publish. Open https://austinevans33.github.io/dagger-caddie/ in Safari. Refresh. If the old Home Screen app is cached, close and reopen it.
-9. Verify the three tabs and the PUCKER FACTOR meter, then test a stock 168-yard fairway shot and a high-risk recovery.
+CAUTION: GitHub Pages must see exactly "index.html" in the repository root. If your current site already uses a file called index.html, update/overwrite it; do not upload index-NEW.html. Do not place these files inside a subfolder.
 
-CAVEATS
-- Pucker Factor is a heuristic situation severity indicator, NOT a scientific probability of scoring a double bogey.
-- Club selection is still a simple, provisional distance and dispersion heuristic, not a comprehensive strokes-gained model.
-- GPS works only for saved, verified green-center coordinates on HTTPS with location permission. It doesn't automatically identify the course, hole, lie, or pin and doesn't know front/back distances.
-- First-time setup provides a blank bag for new golfers. Starter data is example range data, not universally suitable.
-- Uploaded range CSV requires Club Type, Carry Distance, Carry Deviation Distance. Use original launch monitor export format. Imported shot counts are cumulative. A basic duplicate-file check prevents accidental repeat uploads of exactly the same file.
-- Shot feedback is stored locally and does NOT automatically update carry distances.
-- Data lives in local browser storage; keep backups. Public GitHub Pages hosts only the app files, not a shared player database.
+Your saved distances live in local browser storage and are intended to remain after the update on the same origin. They are NOT synced between phones. Clearing website data may delete them.
+
+GPS distances still require VERIFIED latitude/longitude of the hole's green center. The app does not automatically identify courses or holes, or know the actual pin location.
+
+The risk scoring and club calls are approximate training and game-management tools, not verified shot probabilities.

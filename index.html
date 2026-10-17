@@ -81,13 +81,22 @@
   .pulse-reason{font-size:12px;color:#46564b}
   .answer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
   .answer-actions button{padding:9px 5px;font-size:12px;background:#e6dcc6;color:#19372b;border:1px solid #cabc9c}
-  .tabbar{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
+  .tabbar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}
   .tabbar button{font-size:13px;padding:11px 4px;background:#e9e0cd;border:1px solid #c5b593;color:#17372a}
   .tabbar button.active{background:#17372a;color:#fff7e8}
   .hidden-panel{display:none !important}
   .card.green .callout{color:#1d3125}
   .card.green .callout p,.card.green .callout .keith,.card.green .callout .target,.card.green .callout strong{color:#233b2e}
   .card.green .callout .note{color:#665e4c}
+  .portrait{width:106px;max-width:32%;border-radius:12px;border:2px solid #b79c62;object-fit:cover;float:right;margin:0 0 10px 12px}
+  .reset-panel{background:#19392d;color:#f3e9d6;border-radius:18px;padding:16px;margin-top:12px}
+  .reset-quote{background:#f3ead7;color:#17382b;border-radius:15px;padding:18px;font-size:23px;font-weight:700;line-height:1.28;text-align:center}
+  .reset-options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
+  .reset-options button{padding:12px 5px;background:#eee2cd;color:#17382b;border:1px solid #b8a77e;font-size:13px}
+  .reset-options button.active{background:#183a2d;color:#f4eddf}
+  .reset-steps{padding:12px 18px;margin:8px 0 14px;background:#eae0ca;color:#203d30;border-radius:12px;line-height:1.7}
+  .character-strip{display:flex;gap:12px;align-items:center;background:#e9dec7;border-radius:14px;padding:9px;color:#243c30}
+  .character-strip img{width:74px;height:77px;object-fit:cover;border-radius:9px}
   .footer{font-size:12px;color:#6d6a60;text-align:center;padding:6px 0 0}
   .hidden{display:none !important}
   .inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -108,13 +117,13 @@
           <div class="h1">Dagger Caddie</div>
           <div class="sub">Caddie on duty: <strong>Keith</strong> · Club first. Bullshit later.</div>
         </div>
-        <div class="crest">⚑</div>
+        <div class="crest" title="Dagger Country Club">⚑</div>
       </div>
-      <div class="quip" id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</div>
+      <div class="quip"><img class="portrait" src="keith.svg" alt="Keith, Dagger Country Club’s permanently unimpressed caddie"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
     </div>
 
     <div class="content">
-      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ MY BAG</button><button id="tab-settings" type="button">⚙ CLUBHOUSE</button></nav>
+      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ MY BAG</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-settings" type="button">⚙ CLUBHOUSE</button></nav>
 
       <section class="card" id="setupCard">
         <h2>Welcome to Dagger Caddie</h2>
@@ -176,6 +185,7 @@
           <button class="btn-primary" id="call">Ask Keith</button>
           <button class="btn-secondary" id="clearRound">Reset shot</button>
         </div>
+        <div style="margin-top:9px"><button class="btn-secondary" id="quickReset" type="button">↻ MENTAL RESET · 10 SECONDS</button></div>
         <div style="margin-top:9px"><button class="btn-secondary" id="heroCheck" type="button">⚠ I'M ABOUT TO DO SOMETHING STUPID</button></div>
         <div class="pulse-wrap" id="pulseBox" aria-live="polite">
           <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB</div><strong>PUCKER FACTOR</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
@@ -191,6 +201,23 @@
         <div class="answer-actions" aria-label="Quick shot feedback"><button data-feedback="Good">✓ Good</button><button data-feedback="Short">↓ Short</button><button data-feedback="Long">↑ Long</button><button data-feedback="Left">← Left</button><button data-feedback="Right">→ Right</button><button data-feedback="Trouble">! Trouble</button></div>
         <p class="muted" id="feedbackStatus" style="color:#d6d6cb">Optional: one tap records the last shot outcome on this phone. No scorekeeping.</p>
         <div class="note" style="color:#e4dcc9">Recommendations are only as good as your yardage, lie, carry requirement, and hazard info. Keith is sarcastic, not psychic.</div>
+      </section>
+
+      <section class="card" data-tab="reset">
+        <div class="inline" style="justify-content:space-between"><div><div class="over" style="color:#6b644c">DAGGER COUNTRY CLUB · MENTAL PERFORMANCE DEPARTMENT</div><h2>Keith’s Emergency Services</h2><p class="muted">Because apparently we need this. No lectures, no swing rebuilding.</p></div><span class="tag">10 SECOND RESET</span></div>
+        <div class="character-strip"><img src="keith.svg" alt="Keith looking profoundly unimpressed"><div><strong>Keith, Head of Emotional Damage Control</strong><div style="font-size:13px;margin-top:4px">“You’re allowed one bad swing. A full psychological collapse is extra.”</div></div></div>
+        <div class="reset-panel">
+          <div class="over" style="color:#d9c69e">THE LAST SHOT IS DEAD</div>
+          <div class="reset-quote">The last shot is dead.<br>Stop digging it up.</div>
+          <div style="margin-top:12px;color:#f1e8d4"><strong>What’s happening?</strong></div>
+          <div class="reset-options" id="resetOptions"><button type="button" data-trigger="angry">I’m pissed</button><button type="button" data-trigger="hard">Swinging too hard</button><button type="button" data-trigger="lost">Completely lost it</button></div>
+          <div class="reset-steps" id="resetSteps"><strong>1.</strong> Exhale slowly for 6 seconds.<br><strong>2.</strong> Loosen your hands and shoulders.<br><strong>3.</strong> Pick one safe target and commit.</div>
+          <p id="resetKeith" style="color:#f3ead7;font-style:italic">“That shot is dead. We’re not holding a fucking memorial service.”</p>
+          <button id="resetNow" class="btn-secondary" type="button">FUCK IT. NEXT SHOT.</button>
+          <div id="resetStatus" style="margin-top:9px;color:#d5cbaF;font-size:13px">Take the breath before pressing the button.</div>
+        </div>
+        <p class="muted">Keith roasts the decision, not you. A reset is for recovering composure, not forcing a hero shot.</p>
+        <button class="btn-primary" type="button" id="returnToPlay">RETURN TO PLAY</button>
       </section>
 
       <section class="card" data-tab="bag">
@@ -301,7 +328,7 @@
         <div class="note">Range files are parsed on this device. Back up after importing if you don't want Keith to forget everything.</div>
       </section>
 
-      <div class="footer">Dagger Caddie · Personal practice tool · Dagger Country Club styling · No subscription required</div>
+      <div class="footer">Dagger Caddie · Keith’s Country Club Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
     </div>
   </div>
 </main>
@@ -309,8 +336,16 @@
 const $=id=>document.getElementById(id);
 const escapeHTML=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let currentClub='', lastDecision=null, loggedShots=[];
-function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
-['play','bag','settings'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','reset','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
+['play','bag','reset','settings'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+const resetAdvice={
+ angry:{steps:'<strong>1.</strong> Exhale for six seconds. Unclench your jaw.<br><strong>2.</strong> Name what happened without assigning blame.<br><strong>3.</strong> Choose the safest target. Swing only when ready.',quote:'“Yes, that was crap. Giving the next ball the same punishment would be even dumber.”'},
+ hard:{steps:'<strong>1.</strong> Loosen your grip and take one slow breath.<br><strong>2.</strong> Make ONE smooth rehearsal at 75% effort.<br><strong>3.</strong> Pick a target and swing with balance.',quote:'“Distance is not an emergency, you overcaffeinated lumberjack.”'},
+ lost:{steps:'<strong>1.</strong> Six-second exhale. Drop your shoulders.<br><strong>2.</strong> Forget mechanics. Choose a generous landing area.<br><strong>3.</strong> Commit to one simple shot.',quote:'“We are not fixing your entire golf swing on the seventh tee, professor.”'},
+ general:{steps:'<strong>1.</strong> Exhale slowly for six seconds.<br><strong>2.</strong> Relax your hands and shoulders.<br><strong>3.</strong> Pick one safe target and commit.',quote:'“The last shot is dead. We’re not holding a fucking memorial service.”'}
+};
+let resetTrigger='general',resetCount=0;
+function renderReset(){const a=resetAdvice[resetTrigger];$('resetSteps').innerHTML=a.steps;$('resetKeith').textContent=a.quote;document.querySelectorAll('[data-trigger]').forEach(b=>b.classList.toggle('active',b.dataset.trigger===resetTrigger));}
 function showLog(){ $('shotLogInfo').textContent=loggedShots.length?`${loggedShots.length} outcomes saved. Latest: ${loggedShots[loggedShots.length-1].result} (${loggedShots[loggedShots.length-1].club}). These don't silently change your carry distances.`:'No results logged yet.'; }
 function pucker({yards,lie,wind,danger,club,confidence}){
   let val=1.5, reasons=[];
@@ -397,18 +432,24 @@ function getPartialCall(y){
   if(nearest && nearest.d<=12) return nearest.k;
   return null;
 }
+const keithLines={
+ normal:["Beautiful. A stock shot. Resist the urge to turn it into a hostage negotiation.","The flag has no idea who you are. Aim at the middle.","A normal swing would be a refreshing change of policy.","Let the club do its job. Management has requested you stop interfering.","You don't need to prove anything to that golf ball. It has no mortgage.","Center of green. What an appallingly reasonable concept."],
+ long:["You came here to shoot lower, not to audition for a long-drive circus.","That fairway's wider than your excuses. Pick a side and commit.","The heroic line is tempting. So is arson. Let's do neither.","A full send here would be a beautiful monument to terrible judgment.","It turns out you can hit a three-wood without making it a constitutional crisis."],
+ recover:["Punch out. We're a country club, not an emergency rescue documentary.","The trees don't give a shit about your swing speed.","Take your medicine. The comeback shot is the NEXT one.","You cannot negotiate with a pine tree, despite your confidence.","We can save bogey. We cannot save your dignity if you try the gap."]
+};
+let keithQuipSequence=0;
 function getKeithLine(kind){
-  const mode=$('personality').value; const roast=Number($('roast').value);
-  const pack={
-    pro:{normal:['Commit to the target and make a balanced swing.','Middle of the green is rarely a bad decision.','Let the club do the work.'],long:['Choose the widest safe landing area.','Play for position before pride.','A controlled swing beats a heroic one.'],recover:['Take your medicine and advance safely.','The smart bogey beats the stupid double.','Get back in play first.']},
-    dry:{normal:['Center green. Revolutionary stuff.','A nice stock swing would be refreshing.','Try not to out-think a simple golf shot.'],long:['Play to the fat side and spare us the drama.','Long and dumb remains a poor strategy.','Distance is cute. In play is useful.'],recover:['Punch out and pretend this was always the plan.','Hero golf continues to test poorly.','Take the boring option for once.']},
-    smart:{normal:['Make a smooth swing and avoid doing anything stupid at the ball.','Middle of the green, champ. No need to get horny over a tucked flag.','Nice and easy. We are trying to play golf, not settle a blood feud.'],long:['Find the safe side and stop acting like 240 in the air solves everything.','Let’s keep the big miss out of this, for everybody’s sake.','Play the smart shot, not the one your ego keeps sketching in crayon.'],recover:['Punch out. Hero golf can fuck right off.','Take your medicine before this hole becomes a hostage situation.','Advance it safely and keep the card alive, you magnificent dumbass.']}
-  };
-  let arr=pack[mode][kind]||pack.smart.normal;
-  let line=arr[Math.min(roast,arr.length-1)]||arr[0];
-  if(mode==='pro' && roast>=2) line='Conservative target, committed swing. We can be sharp without being reckless.';
-  return line;
+  const mode=$('personality').value, roast=Number($('roast').value);
+  if(mode==='pro')return ({normal:'Choose a reliable target and commit to the shot.',long:'Favor the safest verified landing area.',recover:'Recover to a clear position before attacking.'})[kind];
+  if(mode==='dry')return ({normal:'A stock shot. Try not to improve upon it.',long:'The smart option rarely gets a standing ovation.',recover:'Punch out. The highlights can wait.'})[kind];
+  const pool=keithLines[kind]||keithLines.normal;
+  const phrase=pool[keithQuipSequence++%pool.length];
+  if(roast===0)return 'One target. One smooth swing. Next shot.';
+  if(roast===1)return phrase.replace(/shit|fucking|hell/gi,'trouble');
+  if(roast>=3)return phrase+' Please spare the membership another demonstration.';
+  return phrase;
 }
+
 function decide(){
   const y=Number($('yards').value);
   const lie=state.lie, wind=state.wind, danger=state.danger;
@@ -488,6 +529,11 @@ $('clearWedges').onclick=()=>{ wedgeFeels={}; store('dagger_wedges',wedgeFeels);
 $('personality').onchange=()=>{store('dagger_personality',$('personality').value); renderMastQuip();};
 $('roast').onchange=()=>{store('dagger_roast',$('roast').value); renderMastQuip();};
 $('call').onclick=decide;
+$('quickReset').onclick=()=>{switchTab('reset');$('resetStatus').textContent='Exhale. Then choose one reasonable shot.'};
+$('returnToPlay').onclick=()=>switchTab('play');
+document.querySelectorAll('[data-trigger]').forEach(b=>b.onclick=()=>{resetTrigger=b.dataset.trigger;renderReset();$('resetStatus').textContent='Read your three steps, then tap the button.'});
+$('resetNow').onclick=()=>{resetCount++;$('resetStatus').textContent='Reset #'+resetCount+' complete. You cannot get that swing back. Play the next one.'; if(resetCount%3===0)$('resetKeith').textContent='“A fresh shot. A clean slate. Try not to decorate it with bullshit.”';};
+renderReset();
 $('heroCheck').onclick=()=>{if(!lastDecision){$('answer').innerHTML='<div class="club-big">HOLD UP</div><p>Give me the yardage and tap Ask Keith first, cowboy.</p>';return;}$('answer').innerHTML=`<div class="club-big">THE BORING PLAY</div><div class="target">Protect the safe side</div><p>Do not challenge a hazard or forced carry unless you know the clearance and you can cover it reliably. Choose a layup or center target when in doubt.</p><div class="keith"><strong>Keith says:</strong> The fact that you pressed this button is all the information I needed.</div>`;};
 $('clearRound').onclick=()=>{ $('yards').value=''; $('coursenote').value=''; state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'}; store('dagger_round_state',state); setQuick('lieButtons',LIES,state.lie,v=>{state.lie=v;store('dagger_round_state',state)}); setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)}); setQuick('pinButtons',PINS,state.pin,v=>{state.pin=v;store('dagger_round_state',state)}); setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)}); };
 $('course').onchange=()=>store('dagger_course',$('course').value);
