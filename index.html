@@ -1,16 +1,445 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#18251f"><link rel="manifest" href="manifest.json"><title>Dagger Caddie</title><style>*{box-sizing:border-box}body{margin:0;background:#101b16;color:#f4f2e9;font:16px system-ui,-apple-system,sans-serif}main{max-width:530px;margin:auto;padding:20px 17px 50px}header{display:flex;justify-content:space-between;align-items:center}h1{font-size:26px;margin:0;letter-spacing:1px}small,.muted{color:#b4beb4}h2{font-size:18px;margin:0 0 12px}section{background:#1e2d25;border:1px solid #35473a;border-radius:18px;padding:18px;margin:17px 0}label{display:block;color:#c2cdbf;font-size:13px;margin-bottom:5px}input,select,button{font:inherit;border-radius:10px;padding:12px;width:100%;background:#2b3c31;color:white;border:1px solid #506151}button{background:#a3db93;color:#162319;font-weight:800;border:0;cursor:pointer}button.secondary{background:#35473a;color:#ecf4eb}button:disabled{opacity:.5}input[type=file]{font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hero{background:#c4e4ae;color:#182b20;padding:20px;border-radius:15px}.club{font-size:37px;font-weight:900}.hint{font-size:12px;color:#8f9e91;margin-top:10px}.big{font-size:33px;font-weight:800}p{line-height:1.45}.pill{display:inline-block;border:1px solid #768d76;border-radius:20px;padding:5px 9px;font-size:12px}table{width:100%;font-size:13px;border-collapse:collapse}td,th{padding:7px 3px;border-bottom:1px solid #35483b;text-align:left}summary{cursor:pointer;font-weight:700}.spaced{margin-top:12px}#status{font-size:13px;color:#c7dac4}</style></head><body><main><header><div><small>PERSONAL EDITION · V0.1</small><h1>⚑ DAGGER CADDIE</h1></div><span class="pill">LOCAL DATA</span></header><p class="muted">Club first. Excuses later.</p><section><h2>Next shot</h2><div class="grid"><div><label>Distance (yards)</label><input id="yards" type="number" min="1" max="700" value="168"></div><div><label>Lie</label><select id="lie"><option>Fairway</option><option>Tee</option><option>Rough</option><option>Deep rough</option><option>Trees / recovery</option><option>Bunker</option></select></div><div><label>Wind</label><select id="wind"><option>Calm</option><option>Headwind</option><option>Tailwind</option><option>Crosswind</option></select></div><div><label>Pin</label><select id="pin"><option>Middle</option><option>Front</option><option>Back</option></select></div></div><div class="spaced"><label>Known danger (optional)</label><select id="danger"><option value="none">No information</option><option value="short">Trouble short</option><option value="long">Trouble long</option><option value="left">Trouble left</option><option value="right">Trouble right</option></select></div><div class="spaced"><button id="call">GET DAGGER'S CALL</button></div><div id="answer" class="spaced hero"><div class="club">7 IRON</div><div>Center green · Smooth swing</div><p>Demo until you tap Get Dagger's Call.</p></div><small>Recommendations are provisional. Yardage must be checked against your lie, carry requirements, and the actual hole.</small></section><section><h2>Course & GPS</h2><div class="grid"><div><label>Course</label><input id="course" placeholder="e.g. Bayonet"></div><div><label>Hole</label><input id="hole" type="number" min="1" max="18" value="1"></div><div><label>Green center latitude</label><input id="lat" type="number" step="any" placeholder="e.g. 35.12"></div><div><label>Green center longitude</label><input id="lon" type="number" step="any" placeholder="e.g. -79.12"></div></div><div class="spaced grid"><button id="savegreen" class="secondary">Save green</button><button id="gps">USE PHONE GPS</button></div><p id="status">GPS does not know your hole until you save its verified green coordinates. No course data has been preloaded.</p><small>GPS gives straight-line distance to the mapped center, not flag location. Works over HTTPS with location permission; never assume GPS distinguishes fairway and rough.</small></section><section><h2>Caddie personality</h2><select id="personality"><option value="pro">Tour professional</option><option value="dry">Dry sarcasm</option><option value="smart" selected>Unfiltered smartass</option></select><small class="muted">Personality changes the joke, never the club decision.</small></section><section><h2>Update your range data</h2><label>Launch-monitor CSV (same columns as October 16 export)</label><input type="file" id="csv" accept=".csv,text/csv"><p id="uploadstatus" class="muted">Starting profile: October 16, 2026 · 60 shots.</p><div class="grid"><button id="export" class="secondary">Back up data</button><button id="reset" class="secondary">Restore original</button></div><details class="spaced"><summary>Your clubs</summary><table><thead><tr><th>Club</th><th>Carry</th><th>Shots</th><th>Avg offline</th></tr></thead><tbody id="clubs"></tbody></table></details><small>Your range files are parsed on this device. This version stores updates in this browser's local storage: removing website data can erase them. Use backup after importing.</small></section><footer class="muted" style="font-size:12px">Personal practice tool · Not a substitute for checking hazards and safe landing areas · No AI subscription required</footer></main><script>
-const $=id=>document.getElementById(id);let baseline=[],profile=[],greens={};const store=(k,v)=>localStorage.setItem(k,JSON.stringify(v)),read=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
-async function init(){baseline=await(await fetch('profile.json')).json();profile=read('dagger_profile',baseline);greens=read('dagger_greens',{});$('personality').value=read('dagger_personality','smart');$('course').value=read('dagger_course','');render()};function render(){$('clubs').innerHTML=profile.map(p=>`<tr><td>${p.name}</td><td>${p.carry.toFixed(0)} yd</td><td>${p.n}</td><td>${p.off.toFixed(0)} yd</td></tr>`).join('')}
-function joke(type){let mode=$('personality').value;let sets={normal:['Commit to the target and make a controlled swing.','The green is big. Your ego needn’t be.','Stop trying to impress a tree. Swing smooth.'],long:['Choose a safe landing area before hitting.','Accuracy. A bold new concept.','Leave the driver in therapy until its contact improves.'],recover:['Prioritize a clear recovery route.','Trees are mostly air. Unfortunately, your ball keeps finding the other part.','Punch out. Hero golf can fuck off.']};let i=mode==='pro'?0:mode==='dry'?1:2;return sets[type][i]}
-function decide(){let y=Number($('yards').value),lie=$('lie').value,wind=$('wind').value,danger=$('danger').value;if(!y||y<1){$('answer').innerHTML='Enter a valid distance.';return}let target='Center of green',club='',note='',adjust=wind==='Headwind'?8:wind==='Tailwind'?-7:0;if(lie==='Trees / recovery'||lie==='Bunker'){club='RECOVERY FIRST';target='Safest clear opening';note='Lie / clearance unknown: no reliable club call. Choose a playable escape and confirm carry.';}
-else if(y>285){club='3 WOOD';target='Widest verified safe landing area';note='Play for position, not an imaginary 450-yard miracle.';if(lie==='Deep rough') {club='SAFE LAYUP';note='Pick a lofted club you can advance cleanly; exact club needs lie details.'}}
-else {let effective=y+adjust;let options=profile.filter(p=>p.name!=='Driver'&&p.name!=='Pitching Wedge').concat(profile.filter(p=>p.name==='Pitching Wedge'));if(effective<108){club='PARTIAL WEDGE';note='No measured partial-wedge distances yet. Use your known feel distance.'}else {let choices=options.map(p=>({...p,delta:Math.abs(p.carry-effective),risk:p.delta+Math.max(0,p.off-12)*.22+(p.n<5?3:0)})).sort((a,b)=>a.risk-b.risk);let pick=choices[0];club=pick.name.toUpperCase();note=`Range carry ${pick.carry.toFixed(0)} yd from ${pick.n} swings; verify your actual carry and lie.`;if(lie==='Deep rough'){note='Deep rough makes carry unpredictable. Favor a safe advance; selected club is tentative.'}}if(danger==='short'){target='Safe portion beyond short trouble (verify carry)'}else if(danger==='long'){target='Conservative green-center / short side'}else if(danger==='left'){target='Center-right safe area'}else if(danger==='right'){target='Center-left safe area'}}let kind=club==='RECOVERY FIRST'||club==='SAFE LAYUP'?'recover':y>285?'long':'normal';$('answer').innerHTML=`<div class="club">${club}</div><strong>${target}</strong><p>${note}</p><p>${joke(kind)}</p><small>Provisional strategy — no verified hole map or shot-level carry distribution.</small>`}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#143126">
+<link rel="manifest" href="manifest.json">
+<title>Dagger Caddie</title>
+<style>
+  :root{
+    --green:#143126;
+    --green-2:#1f4335;
+    --green-3:#355847;
+    --cream:#f5f0e5;
+    --cream-2:#ece4d2;
+    --ink:#1d231f;
+    --gold:#b79c62;
+    --line:#ccbfa5;
+    --soft:#6d6a60;
+    --red:#7c342c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--cream);color:var(--ink)}
+  body{font:16px/1.4 Georgia, Cambria, 'Times New Roman', serif}
+  main{max-width:720px;margin:0 auto;padding:18px 14px 60px}
+  .app-shell{background:linear-gradient(180deg,#f7f3ea 0%, #f2ebdd 100%);border:1px solid var(--line);border-radius:26px;box-shadow:0 8px 24px rgba(24,34,26,.09);overflow:hidden}
+  .mast{background:linear-gradient(180deg,#17372b 0%,#122c22 100%);color:var(--cream);padding:22px 18px 20px;position:relative;border-bottom:4px solid var(--gold)}
+  .over{letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:#d7cab0;margin-bottom:6px}
+  .brandrow{display:flex;justify-content:space-between;gap:12px;align-items:start}
+  .h1{font-size:34px;line-height:1;margin:0;font-weight:700;letter-spacing:.01em}
+  .sub{margin:6px 0 0;color:#d6ddd3;font-size:14px}
+  .badge{display:inline-block;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:5px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.06)}
+  .crest{width:54px;height:54px;border:1px solid rgba(255,255,255,.25);border-radius:50%;display:grid;place-items:center;font-size:24px;background:rgba(255,255,255,.06)}
+  .quip{margin-top:12px;padding:10px 12px;background:rgba(245,240,229,.08);border:1px solid rgba(245,240,229,.12);border-radius:14px;color:#d8d4c8;font-size:14px}
+  .content{padding:16px}
+  .card{background:#fbf8f0;border:1px solid var(--line);border-radius:18px;padding:16px;margin:14px 0}
+  .card.green{background:linear-gradient(180deg,#203f32 0%,#19372c 100%);color:var(--cream);border-color:#355646}
+  h2,h3{margin:0 0 10px}
+  h2{font-size:23px;font-weight:700;color:var(--green)}
+  .green h2,.green h3{color:var(--cream)}
+  h3{font-size:17px;color:var(--green)}
+  .muted{color:var(--soft);font-size:13px}
+  .green .muted{color:#d9d2c3}
+  label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.1em;margin:0 0 6px;color:#4d5b54}
+  .green label{color:#d8d4c6}
+  input,select,button{font:inherit}
+  input,select{
+    width:100%;padding:12px 13px;border:1px solid #cfc2a6;border-radius:12px;background:white;color:var(--ink)
+  }
+  button{width:100%;padding:13px 15px;border:0;border-radius:12px;cursor:pointer;font-weight:700}
+  .btn-primary{background:var(--green);color:var(--cream)}
+  .btn-secondary{background:var(--cream-2);color:var(--green);border:1px solid #d5c6a7}
+  .btn-ghost{background:#f9f5eb;color:var(--green);border:1px dashed #baa77f}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .triple{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .quad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .quick{display:flex;flex-wrap:wrap;gap:8px}
+  .quick button{width:auto;min-width:78px;padding:10px 12px;background:#f5eee0;color:var(--green);border:1px solid #d5c4a1;border-radius:999px;font-size:14px}
+  .quick button.active{background:var(--green);color:var(--cream);border-color:var(--green)}
+  .setup-options{display:grid;grid-template-columns:1fr;gap:10px}
+  .setup-option{padding:14px;border:1px solid var(--line);border-radius:16px;background:#fffdf9}
+  .setup-option strong{display:block;color:var(--green);margin-bottom:4px}
+  .callout{background:linear-gradient(180deg,#f3eee2 0%,#eee4d0 100%);border:1px solid #d2c29d;border-radius:18px;padding:16px}
+  .club-big{font-size:32px;font-weight:800;letter-spacing:.02em;color:var(--green)}
+  .target{font-size:18px;font-weight:700;margin-top:4px}
+  .keith{margin-top:10px;padding-top:10px;border-top:1px solid #d8ccb4}
+  .status{font-size:13px;color:#58655d}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border:1px solid #c8ba9d;border-radius:999px;color:#5c5a53;background:#faf6ed}
+  details summary{cursor:pointer;font-weight:700;color:var(--green)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:8px 4px;border-bottom:1px solid #e0d5bd;text-align:left}
+  th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#546056}
+  .note{font-size:12px;color:#6f6b63;margin-top:8px}
+  .footer{font-size:12px;color:#6d6a60;text-align:center;padding:6px 0 0}
+  .hidden{display:none !important}
+  .inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .smallbtn{width:auto;padding:10px 12px}
+  @media (max-width:560px){
+    .grid,.triple,.quad{grid-template-columns:1fr 1fr}
+    .h1{font-size:30px}
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="app-shell">
+    <div class="mast">
+      <div class="over">Dagger Country Club • Personal Edition</div>
+      <div class="brandrow">
+        <div>
+          <div class="h1">Dagger Caddie</div>
+          <div class="sub">Caddie on duty: <strong>Keith</strong> · Club first. Bullshit later.</div>
+        </div>
+        <div class="crest">⚑</div>
+      </div>
+      <div class="quip" id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</div>
+    </div>
+
+    <div class="content">
+      <section class="card" id="setupCard">
+        <h2>Welcome to Dagger Caddie</h2>
+        <p class="muted">Before Keith starts judging your choices, pick how you want to start.</p>
+        <div class="setup-options">
+          <div class="setup-option">
+            <strong>Use Austin's starter profile</strong>
+            <div class="muted">Loads the existing range-session distances so you can try the app instantly.</div>
+            <button class="btn-secondary" id="useAustin">Use starter profile</button>
+          </div>
+          <div class="setup-option">
+            <strong>Build my own bag</strong>
+            <div class="muted">Start with an empty bag and enter your carry distances manually.</div>
+            <button class="btn-secondary" id="buildMine">Build my bag</button>
+          </div>
+          <div class="setup-option">
+            <strong>Upload range data</strong>
+            <div class="muted">Import a launch-monitor CSV and let Keith build your profile from actual shots.</div>
+            <button class="btn-secondary" id="jumpUpload">Take me to upload</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card green">
+        <div class="inline" style="justify-content:space-between">
+          <div>
+            <h2>Round mode</h2>
+            <div class="muted">Fast inputs for the course. Big buttons. No dissertations.</div>
+          </div>
+          <span class="badge">Keith Mode</span>
+        </div>
+        <div class="grid" style="margin-top:10px">
+          <div>
+            <label>Distance (yards)</label>
+            <input id="yards" type="number" min="1" max="700" value="168" inputmode="numeric">
+          </div>
+          <div>
+            <label>Course note</label>
+            <input id="coursenote" placeholder="e.g. uphill / forced carry / dogleg">
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <label>Lie</label>
+          <div class="quick" id="lieButtons"></div>
+        </div>
+        <div style="margin-top:12px">
+          <label>Wind</label>
+          <div class="quick" id="windButtons"></div>
+        </div>
+        <div style="margin-top:12px">
+          <label>Pin</label>
+          <div class="quick" id="pinButtons"></div>
+        </div>
+        <div style="margin-top:12px">
+          <label>Danger (optional)</label>
+          <div class="quick" id="dangerButtons"></div>
+        </div>
+        <div class="grid" style="margin-top:12px">
+          <button class="btn-primary" id="call">Ask Keith</button>
+          <button class="btn-secondary" id="clearRound">Clear round inputs</button>
+        </div>
+        <div class="callout" style="margin-top:14px" id="answer">
+          <div class="club-big">7 IRON</div>
+          <div class="target">Center green · Smooth swing</div>
+          <p>Keith's waiting. Tap Ask Keith for the actual recommendation.</p>
+          <div class="keith"><strong>Keith says:</strong> Nice and easy. No need to turn a stock 7-iron into a federal case.</div>
+        </div>
+        <div class="note">Recommendations are only as good as your yardage, lie, carry requirement, and hazard info. Keith is sarcastic, not psychic.</div>
+      </section>
+
+      <section class="card">
+        <h2>Quick wedges</h2>
+        <p class="muted">Make short-game calls way more useful. Enter your reliable carry for these stock feels.</p>
+        <div class="triple">
+          <div><label>50-yard shot</label><input id="w50" type="number" min="10" max="200" placeholder="50"></div>
+          <div><label>75-yard shot</label><input id="w75" type="number" min="10" max="200" placeholder="75"></div>
+          <div><label>100-yard shot</label><input id="w100" type="number" min="10" max="200" placeholder="100"></div>
+        </div>
+        <div class="grid" style="margin-top:12px">
+          <button class="btn-secondary" id="saveWedges">Save wedge feels</button>
+          <button class="btn-ghost" id="clearWedges">Clear wedge feels</button>
+        </div>
+        <div id="wedgestatus" class="status" style="margin-top:8px">Optional, but extremely useful for actual scoring golf.</div>
+      </section>
+
+      <section class="card">
+        <h2>Course & GPS</h2>
+        <div class="grid">
+          <div><label>Course</label><input id="course" placeholder="e.g. Bayonet at Puppy Creek"></div>
+          <div><label>Hole</label><input id="hole" type="number" min="1" max="18" value="1"></div>
+          <div><label>Green center latitude</label><input id="lat" type="number" step="any" placeholder="35.1234"></div>
+          <div><label>Green center longitude</label><input id="lon" type="number" step="any" placeholder="-79.1234"></div>
+        </div>
+        <div class="grid" style="margin-top:12px">
+          <button class="btn-secondary" id="savegreen">Save green center</button>
+          <button class="btn-primary" id="gps">Use phone GPS</button>
+        </div>
+        <p id="status" class="status">GPS gives straight-line distance to your saved green center. It does not know the flag, bunker lip, or whether you just short-sided yourself like a maniac.</p>
+      </section>
+
+      <section class="card">
+        <h2>Keith's personality</h2>
+        <div class="grid">
+          <div>
+            <label>Style</label>
+            <select id="personality">
+              <option value="pro">Classic club professional</option>
+              <option value="dry">Dry sarcasm</option>
+              <option value="smart" selected>Unfiltered smartass</option>
+            </select>
+          </div>
+          <div>
+            <label>Roast level</label>
+            <select id="roast">
+              <option value="0">0 · Nice guy</option>
+              <option value="1">1 · Light jab</option>
+              <option value="2" selected>2 · Smartass caddie</option>
+              <option value="3">3 · Ruthless little gremlin</option>
+            </select>
+          </div>
+        </div>
+        <div class="note">Personality changes Keith's delivery, not the shot decision.</div>
+      </section>
+
+      <section class="card">
+        <h2>My bag</h2>
+        <p class="muted">Enter your normal carry distance. Manual yardages take priority over range-session averages.</p>
+        <div class="grid">
+          <div><label>Club</label><select id="manualclub"></select></div>
+          <div><label>Carry (yards)</label><input id="manualcarry" type="number" min="10" max="400" placeholder="165"></div>
+        </div>
+        <div class="grid" style="margin-top:12px">
+          <button class="btn-secondary" id="savemanual">Save distance</button>
+          <button class="btn-ghost" id="clearmanual">Clear override</button>
+        </div>
+        <details style="margin-top:12px">
+          <summary>Add a club not listed</summary>
+          <div class="grid" style="margin-top:12px">
+            <div><label>Club name</label><input id="newclub" placeholder="e.g. 56 Wedge"></div>
+            <div><label>Carry (yards)</label><input id="newcarry" type="number" min="10" max="400" placeholder="85"></div>
+          </div>
+          <button class="btn-secondary" style="margin-top:12px" id="addclub">Add this club</button>
+        </details>
+        <div class="grid" style="margin-top:12px">
+          <button class="btn-ghost" id="fresh">Start with an empty bag</button>
+          <button class="btn-secondary" id="useAustinMini">Reload Austin starter profile</button>
+        </div>
+        <p id="manualstatus" class="status" style="margin-top:8px">Your changes are saved on this device.</p>
+        <details open>
+          <summary>Your current distances</summary>
+          <table>
+            <thead><tr><th>Club</th><th>Carry</th><th>Source</th></tr></thead>
+            <tbody id="manualtable"></tbody>
+          </table>
+        </details>
+      </section>
+
+      <section class="card" id="uploadSection">
+        <h2>Update your range data</h2>
+        <label>Launch-monitor CSV</label>
+        <input type="file" id="csv" accept=".csv,text/csv">
+        <p id="uploadstatus" class="status">Starting profile: October 16, 2026 · 60 shots.</p>
+        <div class="grid">
+          <button class="btn-secondary" id="export">Back up data</button>
+          <button class="btn-ghost" id="reset">Restore original</button>
+        </div>
+        <details style="margin-top:12px">
+          <summary>Profile summary</summary>
+          <table>
+            <thead><tr><th>Club</th><th>Carry</th><th>Shots</th><th>Avg offline</th></tr></thead>
+            <tbody id="clubs"></tbody>
+          </table>
+        </details>
+        <div class="note">Range files are parsed on this device. Back up after importing if you don't want Keith to forget everything.</div>
+      </section>
+
+      <div class="footer">Dagger Caddie · Personal practice tool · Dagger Country Club styling · No subscription required</div>
+    </div>
+  </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let baseline=[], profile=[], greens={}, wedgeFeels={}, state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'};
+const store=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)); return v??d}catch{return d}};
+const LIES=['Tee','Fairway','Rough','Deep rough','Trees / recovery','Bunker'];
+const WINDS=['Calm','Headwind','Tailwind','Crosswind'];
+const PINS=['Front','Middle','Back'];
+const DANGERS=[['none','No info'],['short','Trouble short'],['long','Trouble long'],['left','Trouble left'],['right','Trouble right']];
+
+function activeCarry(p){return Number.isFinite(p.manualCarry)?p.manualCarry:p.carry}
+function setQuick(containerId, values, selected, onPick){
+  const root=$(containerId); root.innerHTML='';
+  values.forEach(v=>{
+    const value=Array.isArray(v)?v[0]:v, label=Array.isArray(v)?v[1]:v;
+    const b=document.createElement('button'); b.type='button'; b.textContent=label; if(value===selected)b.classList.add('active');
+    b.onclick=()=>{ onPick(value); setQuick(containerId, values, value, onPick)};
+    root.appendChild(b);
+  });
+}
+function renderMastQuip(){
+  const p=$('personality').value, roast=Number($('roast').value);
+  let msg='Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.';
+  if(p==='pro') msg='Keith remains calm, composed, and only mildly disappointed in your course management.';
+  else if(p==='dry') msg= roast>1 ? 'Keith will be polite enough to help and rude enough to be memorable.' : 'Keith is quietly judgmental, just like a proper club caddie.';
+  else if(roast>=3) msg='Keith loves you enough to help and respects you little enough to tell the truth.';
+  $('mastquip').textContent=msg;
+}
+function syncManualField(){
+  const p=profile[Number($('manualclub').value)];
+  $('manualcarry').value=p?Math.round(activeCarry(p)):'';
+}
+function validCarry(input){let n=Number(input);return String(input).trim()!==''&&Number.isFinite(n)&&n>=10&&n<=400?n:null}
+function render(){
+  $('clubs').innerHTML=profile.length?profile.map(p=>`<tr><td>${p.name}</td><td>${activeCarry(p).toFixed(0)} yd</td><td>${p.n}</td><td>${(p.off??15).toFixed(0)} yd</td></tr>`).join(''):'<tr><td colspan="4">No clubs loaded yet.</td></tr>';
+  const prior=$('manualclub').value;
+  $('manualclub').innerHTML=profile.length?profile.map((p,i)=>`<option value="${i}">${p.name}</option>`).join(''):'<option value="">No clubs yet</option>';
+  if(profile.length){ $('manualclub').value = profile.some((p,i)=>String(i)===prior)?prior:'0'; syncManualField(); }
+  else $('manualcarry').value='';
+  $('manualtable').innerHTML=profile.length?profile.map(p=>`<tr><td>${p.name}</td><td>${activeCarry(p).toFixed(0)} yd</td><td>${Number.isFinite(p.manualCarry)?'Manual':'Range'}</td></tr>`).join(''):'<tr><td colspan="3">No clubs yet. Add one above.</td></tr>';
+  $('w50').value = wedgeFeels[50] ?? '';
+  $('w75').value = wedgeFeels[75] ?? '';
+  $('w100').value = wedgeFeels[100] ?? '';
+  $('setupCard').classList.toggle('hidden', read('dagger_setup_complete', false));
+  renderMastQuip();
+}
+function chooseProfile(mode){
+  if(mode==='austin'){
+    profile = structuredClone(baseline);
+    store('dagger_profile',profile);
+    store('dagger_setup_mode','austin');
+    $('manualstatus').textContent='Austin starter profile loaded.';
+  } else if(mode==='empty') {
+    profile = [];
+    store('dagger_profile',profile);
+    store('dagger_setup_mode','empty');
+    $('manualstatus').textContent='Empty bag ready. Add your own clubs below.';
+  }
+  store('dagger_setup_complete', true);
+  render();
+}
+function getPartialCall(y){
+  const feels=[50,75,100].filter(k=>Number.isFinite(wedgeFeels[k]));
+  if(!feels.length) return null;
+  const nearest = feels.map(k=>({k,d:Math.abs(y-wedgeFeels[k])})).sort((a,b)=>a.d-b.d)[0];
+  if(nearest && nearest.d<=12) return nearest.k;
+  return null;
+}
+function getKeithLine(kind){
+  const mode=$('personality').value; const roast=Number($('roast').value);
+  const pack={
+    pro:{normal:['Commit to the target and make a balanced swing.','Middle of the green is rarely a bad decision.','Let the club do the work.'],long:['Choose the widest safe landing area.','Play for position before pride.','A controlled swing beats a heroic one.'],recover:['Take your medicine and advance safely.','The smart bogey beats the stupid double.','Get back in play first.']},
+    dry:{normal:['Center green. Revolutionary stuff.','A nice stock swing would be refreshing.','Try not to out-think a simple golf shot.'],long:['Play to the fat side and spare us the drama.','Long and dumb remains a poor strategy.','Distance is cute. In play is useful.'],recover:['Punch out and pretend this was always the plan.','Hero golf continues to test poorly.','Take the boring option for once.']},
+    smart:{normal:['Make a smooth swing and avoid doing anything stupid at the ball.','Middle of the green, champ. No need to get horny over a tucked flag.','Nice and easy. We are trying to play golf, not settle a blood feud.'],long:['Find the safe side and stop acting like 240 in the air solves everything.','Let’s keep the big miss out of this, for everybody’s sake.','Play the smart shot, not the one your ego keeps sketching in crayon.'],recover:['Punch out. Hero golf can fuck right off.','Take your medicine before this hole becomes a hostage situation.','Advance it safely and keep the card alive, you magnificent dumbass.']}
+  };
+  let arr=pack[mode][kind]||pack.smart.normal;
+  let line=arr[Math.min(roast,arr.length-1)]||arr[0];
+  if(mode==='pro' && roast>=2) line='Conservative target, committed swing. We can be sharp without being reckless.';
+  return line;
+}
+function decide(){
+  const y=Number($('yards').value);
+  const lie=state.lie, wind=state.wind, danger=state.danger;
+  const noteText = $('coursenote').value.trim();
+  if(!y || y<1){ $('answer').innerHTML='<div class="club-big">ENTER YARDAGE</div><p>Keith needs a number before he can judge you.</p>'; return; }
+  if(!profile.length && !Object.keys(wedgeFeels).length){ $('answer').innerHTML='<div class="club-big">SET UP YOUR BAG</div><p>Add your carry distances in My Bag or Quick Wedges first.</p>'; return; }
+  let target='Center of green', club='', note='';
+  let adjust = wind==='Headwind'?8:wind==='Tailwind'?-7:0;
+  if(/uphill/i.test(noteText)) adjust += 5;
+  if(/downhill/i.test(noteText)) adjust -= 5;
+  const partial = y<=110 ? getPartialCall(y) : null;
+  if(lie==='Trees / recovery' || lie==='Bunker'){
+    club='RECOVERY FIRST'; target='Safest clear opening'; note='Exact club depends on clearance, lip, and lie. Keith recommends getting back into the fight before getting cute.';
+  } else if(partial){
+    club=`${partial}-YARD WEDGE`; note=`Using your saved short-game feel around ${wedgeFeels[partial]} yards. Verify the lie and exact carry.`;
+  } else if(y>285){
+    const has3w=profile.find(p=>p.name.toLowerCase()==='3 wood');
+    club=has3w?'3 WOOD':'SAFE LAYUP'; target='Widest verified safe landing area'; note='This is a position shot. We are not trying to solve the hole in one swing.';
+    if(lie==='Deep rough') {club='SAFE LAYUP'; note='Deep rough makes carry and spin unreliable. Advance it safely.'}
+  } else {
+    let effective=y+adjust;
+    let options=profile.filter(p=>p.name.toLowerCase()!=='driver');
+    if(!options.length) options=profile.slice();
+    const choices=options.map(p=>({
+      ...p,
+      delta:Math.abs(activeCarry(p)-effective),
+      risk:Math.abs(activeCarry(p)-effective)+Math.max(0,(p.off??15)-12)*0.22+(p.n>0&&p.n<5?3:0)+(lie==='Deep rough'?6:0)
+    })).sort((a,b)=>a.risk-b.risk);
+    const pick=choices[0];
+    if(!pick){ club='ADD YOUR CLUBS'; note='Keith cannot recommend a club until you give him a bag to work with.'; }
+    else {
+      club=pick.name.toUpperCase();
+      note=Number.isFinite(pick.manualCarry)?`Manual carry ${pick.manualCarry.toFixed(0)} yd. Range this against the actual situation.`:`Range carry ${pick.carry.toFixed(0)} yd from ${pick.n} swings. Good starting point, not gospel.`;
+      if(lie==='Deep rough') note='Deep rough makes carry weird. Keith favors a safer advance unless the lie is cleaner than advertised.';
+    }
+    if(danger==='short') target='Safe section beyond short trouble';
+    else if(danger==='long') target='Conservative green-center / short side';
+    else if(danger==='left') target='Center-right safe area';
+    else if(danger==='right') target='Center-left safe area';
+  }
+  const kind = (club==='RECOVERY FIRST' || club==='SAFE LAYUP') ? 'recover' : (y>210 ? 'long' : 'normal');
+  $('answer').innerHTML=`<div class="club-big">${club}</div><div class="target">${target}</div><p>${note}</p>${noteText?`<p><strong>Course note:</strong> ${noteText}</p>`:''}<div class="keith"><strong>Keith says:</strong> ${getKeithLine(kind)}</div><div class="note">Provisional call based on your saved yardages, lie, and limited context.</div>`;
+}
 function csvRows(s){let rows=[],row=[],cell='',quoted=false;for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'){if(quoted&&s[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&s[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows}
-$('csv').onchange=async e=>{let f=e.target.files[0];if(!f)return;let rows=csvRows(await f.text());let h=rows.shift().map(x=>x.trim());let ix=n=>h.indexOf(n),ic=ix('Club Type'),iy=ix('Carry Distance'),io=ix('Carry Deviation Distance');if([ic,iy,io].some(x=>x<0)){$('uploadstatus').textContent='Wrong CSV format: needs Club Type, Carry Distance, Carry Deviation Distance.';return}let grouped={};for(let r of rows){let name=(r[ic]||'').trim(),carry=Number(r[iy]),off=Math.abs(Number(r[io]));if(!name||!Number.isFinite(carry)||carry<=0||!Number.isFinite(off))continue;if(!grouped[name])grouped[name]=[];grouped[name].push({carry,off})}let count=0;for(let [name,shots] of Object.entries(grouped)){let p=profile.find(x=>x.name===name);let n=shots.length,sum=shots.reduce((s,x)=>s+x.carry,0),offs=shots.reduce((s,x)=>s+x.off,0);if(p){p.carry=(p.carry*p.n+sum)/(p.n+n);p.off=(p.off*p.n+offs)/(p.n+n);p.n+=n}else profile.push({name,carry:sum/n,off:offs/n,n});count+=n}store('dagger_profile',profile);render();$('uploadstatus').textContent=`Imported ${count} swings from ${f.name}. Back up your data now.`};
-$('personality').onchange=()=>store('dagger_personality',$('personality').value);$('call').onclick=decide;$('course').onchange=()=>store('dagger_course',$('course').value);
-const key=()=>($('course').value||'unnamed').trim().toLowerCase()+'|'+$('hole').value;
-$('savegreen').onclick=()=>{let lat=Number($('lat').value),lon=Number($('lon').value);if(!$('lat').value||!$('lon').value||Math.abs(lat)>90||Math.abs(lon)>180){$('status').textContent='Enter verified latitude and longitude for green center.';return}greens[key()]={lat,lon};store('dagger_greens',greens);$('status').textContent='Green center saved locally for this course and hole.'};
-$('gps').onclick=()=>{let g=greens[key()];if(!g){$('status').textContent='No green mapped for this hole. Enter verified center coordinates, save, then try GPS.';return}if(!navigator.geolocation){$('status').textContent='GPS unavailable here. Try HTTPS in Safari.';return}$('status').textContent='Requesting GPS permission…';navigator.geolocation.getCurrentPosition(p=>{let R=6371000,toRad=v=>v*Math.PI/180,a=Math.sin(toRad(g.lat-p.coords.latitude)/2)**2+Math.cos(toRad(p.coords.latitude))*Math.cos(toRad(g.lat))*Math.sin(toRad(g.lon-p.coords.longitude)/2)**2,d=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));let yd=Math.round(d*1.0936133);$('yards').value=yd;$('status').textContent=`GPS: ${yd} yards to saved green center (accuracy ±${Math.round(p.coords.accuracy*1.0936133)} yd). Tap Get Dagger's Call.`},e=>$('status').textContent='Location unavailable: '+e.message,{enableHighAccuracy:true,timeout:12000,maximumAge:10000})};
-$('export').onclick=()=>{let data={profile,greens,personality:$('personality').value},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dagger-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
-$('reset').onclick=()=>{if(confirm('Restore original club data and discard imported updates?')){profile=structuredClone(baseline);store('dagger_profile',profile);render()}};init();
-</script></body></html>
+
+async function init(){
+  baseline=await (await fetch('profile.json')).json();
+  profile=read('dagger_profile', structuredClone(baseline));
+  greens=read('dagger_greens',{});
+  wedgeFeels=read('dagger_wedges',{});
+  $('personality').value=read('dagger_personality','smart');
+  $('roast').value=read('dagger_roast','2');
+  $('course').value=read('dagger_course','');
+  state=read('dagger_round_state',state);
+  setQuick('lieButtons',LIES,state.lie,v=>{state.lie=v;store('dagger_round_state',state)});
+  setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)});
+  setQuick('pinButtons',PINS,state.pin,v=>{state.pin=v;store('dagger_round_state',state)});
+  setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)});
+  render();
+}
+
+$('manualclub').onchange=syncManualField;
+$('savemanual').onclick=()=>{const p=profile[Number($('manualclub').value)], v=validCarry($('manualcarry').value); if(!p||v===null){$('manualstatus').textContent='Choose a club and enter a carry between 10 and 400 yards.';return} p.manualCarry=v; store('dagger_profile',profile); render(); $('manualstatus').textContent=`Saved ${p.name}: ${v} yd carry.`;};
+$('clearmanual').onclick=()=>{const p=profile[Number($('manualclub').value)]; if(!p) return; if(p.n===0){ profile=profile.filter(x=>x!==p); $('manualstatus').textContent='Removed manually added club.'; } else { delete p.manualCarry; $('manualstatus').textContent=`Restored ${p.name} to range-session average.`; } store('dagger_profile',profile); render(); };
+$('addclub').onclick=()=>{const name=$('newclub').value.trim(), v=validCarry($('newcarry').value); if(!name||v===null){$('manualstatus').textContent='Enter a club name and carry between 10 and 400 yards.';return} let found=profile.find(p=>p.name.toLowerCase()===name.toLowerCase()); if(found) found.manualCarry=v; else profile.push({name,carry:v,off:15,n:0,manualCarry:v}); store('dagger_profile',profile); render(); $('newclub').value=''; $('newcarry').value=''; $('manualstatus').textContent=`Saved ${name}: ${v} yd carry.`;};
+$('fresh').onclick=()=>{ if(!confirm('Replace your current bag with an empty one?')) return; profile=[]; store('dagger_profile',profile); store('dagger_setup_complete', true); render(); $('manualstatus').textContent='Empty bag ready.'; };
+$('useAustinMini').onclick=()=>chooseProfile('austin');
+$('useAustin').onclick=()=>chooseProfile('austin');
+$('buildMine').onclick=()=>chooseProfile('empty');
+$('jumpUpload').onclick=()=>{ store('dagger_setup_complete',true); render(); $('uploadSection').scrollIntoView({behavior:'smooth',block:'start'}); };
+$('saveWedges').onclick=()=>{ let vals={}; [50,75,100].forEach(k=>{const v=validCarry($(k===50?'w50':k===75?'w75':'w100').value); if(v!==null) vals[k]=v;}); wedgeFeels=vals; store('dagger_wedges',wedgeFeels); $('wedgestatus').textContent=Object.keys(vals).length? 'Saved wedge feels locally.' : 'No wedge feels saved.'; };
+$('clearWedges').onclick=()=>{ wedgeFeels={}; store('dagger_wedges',wedgeFeels); $('wedgestatus').textContent='Cleared wedge feels.'; render(); };
+$('personality').onchange=()=>{store('dagger_personality',$('personality').value); renderMastQuip();};
+$('roast').onchange=()=>{store('dagger_roast',$('roast').value); renderMastQuip();};
+$('call').onclick=decide;
+$('clearRound').onclick=()=>{ $('yards').value=''; $('coursenote').value=''; state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'}; store('dagger_round_state',state); setQuick('lieButtons',LIES,state.lie,v=>{state.lie=v;store('dagger_round_state',state)}); setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)}); setQuick('pinButtons',PINS,state.pin,v=>{state.pin=v;store('dagger_round_state',state)}); setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)}); };
+$('course').onchange=()=>store('dagger_course',$('course').value);
+const greenKey=()=>($('course').value||'unnamed').trim().toLowerCase()+'|'+$('hole').value;
+$('savegreen').onclick=()=>{ const lat=Number($('lat').value), lon=Number($('lon').value); if(!$('lat').value || !$('lon').value || Math.abs(lat)>90 || Math.abs(lon)>180){ $('status').textContent='Enter verified latitude and longitude for the green center.'; return; } greens[greenKey()]={lat,lon}; store('dagger_greens',greens); $('status').textContent='Green center saved locally for this course and hole.'; };
+$('gps').onclick=()=>{ const g=greens[greenKey()]; if(!g){ $('status').textContent='No green mapped for this course + hole yet. Save it first.'; return; } if(!navigator.geolocation){ $('status').textContent='GPS unavailable here. Try Safari over HTTPS.'; return; } $('status').textContent='Requesting GPS permission…'; navigator.geolocation.getCurrentPosition(p=>{ const R=6371000, toRad=v=>v*Math.PI/180, lat1=toRad(p.coords.latitude), lat2=toRad(g.lat), dLat=toRad(g.lat-p.coords.latitude), dLon=toRad(g.lon-p.coords.longitude), a=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2, d=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); const yd=Math.round(d*1.0936133); $('yards').value=yd; $('status').textContent=`GPS: ${yd} yards to saved green center (accuracy ±${Math.round(p.coords.accuracy*1.0936133)} yd).`; },e=>$('status').textContent='Location unavailable: '+e.message,{enableHighAccuracy:true,timeout:12000,maximumAge:10000}) };
+$('csv').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const rows=csvRows(await f.text()); const h=rows.shift().map(x=>x.trim()); const ix=n=>h.indexOf(n), ic=ix('Club Type'), iy=ix('Carry Distance'), io=ix('Carry Deviation Distance'); if([ic,iy,io].some(x=>x<0)){ $('uploadstatus').textContent='Wrong CSV format. Need Club Type, Carry Distance, Carry Deviation Distance.'; return; } let grouped={}; for(let r of rows){ let name=(r[ic]||'').trim(), carry=Number(r[iy]), off=Math.abs(Number(r[io])); if(!name || !Number.isFinite(carry) || carry<=0 || !Number.isFinite(off)) continue; if(!grouped[name]) grouped[name]=[]; grouped[name].push({carry,off}); } let count=0; for(let [name,shots] of Object.entries(grouped)){ const p=profile.find(x=>x.name===name); const n=shots.length, sum=shots.reduce((s,x)=>s+x.carry,0), offs=shots.reduce((s,x)=>s+x.off,0); if(p){ p.carry=(p.carry*p.n+sum)/(p.n+n); p.off=(p.off*p.n+offs)/(p.n+n); p.n+=n; } else profile.push({name,carry:sum/n,off:offs/n,n}); count+=n; } store('dagger_profile',profile); store('dagger_setup_complete',true); render(); $('uploadstatus').textContent=`Imported ${count} swings from ${f.name}. Back up your data now.`; };
+$('export').onclick=()=>{ const data={profile,greens,wedgeFeels,personality:$('personality').value,roast:$('roast').value}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dagger-backup.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); };
+$('reset').onclick=()=>{ if(confirm('Restore original club data and discard imported updates?')){ profile=structuredClone(baseline); store('dagger_profile',profile); render(); } };
+init();
+</script>
+</body>
+</html>

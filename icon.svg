@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="95" fill="#18251f"/><path d="M248 90v326" stroke="#c4e4ae" stroke-width="20"/><path d="M258 96L413 157 258 218Z" fill="#c4e4ae"/><text x="256" y="456" text-anchor="middle" fill="#c4e4ae" font-family="Arial" font-size="62" font-weight="bold">DAGGER</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="88" fill="#143126"/>
+  <rect x="32" y="32" width="448" height="448" rx="72" fill="none" stroke="#b79c62" stroke-width="14"/>
+  <circle cx="256" cy="210" r="124" fill="none" stroke="#f5f0e5" stroke-width="12"/>
+  <path d="M250 110v208" stroke="#f5f0e5" stroke-width="18" stroke-linecap="round"/>
+  <path d="M260 118L376 165 260 212Z" fill="#f5f0e5"/>
+  <text x="256" y="388" text-anchor="middle" fill="#f5f0e5" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700">KEITH</text>
+  <text x="256" y="438" text-anchor="middle" fill="#b79c62" font-family="Georgia, 'Times New Roman', serif" font-size="34" letter-spacing="3">DAGGER</text>
+</svg>
