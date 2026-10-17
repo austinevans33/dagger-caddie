@@ -1,9 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="88" fill="#143126"/>
-  <rect x="32" y="32" width="448" height="448" rx="72" fill="none" stroke="#b79c62" stroke-width="14"/>
-  <circle cx="256" cy="210" r="124" fill="none" stroke="#f5f0e5" stroke-width="12"/>
-  <path d="M250 110v208" stroke="#f5f0e5" stroke-width="18" stroke-linecap="round"/>
-  <path d="M260 118L376 165 260 212Z" fill="#f5f0e5"/>
-  <text x="256" y="388" text-anchor="middle" fill="#f5f0e5" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700">KEITH</text>
-  <text x="256" y="438" text-anchor="middle" fill="#b79c62" font-family="Georgia, 'Times New Roman', serif" font-size="34" letter-spacing="3">DAGGER</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="90" fill="#17382c"/><rect x="29" y="29" width="454" height="454" rx="65" fill="none" stroke="#b8a274" stroke-width="10"/><circle cx="256" cy="195" r="126" fill="none" stroke="#eee7d7" stroke-width="8"/><path d="M242 95v233" stroke="#eee7d7" stroke-width="15" stroke-linecap="round"/><path d="M252 105l108 44-108 43z" fill="#eee7d7"/><path d="M161 335h190" stroke="#b8a274" stroke-width="6"/><text x="256" y="395" font-family="Georgia,serif" font-size="45" font-weight="bold" fill="#f3eada" text-anchor="middle">DAGGER</text><text x="256" y="441" font-family="Georgia,serif" font-size="31" letter-spacing="4" fill="#b8a274" text-anchor="middle">KEITH</text></svg>
