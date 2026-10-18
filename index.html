@@ -27,6 +27,7 @@
   .mast{background:linear-gradient(180deg,#17372b 0%,#122c22 100%);color:var(--cream);padding:22px 18px 20px;position:relative;border-bottom:4px solid var(--gold)}
   .over{letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:#d7cab0;margin-bottom:6px}
   .brandrow{display:flex;justify-content:space-between;gap:12px;align-items:start}
+  .logo-lockup{display:block;width:100%;max-width:360px;min-height:96px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.28);box-shadow:0 6px 18px rgba(0,0,0,.22);background:#10261d}
   .h1{font-size:34px;line-height:1;margin:0;font-weight:700;letter-spacing:.01em}
   .sub{margin:6px 0 0;color:#d6ddd3;font-size:14px}
   .badge{display:inline-block;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:5px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.06)}
@@ -81,8 +82,15 @@
   .pulse-reason{font-size:12px;color:#46564b}
   .answer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
   .answer-actions button{padding:9px 5px;font-size:12px;background:#e6dcc6;color:#19372b;border:1px solid #cabc9c}
-  .tabbar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}
-  .tabbar button{font-size:13px;padding:11px 4px;background:#e9e0cd;border:1px solid #c5b593;color:#17372a}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
+  .tabbar button{font-size:12px;padding:11px 4px;background:#e9e0cd;border:1px solid #c5b593;color:#17372a}
+  .bet-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+  .betbox{padding:10px;border-radius:12px;background:#f4eddf;border:1px solid #d3c4a5;text-align:center}
+  .betbox strong{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b645d;margin-bottom:3px}
+  .betbox span{font-size:20px;font-weight:700;color:#17372a}
+  .bet-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .bet-actions button{font-size:13px;padding:12px 6px}
+  .bet-log td:last-child,.bet-log th:last-child{text-align:right}
   .tabbar button.active{background:#17372a;color:#fff7e8}
   .hidden-panel{display:none !important}
   .card.green .callout{color:#1d3125}
@@ -113,17 +121,16 @@
     <div class="mast">
       <div class="over">Dagger Country Club • Personal Edition</div>
       <div class="brandrow">
-        <div>
-          <div class="h1">Dagger Caddie</div>
-          <div class="sub">Caddie on duty: <strong>Keith</strong> · Club first. Bullshit later.</div>
+        <div style="width:100%">
+          <img class="logo-lockup" src="dagger_cc_logo.jpg" alt="Dagger Country Club logo">
+          <div class="sub" style="margin-top:10px">Caddie on duty: <strong>Keith</strong> · Club first. Bullshit later.</div>
         </div>
-        <div class="crest" title="Dagger Country Club">⚑</div>
       </div>
       <div class="quip"><img class="portrait" src="keith.svg" alt="Keith, Dagger Country Club’s permanently unimpressed caddie"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
     </div>
 
     <div class="content">
-      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ MY BAG</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-settings" type="button">⚙ CLUBHOUSE</button></nav>
+      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ MY BAG</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-bets" type="button">$ BETTING</button><button id="tab-settings" type="button">⚙ CLUBHOUSE</button></nav>
 
       <section class="card" id="setupCard">
         <h2>Welcome to Dagger Caddie</h2>
@@ -328,7 +335,42 @@
         <div class="note">Range files are parsed on this device. Back up after importing if you don't want Keith to forget everything.</div>
       </section>
 
-      <div class="footer">Dagger Caddie · Keith’s Country Club Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
+            <section class="card" data-tab="bets">
+        <div class="inline" style="justify-content:space-between"><div><div class="over" style="color:#6b644c">DAGGER COUNTRY CLUB · WAGERING DESK</div><h2>Betting</h2><p class="muted">Simple match play. Hole-by-hole. Enough math to keep the money honest.</p></div><span class="tag">MATCH PLAY</span></div>
+        <div class="grid">
+          <div><label>Opponent</label><input id="betOpponent" placeholder="Name or group"></div>
+          <div><label>Money per hole ($)</label><input id="betStake" type="number" min="1" max="1000" step="1" placeholder="10"></div>
+        </div>
+        <div class="grid" style="margin-top:12px">
+          <button class="btn-secondary" id="saveBetSettings">Save betting setup</button>
+          <button class="btn-ghost" id="resetBetRound">Reset betting round</button>
+        </div>
+        <div class="bet-summary">
+          <div class="betbox"><strong>Current hole</strong><span id="betCurrentHole">1</span></div>
+          <div class="betbox"><strong>Match</strong><span id="betMatchState">All square</span></div>
+          <div class="betbox"><strong>Net</strong><span id="betNet">$0</span></div>
+          <div class="betbox"><strong>Press level</strong><span id="betSimpleNote">Clean</span></div>
+        </div>
+        <div class="bet-actions">
+          <button class="btn-primary" id="betWin">Win hole</button>
+          <button class="btn-secondary" id="betPush">Push hole</button>
+          <button class="btn-ghost" id="betLose">Lose hole</button>
+        </div>
+        <div class="grid" style="margin-top:10px">
+          <button class="btn-ghost" id="betUndo">Undo last hole</button>
+          <button class="btn-secondary" id="betPress">Start a simple press</button>
+        </div>
+        <p class="muted" id="betStatus" style="margin-top:10px">Log each hole result and Keith will keep the running tally.</p>
+        <details style="margin-top:12px" open>
+          <summary>Hole-by-hole ledger</summary>
+          <table class="bet-log">
+            <thead><tr><th>Hole</th><th>Result</th><th>Running</th></tr></thead>
+            <tbody id="betTable"></tbody>
+          </table>
+        </details>
+      </section>
+
+<div class="footer">Dagger Caddie · Keith’s Country Club Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
     </div>
   </div>
 </main>
@@ -336,8 +378,9 @@
 const $=id=>document.getElementById(id);
 const escapeHTML=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let currentClub='', lastDecision=null, loggedShots=[];
-function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','reset','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
-['play','bag','reset','settings'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+let betState={opponent:'',stake:10,currentHole:1,results:Array(18).fill(null),presses:0};
+function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','reset','bets','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
+['play','bag','reset','bets','settings'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
 const resetAdvice={
  angry:{steps:'<strong>1.</strong> Exhale for six seconds. Unclench your jaw.<br><strong>2.</strong> Name what happened without assigning blame.<br><strong>3.</strong> Choose the safest target. Swing only when ready.',quote:'“Yes, that was crap. Giving the next ball the same punishment would be even dumber.”'},
  hard:{steps:'<strong>1.</strong> Loosen your grip and take one slow breath.<br><strong>2.</strong> Make ONE smooth rehearsal at 75% effort.<br><strong>3.</strong> Pick a target and swing with balance.',quote:'“Distance is not an emergency, you overcaffeinated lumberjack.”'},
@@ -347,6 +390,44 @@ const resetAdvice={
 let resetTrigger='general',resetCount=0;
 function renderReset(){const a=resetAdvice[resetTrigger];$('resetSteps').innerHTML=a.steps;$('resetKeith').textContent=a.quote;document.querySelectorAll('[data-trigger]').forEach(b=>b.classList.toggle('active',b.dataset.trigger===resetTrigger));}
 function showLog(){ $('shotLogInfo').textContent=loggedShots.length?`${loggedShots.length} outcomes saved. Latest: ${loggedShots[loggedShots.length-1].result} (${loggedShots[loggedShots.length-1].club}). These don't silently change your carry distances.`:'No results logged yet.'; }
+
+function calcBetNet(){
+  const stake=Number(betState.stake)||0;
+  return betState.results.reduce((sum,r)=>sum + (r==='W'?stake:r==='L'?-stake:0),0);
+}
+function calcMatchState(){
+  let diff=0, played=0;
+  betState.results.forEach(r=>{if(r==='W'){diff++;played++;} else if(r==='L'){diff--;played++;} else if(r==='P'){played++;}});
+  if(played===0 || diff===0) return 'All square';
+  const remain=18-played;
+  if(Math.abs(diff)>remain) return diff>0 ? `Won ${Math.abs(diff)}&${remain}` : `Lost ${Math.abs(diff)}&${remain}`;
+  return diff>0 ? `${diff} up` : `${Math.abs(diff)} down`;
+}
+function renderBets(){
+  $('betOpponent').value=betState.opponent||'';
+  $('betStake').value=betState.stake||10;
+  $('betCurrentHole').textContent=betState.currentHole;
+  $('betMatchState').textContent=calcMatchState();
+  const net=calcBetNet();
+  $('betNet').textContent=(net>=0?'+':'-')+'$'+Math.abs(net);
+  $('betSimpleNote').textContent=betState.presses>0 ? `${betState.presses} press`+(betState.presses===1?'':'es') : 'Clean';
+  $('betTable').innerHTML='';
+  let running=0; const stake=Number(betState.stake)||0;
+  for(let i=0;i<18;i++){
+    const r=betState.results[i]; if(r==='W') running+=stake; else if(r==='L') running-=stake;
+    const label=r==='W'?'Won':r==='L'?'Lost':r==='P'?'Pushed':'—';
+    const row=document.createElement('tr');
+    row.innerHTML=`<td>${i+1}</td><td>${label}</td><td>${running>=0?'+':'-'}$${Math.abs(running)}</td>`;
+    $('betTable').appendChild(row);
+  }
+}
+function saveBetState(msg){ store('dagger_bet_state',betState); renderBets(); if(msg) $('betStatus').textContent=msg; }
+function logBetResult(result){
+  const idx=Math.max(0,Math.min(17,(betState.currentHole||1)-1));
+  betState.results[idx]=result;
+  if(idx<17) betState.currentHole=idx+2;
+  saveBetState(`Hole ${idx+1} logged as ${result==='W'?'win':result==='L'?'loss':'push'}. Keith trusts you with arithmetic slightly more now.`);
+}
 function pucker({yards,lie,wind,danger,club,confidence}){
   let val=1.5, reasons=[];
   const bump=(v,t)=>{val+=v;reasons.push(t)};
@@ -409,6 +490,7 @@ function render(){
   $('w100').value = wedgeFeels[100] ?? '';
   $('setupCard').classList.toggle('hidden', read('dagger_setup_complete', false));
   renderMastQuip();
+  renderBets();
 }
 function chooseProfile(mode){
   if(mode==='austin'){
@@ -433,20 +515,39 @@ function getPartialCall(y){
   return null;
 }
 const keithLines={
- normal:["Beautiful. A stock shot. Resist the urge to turn it into a hostage negotiation.","The flag has no idea who you are. Aim at the middle.","A normal swing would be a refreshing change of policy.","Let the club do its job. Management has requested you stop interfering.","You don't need to prove anything to that golf ball. It has no mortgage.","Center of green. What an appallingly reasonable concept."],
- long:["You came here to shoot lower, not to audition for a long-drive circus.","That fairway's wider than your excuses. Pick a side and commit.","The heroic line is tempting. So is arson. Let's do neither.","A full send here would be a beautiful monument to terrible judgment.","It turns out you can hit a three-wood without making it a constitutional crisis."],
- recover:["Punch out. We're a country club, not an emergency rescue documentary.","The trees don't give a shit about your swing speed.","Take your medicine. The comeback shot is the NEXT one.","You cannot negotiate with a pine tree, despite your confidence.","We can save bogey. We cannot save your dignity if you try the gap."]
+ normal:[
+  "Middle of the green. Mature stuff. Make your normal swing and let the club rescue your personality.",
+  "Good number for a stock swing. Very grown-up. Pick the safe target and don’t overthrow it.",
+  "Reasonable club. Reasonable target. If you keep this up, people will think you have self-control.",
+  "Take the center bias and make a balanced move. Astonishingly competent idea, honestly.",
+  "This is your yardage. Smooth tempo, committed finish, and maybe we avoid the usual circus.",
+  "Choose the fat side and trust the carry. Congratulations on briefly resembling a golfer."
+ ],
+ long:[
+  "Take the widest safe landing area. A surprisingly adult choice for someone with your impulses.",
+  "This is a position shot. Tempo first, ego last. I’m proud of you in a deeply reluctant way.",
+  "Long hole, simple plan. Favor the safe side and keep the hero complex on a leash.",
+  "Commit to the stock shape and accept boring. Boring is how people win money, shockingly.",
+  "You don’t need maximum violence here. You need something in play. Try to cherish that distinction."
+ ],
+ recover:[
+  "Get it back in play and leave yourself a real third shot. Sensible golf looks strange on you, but I support it.",
+  "Punch out to daylight. It’s not flashy, but neither is writing down double after a tree fight.",
+  "Take your medicine and advance it safely. Very noble. Almost responsible.",
+  "Recovery first. Save the artistry for a lie that isn’t actively insulting you.",
+  "Use the biggest window and smallest ambition. Honestly, that’s progress."
+ ]
 };
 let keithQuipSequence=0;
 function getKeithLine(kind){
   const mode=$('personality').value, roast=Number($('roast').value);
-  if(mode==='pro')return ({normal:'Choose a reliable target and commit to the shot.',long:'Favor the safest verified landing area.',recover:'Recover to a clear position before attacking.'})[kind];
-  if(mode==='dry')return ({normal:'A stock shot. Try not to improve upon it.',long:'The smart option rarely gets a standing ovation.',recover:'Punch out. The highlights can wait.'})[kind];
+  if(mode==='pro')return ({normal:'Choose a reliable target, commit to the club, and make your normal swing. Surprisingly solid plan.',long:'Favor the safest verified landing area and accept a boring good result.',recover:'Recover to a clear position before attacking. That counts as wisdom, even from you.'})[kind];
+  if(mode==='dry')return ({normal:'A stock shot. Aim middle, stay balanced, and try not to decorate it.',long:'The smart option is rarely glamorous, but it does keep money in your pocket.',recover:'Punch out, take the easy angle, and pretend it was strategic all along.'})[kind];
   const pool=keithLines[kind]||keithLines.normal;
-  const phrase=pool[keithQuipSequence++%pool.length];
-  if(roast===0)return 'One target. One smooth swing. Next shot.';
-  if(roast===1)return phrase.replace(/shit|fucking|hell/gi,'trouble');
-  if(roast>=3)return phrase+' Please spare the membership another demonstration.';
+  let phrase=pool[keithQuipSequence++%pool.length];
+  if(roast===0) return 'Pick the sensible target, make a smooth swing, and trust the number.';
+  if(roast===1) return phrase.replace('personality','decision-making').replace('circus','show');
+  if(roast>=3) return phrase+' If you can avoid freelancing, we might all get home at a decent hour.';
   return phrase;
 }
 
@@ -512,7 +613,10 @@ async function init(){
   setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)});
   setQuick('pinButtons',PINS,state.pin,v=>{state.pin=v;store('dagger_round_state',state)});
   setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)});
-  loggedShots=read('dagger_shot_log',[]);showLog();switchTab('play');render();
+  loggedShots=read('dagger_shot_log',[]);
+  betState=read('dagger_bet_state',betState);
+  if(!Array.isArray(betState.results)||betState.results.length!==18) betState.results=Array(18).fill(null);
+  showLog();switchTab('play');render();
 }
 
 $('manualclub').onchange=syncManualField;
@@ -546,6 +650,13 @@ document.querySelectorAll('[data-feedback]').forEach(b=>b.onclick=()=>{if(!lastD
 $('clearLog').onclick=()=>{if(confirm('Delete all saved shot feedback?')){loggedShots=[];store('dagger_shot_log',loggedShots);showLog();}};
 $('backupFile').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const d=JSON.parse(await f.text());if(!Array.isArray(d.profile)||!d.profile.every(x=>typeof x.name==='string'&&Number.isFinite(x.carry)&&Number.isFinite(x.n))){throw Error('Not a valid Dagger backup');}if(!confirm('Replace your current local profile and settings with this backup?'))return;profile=d.profile;greens=d.greens||{};wedgeFeels=d.wedgeFeels||{};loggedShots=Array.isArray(d.loggedShots)?d.loggedShots:[];store('dagger_profile',profile);store('dagger_greens',greens);store('dagger_wedges',wedgeFeels);store('dagger_shot_log',loggedShots);if(['pro','dry','smart'].includes(d.personality)){$('personality').value=d.personality;store('dagger_personality',d.personality);}if([0,1,2,3].includes(Number(d.roast))){$('roast').value=String(d.roast);store('dagger_roast',String(d.roast));}showLog();render();$('uploadstatus').textContent='Backup restored successfully.';}catch(err){$('uploadstatus').textContent='Unable to restore: '+err.message;}};
 $('reset').onclick=()=>{ if(confirm('Restore original club data and discard imported updates?')){ profile=structuredClone(baseline); store('dagger_profile',profile); render(); } };
+$('saveBetSettings').onclick=()=>{betState.opponent=$('betOpponent').value.trim(); betState.stake=Math.max(1,Number($('betStake').value)||10); saveBetState('Betting setup saved. Try not to get hustled.');};
+$('betWin').onclick=()=>logBetResult('W');
+$('betPush').onclick=()=>logBetResult('P');
+$('betLose').onclick=()=>logBetResult('L');
+$('betUndo').onclick=()=>{const idx=Math.max(0,(betState.currentHole||1)-2); betState.results[idx]=null; betState.currentHole=Math.max(1,idx+1); saveBetState('Undid the last hole. Revisionist history remains undefeated.');};
+$('betPress').onclick=()=>{betState.presses=(betState.presses||0)+1; saveBetState('Simple press noted. Congratulations on escalating the situation.');};
+$('resetBetRound').onclick=()=>{ if(confirm('Reset the betting round and clear all hole results?')){ betState={opponent:$('betOpponent').value.trim(),stake:Math.max(1,Number($('betStake').value)||10),currentHole:1,results:Array(18).fill(null),presses:0}; saveBetState('Betting round reset. Everyone is even again, tragically.'); } };
 init();
 </script>
 </body>
