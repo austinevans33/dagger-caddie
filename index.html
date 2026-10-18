@@ -240,7 +240,7 @@ body{background:#e9e1d0}
 .room-table{width:100%;border-collapse:collapse;table-layout:fixed}
 .room-table th,.room-table td{font-size:12px;padding:7px 3px;border-bottom:1px solid #cfbf9b;text-align:center}
 .room-table th:first-child,.room-table td:first-child{text-align:left}
-.room-table input{padding:8px 2px;text-align:center;font-size:16px;min-width:0}
+.room-table input{padding:8px 2px;text-align:center;font-size:16px;min-width:0}.room-score-step{display:flex;align-items:center;gap:4px}.room-score-step input{flex:1;min-width:0}.room-score-step button{width:30px;flex:0 0 30px;padding:8px 0;font:700 18px/1 system-ui;color:#18392b;background:#eee1c6;border:1px solid #c5ae7c;border-radius:8px}
 .room-controls{display:flex;gap:7px;margin-top:10px}
 .room-controls button{padding:11px 5px;font-size:12px}
 .tiny-print{font-size:11px;color:#685f4b;line-height:1.5}
@@ -537,7 +537,7 @@ body{background:#e9e1d0}
 <div class="over" style="color:#806f4d">DAGGER COUNTRY CLUB · MONEY ROOM</div><h2>Live Money Room</h2>
 <p class="muted">One designated scorekeeper. Everyone else watches the same scorecard on their phone.</p>
 <div class="room-status" id="roomStatus" aria-live="polite">Offline/local mode. Live sync needs Firebase configuration once.</div>
-<div class="room-grid" style="margin-top:10px">
+<details id="roomSetup" open><summary>Room setup / invitation</summary><div class="room-grid" style="margin-top:10px">
 <div><label>Your display name</label><input id="roomMe" maxlength="24" placeholder="Member"></div>
 <div><label>Game format</label><select id="roomFormat"><option value="skins">Skins</option><option value="nassau">Nassau · 2 players</option><option value="hole">Match by hole · 2 players</option><option value="vegas">Vegas · 4 players</option></select></div>
 <div><label>Other golfers (comma-separated)</label><input id="roomPlayers" placeholder="Keith, Vinny, Kyle"></div>
@@ -545,13 +545,17 @@ body{background:#e9e1d0}
 </div>
 <div class="room-controls"><button type="button" class="btn-primary" id="roomCreate">Create room</button><button type="button" class="btn-secondary" id="roomJoin">Join room</button></div>
 <div class="room-grid" style="margin-top:8px"><div><label>Room code / link</label><input id="roomCode" placeholder="Paste the invitation code"></div><div><label>Invitation</label><button type="button" class="btn-secondary" id="roomCopy">Copy invite link</button></div></div>
-<div class="room-status" style="margin-top:10px" id="roomWho">No active shared room.</div>
+<div class="room-status" style="margin-top:10px" id="roomWho">No active shared room.</div></details>
 <div id="roomScoreSection" hidden>
+<div class="bet-summary" style="grid-template-columns:repeat(3,1fr)"><div class="betbox"><strong>Format</strong><span id="roomFormatDisplay" style="font-size:15px">—</span></div><div class="betbox"><strong>Stake</strong><span id="roomStakeDisplay" style="font-size:15px">—</span></div><div class="betbox"><strong>Next hole</strong><span id="roomNextDisplay" style="font-size:15px">1</span></div></div>
+<div id="roomTotalsCards" class="room-grid" style="margin:8px 0"></div>
 <div class="room-grid" style="margin:10px 0"><div><label>Hole to record</label><select id="roomHole"></select></div><div><label>Scorekeeper</label><input id="roomHostName" readonly></div></div>
 <div style="overflow-x:auto"><table class="room-table"><thead id="roomScoreHead"></thead><tbody id="roomScoreRows"></tbody></table></div>
 <div class="room-controls"><button class="btn-primary" id="roomSaveHole" type="button">Save hole</button><button class="btn-secondary" id="roomFinish" type="button">Archive match</button></div>
-<div class="notice-card" id="roomStandings"></div>
+<div class="notice-card" id="roomStandings"></div><div class="notice-card" id="roomCaddieBanter" aria-live="polite">Your caddie is studying the scoreboard and preparing a totally unnecessary remark.</div>
 <div class="tiny-print" id="roomAudit"></div>
+<div class="game-live"><h3>Hole-by-hole live ledger</h3><p class="game-note">Official strokes, hole result, and running payouts. Unscored holes stay blank; skins carry forward on ties.</p><div style="overflow-x:auto"><table class="room-table" id="roomLedgerTable"><thead id="roomLedgerHead"></thead><tbody id="roomLedgerBody"></tbody></table></div></div>
+<div class="grid" style="margin-top:9px"><button id="roomShareCurrent" class="btn-secondary" type="button">Share invitation</button><button id="roomLocalArchive" class="btn-ghost" type="button">Save copy to this phone</button></div>
 </div>
 <p class="tiny-print" style="margin-top:10px">Scorekeeper alone can change scores; members can view. One gross-score entry per golfer per hole powers the chosen format. Live mode needs internet and an authenticated Firebase connection. No money transfers.</p>
 </section>

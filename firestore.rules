@@ -37,7 +37,18 @@ service cloud.firestore {
         allow get: if signedIn() && (memberId == myUid()
           || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostUid == myUid());
         allow list: if false;
-        allow update, delete: if false;
+        // A returning guest may update their own display name after presenting
+        // the room invitation again. No other membership field may change.
+        allow update: if signedIn()
+          && memberId == myUid()
+          && resource.data.uid == myUid()
+          && request.resource.data.uid == myUid()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'invite', 'joined'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 24
+          && request.resource.data.invite == get(/databases/$(database)/documents/rooms/$(roomId)).data.invite;
+        allow delete: if false;
       }
     }
   }

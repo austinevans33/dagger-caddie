@@ -1,0 +1,20 @@
+Dagger Caddie 4.9.3.1 — Live Room Join Fix
+
+This is a targeted multiplayer hotfix. It keeps all of your existing app design, games, Firebase configuration, and data model unchanged.
+
+A. On Firebase Console -> Firestore Database -> Rules:
+   Replace the entire rules text with the content of firestore.rules in this package, then Publish.
+   Existing rules rejected a returning guest trying to rejoin because member UPDATE was not allowed.
+
+B. In the GitHub repository ROOT, replace money-room.js with this package's money-room.js, and commit.
+   This version reports exactly which stage of joining failed.
+
+C. Refresh both phones. Create a NEW TEST ROOM on the host phone and share its CURRENT invite link.
+   The second phone should open the newest link and tap Join room.
+   Confirm both room IDs match. Only host can record scores.
+
+Important:
+- Never set Firestore security rules to 'allow read, write: if true'.
+- You do not need to re-upload index.html or portrait PNGs for this hotfix.
+- A recurring permissions failure during member-registration may indicate the current invite doesn't match an existing room, or that the new rules were not published.
+- This patch has not been confirmed in a live two-phone test yet.
