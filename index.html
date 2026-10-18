@@ -113,6 +113,22 @@
     .grid,.triple,.quad{grid-template-columns:1fr 1fr}
     .h1{font-size:30px}
   }
+
+/* 4.3 Mobile-first course mode */
+.mast{padding:13px 16px 12px}.mast .over{margin-bottom:3px;font-size:10px}.h1{font-size:28px}.sub{font-size:12px}.quip{margin-top:8px;padding:7px 9px;font-size:12px;min-height:46px}.portrait{width:46px;height:46px;float:left;margin:0 9px 0 0;border-width:1px}
+.content{padding:10px}.tabbar{gap:4px;margin:5px 0 8px}.tabbar button{padding:10px 1px;font-family:system-ui,-apple-system,sans-serif;font-size:10px;letter-spacing:0;border-radius:10px;line-height:1.25;min-height:42px}
+.card{margin:8px 0;padding:11px;border-radius:14px}.card.green>div:first-child .muted{display:none}.card.green h2{font-size:18px;margin:0}.card.green .badge{font-size:9px;padding:4px 7px}
+.card.green .callout{margin-top:9px !important;padding:12px;border-radius:12px}.card.green .club-big{font-size:29px;line-height:1.12}.card.green .target{font-size:14px}.card.green .callout p{font-size:12px;line-height:1.35;margin:5px 0}.card.green .callout .keith{font-size:12px;line-height:1.4;padding-top:6px;margin-top:6px}.card.green .callout .note{font-size:10px;margin:5px 0 0}
+.pulse-wrap{margin-top:8px;padding:9px 11px;border-radius:12px}.pulse-score{font-size:24px}.pulse-track{height:12px;margin:7px 0 4px;overflow:visible}.pulse-marker{height:19px;transition:left 850ms cubic-bezier(.22,.75,.17,1)}.pulse-reason{font-size:11px;line-height:1.3}.pulse-head .over{display:none}
+.distance-line{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:end;margin-top:9px}.distance-line input{font-size:22px;font-weight:800;text-align:center;height:49px;padding:6px}.distance-line button{height:49px;padding:8px;font:700 14px system-ui,-apple-system,sans-serif}
+.card.green label{font-size:10px;margin-bottom:4px}.card.green .quick{gap:5px;margin-top:0}.card.green .quick button{min-width:0;padding:7px 10px;font:600 12px system-ui,-apple-system,sans-serif;border-radius:9px}
+.shot-extra{margin-top:9px;padding:0;border:1px solid #678070;border-radius:11px}.shot-extra>summary{font:600 12px system-ui,-apple-system,sans-serif;color:#f0e6d2;padding:9px 11px;display:flex;justify-content:space-between;list-style:none}.shot-extra>summary::-webkit-details-marker{display:none}.shot-extra[open]>summary span{transform:rotate(45deg)}.extra-inner{padding:0 10px 10px}.shot-toolbar{display:grid;grid-template-columns:.65fr 1.15fr 1fr;gap:6px;margin-top:8px}.shot-toolbar button{padding:9px 4px;font:600 11px system-ui,-apple-system,sans-serif}
+.answer-actions{margin-top:7px;gap:5px}.answer-actions button{padding:8px 2px;font-size:11px}.card.green #feedbackStatus,.card.green>.note{font-size:10px;margin-top:5px}
+@keyframes dangerShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-3px)}30%{transform:translateX(3px)}45%{transform:translateX(-2px)}60%{transform:translateX(2px)}75%{transform:translateX(-1px)}}
+.pucker-shake{animation:dangerShake 460ms ease-in-out 2}.pucker-glow{box-shadow:0 0 0 2px rgba(167,63,49,.48)}
+@media(prefers-reduced-motion:reduce){.pulse-marker{transition:none!important}.pucker-shake{animation:none!important}}
+@media(max-width:390px){.h1{font-size:25px}.tabbar button{font-size:9px}.card.green .club-big{font-size:26px}.shot-toolbar button{font-size:10px}}
+
 </style>
 </head>
 <body>
@@ -122,8 +138,8 @@
       <div class="over">Dagger Country Club • Personal Edition</div>
       <div class="brandrow">
         <div style="width:100%">
-          <img class="logo-lockup" src="dagger_cc_logo.jpg" alt="Dagger Country Club logo">
-          <div class="sub" style="margin-top:10px">Caddie on duty: <strong>Keith</strong> · Club first. Bullshit later.</div>
+          <div class="h1">Dagger Caddie</div>
+          <div class="sub" style="margin-top:5px">Caddie on duty: <strong>Keith</strong> · Club first. Bullshit later.</div>
         </div>
       </div>
       <div class="quip"><img class="portrait" src="keith.svg" alt="Keith, Dagger Country Club’s permanently unimpressed caddie"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
@@ -162,21 +178,27 @@
           </div>
           <span class="badge">Keith Mode</span>
         </div>
-        <div class="grid" style="margin-top:10px">
-          <div>
-            <label>Distance (yards)</label>
-            <input id="yards" type="number" min="1" max="700" value="168" inputmode="numeric">
-          </div>
-          <div>
-            <label>Course note</label>
-            <input id="coursenote" placeholder="e.g. uphill / forced carry / dogleg">
-          </div>
+        <div class="callout" style="margin-top:14px" id="answer">
+          <div class="club-big">READY, WHEN YOU ARE</div>
+          <div class="target">Enter yardage · Ask Keith</div>
+          <p>Keith has the bag. He just needs a number.</p>
+          <div class="keith"><strong>Keith says:</strong> Nice and easy. No need to turn a stock 7-iron into a federal case.</div>
+        </div>
+        <div class="pulse-wrap" id="pulseBox" aria-live="polite">
+          <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB</div><strong>PUCKER FACTOR</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
+          <div class="pulse-track"><div class="pulse-marker" id="pulseMarker"></div></div>
+          <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
+        </div>
+
+        <div class="distance-line">
+          <div><label>Yards to target</label><input id="yards" type="number" min="1" max="700" value="168" inputmode="numeric"></div>
+          <button class="btn-primary" id="call">ASK KEITH →</button>
         </div>
         <div style="margin-top:12px">
           <label>Lie</label>
           <div class="quick" id="lieButtons"></div>
         </div>
-        <div style="margin-top:12px">
+<details class="shot-extra"><summary>Wind, pin, danger & notes <span>＋</span></summary><div class="extra-inner">        <div style="margin-top:12px">
           <label>Wind</label>
           <div class="quick" id="windButtons"></div>
         </div>
@@ -188,23 +210,9 @@
           <label>Danger (optional)</label>
           <div class="quick" id="dangerButtons"></div>
         </div>
-        <div class="grid" style="margin-top:12px">
-          <button class="btn-primary" id="call">Ask Keith</button>
-          <button class="btn-secondary" id="clearRound">Reset shot</button>
-        </div>
-        <div style="margin-top:9px"><button class="btn-secondary" id="quickReset" type="button">↻ MENTAL RESET · 10 SECONDS</button></div>
-        <div style="margin-top:9px"><button class="btn-secondary" id="heroCheck" type="button">⚠ I'M ABOUT TO DO SOMETHING STUPID</button></div>
-        <div class="pulse-wrap" id="pulseBox" aria-live="polite">
-          <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB</div><strong>PUCKER FACTOR</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
-          <div class="pulse-track"><div class="pulse-marker" id="pulseMarker"></div></div>
-          <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
-        </div>
-        <div class="callout" style="margin-top:14px" id="answer">
-          <div class="club-big">7 IRON</div>
-          <div class="target">Center green · Smooth swing</div>
-          <p>Keith's waiting. Tap Ask Keith for the actual recommendation.</p>
-          <div class="keith"><strong>Keith says:</strong> Nice and easy. No need to turn a stock 7-iron into a federal case.</div>
-        </div>
+<div style="margin-top:12px"><label>Course note</label><input id="coursenote" placeholder="uphill / forced carry / dogleg"></div></div></details>
+        <div class="shot-toolbar"><button class="btn-secondary" id="clearRound">Clear</button><button class="btn-secondary" id="quickReset" type="button">↻ Mental Reset</button><button class="btn-secondary" id="heroCheck" type="button">⚠ Bad Idea?</button></div>
+
         <div class="answer-actions" aria-label="Quick shot feedback"><button data-feedback="Good">✓ Good</button><button data-feedback="Short">↓ Short</button><button data-feedback="Long">↑ Long</button><button data-feedback="Left">← Left</button><button data-feedback="Right">→ Right</button><button data-feedback="Trouble">! Trouble</button></div>
         <p class="muted" id="feedbackStatus" style="color:#d6d6cb">Optional: one tap records the last shot outcome on this phone. No scorekeeping.</p>
         <div class="note" style="color:#e4dcc9">Recommendations are only as good as your yardage, lie, carry requirement, and hazard info. Keith is sarcastic, not psychic.</div>
@@ -445,6 +453,9 @@ function pucker({yards,lie,wind,danger,club,confidence}){
   $('pulseNumber').textContent=val.toFixed(1)+' / 10';$('pulseTier').textContent=tier;
   $('pulseMarker').style.left=`calc(${Math.max(0,Math.min(99,(val-1)/9*100))}% - 2px)`;
   $('pulseReason').textContent=reasons.join(' · ')+'. Situation estimate, not a measured probability.';
+  const box=$('pulseBox'); box.classList.remove('pucker-shake','pucker-glow');
+  if(val>9){box.classList.add('pucker-glow');if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){void box.offsetWidth;box.classList.add('pucker-shake');}}
+
 }
 
 let baseline=[], profile=[], greens={}, wedgeFeels={}, state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'};
