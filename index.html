@@ -124,11 +124,22 @@
 .card.green label{font-size:10px;margin-bottom:4px}.card.green .quick{gap:5px;margin-top:0}.card.green .quick button{min-width:0;padding:7px 10px;font:600 12px system-ui,-apple-system,sans-serif;border-radius:9px}
 .shot-extra{margin-top:9px;padding:0;border:1px solid #678070;border-radius:11px}.shot-extra>summary{font:600 12px system-ui,-apple-system,sans-serif;color:#f0e6d2;padding:9px 11px;display:flex;justify-content:space-between;list-style:none}.shot-extra>summary::-webkit-details-marker{display:none}.shot-extra[open]>summary span{transform:rotate(45deg)}.extra-inner{padding:0 10px 10px}.shot-toolbar{display:grid;grid-template-columns:.65fr 1.15fr 1fr;gap:6px;margin-top:8px}.shot-toolbar button{padding:9px 4px;font:600 11px system-ui,-apple-system,sans-serif}
 .answer-actions{margin-top:7px;gap:5px}.answer-actions button{padding:8px 2px;font-size:11px}.card.green #feedbackStatus,.card.green>.note{font-size:10px;margin-top:5px}
-@keyframes dangerShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-3px)}30%{transform:translateX(3px)}45%{transform:translateX(-2px)}60%{transform:translateX(2px)}75%{transform:translateX(-1px)}}
-.pucker-shake{animation:dangerShake 460ms ease-in-out 2}.pucker-glow{box-shadow:0 0 0 2px rgba(167,63,49,.48)}
+@keyframes dangerShake{0%,100%{transform:translateX(0)}16%{transform:translateX(-2px)}33%{transform:translateX(2px)}50%{transform:translateX(-1px)}67%{transform:translateX(2px)}84%{transform:translateX(-1px)}}
+.pucker-shake{animation:dangerShake 1050ms ease-in-out infinite}.pucker-glow{box-shadow:0 0 0 2px rgba(167,63,49,.48)}
 @media(prefers-reduced-motion:reduce){.pulse-marker{transition:none!important}.pucker-shake{animation:none!important}}
 @media(max-width:390px){.h1{font-size:25px}.tabbar button{font-size:9px}.card.green .club-big{font-size:26px}.shot-toolbar button{font-size:10px}}
 
+
+/* 4.4 discreet field tools */
+.field-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.field-row button{width:auto;flex:1;min-width:105px;padding:10px 8px;font-size:12px}
+.field-row button.selected{background:#b79c62;color:#142f24}
+.keith-intel{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 4px}
+.keith-intel span{font-size:11px;border:1px solid #c5b391;background:#eee2ca;color:#233c2e;border-radius:999px;padding:5px 8px}
+#yardageNote{font-size:12px;color:#d8cfb9;padding-top:5px}
+#voiceStatus,#notebookStatus{font-size:12px;color:#6a665b}
+#clubMood{font-weight:700;color:#294e38}
+@media(max-width:390px){.field-row button{min-width:88px}.keith-intel span{font-size:10px}}
 </style>
 </head>
 <body>
@@ -178,7 +189,7 @@
           </div>
           <span class="badge">Keith Mode</span>
         </div>
-        <div class="callout" style="margin-top:14px" id="answer">
+        <div class="callout" style="margin-top:8px" id="answer">
           <div class="club-big">READY, WHEN YOU ARE</div>
           <div class="target">Enter yardage · Ask Keith</div>
           <p>Keith has the bag. He just needs a number.</p>
@@ -190,6 +201,7 @@
           <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
         </div>
 
+        <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Keith</button></div><div id="voiceStatus" style="color:#d7cfb9;margin-top:3px" aria-live="polite">Voice optional; manual controls always work.</div>
         <div class="distance-line">
           <div><label>Yards to target</label><input id="yards" type="number" min="1" max="700" value="168" inputmode="numeric"></div>
           <button class="btn-primary" id="call">ASK KEITH →</button>
@@ -211,7 +223,7 @@
           <div class="quick" id="dangerButtons"></div>
         </div>
 <div style="margin-top:12px"><label>Course note</label><input id="coursenote" placeholder="uphill / forced carry / dogleg"></div></div></details>
-        <div class="shot-toolbar"><button class="btn-secondary" id="clearRound">Clear</button><button class="btn-secondary" id="quickReset" type="button">↻ Mental Reset</button><button class="btn-secondary" id="heroCheck" type="button">⚠ Bad Idea?</button></div>
+        <div class="keith-intel" id="shotIntel"><span id="clubTrust">Club confidence: —</span><span id="safeMiss">Safe miss: unknown</span><span id="keithMood">Keith: unimpressed</span></div><div class="shot-toolbar"><button class="btn-secondary" id="clearRound">Clear</button><button class="btn-secondary" id="quickReset" type="button">↻ Mental Reset</button><button class="btn-secondary" id="heroCheck" type="button">⚠ Bad Idea?</button></div>
 
         <div class="answer-actions" aria-label="Quick shot feedback"><button data-feedback="Good">✓ Good</button><button data-feedback="Short">↓ Short</button><button data-feedback="Long">↑ Long</button><button data-feedback="Left">← Left</button><button data-feedback="Right">→ Right</button><button data-feedback="Trouble">! Trouble</button></div>
         <p class="muted" id="feedbackStatus" style="color:#d6d6cb">Optional: one tap records the last shot outcome on this phone. No scorekeeping.</p>
@@ -251,6 +263,13 @@
       </section>
 
       <section class="card" data-tab="settings">
+<h2>Keith's Yardage Book</h2><p class="muted">Save course-and-hole notes. No pretending Keith knows a hazard you haven't entered.</p>
+<div class="grid"><div><label>Course (uses Course & GPS)</label><input id="noteCourse" placeholder="Bayonet at Puppy Creek"></div><div><label>Hole</label><input id="noteHole" type="number" min="1" max="18" value="1"></div></div>
+<div style="margin-top:10px"><label>Hole note</label><input id="holeNote" maxlength="240" placeholder="e.g. water right / center green best"></div>
+<div class="grid" style="margin-top:10px"><button class="btn-primary" id="saveHoleNote">Save note</button><button class="btn-secondary" id="loadHoleNote">Load note into shot</button></div>
+<p id="notebookStatus" style="margin-top:8px">Saved locally on this phone.</p>
+</section>
+<section class="card" data-tab="settings">
         <h2>Course & GPS</h2>
         <div class="grid">
           <div><label>Course</label><input id="course" placeholder="e.g. Bayonet at Puppy Creek"></div>
@@ -454,7 +473,7 @@ function pucker({yards,lie,wind,danger,club,confidence}){
   $('pulseMarker').style.left=`calc(${Math.max(0,Math.min(99,(val-1)/9*100))}% - 2px)`;
   $('pulseReason').textContent=reasons.join(' · ')+'. Situation estimate, not a measured probability.';
   const box=$('pulseBox'); box.classList.remove('pucker-shake','pucker-glow');
-  if(val>9){box.classList.add('pucker-glow');if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){void box.offsetWidth;box.classList.add('pucker-shake');}}
+  if(val>8){box.classList.add('pucker-glow');if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){box.classList.add('pucker-shake');}}
 
 }
 
@@ -668,6 +687,68 @@ $('betLose').onclick=()=>logBetResult('L');
 $('betUndo').onclick=()=>{const idx=Math.max(0,(betState.currentHole||1)-2); betState.results[idx]=null; betState.currentHole=Math.max(1,idx+1); saveBetState('Undid the last hole. Revisionist history remains undefeated.');};
 $('betPress').onclick=()=>{betState.presses=(betState.presses||0)+1; saveBetState('Simple press noted. Congratulations on escalating the situation.');};
 $('resetBetRound').onclick=()=>{ if(confirm('Reset the betting round and clear all hole results?')){ betState={opponent:$('betOpponent').value.trim(),stake:Math.max(1,Number($('betStake').value)||10),currentHole:1,results:Array(18).fill(null),presses:0}; saveBetState('Betting round reset. Everyone is even again, tragically.'); } };
+
+// Dagger 4.4: keep all of the previous local profile and betting storage keys.
+let daggerMode='approach';
+let holeNotes=read('dagger_hole_notes',{});
+const nkey=()=>($('noteCourse').value||$('course').value||'').trim().toLowerCase()+'|'+String($('noteHole').value||'1');
+function setDaggerMode(mode){daggerMode=mode;store('dagger_shot_mode',mode);$('modeTee').classList.toggle('selected',mode==='tee');$('modeApproach').classList.toggle('selected',mode!=='tee');}
+$('modeApproach').onclick=()=>setDaggerMode('approach');
+$('modeTee').onclick=()=>{setDaggerMode('tee'); const b=document.querySelector('#lieButtons button');if(b && state.lie!=='Tee') {$('voiceStatus').textContent='Tee mode active. Select Tee lie for the correct call.';}};
+$('saveHoleNote').onclick=()=>{const note=$('holeNote').value.trim();if(!$('noteCourse').value.trim()||!note){$('notebookStatus').textContent='Enter a course and a note.';return;}holeNotes[nkey()]=note;store('dagger_hole_notes',holeNotes);$('notebookStatus').textContent='Hole note saved.';};
+$('loadHoleNote').onclick=()=>{const note=holeNotes[nkey()];if(!note){$('notebookStatus').textContent='No saved note for that course and hole.';return;}$('coursenote').value=note;$('notebookStatus').textContent='Loaded into the Play course note. Ask Keith again.';};
+$('noteCourse').onchange=()=>{$('holeNote').value=holeNotes[nkey()]||'';};
+$('noteHole').onchange=()=>{$('holeNote').value=holeNotes[nkey()]||'';};
+function voiceParse(raw){
+ const s=raw.toLowerCase();let matched=false;
+ const yd=s.match(/(?:^|\b)(\d{2,3})(?:\s*(?:yard|yards|yd|yds))?\b/);
+ if(yd){$('yards').value=yd[1];matched=true;}
+ const lie=/deep rough/.test(s)?'Deep rough':/rough/.test(s)?'Rough':/trees|punch|recovery/.test(s)?'Trees / recovery':/bunker/.test(s)?'Bunker':/fairway/.test(s)?'Fairway':/tee/.test(s)?'Tee':null;
+ if(lie){state.lie=lie;setQuick('lieButtons',LIES,lie,v=>{state.lie=v;store('dagger_round_state',state)});matched=true;}
+ const wind=/headwind|into the wind|wind into/.test(s)?'Headwind':/tailwind|downwind|helping wind/.test(s)?'Tailwind':/crosswind/.test(s)?'Crosswind':null;
+ if(wind){state.wind=wind;setQuick('windButtons',WINDS,wind,v=>{state.wind=v;store('dagger_round_state',state)});matched=true;}
+ const pin=/back pin/.test(s)?'Back':/front pin/.test(s)?'Front':/middle pin|center pin/.test(s)?'Middle':null;
+ if(pin){state.pin=pin;setQuick('pinButtons',PINS,pin,v=>{state.pin=v;store('dagger_round_state',state)});matched=true;}
+ const danger=/trouble right|water right|bunker right/.test(s)?'right':/trouble left|water left|bunker left/.test(s)?'left':/trouble short|bunker short|water short/.test(s)?'short':/trouble long|water long/.test(s)?'long':null;
+ if(danger){state.danger=danger;setQuick('dangerButtons',DANGERS,danger,v=>{state.danger=v;store('dagger_round_state',state)});matched=true;}
+ if(/tee shot|off the tee/.test(s)){setDaggerMode('tee');matched=true;}
+ if(/uphill|downhill/.test(s)){$('coursenote').value=(/uphill/.test(s)?'uphill':'downhill');matched=true;}
+ store('dagger_round_state',state);return matched;
+}
+$('voiceShot').onclick=()=>{
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){$('voiceStatus').textContent='Speech recognition unavailable in this browser. Type the yardage or use iPhone keyboard dictation.';return;}
+ const r=new SR();r.lang='en-US';r.interimResults=false;r.maxAlternatives=1;
+ $('voiceStatus').textContent='Listening… say “175, right rough, back pin, bunker short”.';
+ r.onresult=e=>{const heard=e.results[0][0].transcript;const ok=voiceParse(heard);$('voiceStatus').textContent=(ok?'Heard: ':'Could not parse: ')+heard+(ok?' · Review inputs and tap Ask Keith.':' · Use manual inputs.');};
+ r.onerror=e=>{$('voiceStatus').textContent='Voice unavailable: '+e.error+'. Use manual inputs.';};
+ try{r.start();}catch(e){$('voiceStatus').textContent='Cannot start voice. Use manual controls.';}
+};
+const oldDecide=decide;
+decide=function(){
+ if(daggerMode==='tee' && state.lie==='Tee'){
+  const options=profile.filter(p=>/driver|wood|hybrid|iron/i.test(p.name)&&activeCarry(p)>=150);
+  const ranked=options.map(p=>({p,score:activeCarry(p)-Math.max(0,p.off||15)*1.4-(p.n>0&&p.n<5?7:0)})).sort((a,b)=>b.score-a.score);
+  const pick=ranked[0];
+  if(!pick){oldDecide();return;}
+  const club=pick.p.name.toUpperCase();const msg='Tee mode: prioritizing reliable carry and dispersion. Confirm a safe landing area, not just a big number.';
+  $('answer').innerHTML=`<div class="club-big">${escapeHTML(club)}</div><div class="target">Widest safe landing area</div><p>${msg}</p><div class="keith"><strong>Keith says:</strong> Solid choice. You’ve briefly escaped the gravitational pull of your own ego. Smooth tempo and find the fairway.</div>`;
+  currentClub=club;lastDecision={club,yards:Number($('yards').value),lie:state.lie,wind:state.wind,danger:state.danger,ts:new Date().toISOString()};
+  const c=pick.p.n<5?'Developing':pick.p.n>=15?'Trusted':'Provisional';
+  $('clubTrust').textContent='Club confidence: '+c;
+  $('safeMiss').textContent='Safe miss: '+(state.danger==='right'?'left':state.danger==='left'?'right':state.danger==='short'?'long':state.danger==='long'?'short':'unknown');
+  $('keithMood').textContent='Keith: reluctant approval';
+  pucker({yards:Number($('yards').value)||300,lie:state.lie,wind:state.wind,danger:state.danger,club,confidence:c==='Trusted'?'high':'low'});
+  return;
+ }
+ oldDecide();
+ const p=profile.find(x=>x.name.toUpperCase()===currentClub);
+ $('clubTrust').textContent='Club confidence: '+(!p?'Unknown':p.n>=15?'Trusted':p.n>=5?'Provisional':'Developing');
+ $('safeMiss').textContent='Safe miss: '+(state.danger==='right'?'left':state.danger==='left'?'right':state.danger==='short'?'long':state.danger==='long'?'short':'unknown');
+ $('keithMood').textContent=state.lie.includes('recovery')||state.danger!=='none'?'Keith: profoundly concerned':'Keith: suspiciously hopeful';
+};
+const origInit=init;
+init=async function(){await origInit();setDaggerMode(read('dagger_shot_mode','approach'));$('noteCourse').value=$('course').value;$('holeNote').value=holeNotes[nkey()]||'';};
 init();
 </script>
 </body>

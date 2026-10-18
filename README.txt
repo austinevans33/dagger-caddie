@@ -1,5 +1,26 @@
-DAGGER CADDIE 4.3 — MOBILE FIRST
+DAGGER CADDIE 4.4 — FIELD INTELLIGENCE
+Based on mobile-first 4.3.1.
 
-Return to classic 4.1 look. Remove photo logo. Tight nav, Keith call and Pucker Factor first. Motion: smooth Pucker marker, 2 brief shakes above 9 unless reduced motion. Existing profile, betting and reset kept.
+NEW
+- Tee Shot Mode for selecting a reliable club off the tee
+- Safe Miss indicator when you identify left/right/short/long trouble
+- Club Confidence: Trusted, Provisional, Developing (provisional sample-size labels)
+- Keith's situational reaction label
+- Optional Talk to Keith voice parsing (browser support varies)
+- Keith's Yardage Book in Clubhouse with local hole notes
+- Keeps persistent Pucker Factor shake when above 8 (Reduce Motion supported)
+- Keeps Betting, Mental Reset, manual bag distances and CSV uploads
 
-Upload index.html, icon.svg, keith.svg, manifest.json, profile.json, README.txt. No dagger_cc_logo.jpg necessary.
+SAFETY/ACCURACY
+- Safe Miss is directional strategy, not verified course mapping.
+- No GPS course data is preloaded. Continue entering yardages manually until verified green coordinates exist.
+- Voice recognition is optional, not available on all iPhone browsers.
+- Tee mode is a conservative heuristic, not a guarantee of fairway or carry.
+
+DEPLOY
+1. Back up your data in My Bag.
+2. Replace index.html in GitHub repository root (keep exact filename).
+3. Other existing files can remain unchanged.
+4. Wait for GitHub Pages then reload in Safari.
+
+Keep a backup before clearing Safari website data.
