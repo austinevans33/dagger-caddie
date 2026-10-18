@@ -1,22 +1,25 @@
-DAGGER CADDIE 5.0 — KEITH AT DAGGER COUNTRY CLUB
-=================================================
+DAGGER CADDIE 4.1 — KEITH'S EMERGENCY SERVICES
+===============================================
+NEW: Four tabs (PLAY / MY BAG / RESET / CLUBHOUSE)
+NEW: 10-second Mental Reset with three specific situations
+NEW: Original Keith caddie illustration and private-club styling
+NEW: More varied, context-sensitive Keith commentary
+RETAINED: Pucker Factor, GPS to saved green centers, manual carry distances, CSV imports, local backups, shot feedback.
 
-NEW:
-- Major visual redesign with stronger Dagger Country Club branding
-- Upgraded Keith artwork and old-country-club look
-- Cleaner PLAY screen with recommendation card and Pucker Factor
-- Favorite Courses section (Bayonet at Puppy Creek preloaded)
-- Same local-storage keys so existing bag / wedge / GPS data should persist
-- Mental Reset tab retained and refined
-- Meaner, funnier Keith line library
+IMPORTANT: Back up your data inside the existing app BEFORE updating.
 
-FILES TO UPLOAD:
-- index.html
-- icon.svg
-- keith.svg
-- manifest.json
-- profile.json
-- README.txt
+UPLOAD THESE SIX FILES TO THE ROOT OF YOUR EXISTING GITHUB REPOSITORY:
+index.html
+keith.svg
+icon.svg
+manifest.json
+profile.json
+README.txt
 
-NOTE:
-Back up your data before replacing files.
+CAUTION: GitHub Pages must see exactly "index.html" in the repository root. If your current site already uses a file called index.html, update/overwrite it; do not upload index-NEW.html. Do not place these files inside a subfolder.
+
+Your saved distances live in local browser storage and are intended to remain after the update on the same origin. They are NOT synced between phones. Clearing website data may delete them.
+
+GPS distances still require VERIFIED latitude/longitude of the hole's green center. The app does not automatically identify courses or holes, or know the actual pin location.
+
+The risk scoring and club calls are approximate training and game-management tools, not verified shot probabilities.

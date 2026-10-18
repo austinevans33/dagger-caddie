@@ -1,27 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="48" fill="#efe3ca"/>
-  <rect x="14" y="14" width="484" height="484" rx="36" fill="none" stroke="#ba9c60" stroke-width="10"/>
-  <ellipse cx="258" cy="450" rx="150" ry="28" fill="#d8c7a3" opacity=".45"/>
-  <path d="M160 406q28-82 98-82t98 82" fill="#16372b"/>
-  <rect x="176" y="336" width="166" height="118" rx="26" fill="#16372b"/>
-  <path d="M112 208q22-96 144-96 124 0 146 96-24 12-54 8l-180-2q-30 6-56-6Z" fill="#24483a"/>
-  <path d="M145 186q14-76 113-76 100 0 114 76" fill="#0f281f"/>
-  <path d="M166 214h182q-10 42-91 42-82 0-91-42Z" fill="#d6bf8b" opacity=".32"/>
-  <circle cx="198" cy="254" r="30" fill="#e3c8a2"/>
-  <circle cx="320" cy="254" r="30" fill="#e3c8a2"/>
-  <ellipse cx="258" cy="240" rx="102" ry="122" fill="#e9cfaa"/>
-  <path d="M177 224q-2-11 7-18 24-18 75-18 52 0 77 18 10 7 8 18-56-15-167 0Z" fill="#7f6044" opacity=".42"/>
-  <path d="M201 270q18-18 42 0" stroke="#2e2a24" stroke-width="9" stroke-linecap="round" fill="none"/>
-  <path d="M278 270q18-18 42 0" stroke="#2e2a24" stroke-width="9" stroke-linecap="round" fill="none"/>
-  <circle cx="223" cy="273" r="8" fill="#241d19"/>
-  <circle cx="301" cy="273" r="8" fill="#241d19"/>
-  <path d="M200 243q22-16 50-6" stroke="#433126" stroke-width="10" stroke-linecap="round" fill="none"/>
-  <path d="M268 237q28-10 48 6" stroke="#433126" stroke-width="10" stroke-linecap="round" fill="none"/>
-  <path d="M256 287q-5 18 0 28" stroke="#9c7e5b" stroke-width="5" stroke-linecap="round"/>
-  <path d="M220 327q39 22 78 0" stroke="#4b3027" stroke-width="8" stroke-linecap="round" fill="none"/>
-  <path d="M202 327q19 18 96 18" stroke="#7a5a3b" stroke-width="6" stroke-linecap="round" opacity=".35" fill="none"/>
-  <path d="M192 344q65 18 135-1" stroke="#e8d6b9" stroke-width="6" opacity=".5"/>
-  <rect x="168" y="154" width="180" height="30" rx="10" fill="#f4ead4" opacity=".8"/>
-  <path d="M171 153q89-44 173 0" stroke="#f4ead4" stroke-width="12" stroke-linecap="round" fill="none"/>
-  <text x="256" y="476" text-anchor="middle" fill="#16372b" font-family="Georgia, serif" font-size="34" font-weight="700">KEITH</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 400" role="img" aria-label="Keith, a permanently unimpressed illustrated old school golf caddie">
+<rect width="480" height="400" rx="22" fill="#eadfc8"/>
+<path d="M15 345 Q240 283 466 350 V400 H15Z" fill="#b4bd9e"/>
+<circle cx="241" cy="198" r="151" fill="none" stroke="#ad9561" stroke-width="3" stroke-dasharray="5 9"/>
+<path d="M117 391 Q118 293 180 278 L293 278 Q377 300 376 391Z" fill="#1b392d" stroke="#182d24" stroke-width="7"/>
+<path d="M197 286 L220 337 L258 337 L288 283" fill="#d8c5a2"/>
+<path d="M171 177 Q177 124 246 124 Q309 132 312 207 L291 264 L264 289 L218 284 L179 253Z" fill="#cfac82" stroke="#3a342b" stroke-width="6"/>
+<path d="M164 192 Q166 170 187 166 L188 234 L176 225Z M312 191 Q326 165 337 188 L321 235 L308 224Z" fill="#c59c77" stroke="#3a342b" stroke-width="5"/>
+<path d="M177 154 Q157 139 168 113 Q179 84 233 82 Q276 79 312 105 L338 150 Q241 179 164 156Z" fill="#274a36" stroke="#253528" stroke-width="7"/>
+<path d="M167 127 Q244 118 332 151" fill="none" stroke="#bfa36b" stroke-width="9"/>
+<path d="M225 104 L225 141 L250 141Z" fill="#d5c399"/>
+<path d="M186 193 Q205 182 222 192 M264 192 Q281 180 301 193" fill="none" stroke="#3b322c" stroke-width="8" stroke-linecap="round"/>
+<ellipse cx="209" cy="205" rx="6" ry="5" fill="#2f2926"/><ellipse cx="286" cy="205" rx="6" ry="5" fill="#2f2926"/>
+<path d="M247 206 L237 231 L256 238" stroke="#674c3d" stroke-width="6" fill="none"/>
+<path d="M209 253 Q250 244 286 251" fill="none" stroke="#3c312a" stroke-width="7" stroke-linecap="round"/>
+<path d="M204 225 L216 233 M283 227 L292 220" stroke="#75523d" stroke-width="4"/>
+<path d="M301 250 L368 235" stroke="#3b3028" stroke-width="7" stroke-linecap="round"/>
+<path d="M365 228 L385 234 L366 244Z" fill="#a89168"/>
+<path d="M169 309 Q212 356 234 398" fill="none" stroke="#a38d68" stroke-width="20"/>
+<text x="27" y="42" font-family="Georgia,serif" font-size="20" font-weight="bold" fill="#224233">KEITH • SENIOR CADDIE</text>
+<text x="28" y="374" font-family="Georgia,serif" font-size="12" letter-spacing="3" fill="#204132">DAGGER COUNTRY CLUB</text>
 </svg>
