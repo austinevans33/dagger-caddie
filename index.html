@@ -231,6 +231,21 @@ body{background:#e9e1d0}
 .wager-panel{background:#f9f5ec;border:1px solid #cdbc98;padding:10px;border-radius:12px;margin-top:12px}.wager-panel>summary{font-size:14px}
 [data-tab="games"] input,[data-tab="bets"] input{font-size:16px}
 @media(max-width:390px){.tabbar button{font-size:8px}}
+
+/* 4.9 Money Room and Club Records */
+.room-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.room-status{padding:10px;border-radius:11px;background:#e8ddc2;color:#23412f;font-size:13px;line-height:1.45}
+.room-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.room-table th,.room-table td{font-size:12px;padding:7px 3px;border-bottom:1px solid #cfbf9b;text-align:center}
+.room-table th:first-child,.room-table td:first-child{text-align:left}
+.room-table input{padding:8px 2px;text-align:center;font-size:16px;min-width:0}
+.room-controls{display:flex;gap:7px;margin-top:10px}
+.room-controls button{padding:11px 5px;font-size:12px}
+.tiny-print{font-size:11px;color:#685f4b;line-height:1.5}
+.notice-card{background:#f0e6d1;border-left:3px solid #b69a62;border-radius:8px;padding:10px;margin:8px 0;color:#25372c;font-size:13px}
+.notice-head{font:700 10px system-ui;letter-spacing:.13em;color:#6e624f}
+.money-chip{display:inline-block;background:#143126;color:#ffeed4;border-radius:20px;padding:5px 9px;font-size:11px}
+@media(max-width:420px){.room-grid{grid-template-columns:1fr}.room-table th,.room-table td{font-size:11px}}
 </style>
 </head>
 <body>
@@ -248,7 +263,7 @@ body{background:#e9e1d0}
     </div>
 
     <div class="content">
-      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ MY BAG</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-bets" type="button">$ BETTING</button><button id="tab-settings" type="button">⚙ CLUB</button><button id="tab-office" type="button">♜ OFFICE</button><button id="tab-games" type="button">★ GAMES</button></nav>
+      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ LOCKER</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-bets" type="button">$ BETTING</button><button id="tab-settings" type="button">⚙ CLUB</button><button id="tab-office" type="button">♜ OFFICE</button><button id="tab-games" type="button">★ GAMES</button></nav>
 
       <section class="card" id="setupCard">
         <h2>Welcome to Dagger Caddie</h2>
@@ -304,7 +319,15 @@ body{background:#e9e1d0}
 
         <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddie</button></div><div id="voiceStatus" style="color:#d7cfb9;margin-top:3px" aria-live="polite">Voice optional; manual controls always work.</div>
         <details class="shot-extra" style="margin-top:6px"><summary>Full shot description / voice transcript <span>＋</span></summary><div class="extra-inner"><label for="fullShotDescription">Describe your entire situation</label><textarea id="fullShotDescription" rows="4" placeholder="I'm 176 out, light downhill lie in right rough. Crosswind left to right, bunker short, water long, flag back right..." style="width:100%;border-radius:10px;padding:10px;font:14px system-ui"></textarea><div class="grid"><button class="btn-secondary" type="button" id="parseDescription">Extract shot details</button><button class="btn-secondary" type="button" id="useDescription">Apply details & ask caddie</button></div><p id="descriptionStatus" style="color:#efe3cc;font-size:12px;margin:7px 0 0">Caddie interprets recognized yardage, lie, wind, pin and hazards. Other context is preserved as a note, not automatically understood or verified.</p></div></details>
-        <div class="distance-line">
+        <details class="compact-tools" style="margin-top:8px" id="caddieConversation">
+<summary>Talk it through · Detailed Caddie Consultation</summary>
+<p class="mini-note">Describe the lie, target, required carry, obstacles, pin, wind and what shot you're considering. Speech dictation or typing both work.</p>
+<textarea id="convoDescription" rows="4" style="width:100%;border-radius:10px;padding:10px;background:#fffdf8;color:#13271e;font:15px/1.45 system-ui" placeholder="I'm 182 out in heavy rough, ball below my feet, water from 165 to 190 short right, pin front left. Thinking 6 iron... "></textarea>
+<div class="room-controls"><button type="button" id="convoReview" class="btn-secondary">Review with caddie</button><button type="button" id="convoAskAgain" class="btn-ghost">Ask follow-up</button></div>
+<div class="notice-card" id="convoReply">Your caddie will ask for the important missing number before suggesting hero golf.</div>
+<p class="tiny-print" style="color:#d4c3a2">Offline: structured advice and one follow-up. True AI conversation requires a separately hosted secure backend; never put an AI API key in this site's code.</p>
+</details>
+<div class="distance-line">
           <div><label>Yards to target</label><input id="yards" type="number" min="1" max="700" value="168" inputmode="numeric"></div>
           <button class="btn-primary" id="call">ASK CADDIE →</button>
         </div>
@@ -355,7 +378,8 @@ body{background:#e9e1d0}
         <button class="btn-primary" type="button" id="returnToPlay">RETURN TO PLAY</button>
       </section>
 
-      <section class="card" data-tab="bag">
+      <section class="card" data-tab="bag" id="playersLocker"><div class="over" style="color:#756344">DAGGER COUNTRY CLUB · MEMBER ARCHIVES</div><h2>Players Locker</h2><p class="muted">Your actual entered yardages, launch monitor summaries, voice descriptions and on-course shot feedback. Saved to this profile on this phone.</p><div id="lockerStats" class="bet-summary" style="grid-template-columns:repeat(3,1fr)"></div><details open><summary>On-course shot records</summary><div id="lockerShots"></div></details><details style="margin-top:12px"><summary>Range sessions and club numbers</summary><div id="lockerRange"></div></details><div class="grid" style="margin-top:12px"><button class="btn-secondary" id="lockerExport">Export locker JSON</button><button class="btn-ghost" id="lockerRebuild">Refresh records</button></div><div style="margin-top:12px;border:1px solid #973f39;border-radius:12px;padding:12px;background:#f8eee4"><strong style="color:#7c342c">DANGER · CLEAR PERSONAL SHOT DATA</strong><p class="note">This destroys the active profile’s club distance overrides, shot logs, range histories and course notes. Games and money ledgers are preserved. Export a backup first.</p><button class="btn-primary" style="background:#7c342c" id="wyndhamPunch">WYNDHAM PUNCH</button><p id="punchStatus" class="note"></p></div></section>
+<section class="card" data-tab="bag">
         <h2>Quick wedges</h2>
         <p class="muted">Make short-game calls way more useful. Enter your reliable carry for these stock feels.</p>
         <div class="triple">
@@ -470,7 +494,29 @@ body{background:#e9e1d0}
         <div class="note">Range files are parsed on this device. Back up after importing if you don't want Keith to forget everything.</div><details style="margin-top:12px"><summary>Range-session trend</summary><div id="trendSummary" class="note">Import a new range CSV to start your session history. Existing averages do not contain past individual-session data.</div><table id="trendTable"><thead><tr><th>Session</th><th>Swings</th><th>Clubs</th></tr></thead><tbody id="trendRows"></tbody></table></details>
       </section>
 
-            <section class="card" data-tab="bets">
+            <section class="card" data-tab="bets" id="moneyRoomSection">
+<div class="over" style="color:#806f4d">DAGGER COUNTRY CLUB · MONEY ROOM</div><h2>Live Money Room</h2>
+<p class="muted">One designated scorekeeper. Everyone else watches the same scorecard on their phone.</p>
+<div class="room-status" id="roomStatus" aria-live="polite">Offline/local mode. Live sync needs Firebase configuration once.</div>
+<div class="room-grid" style="margin-top:10px">
+<div><label>Your display name</label><input id="roomMe" maxlength="24" placeholder="Member"></div>
+<div><label>Game format</label><select id="roomFormat"><option value="skins">Skins</option><option value="nassau">Nassau · 2 players</option><option value="hole">Match by hole · 2 players</option><option value="vegas">Vegas · 4 players</option></select></div>
+<div><label>Other golfers (comma-separated)</label><input id="roomPlayers" placeholder="Keith, Vinny, Kyle"></div>
+<div><label>Stake · dollars</label><input type="number" min="0" max="10000" step="0.5" id="roomStake" value="5"></div>
+</div>
+<div class="room-controls"><button type="button" class="btn-primary" id="roomCreate">Create room</button><button type="button" class="btn-secondary" id="roomJoin">Join room</button></div>
+<div class="room-grid" style="margin-top:8px"><div><label>Room code / link</label><input id="roomCode" placeholder="Paste the invitation code"></div><div><label>Invitation</label><button type="button" class="btn-secondary" id="roomCopy">Copy invite link</button></div></div>
+<div class="room-status" style="margin-top:10px" id="roomWho">No active shared room.</div>
+<div id="roomScoreSection" hidden>
+<div class="room-grid" style="margin:10px 0"><div><label>Hole to record</label><select id="roomHole"></select></div><div><label>Scorekeeper</label><input id="roomHostName" readonly></div></div>
+<div style="overflow-x:auto"><table class="room-table"><thead id="roomScoreHead"></thead><tbody id="roomScoreRows"></tbody></table></div>
+<div class="room-controls"><button class="btn-primary" id="roomSaveHole" type="button">Save hole</button><button class="btn-secondary" id="roomFinish" type="button">Archive match</button></div>
+<div class="notice-card" id="roomStandings"></div>
+<div class="tiny-print" id="roomAudit"></div>
+</div>
+<p class="tiny-print" style="margin-top:10px">Scorekeeper alone can change scores; members can view. One gross-score entry per golfer per hole powers the chosen format. Live mode needs internet and an authenticated Firebase connection. No money transfers.</p>
+</section>
+<section class="card" data-tab="bets">
         <div class="inline" style="justify-content:space-between"><div><div class="over" style="color:#6b644c">DAGGER COUNTRY CLUB · WAGERING DESK</div><h2>Betting</h2><p class="muted">Simple match play. Hole-by-hole. Enough math to keep the money honest.</p></div><span class="tag">MATCH PLAY</span></div>
         <div class="grid">
           <div><label>Opponent</label><input id="betOpponent" placeholder="Name or group"></div>
@@ -542,6 +588,19 @@ body{background:#e9e1d0}
   <button class="btn-primary" id="gSave" style="margin-top:10px">Save hole & next</button><div class="grid" style="margin-top:8px"><button class="btn-ghost" id="gUndo">Undo last hole</button><button class="btn-secondary" id="gFinish">Archive game</button></div><div id="gStandings" class="note" style="margin-top:10px"></div><p id="gStatus" class="status"></p></div>
   <details style="margin-top:12px"><summary>Past games & lifetime points</summary><div id="gLifetime" class="note" style="margin-top:10px"></div><div id="gHistory" class="note"></div></details>
 </section>
+
+<section class="card" data-tab="games"><div class="over" style="color:#756344">COMPETITION COMMITTEE · NEW FORMATS</div><h2>Vegas & Wolf</h2><details open><summary>Vegas · How to play</summary><p class="note">Four golfers, two fixed teams. Each team's hole score is a two-digit number built from teammates' gross strokes, <strong>lower score first</strong> (4 and 5 = 45). The lower number wins the difference in points (45 vs 56 = 11). Optional $/point turns points into money. We do not apply the optional “birdie flips the opponent's number” rule in this edition.</p></details><details><summary>Wolf · How to play</summary><p class="note">Four golfers. Wolf rotates every hole (1–4 repeated). Wolf either selects one partner to play 2 vs 2 or plays Lone Wolf 1 vs 3. Score by lower <strong>best-ball gross score</strong> for each side. A team win gives each winning teammate +1 point; a losing teammate -1. Lone Wolf wins +3 and each opponent loses -1; if Lone Wolf loses, Wolf -3 and each opponent +1. Ties are zero. These are selectable house rules; confirm with your group first.</p></details>
+<div class="grid" style="margin-top:10px"><div><label>Game</label><select id="vwType"><option value="vegas">Vegas (2 vs 2)</option><option value="wolf">Wolf (rotation)</option></select></div><div><label>$ per point (optional)</label><input id="vwStake" type="number" min="0" step="0.25" value="0"></div></div><div class="grid"><div><label>Player 1</label><input id="vwP1" value="Me" maxlength="25"></div><div><label>Player 2</label><input id="vwP2" value="Player 2" maxlength="25"></div><div><label>Player 3</label><input id="vwP3" value="Player 3" maxlength="25"></div><div><label>Player 4</label><input id="vwP4" value="Player 4" maxlength="25"></div></div><button class="btn-primary" id="vwStart" style="margin-top:9px">Start Vegas / Wolf</button><div id="vwActive" hidden><h3 style="margin-top:10px">Hole <span id="vwHole">1</span></h3><div id="vwRuleLine" class="note"></div><div class="grid" id="vwScores"></div><div id="vwWolfControls" hidden><label>Wolf choice</label><select id="vwPartner"></select></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="vwSave">Record hole</button><button class="btn-ghost" id="vwUndo">Undo hole</button></div><div id="vwStandings" class="note" style="margin-top:10px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Vegas / Wolf lifetime records</summary><div id="vwLifetime" class="note"></div></details></section>
+<section class="card" data-tab="settings" id="clubRecordsSection">
+<div class="over" style="color:#7a6847">DAGGER COUNTRY CLUB · ARCHIVES DEPARTMENT</div><h2>Hall of Shame & Rivalries</h2>
+<p class="muted">Real results only. The committee rejects fabricated statistics.</p>
+<div class="bet-summary" id="hallStats"></div>
+<div id="rivalryBoard" class="notice-card">No archived opponents yet.</div>
+<button class="btn-secondary" type="button" id="refreshRecords">Refresh records</button>
+<button class="btn-secondary" type="button" id="makeReport" style="margin-top:8px">Issue disciplinary report</button>
+<div class="notice-card" id="reportCard" hidden><div class="notice-head">CONFIDENTIAL · GREENS COMMITTEE</div><div id="reportText" style="white-space:pre-line;margin-top:8px"></div><div class="grid" style="margin-top:8px"><button type="button" class="btn-secondary" id="shareReport">Share text</button><button type="button" class="btn-secondary" id="imageReport">Save image</button></div></div>
+</section>
+<section class="card" data-tab="settings"><h2>Member Profiles</h2><p class="muted">Each golfer can keep a separate locker, bag and games on this phone. Profile switching reloads the page. Different phones already have separate browser storage; accounts syncing across devices would need a server.</p><label>Current profile</label><select id="memberSelect"></select><div class="grid" style="margin-top:10px"><div><input id="memberNewName" maxlength="30" placeholder="New member name"></div><button class="btn-secondary" id="memberCreate">Create member</button></div><button class="btn-secondary" style="margin-top:9px" id="memberSwitch">Switch to selected profile</button><p id="memberStatus" class="note"></p></section>
 
 <div class="footer">Dagger Caddie · Keith’s Country Club Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
     </div>
@@ -1168,6 +1227,91 @@ $('export').onclick=()=>{priorExport47();const a=document.createElement('a'),dat
 $('restoreGames').onchange=async e=>{try{const f=e.target.files?.[0];if(!f)return;const d=JSON.parse(await f.text());if(!Array.isArray(d.wHistory)||!Array.isArray(d.gHistory))throw Error('Not a Dagger games backup');if(!confirm('Replace locally saved games and betting history from this backup?'))return;wHistory=d.wHistory;gHistory=d.gHistory;activeW=d.activeW??null;activeG=d.activeG??null;wStore();gStore();renderFoursome();renderBBB();$('restoreGamesStatus').textContent='Games and betting history restored.';}catch(err){$('restoreGamesStatus').textContent='Restore failed: '+err.message;}};
 renderFoursome();renderBBB();
 
+
+// V4.8: per-device member separation. Existing v4.7 storage becomes the first member's profile.
+const MEMBER_META='dagger_members_v48', MEMBER_ACTIVE='dagger_member_active_v48';
+const memberExclude=new Set([MEMBER_META,MEMBER_ACTIVE]);
+function profileKey(k,id){return 'member48:'+id+':'+k;}
+function storedDaggerKeys(){return Object.keys(localStorage).filter(k=>k.startsWith('dagger_')&&!memberExclude.has(k));}
+function memberRegistry(){try{return JSON.parse(localStorage.getItem(MEMBER_META))||[]}catch{return []}}
+function ensureMembers(){let r=memberRegistry();if(!r.length){r=[{id:'member1',name:'Founding Member'}];localStorage.setItem(MEMBER_META,JSON.stringify(r));localStorage.setItem(MEMBER_ACTIVE,r[0].id);}let id=localStorage.getItem(MEMBER_ACTIVE)||r[0].id;if(!r.some(m=>m.id===id)){id=r[0].id;localStorage.setItem(MEMBER_ACTIVE,id);}return {r,id};}
+function snapshotMember(id){for(const k of storedDaggerKeys()){localStorage.setItem(profileKey(k,id),localStorage.getItem(k));}localStorage.setItem(profileKey('_keys',id),JSON.stringify(storedDaggerKeys()));}
+function activateMember(id){const old=localStorage.getItem(MEMBER_ACTIVE);if(old===id)return; if(old)snapshotMember(old);for(const k of storedDaggerKeys())localStorage.removeItem(k);let keys=[];try{keys=JSON.parse(localStorage.getItem(profileKey('_keys',id)))||[]}catch{} for(const k of keys){const v=localStorage.getItem(profileKey(k,id));if(v!==null)localStorage.setItem(k,v);}localStorage.setItem(MEMBER_ACTIVE,id);location.reload();}
+function renderMemberSelect(){const {r,id}=ensureMembers(),el=$('memberSelect');el.innerHTML='';for(const m of r){const o=document.createElement('option');o.value=m.id;o.textContent=m.name;el.append(o);}el.value=id;}
+$('memberCreate').onclick=()=>{const name=$('memberNewName').value.trim();if(!name)return;let r=memberRegistry();if(r.some(m=>m.name.toLowerCase()===name.toLowerCase())){ $('memberStatus').textContent='That member exists.';return;}const id='m'+Date.now().toString(36);r.push({id,name});localStorage.setItem(MEMBER_META,JSON.stringify(r));activateMember(id);};
+$('memberSwitch').onclick=()=>activateMember($('memberSelect').value);
+// Explicit record of structured decisions and descriptions, in addition to prior feedback.
+const priorCall48=$('call').onclick;
+$('call').onclick=()=>{priorCall48();const y=Number($('yards').value);if(Number.isFinite(y)&&y>0){let records=read('dagger_decision_history',[]);records.push({date:new Date().toISOString(),yards:y,club:currentClub||'',lie:state.lie,wind:state.wind,danger:state.danger,course:$('course').value,hole:$('hole').value,description:$('fullShotDescription')?.value||'',note:$('coursenote').value});store('dagger_decision_history',records.slice(-300));}};
+function renderLocker(){const shots=read('dagger_shot_log',[]),decisions=read('dagger_decision_history',[]),sessions=read('dagger_range_sessions',[]);$('lockerStats').innerHTML=[['Shot outcomes',shots.length],['Caddie calls',decisions.length],['Range sessions',sessions.length]].map(([l,n])=>`<div class="betbox"><strong>${l}</strong><span>${n}</span></div>`).join('');$('lockerShots').innerHTML='';const merged=[...decisions.map(x=>({...x,kind:'Call'})),...shots.map(x=>({...x,kind:'Feedback',date:x.date||x.ts||x.time||''}))].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,100);if(!merged.length)$('lockerShots').textContent='No on-course records yet.';for(const x of merged){const div=document.createElement('div');div.className='notice-card';div.style.margin='6px 0';div.textContent=`${x.kind} · ${x.club||'Club unknown'} · ${x.yards||'?'} yd · ${x.result||x.lie||''}${x.description?' · '+x.description:''}`; $('lockerShots').append(div);} $('lockerRange').innerHTML='';let p=document.createElement('p');p.textContent='Club carries: '+profile.map(x=>x.name+' '+Math.round(activeCarry(x))+' yd').join(' · ');$('lockerRange').append(p);let ss=document.createElement('p');ss.textContent='Imported sessions: '+sessions.length+'; current bag reflects all saved imported and manual distances.';$('lockerRange').append(ss);}
+$('lockerRebuild').onclick=renderLocker;
+$('lockerExport').onclick=()=>{const data={profile,shots:read('dagger_shot_log',[]),decisions:read('dagger_decision_history',[]),sessions:read('dagger_range_sessions',[]),notes:read('dagger_hole_notes',{})};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='dagger-players-locker.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
+$('wyndhamPunch').onclick=()=>{if(!confirm('WYNDHAM PUNCH? This destroys your active member’s shot records, range history, saved bag changes and notes. Money ledger and games remain.'))return;let phrase=prompt('Type WYNDHAM PUNCH to confirm the destruction of the locker data.');if(phrase!=='WYNDHAM PUNCH'){ $('punchStatus').textContent='Cancelled. Locker survives another day.';return;}for(const k of ['dagger_profile','dagger_shot_log','dagger_decision_history','dagger_range_sessions','dagger_hole_notes','dagger_import_signatures','dagger_wedges'])localStorage.removeItem(k);snapshotMember(localStorage.getItem(MEMBER_ACTIVE));location.reload();};
+const VW_ACTIVE='dagger_vegas_wolf_active',VW_HISTORY='dagger_vegas_wolf_history';let vw=read(VW_ACTIVE,null),vwh=read(VW_HISTORY,[]);
+function vwCalc(g){const points=[0,0,0,0];for(let i=0;i<g.holes.length;i++){const h=g.holes[i],sc=h.scores;if(g.type==='vegas'){const t=(a,b)=>10*Math.min(a,b)+Math.max(a,b);const d=t(sc[2],sc[3])-t(sc[0],sc[1]);points[0]+=d;points[1]+=d;points[2]-=d;points[3]-=d;}else{const wolf=i%4;const partner=h.partner;const left=partner===-1?[wolf]:[wolf,partner];const right=[0,1,2,3].filter(n=>!left.includes(n));const l=Math.min(...left.map(j=>sc[j])),r=Math.min(...right.map(j=>sc[j]));if(l!==r){const win=l<r,mult=partner===-1?3:1;points[wolf]+=(win?1:-1)*mult;for(let j=0;j<4;j++){if(j===wolf)continue;points[j]+=(left.includes(j)?(win?1:-1):(win?-1:1));}}}}return points;}
+function vwRender(){ $('vwActive').hidden=!vw; if(vw){const i=vw.holes.length;$('vwHole').textContent=Math.min(i+1,18);$('vwRuleLine').textContent=vw.type==='wolf'?`Wolf: ${vw.players[i%4]}. Choose a partner or Lone Wolf before recording.`:'Fixed teams: '+vw.players[0]+' + '+vw.players[1]+' versus '+vw.players[2]+' + '+vw.players[3];$('vwScores').innerHTML='';vw.players.forEach((n,j)=>{let d=document.createElement('div'),label=document.createElement('label'),inp=document.createElement('input');label.textContent=n+' strokes';inp.type='number';inp.min='1';inp.max='20';inp.id='vwScore'+j;d.append(label,inp);$('vwScores').append(d)});$('vwWolfControls').hidden=vw.type!=='wolf';$('vwPartner').innerHTML='';if(vw.type==='wolf'){for(const [v,label] of [[-1,'Lone Wolf'],...[0,1,2,3].filter(j=>j!==i%4).map(j=>[j,vw.players[j]])]){const o=document.createElement('option');o.value=v;o.textContent=label;$('vwPartner').append(o)}}$('vwStandings').textContent=vw.players.map((n,j)=>n+': '+vwCalc(vw)[j]+' pts').join(' · ');}const sums={};vwh.forEach(g=>g.players.forEach((n,j)=>sums[n]=(sums[n]||0)+vwCalc(g)[j]));$('vwLifetime').textContent=vwh.length+' archived rounds · '+(Object.entries(sums).map(([n,p])=>n+': '+p+' pts').join(' · ')||'No Vegas/Wolf results yet');}
+function vwStore(){store(VW_ACTIVE,vw);store(VW_HISTORY,vwh);vwRender();}
+$('vwStart').onclick=()=>{if(vw&&!confirm('Replace current Vegas/Wolf round?'))return;const players=['vwP1','vwP2','vwP3','vwP4'].map(k=>$(k).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}vw={players,type:$('vwType').value,stake:Math.max(0,Number($('vwStake').value)||0),holes:[],start:Date.now()};vwStore();};
+$('vwSave').onclick=()=>{if(!vw)return;if(vw.holes.length>=18){alert('Archive the 18-hole round.');return;}const scores=[0,1,2,3].map(j=>Number($('vwScore'+j).value));if(scores.some(x=>!Number.isInteger(x)||x<1||x>20)){alert('Enter a valid score for all four players.');return;}vw.holes.push({scores,partner:vw.type==='wolf'?Number($('vwPartner').value):null});vwStore();};
+$('vwUndo').onclick=()=>{if(vw&&vw.holes.length){vw.holes.pop();vwStore();}};
+$('vwArchive').onclick=()=>{if(vw&&vw.holes.length&&confirm('Archive this round to lifetime history?')){vw.end=Date.now();vwh.push(vw);vw=null;vwStore();}};
+$('vwDiscard').onclick=()=>{if(vw&&confirm('Discard this unarchived round?')){vw=null;vwStore();}};
+renderMemberSelect();renderLocker();vwRender();
+
+
+// 4.9 local Dagger records and voice-first follow-up; independent of paid cloud services.
+(function(){
+ const el=id=>document.getElementById(id);
+ const safeArray=(k)=>{try{const x=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(x)?x:[]}catch{return[]}};
+ function memberName(){return (el('roomMe').value||'Member').trim().slice(0,24)}
+ function formatMoney(n){return (n<0?'−':'')+'$'+Math.abs(n).toFixed(2)}
+ function collection(){return [...safeArray('dagger_foursome_history'),...safeArray('dagger_vegas_wolf_history'),...safeArray('dagger_room_archives')];}
+ function scoreName(w){return w.players||[]}
+ function renderHall(){
+  const records=collection();const shots=safeArray('dagger_shot_log'); const group=records.filter(x=>x&&Array.isArray(x.players));
+  const me=(localStorage.getItem('dagger_member_name')||memberName()).replaceAll('"','');
+  let wins=0,losses=0,net=0,bad=0,good=0;const versus={};
+  for(const sh of shots){if(sh.result==='Good')good++;if(sh.result==='Trouble')bad++;}
+  group.forEach(r=>{const i=r.players.findIndex(n=>String(n).toLowerCase()===me.toLowerCase());if(i<0)return;
+   let vals=Array.isArray(r.payouts)?r.payouts:null;
+   if(!vals&&typeof wagerMath==='function'&&r.format){try{vals=wagerMath(r).score}catch{}}
+   if(!vals&&Array.isArray(r.net))vals=r.net;
+   if(!vals&&r.type==='vegas'&&typeof vwCalc==='function'){try{vals=vwCalc(r).map(v=>v*(r.stake||0))}catch{}}
+   const v=Array.isArray(vals)?Number(vals[i])||0:0;net+=v;if(v>0)wins++;if(v<0)losses++;
+   r.players.forEach((name,j)=>{if(j===i)return;const k=name.toLowerCase();versus[k]??={name,played:0,net:0};versus[k].played++;versus[k].net+=v;});
+  });
+  const cards=[['Archived matches',group.length],['Member net',formatMoney(net)],['Winning records',wins],['Trouble shots',bad]];
+  el('hallStats').innerHTML=cards.map(([a,b])=>'<div class="betbox"><strong>'+a+'</strong><span style="font-size:15px">'+b+'</span></div>').join('');
+  const lines=Object.values(versus).sort((a,b)=>b.played-a.played).map(v=>v.name+': '+v.played+' meetings · net '+formatMoney(v.net));
+  el('rivalryBoard').textContent=lines.length?lines.join(' | '):'No recorded rivalries yet. The archive refuses to invent enemies.';
+  return {me,group,wins,losses,net,bad,good,versus};
+ }
+ el('refreshRecords').onclick=renderHall;
+ el('makeReport').onclick=()=>{const x=renderHall();const c=(typeof selectedCaddie!=='undefined'?selectedCaddie:'keith');
+ const message=(c==='kyle'?'BROTHER. The tactical paperwork is finished.':c==='vinny'?'Listen, sweetheart. The ledger never lies.':c==='reginald'?'The committee has reviewed your rather athletic record.':'Right. The committee has seen enough.');
+ const text=`DAGGER COUNTRY CLUB — FORM 19-B
+MEMBER: ${x.me}\nMATCHES ARCHIVED: ${x.group.length}\nWINNING MATCH RECORDS: ${x.wins}\nLOSING MATCH RECORDS: ${x.losses}\nDOCUMENTED TROUBLE SHOTS: ${x.bad}\nRECORDED NET: ${formatMoney(x.net)}\n\n${message}\n\nMembership remains active, subject to further evidence.\n— ${c.toUpperCase()}, Caddie Department`;
+ el('reportText').textContent=text;el('reportCard').hidden=false;};
+ el('imageReport').onclick=()=>{const txt=el('reportText').textContent.split('\n');const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;const c=canvas.getContext('2d');c.fillStyle='#f4ecda';c.fillRect(0,0,1080,1350);c.strokeStyle='#b49c66';c.lineWidth=10;c.strokeRect(38,38,1004,1274);c.fillStyle='#173729';c.fillRect(56,56,968,164);c.fillStyle='#f1e5ce';c.font='bold 47px Georgia';c.fillText('DAGGER COUNTRY CLUB',95,133);c.font='26px Georgia';c.fillText('CONFIDENTIAL · GREENS COMMITTEE',95,185);c.fillStyle='#173729';c.font='32px Georgia';let y=295;for(const line of txt){if(y>1260)break;c.fillText(line.slice(0,57),89,y);y+=line.trim()?66:32;}canvas.toBlob(blob=>{if(!blob)return;const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dagger-disciplinary-report.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);},'image/png');};
+ el('shareReport').onclick=async()=>{const msg=el('reportText').textContent;try{if(navigator.share)await navigator.share({title:'Dagger Country Club — Disciplinary Report',text:msg});else await navigator.clipboard.writeText(msg)}catch(e){el('reportText').textContent=msg+'\n\n(Sharing unavailable; select and copy this report.)'}};
+ let previousQuestion='';
+ const parse = t=>{const distance=t.match(/\b(\d{2,3})\s*(?:yards?|yds?|out)\b/i)||t.match(/\b(?:from|at|about)\s*(\d{2,3})\b/i);const carry=t.match(/(?:carry|clear|over)\s*(\d{2,3})/i);let danger='';if(/water|pond|creek|lake/i.test(t))danger='water';else if(/bunker|sand/i.test(t))danger='bunker';else if(/trees|woods/i.test(t))danger='trees';let lie=/deep rough|buried|sitting down/i.test(t)?'deep rough':/rough/i.test(t)?'rough':/fairway/i.test(t)?'fairway':/tee/i.test(t)?'tee':'unknown';return {distance:distance?Number(distance[1]):null,carry:carry?Number(carry[1]):null,danger,lie};};
+ const respond=()=>{let t=el('convoDescription').value.trim();if(!t){el('convoReply').textContent='Tell me what you are looking at, chief. We are not reading minds.';return;}const q=parse(t);previousQuestion=t;
+ if(q.distance&&el('yards'))el('yards').value=q.distance;
+ let msg='';const c=(typeof selectedCaddie!=='undefined'?selectedCaddie:'keith');
+ if(!q.distance)msg='How far is the target? Give me the actual yardage, not a nostalgic estimate from your last good swing.';
+ else if(q.danger&&!q.carry)msg=`${q.distance} out, ${q.lie} lie, and ${q.danger} involved. How many yards must you CARRY to clear the danger? That's the number that decides whether you're brave or just confused.`;
+ else if(q.carry&&q.distance&&q.carry>q.distance)msg=`Something is off: the required carry (${q.carry}) exceeds the target distance (${q.distance}). Confirm which number is right before I choose a club.`;
+ else{let notes=[];if(q.lie==='deep rough')notes.push('Deep rough makes normal range carry unreliable');if(q.danger)notes.push('the trouble makes a center/safe-side target preferable');if(q.carry)notes.push('confirm your *reliable* carry exceeds '+q.carry+' yards, not your once-in-a-lifetime flyer');msg='Here is the sober reading: '+q.distance+' yards'+(notes.length?' · '+notes.join(' · '):' · stock distance, assuming a decent lie')+'. Ask for a club with your saved carry profile, and prioritize the safe miss.';}
+ const sign=c==='kyle'?' BROTHER. This is operational common sense, and I was nearly enlisted.':c==='reginald'?' A thoughtful answer would be most refreshing, sir.':c==='vinny'?' We are protecting the wallet, sweetheart.':' Try an adult answer. It would be a lovely change.';
+ el('convoReply').textContent=msg+sign;
+ if(el('coursenote'))el('coursenote').value=t.slice(0,350);
+ };
+ el('convoReview').onclick=respond;
+ el('convoAskAgain').onclick=()=>{if(!previousQuestion){respond();return;}el('convoReply').textContent='Give me the missing carry, pin position, or safe landing area and tap Review again. I need facts, not adrenaline.';el('convoDescription').focus();};
+ renderHall();
+})();
 </script>
+<script type="module" src="money-room.js"></script>
 </body>
 </html>

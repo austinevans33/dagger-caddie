@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function myUid() { return request.auth.uid; }
+    function isHost() { return signedIn() && resource.data.hostUid == myUid(); }
+    function isMember(roomId) {
+      return signedIn() && exists(/databases/$(database)/documents/rooms/$(roomId)/members/$(myUid()));
+    }
+    match /rooms/{roomId} {
+      allow create: if signedIn()
+        && request.resource.data.hostUid == myUid()
+        && request.resource.data.players is list
+        && request.resource.data.players.size() >= 2
+        && request.resource.data.players.size() <= 4
+        && request.resource.data.invite is string
+        && request.resource.data.invite.size() == 16
+        && request.resource.data.archived == false;
+      allow get, list: if isHost() || isMember(roomId);
+      allow update: if isHost()
+        && resource.data.archived == false
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['holes', 'lastEditor', 'lastChange', 'archived'])
+        && request.resource.data.hostUid == resource.data.hostUid
+        && request.resource.data.invite == resource.data.invite
+        && request.resource.data.players == resource.data.players
+        && request.resource.data.format == resource.data.format
+        && request.resource.data.stake == resource.data.stake
+        && request.resource.data.holes is map;
+      allow delete: if false;
+      match /members/{memberId} {
+        allow create: if signedIn()
+          && memberId == myUid()
+          && request.resource.data.uid == myUid()
+          && request.resource.data.name is string
+          && request.resource.data.name.size() <= 24
+          && request.resource.data.invite == get(/databases/$(database)/documents/rooms/$(roomId)).data.invite;
+        allow get: if signedIn() && (memberId == myUid()
+          || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostUid == myUid());
+        allow list: if false;
+        allow update, delete: if false;
+      }
+    }
+  }
+}
