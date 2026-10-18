@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Dagger Country Club mark">
+  <defs>
+    <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#1a4232"/>
+      <stop offset="1" stop-color="#10291f"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="112" fill="#f4ecda" stroke="#b79c62" stroke-width="10"/>
+  <circle cx="120" cy="120" r="96" fill="url(#g)" stroke="#d9c08d" stroke-width="3"/>
+  <path d="M87 54 L158 54 Q171 55 177 64 Q164 75 150 77 L122 77 L122 134 Q122 157 108 174 Q100 183 88 191" fill="#f5efe3" stroke="#e1c484" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M121 44 L121 177" stroke="#dcb772" stroke-width="9" stroke-linecap="round"/>
+  <path d="M121 59 L141 97 L126 97 L144 144 L121 174 L98 144 L116 97 L101 97 Z" fill="#121212" stroke="#dfc27b" stroke-width="4" stroke-linejoin="round"/>
+  <text x="120" y="208" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#f2e7cf" letter-spacing="3">DCC</text>
+</svg>

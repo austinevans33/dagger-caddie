@@ -26,10 +26,12 @@
   .app-shell{background:linear-gradient(180deg,#f7f3ea 0%, #f2ebdd 100%);border:1px solid var(--line);border-radius:26px;box-shadow:0 8px 24px rgba(24,34,26,.09);overflow:hidden}
   .mast{background:linear-gradient(180deg,#17372b 0%,#122c22 100%);color:var(--cream);padding:22px 18px 20px;position:relative;border-bottom:4px solid var(--gold)}
   .over{letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:#d7cab0;margin-bottom:6px}
-  .brandrow{display:flex;justify-content:space-between;gap:12px;align-items:start}
-  .logo-lockup{display:block;width:100%;max-width:360px;min-height:96px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,.28);box-shadow:0 6px 18px rgba(0,0,0,.22);background:#10261d}
-  .h1{font-size:34px;line-height:1;margin:0;font-weight:700;letter-spacing:.01em}
-  .sub{margin:6px 0 0;color:#d6ddd3;font-size:14px}
+  .brandrow{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .club-mark{width:66px;height:66px;flex:0 0 66px;border-radius:50%;background:#10261d;border:1px solid rgba(255,255,255,.22);box-shadow:0 6px 18px rgba(0,0,0,.22)}
+  .brandtext{min-width:0;display:flex;flex-direction:column;justify-content:center}
+  .scriptword{font-family:'Brush Script MT','Segoe Script','Snell Roundhand',cursive;font-size:46px;line-height:.92;margin:0;color:#f8edd7;letter-spacing:.02em;text-shadow:0 2px 10px rgba(0,0,0,.18)}
+  .sub{margin:6px 0 0;color:#d6ddd3;font-size:13px}
+  .club-kicker{font:700 10px/1.2 system-ui,-apple-system,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#d9caa8;margin-top:4px}
   .badge{display:inline-block;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:5px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.06)}
   .crest{width:54px;height:54px;border:1px solid rgba(255,255,255,.25);border-radius:50%;display:grid;place-items:center;font-size:24px;background:rgba(255,255,255,.06)}
   .quip{margin-top:12px;padding:10px 12px;background:rgba(245,240,229,.08);border:1px solid rgba(245,240,229,.12);border-radius:14px;color:#d8d4c8;font-size:14px}
@@ -111,11 +113,11 @@
   .smallbtn{width:auto;padding:10px 12px}
   @media (max-width:560px){
     .grid,.triple,.quad{grid-template-columns:1fr 1fr}
-    .h1{font-size:30px}
+    .scriptword{font-size:38px}
   }
 
 /* 4.3 Mobile-first course mode */
-.mast{padding:13px 16px 12px}.mast .over{margin-bottom:3px;font-size:10px}.h1{font-size:28px}.sub{font-size:12px}.quip{margin-top:8px;padding:7px 9px;font-size:12px;min-height:46px}.portrait{width:46px;height:46px;float:left;margin:0 9px 0 0;border-width:1px}
+.mast{padding:13px 16px 12px}.mast .over{margin-bottom:3px;font-size:10px}.scriptword{font-size:34px}.sub{font-size:12px}.quip{margin-top:8px;padding:7px 9px;font-size:12px;min-height:46px}.portrait{width:46px;height:46px;float:left;margin:0 9px 0 0;border-width:1px}
 .content{padding:10px}.tabbar{gap:4px;margin:5px 0 8px}.tabbar button{padding:10px 1px;font-family:system-ui,-apple-system,sans-serif;font-size:10px;letter-spacing:0;border-radius:10px;line-height:1.25;min-height:42px}
 .card{margin:8px 0;padding:11px;border-radius:14px}.card.green>div:first-child .muted{display:none}.card.green h2{font-size:18px;margin:0}.card.green .badge{font-size:9px;padding:4px 7px}
 .card.green .callout{margin-top:9px !important;padding:12px;border-radius:12px}.card.green .club-big{font-size:29px;line-height:1.12}.card.green .target{font-size:14px}.card.green .callout p{font-size:12px;line-height:1.35;margin:5px 0}.card.green .callout .keith{font-size:12px;line-height:1.4;padding-top:6px;margin-top:6px}.card.green .callout .note{font-size:10px;margin:5px 0 0}
@@ -147,7 +149,7 @@ body{background:#e9e1d0}
 .app-shell{border-color:#ae9a72;box-shadow:0 12px 32px #1a2a1e22}
 .mast{background:linear-gradient(120deg,#122b21,#1d4332);border-bottom:3px double #c7ad74}
 .mast .over{letter-spacing:.22em;color:#dfcfa7}
-.mast .h1{letter-spacing:.025em;font-weight:700}
+.mast .scriptword{letter-spacing:.02em;font-weight:700}
 .content{padding-bottom:78px}
 .card{border-color:#c9b78d;box-shadow:0 1px 0 #fff8e8 inset}
 .card:not(.green) h2{border-bottom:1px solid #c9b78d;padding-bottom:8px}
@@ -246,6 +248,34 @@ body{background:#e9e1d0}
 .notice-head{font:700 10px system-ui;letter-spacing:.13em;color:#6e624f}
 .money-chip{display:inline-block;background:#143126;color:#ffeed4;border-radius:20px;padding:5px 9px;font-size:11px}
 @media(max-width:420px){.room-grid{grid-template-columns:1fr}.room-table th,.room-table td{font-size:11px}}
+
+/* 4.9.2 field navigation: 5 thumb-friendly destinations */
+.tabbar{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:55px;padding:5px 2px;font-size:11px;letter-spacing:.01em}
+.nav-ico{font-size:20px;line-height:1.1;font-family:Georgia,serif}
+.game-picks{display:grid;grid-template-columns:1fr;gap:8px}
+.game-pick{text-align:left;background:#efe4cf;color:#183e2e;border:1px solid #cbb994;padding:12px 14px}
+.game-pick strong{display:block;font-size:17px}.game-pick small{display:block;margin-top:3px;font:12px system-ui,sans-serif;color:#695f48}
+.game-pick.selected{background:#193b2d;color:#fff3dd;border-color:#b99d64}
+.game-pick.selected small{color:#dfd4bb}
+.game-hidden{display:none!important}
+.voice-indicator{border:1px solid rgba(255,255,255,.2);padding:8px 10px;border-radius:9px;font:600 12px/1.4 system-ui,sans-serif;color:#e5d5b1;margin-top:8px}
+
+.game-note{font-size:12px;color:#695f48;margin-top:6px;line-height:1.45}
+.game-live{background:#f4ebd8;border:1px solid #cdb98e;border-radius:12px;padding:11px;margin-top:10px}
+.game-live h3{margin-bottom:8px}
+.scoreline{font-size:13px;line-height:1.5;color:#20392c}
+.robin-badge{display:inline-block;background:#153628;color:#f7ead2;border-radius:999px;padding:4px 8px;font:700 11px system-ui;letter-spacing:.07em;text-transform:uppercase}
+.recap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.recap-item{padding:10px;border:1px solid #d2c19d;border-radius:12px;background:#f6efe0}
+.recap-item strong{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#6e624d;margin-bottom:4px}
+@media(max-width:420px){.scriptword{font-size:32px}.club-mark{width:58px;height:58px}.recap-grid{grid-template-columns:1fr}}
+
+.voice-indicator.listening{border:2px solid #e7b46f;background:#782c26;color:#fff6e4;animation:listenPulse 950ms ease-in-out infinite alternate}
+#voiceShot.mic-active{background:#e7b46f;color:#162e23;font-weight:900}
+@keyframes listenPulse{from{box-shadow:0 0 0 rgba(240,186,104,0)}to{box-shadow:0 0 0 4px rgba(240,186,104,.27)}}
+@media(prefers-reduced-motion:reduce){.voice-indicator.listening{animation:none}}
+@media(max-width:390px){.tabbar button{font-size:10px}.nav-ico{font-size:18px}}
 </style>
 </head>
 <body>
@@ -254,16 +284,24 @@ body{background:#e9e1d0}
     <div class="mast">
       <div class="over">Dagger Country Club • Personal Edition</div>
       <div class="brandrow">
-        <div style="width:100%">
-          <div class="h1">Dagger Caddie</div>
-          <div class="sub" style="margin-top:5px">On the bag: <strong id="onBagName">Keith</strong> · Private-club service. Municipal-course language.</div>
+        <img class="club-mark" src="dagger_cc_mark.svg" alt="Dagger Country Club crest">
+        <div class="brandtext" style="width:100%">
+          <div class="scriptword">Dagger Caddie</div>
+          <div class="club-kicker">Dagger Country Club</div>
+          <div class="sub">On the bag: <strong id="onBagName">Keith</strong> · Private-club service. Municipal-course language.</div>
         </div>
       </div>
-      <div class="quip"><img class="portrait" id="staffPortrait" src="keith_portrait.webp" alt="Keith portrait"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
+      <div class="quip"><img class="portrait" id="staffPortrait" src="keith_portrait.png" alt="Keith portrait"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
     </div>
 
     <div class="content">
-      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ LOCKER</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-bets" type="button">$ BETTING</button><button id="tab-settings" type="button">⚙ CLUB</button><button id="tab-office" type="button">♜ OFFICE</button><button id="tab-games" type="button">★ GAMES</button></nav>
+      <nav class="tabbar" aria-label="Main navigation">
+<button id="tab-play" class="active" type="button"><span class="nav-ico">⛳</span><span>Play</span></button>
+<button id="tab-bets" type="button"><span class="nav-ico">💵</span><span>Money</span></button>
+<button id="tab-games" type="button"><span class="nav-ico">🎲</span><span>Games</span></button>
+<button id="tab-bag" type="button"><span class="nav-ico">🗄</span><span>Locker</span></button>
+<button id="tab-settings" type="button"><span class="nav-ico">🏛</span><span>Club</span></button>
+</nav>
 
       <section class="card" id="setupCard">
         <h2>Welcome to Dagger Caddie</h2>
@@ -290,12 +328,12 @@ body{background:#e9e1d0}
       <section class="caddie-roster" data-tab="play" aria-label="Choose your caddie">
         <div class="roster-heading"><span>CADDIE MASTER'S OFFICE</span><button class="roster-file-link" id="toggleStaffFile" type="button" aria-expanded="false">Personnel file ▾</button></div>
         <div class="staff-grid" id="caddieChoices">
-          <button type="button" class="staff-pick active" data-caddie="keith" aria-pressed="true"><img class="staff-thumb" src="keith_portrait.webp" alt="Keith portrait"><strong>Keith</strong><small>Head caddie</small></button>
-          <button type="button" class="staff-pick" data-caddie="reginald" aria-pressed="false"><img class="staff-thumb" src="reginald_portrait.webp" alt="Reginald portrait"><strong>Reginald</strong><small>Traditions</small></button>
-          <button type="button" class="staff-pick" data-caddie="vinny" aria-pressed="false"><img class="staff-thumb" src="vinny_portrait.webp" alt="Vinny portrait"><strong>Vinny</strong><small>Wagering</small></button>
-          <button type="button" class="staff-pick" data-caddie="kyle" aria-pressed="false"><img class="staff-thumb" src="kyle_portrait.webp" alt="Kyle portrait"><strong>Kyle</strong><small>Almost enlisted</small></button>
+          <button type="button" class="staff-pick active" data-caddie="keith" aria-pressed="true"><img class="staff-thumb" src="keith_portrait.png" alt="Keith portrait"><strong>Keith</strong><small>Head caddie</small></button>
+          <button type="button" class="staff-pick" data-caddie="reginald" aria-pressed="false"><img class="staff-thumb" src="reginald_portrait.png" alt="Reginald portrait"><strong>Reginald</strong><small>Traditions</small></button>
+          <button type="button" class="staff-pick" data-caddie="vinny" aria-pressed="false"><img class="staff-thumb" src="vinny_portrait.png" alt="Vinny portrait"><strong>Vinny</strong><small>Wagering</small></button>
+          <button type="button" class="staff-pick" data-caddie="kyle" aria-pressed="false"><img class="staff-thumb" src="kyle_portrait.png" alt="Kyle portrait"><strong>Kyle</strong><small>Almost enlisted</small></button>
         </div>
-        <div id="staffBanter" aria-live="polite"></div><div class="staff-file" id="staffFile" data-theme="keith" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><div class="staff-file-top"><img class="staff-file-photo" id="filePortrait" src="keith_portrait.webp" alt="Keith dossier portrait"><div><h3 id="fileName">KEITH · HEAD CADDIE</h3><div class="file-sub" id="fileTitle"></div></div></div><div class="file-grid"><div class="file-box"><strong>Known for</strong><span id="fileKnown"></span></div><div class="file-box"><strong>Specialty</strong><span id="fileSpecialty"></span></div><div class="file-box"><strong>Club warning</strong><span id="fileWarning"></span></div></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
+        <div id="staffBanter" aria-live="polite"></div><div class="staff-file" id="staffFile" data-theme="keith" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><div class="staff-file-top"><img class="staff-file-photo" id="filePortrait" src="keith_portrait.png" alt="Keith dossier portrait"><div><h3 id="fileName">KEITH · HEAD CADDIE</h3><div class="file-sub" id="fileTitle"></div></div></div><div class="file-grid"><div class="file-box"><strong>Known for</strong><span id="fileKnown"></span></div><div class="file-box"><strong>Specialty</strong><span id="fileSpecialty"></span></div><div class="file-box"><strong>Club warning</strong><span id="fileWarning"></span></div></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
       </section>
       <section class="card green" data-tab="play">
         <div class="inline" style="justify-content:space-between">
@@ -317,7 +355,7 @@ body{background:#e9e1d0}
           <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div id="puckerStaffLine" aria-live="polite"></div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
         </div>
 
-        <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddie</button></div><div id="voiceStatus" style="color:#d7cfb9;margin-top:3px" aria-live="polite">Voice optional; manual controls always work.</div>
+        <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddie</button></div><div id="voiceStatus" class="voice-indicator" role="status" aria-live="polite">Voice optional; manual controls always work.</div>
         <details class="shot-extra" style="margin-top:6px"><summary>Full shot description / voice transcript <span>＋</span></summary><div class="extra-inner"><label for="fullShotDescription">Describe your entire situation</label><textarea id="fullShotDescription" rows="4" placeholder="I'm 176 out, light downhill lie in right rough. Crosswind left to right, bunker short, water long, flag back right..." style="width:100%;border-radius:10px;padding:10px;font:14px system-ui"></textarea><div class="grid"><button class="btn-secondary" type="button" id="parseDescription">Extract shot details</button><button class="btn-secondary" type="button" id="useDescription">Apply details & ask caddie</button></div><p id="descriptionStatus" style="color:#efe3cc;font-size:12px;margin:7px 0 0">Caddie interprets recognized yardage, lie, wind, pin and hazards. Other context is preserved as a note, not automatically understood or verified.</p></div></details>
         <details class="compact-tools" style="margin-top:8px" id="caddieConversation">
 <summary>Talk it through · Detailed Caddie Consultation</summary>
@@ -361,7 +399,7 @@ body{background:#e9e1d0}
         <div class="note" style="color:#e4dcc9">Recommendations are only as good as your yardage, lie, carry requirement, and hazard info. Keith is sarcastic, not psychic.</div>
       </section>
 
-      <section class="card" data-tab="reset">
+      <section class="card" data-tab="settings">
         <div class="inline" style="justify-content:space-between"><div><div class="over" style="color:#6b644c">DAGGER COUNTRY CLUB · MENTAL PERFORMANCE DEPARTMENT</div><h2>Keith’s Emergency Services</h2><p class="muted">Because apparently we need this. No lectures, no swing rebuilding.</p></div><span class="tag">10 SECOND RESET</span></div>
         <div class="character-strip"><img src="keith.svg" alt="Keith looking profoundly unimpressed"><div><strong>Keith, Head of Emotional Damage Control</strong><div style="font-size:13px;margin-top:4px">“You’re allowed one bad swing. A full psychological collapse is extra.”</div></div></div>
         <div class="reset-panel">
@@ -494,7 +532,8 @@ body{background:#e9e1d0}
         <div class="note">Range files are parsed on this device. Back up after importing if you don't want Keith to forget everything.</div><details style="margin-top:12px"><summary>Range-session trend</summary><div id="trendSummary" class="note">Import a new range CSV to start your session history. Existing averages do not contain past individual-session data.</div><table id="trendTable"><thead><tr><th>Session</th><th>Swings</th><th>Clubs</th></tr></thead><tbody id="trendRows"></tbody></table></details>
       </section>
 
-            <section class="card" data-tab="bets" id="moneyRoomSection">
+            <section class="card" data-tab="bets" id="opponentRoastSection"><div class="over" style="color:#776344">THE CADDIE'S OPPONENT DOSSIER</div><h2>Competitive encouragement</h2><p class="muted">Name the person you're playing against. Your current caddie will offer absolutely unrequested psychological support.</p><div class="grid"><input type="text" id="roastOpponentName" maxlength="35" placeholder="Opponent's first name"><button class="btn-secondary" id="roastOpponent" type="button">Roast opponent</button></div><div id="opponentRoastLine" class="notice-card" style="margin-top:10px" aria-live="polite">Enter an opponent's name and invite the caddie to behave unprofessionally.</div><p class="note">The insults are fictional jokes about golf—not facts about the other golfer.</p></section>
+<section class="card" data-tab="bets" id="moneyRoomSection">
 <div class="over" style="color:#806f4d">DAGGER COUNTRY CLUB · MONEY ROOM</div><h2>Live Money Room</h2>
 <p class="muted">One designated scorekeeper. Everyone else watches the same scorecard on their phone.</p>
 <div class="room-status" id="roomStatus" aria-live="polite">Offline/local mode. Live sync needs Firebase configuration once.</div>
@@ -569,17 +608,27 @@ body{background:#e9e1d0}
         <details class="wager-panel"><summary>Lifetime wagering ledger</summary><div id="wLifetime" class="note" style="margin-top:10px"></div><table><thead><tr><th>Date</th><th>Game</th><th>Your net</th></tr></thead><tbody id="wHistory"></tbody></table><button class="btn-ghost" id="wExport" type="button">Export wager history CSV</button><div style="margin-top:9px"><label>Restore games & bets backup</label><input id="restoreGames" type="file" accept=".json,application/json"></div><p id="restoreGamesStatus" class="note"></p></details>
       </section>
 
-<section class="staff-office" data-tab="office" aria-label="Caddie Master's Office">
+<section class="staff-office" data-tab="settings" aria-label="Caddie Master's Office">
   <div class="notice-eyebrow">DAGGER COUNTRY CLUB · EST. UNDER PROTEST</div>
   <h2>Caddie Master's Office</h2>
   <p class="muted">A private club with extraordinarily public personnel problems.</p>
-  <div class="office-header"><img id="officePortrait" src="keith_portrait.webp" alt="Selected caddie"><div><div class="office-title" id="officeName">Keith · Head Caddie</div><span class="staff-badge" id="officeBadge">Veteran Menace</span></div></div>
+  <div class="office-header"><img id="officePortrait" src="keith_portrait.png" alt="Selected caddie"><div><div class="office-title" id="officeName">Keith · Head Caddie</div><span class="staff-badge" id="officeBadge">Veteran Menace</span></div></div>
   <div class="notice-card"><div class="notice-eyebrow">CONFIDENTIAL PERSONNEL RECORD</div><div id="officePersonnel">Select a caddie to inspect their dubious credentials.</div></div>
   <div class="notice-card"><div class="notice-eyebrow">LATEST FROM THE STAFF ROOM</div><div id="officeGossip">Keith has issued a noise complaint against Kyle.</div><button id="officeNewGossip" class="btn-secondary" type="button" style="margin-top:10px">Another staff-room complaint</button></div>
   <h3>Staff directory</h3><div id="officeRoster"></div>
   <p class="note">Staff rumors are fictional. Their golf recommendations still use your actual bag data.</p>
 </section>
-<section class="card" data-tab="games"><div class="over" style="color:#776344">DAGGER COUNTRY CLUB · COMPETITION COMMITTEE</div><h2>Club Games</h2><p class="muted">The club has approved structured chaos. Start with Bingo Bango Bongo.</p>
+<section class="card" data-tab="games" id="gamesMenu">
+<div class="over" style="color:#756344">DAGGER COUNTRY CLUB · GAMES DESK</div><h2>Choose your game</h2><p class="muted">Separate game pages, separate scorecards, fewer chances to butcher the action.</p>
+<div class="game-picks">
+<button class="game-pick selected" type="button" data-game="bingo"><strong>◎ Bingo Bango Bongo</strong><small>Three points every hole</small></button>
+<button class="game-pick" type="button" data-game="vegas"><strong>♠ Vegas</strong><small>Two teams · two-digit scores</small></button>
+<button class="game-pick" type="button" data-game="wolf"><strong>◈ Wolf</strong><small>Rotating Wolf · partner or solo</small></button>
+<button class="game-pick" type="button" data-game="hammer"><strong>✦ Hammer</strong><small>2 vs 2 · escalating pressure</small></button>
+<button class="game-pick" type="button" data-game="robin"><strong>↺ 6-6-6 / Round Robin</strong><small>Rotate teams every six holes</small></button>
+<button class="game-pick" type="button" data-game="snake"><strong>≈ Snake</strong><small>Track the dreaded 3-putt tax</small></button>
+</div></section>
+<section class="card" data-tab="games" id="bingoGameCard"><div class="over" style="color:#776344">DAGGER COUNTRY CLUB · COMPETITION COMMITTEE</div><h2>Bingo Bango Bongo</h2><p class="muted">Three independent points on every hole. Maximum chaos, minimal mathematics.</p>
   <details open><summary>How to play · Bingo Bango Bongo</summary><div style="padding:10px 0"><p>Each hole offers <strong>three independent points</strong>:</p><p><strong>Bingo:</strong> First player to get their ball on the green.<br><strong>Bango:</strong> Closest to the hole once every ball is on the green.<br><strong>Bongo:</strong> First player to hole out.</p><p class="note">Keep proper order of play, especially for Bingo and Bongo. No points are automatically awarded for a tie; choose the applicable player or leave unawarded. It's a points game, not normal stroke-play scoring.</p></div></details>
   <div class="grid"><div><label>Player 1</label><input id="gP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="gP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="gP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="gP4" maxlength="24" placeholder="Optional"></div></div>
   <button class="btn-secondary" id="gStart" type="button" style="margin-top:10px">Start new Bingo Bango Bongo round</button>
@@ -589,8 +638,14 @@ body{background:#e9e1d0}
   <details style="margin-top:12px"><summary>Past games & lifetime points</summary><div id="gLifetime" class="note" style="margin-top:10px"></div><div id="gHistory" class="note"></div></details>
 </section>
 
-<section class="card" data-tab="games"><div class="over" style="color:#756344">COMPETITION COMMITTEE · NEW FORMATS</div><h2>Vegas & Wolf</h2><details open><summary>Vegas · How to play</summary><p class="note">Four golfers, two fixed teams. Each team's hole score is a two-digit number built from teammates' gross strokes, <strong>lower score first</strong> (4 and 5 = 45). The lower number wins the difference in points (45 vs 56 = 11). Optional $/point turns points into money. We do not apply the optional “birdie flips the opponent's number” rule in this edition.</p></details><details><summary>Wolf · How to play</summary><p class="note">Four golfers. Wolf rotates every hole (1–4 repeated). Wolf either selects one partner to play 2 vs 2 or plays Lone Wolf 1 vs 3. Score by lower <strong>best-ball gross score</strong> for each side. A team win gives each winning teammate +1 point; a losing teammate -1. Lone Wolf wins +3 and each opponent loses -1; if Lone Wolf loses, Wolf -3 and each opponent +1. Ties are zero. These are selectable house rules; confirm with your group first.</p></details>
-<div class="grid" style="margin-top:10px"><div><label>Game</label><select id="vwType"><option value="vegas">Vegas (2 vs 2)</option><option value="wolf">Wolf (rotation)</option></select></div><div><label>$ per point (optional)</label><input id="vwStake" type="number" min="0" step="0.25" value="0"></div></div><div class="grid"><div><label>Player 1</label><input id="vwP1" value="Me" maxlength="25"></div><div><label>Player 2</label><input id="vwP2" value="Player 2" maxlength="25"></div><div><label>Player 3</label><input id="vwP3" value="Player 3" maxlength="25"></div><div><label>Player 4</label><input id="vwP4" value="Player 4" maxlength="25"></div></div><button class="btn-primary" id="vwStart" style="margin-top:9px">Start Vegas / Wolf</button><div id="vwActive" hidden><h3 style="margin-top:10px">Hole <span id="vwHole">1</span></h3><div id="vwRuleLine" class="note"></div><div class="grid" id="vwScores"></div><div id="vwWolfControls" hidden><label>Wolf choice</label><select id="vwPartner"></select></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="vwSave">Record hole</button><button class="btn-ghost" id="vwUndo">Undo hole</button></div><div id="vwStandings" class="note" style="margin-top:10px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Vegas / Wolf lifetime records</summary><div id="vwLifetime" class="note"></div></details></section>
+<section class="card" data-tab="games" id="vwGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · FEATURED MATCH</div><h2 id="vwGameHeading">Vegas</h2><div id="vegasRules"><details open><summary>Vegas · How to play</summary><p class="note">Four golfers, two fixed teams. Each team's hole score is a two-digit number built from teammates' gross strokes, <strong>lower score first</strong> (4 and 5 = 45). The lower number wins the difference in points (45 vs 56 = 11). Optional $/point turns points into money. We do not apply the optional “birdie flips the opponent's number” rule in this edition.</p></details></div><div id="wolfRules" hidden><details open><summary>Wolf · How to play</summary><p class="note">Four golfers. Wolf rotates every hole (1–4 repeated). Wolf either selects one partner to play 2 vs 2 or plays Lone Wolf 1 vs 3. Score by lower <strong>best-ball gross score</strong> for each side. A team win gives each winning teammate +1 point; a losing teammate -1. Lone Wolf wins +3 and each opponent loses -1; if Lone Wolf loses, Wolf -3 and each opponent +1. Ties are zero. These are selectable house rules; confirm with your group first.</p></details></div>
+<input id="vwType" type="hidden" value="vegas"><div class="grid" style="margin-top:10px"><div><label>$ per point (optional)</label><input id="vwStake" type="number" min="0" step="0.25" value="0"></div><div><label>Selected game</label><div class="game-live"><span class="robin-badge" id="vwSelectedBadge">Vegas</span><div class="game-note" id="vwSelectedNote">Fixed teams. Calm bookkeeping. Violent arguments optional.</div></div></div></div><div class="grid"><div><label>Player 1</label><input id="vwP1" value="Me" maxlength="25"></div><div><label>Player 2</label><input id="vwP2" value="Player 2" maxlength="25"></div><div><label>Player 3</label><input id="vwP3" value="Player 3" maxlength="25"></div><div><label>Player 4</label><input id="vwP4" value="Player 4" maxlength="25"></div></div><button class="btn-primary" id="vwStart" style="margin-top:9px">Start selected game</button><div id="vwActive" hidden><h3 style="margin-top:10px">Hole <span id="vwHole">1</span></h3><div id="vwRuleLine" class="note"></div><div class="grid" id="vwScores"></div><div id="vwWolfControls" hidden><label>Wolf choice</label><select id="vwPartner"></select></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="vwSave">Record hole</button><button class="btn-ghost" id="vwUndo">Undo hole</button></div><div id="vwStandings" class="note" style="margin-top:10px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary id="vwLifetimeLabel">Vegas lifetime records</summary><div id="vwLifetime" class="note"></div></details></section>
+
+<section class="card game-hidden" data-tab="games" id="hammerGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · SIDE ACTION</div><h2>Hammer</h2><p class="muted">This simplified house version records the <em>final multiplier</em> on each hole. If somebody hammers mid-hole, just bump the multiplier before you save.</p><details open><summary>How to play · Hammer</summary><p class="note">Two teams of two. Each hole starts at 1 unit. Any hammer during the hole increases the multiplier. At the end of the hole, record who won and what the hole was worth. Halves score zero.</p></details><div class="grid"><div><label>$ per unit</label><input id="hmStake" type="number" min="0" step="0.25" value="1"></div><div><label>Starting multiplier</label><input id="hmBase" type="number" min="1" step="1" value="1"></div><div><label>Team A · Player 1</label><input id="hmP1" maxlength="24" value="Me"></div><div><label>Team A · Player 2</label><input id="hmP2" maxlength="24" value="Partner"></div><div><label>Team B · Player 1</label><input id="hmP3" maxlength="24" value="Player 3"></div><div><label>Team B · Player 2</label><input id="hmP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="hmStart" style="margin-top:10px">Start Hammer game</button><div id="hmActive" hidden class="game-live"><h3>Hole <span id="hmHole">1</span></h3><div class="grid"><div><label>Winner</label><select id="hmWinner"><option value="A">Team A</option><option value="B">Team B</option><option value="H">Halved hole</option></select></div><div><label>Final multiplier</label><input id="hmMult" type="number" min="1" step="1" value="1"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="hmSave">Record hole</button><button class="btn-ghost" id="hmUndo">Undo hole</button></div><div id="hmStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Hammer ledger</summary><div id="hmLifetime" class="note"></div></details></section>
+
+<section class="card game-hidden" data-tab="games" id="robinGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MEMBER FAVORITE</div><h2>6-6-6 / Round Robin</h2><p class="muted">Better-ball teams rotate every six holes: 1–6, 7–12, then 13–18. Great for a foursome where nobody wants the same partner all day.</p><details open><summary>How to play · 6-6-6</summary><p class="note">Use four players. Teams are 1+2 vs 3+4 on holes 1–6, 1+3 vs 2+4 on holes 7–12, and 1+4 vs 2+3 on holes 13–18. Record gross strokes; the lower best-ball score wins the hole. Winning teammates receive +1 point each, losers -1. Halves are zero.</p></details><div class="grid"><div><label>$ per point (optional)</label><input id="rrStake" type="number" min="0" step="0.25" value="0"></div><div><label>Player 1</label><input id="rrP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="rrP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="rrP3" maxlength="24" value="Player 3"></div><div><label>Player 4</label><input id="rrP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="rrStart" style="margin-top:10px">Start 6-6-6 round</button><div id="rrActive" hidden class="game-live"><h3>Hole <span id="rrHole">1</span></h3><div id="rrTeams" class="scoreline" style="font-weight:700"></div><div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
+
+<section class="card game-hidden" data-tab="games" id="snakeGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MINOR CRIMES UNIT</div><h2>Snake</h2><p class="muted">The quickest way to punish a three-putt without turning the round into a tax audit.</p><details open><summary>How to play · Snake</summary><p class="note">Record a snake every time someone three-putts. Most groups simply charge a fixed amount per snake to the player who earned it. Use this tracker as a ledger of shame.</p></details><div class="grid"><div><label>$ per snake</label><input id="snStake" type="number" min="0" step="0.25" value="1"></div><div><label>Player 1</label><input id="snP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="snP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="snP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="snP4" maxlength="24" placeholder="Optional"></div></div><button class="btn-primary" id="snStart" style="margin-top:10px">Start Snake session</button><div id="snActive" hidden class="game-live"><h3>Snake event <span id="snEvent">1</span></h3><div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div><div id="snStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div><details style="margin-top:12px"><summary>Snake history</summary><div id="snLifetime" class="note"></div></details></section>
 <section class="card" data-tab="settings" id="clubRecordsSection">
 <div class="over" style="color:#7a6847">DAGGER COUNTRY CLUB · ARCHIVES DEPARTMENT</div><h2>Hall of Shame & Rivalries</h2>
 <p class="muted">Real results only. The committee rejects fabricated statistics.</p>
@@ -602,7 +657,7 @@ body{background:#e9e1d0}
 </section>
 <section class="card" data-tab="settings"><h2>Member Profiles</h2><p class="muted">Each golfer can keep a separate locker, bag and games on this phone. Profile switching reloads the page. Different phones already have separate browser storage; accounts syncing across devices would need a server.</p><label>Current profile</label><select id="memberSelect"></select><div class="grid" style="margin-top:10px"><div><input id="memberNewName" maxlength="30" placeholder="New member name"></div><button class="btn-secondary" id="memberCreate">Create member</button></div><button class="btn-secondary" style="margin-top:9px" id="memberSwitch">Switch to selected profile</button><p id="memberStatus" class="note"></p></section>
 
-<div class="footer">Dagger Caddie · Keith’s Country Club Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
+<section class="card" data-tab="settings" id="memberRecapSection"><div class="over" style="color:#7a6847">DAGGER COUNTRY CLUB · MEMBER RECAP</div><h2>Round & Member Recap</h2><p class="muted">A quick pulse check on your scoring choices, gambling habits and documented ball-striking crimes.</p><div class="recap-grid" id="recapGrid"></div><button class="btn-secondary" type="button" id="buildRecap" style="margin-top:10px">Refresh recap</button><div class="notice-card" id="recapNarrative" style="margin-top:10px">No recap generated yet. Press refresh and let the committee speak.</div></section><div class="footer">Dagger Caddie · Members Script Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
     </div>
   </div>
 </main>
@@ -611,8 +666,8 @@ const $=id=>document.getElementById(id);
 const escapeHTML=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let currentClub='', lastDecision=null, loggedShots=[];
 let betState={opponent:'',stake:10,currentHole:1,results:Array(18).fill(null),presses:0};
-function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','reset','bets','settings','office','games'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
-['play','bag','reset','bets','settings','office','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
+['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
 const resetAdvice={
  angry:{steps:'<strong>1.</strong> Exhale for six seconds. Unclench your jaw.<br><strong>2.</strong> Name what happened without assigning blame.<br><strong>3.</strong> Choose the safest target. Swing only when ready.',quote:'“Yes, that was crap. Giving the next ball the same punishment would be even dumber.”'},
  hard:{steps:'<strong>1.</strong> Loosen your grip and take one slow breath.<br><strong>2.</strong> Make ONE smooth rehearsal at 75% effort.<br><strong>3.</strong> Pick a target and swing with balance.',quote:'“Distance is not an emergency, you overcaffeinated lumberjack.”'},
@@ -658,7 +713,7 @@ function logBetResult(result){
   const idx=Math.max(0,Math.min(17,(betState.currentHole||1)-1));
   betState.results[idx]=result;
   if(idx<17) betState.currentHole=idx+2;
-  saveBetState(`Hole ${idx+1} logged as ${result==='W'?'win':result==='L'?'loss':'push'}. Keith trusts you with arithmetic slightly more now.`);
+  saveBetState(`Hole ${idx+1} logged as ${result==='W'?'win':result==='L'?'loss':'push'}. ${result==='W'?'Your caddie has begun drafting the opponent’s condolence letter.':result==='L'?'Your caddie recommends a brief moment of silence for the lost money.':'Neither side has earned the right to brag.'}`);
 }
 function pucker({yards,lie,wind,danger,club,confidence}){
   let val=1.5, reasons=[];
@@ -801,13 +856,18 @@ const CADDIE_LINES={
  kyle:{normal:['BROTHER. Seven-iron protocol: center green, smooth swing. I almost taught this at BUD/S. Spiritually.','Maintain tactical tempo, warrior. A balanced finish is basically special operations. I was gonna enlist.','Target acquired: fat side of green. No need for a kinetic overreaction. I have trained mentally for this.'],long:['Establish fairway superiority with a controlled swing. My recruiter said I had leadership potential.','Widest landing zone, BROTHER. I would have been a sniper but my eyes are too good.','This calls for precision, not brute force. Which is what I would have told my drill sergeant.'],recover:['TACTICAL WITHDRAWAL. Punch out to daylight. I almost went Ranger, trust me.','Reposition behind cover—sorry, in the fairway. That is a strategic reset, brother.']}
 };
 let selectedCaddie='keith';
-let staffLineCounter={reginald:0,vinny:0,kyle:0};
-const CADDIE_PORTRAITS={keith:'keith_portrait.webp',reginald:'reginald_portrait.webp',vinny:'vinny_portrait.webp',kyle:'kyle_portrait.webp'};
+let staffLineCounter={reginald:0,vinny:0,kyle:0};let competitiveCallCount=0;
+const CADDIE_PORTRAITS={keith:'keith_portrait.png',reginald:'reginald_portrait.png',vinny:'vinny_portrait.png',kyle:'kyle_portrait.png'};
 function getKeithLine(kind){
- if(selectedCaddie==='keith') return getOriginalKeithLine(kind);
- const c=CADDIE_LINES[selectedCaddie]||CADDIE_LINES.reginald;
- const pool=c[kind]||c.normal; const i=staffLineCounter[selectedCaddie]++;
- return pool[i%pool.length];
+ let line;
+ if(selectedCaddie==='keith')line=getOriginalKeithLine(kind);
+ else {const c=CADDIE_LINES[selectedCaddie]||CADDIE_LINES.reginald; const pool=c[kind]||c.normal; const i=staffLineCounter[selectedCaddie]++;line=pool[i%pool.length];}
+ // Every sixth on-course consultation, if an opponent was named, add a golf-only jab.
+ if(++competitiveCallCount%6===0&&betState.opponent&&typeof OPPONENT_ZING!=='undefined'){
+  const lines=OPPONENT_ZING[selectedCaddie]||OPPONENT_ZING.keith;
+  line+=' '+lines[Math.floor(competitiveCallCount/6)%lines.length].replaceAll('{name}',betState.opponent.slice(0,35));
+ }
+ return line;
 }
 function renderStaff(){
  const c=CADDIES[selectedCaddie]||CADDIES.keith;
@@ -976,7 +1036,7 @@ $('voiceShot').onclick=()=>{
  if(!SR){$('voiceStatus').textContent='Speech recognition unavailable in this browser. Type the yardage or use iPhone keyboard dictation.';return;}
  const r=new SR();r.lang='en-US';r.interimResults=false;r.maxAlternatives=1;
  $('voiceStatus').textContent='Listening… say “175, right rough, back pin, bunker short”.';
- r.onresult=e=>{const heard=e.results[0][0].transcript;const ok=voiceParse(heard);$('voiceStatus').textContent=(ok?'Heard: ':'Could not parse: ')+heard+(ok?' · Review inputs and tap Ask Keith.':' · Use manual inputs.');};
+ r.onend=()=>{voiceStopIndicator();}; r.onresult=e=>{const heard=e.results[0][0].transcript;const ok=voiceParse(heard);$('voiceStatus').textContent=(ok?'Heard: ':'Could not parse: ')+heard+(ok?' · Review inputs and tap Ask Keith.':' · Use manual inputs.');};
  r.onerror=e=>{$('voiceStatus').textContent='Voice unavailable: '+e.error+'. Use manual inputs.';};
  try{r.start();}catch(e){$('voiceStatus').textContent='Cannot start voice. Use manual controls.';}
 };
@@ -1164,15 +1224,16 @@ function descriptionParse(raw){
 }
 $('parseDescription').onclick=()=>descriptionParse($('fullShotDescription').value);
 $('useDescription').onclick=()=>{descriptionParse($('fullShotDescription').value);$('call').click();};
+function voiceStopIndicator(){$('voiceStatus').classList.remove('listening');$('voiceShot').classList.remove('mic-active');$('voiceShot').textContent='🎙 Talk to Caddie';}
 // Override microphone result to keep complete natural-language context, while retaining manual fallback.
 $('voiceShot').onclick=()=>{
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR){$('voiceStatus').textContent='Voice recognition unavailable; tap the description box and use iPhone keyboard dictation.';$('fullShotDescription').focus();return;}
  const r=new SR();r.lang='en-US';r.interimResults=false;r.maxAlternatives=1;
- $('voiceStatus').textContent='Listening. Describe the entire hole: distance, lie, wind, hazards, flag and the shot you want.';
- r.onresult=e=>{const heard=e.results[0][0].transcript;$('fullShotDescription').value=heard;descriptionParse(heard);$('voiceStatus').textContent='Heard your full description. Review it and tap Apply details & ask caddie.';};
- r.onerror=e=>$('voiceStatus').textContent='Mic unavailable: '+e.error+'. Keyboard dictation still works.';
- try{r.start();}catch(e){$('voiceStatus').textContent='Microphone could not start. Use keyboard dictation.';}
+ $('voiceStatus').textContent='● LIVE MICROPHONE — TALK NOW. Describe the yardage, lie, trouble and your intended shot.';$('voiceStatus').classList.add('listening');$('voiceShot').classList.add('mic-active');$('voiceShot').textContent='● LISTENING…';
+ r.onend=()=>{voiceStopIndicator();}; r.onresult=e=>{const heard=e.results[0][0].transcript;$('fullShotDescription').value=heard;descriptionParse(heard);$('voiceStatus').textContent='Heard your full description. Review it and tap Apply details & ask caddie.';};
+ r.onerror=e=>{voiceStopIndicator();$('voiceStatus').textContent='Mic unavailable: '+e.error+'. Keyboard dictation still works.';};
+ try{r.start();}catch(e){voiceStopIndicator();$('voiceStatus').textContent='Microphone could not start. Use keyboard dictation.';}
 };
 const freshWager=()=>({players:[],format:'skins',stake:5,holes:[],started:Date.now()});
 let activeW=read('dagger_foursome_active',null),wHistory=read('dagger_foursome_history',[]);
@@ -1311,6 +1372,101 @@ MEMBER: ${x.me}\nMATCHES ARCHIVED: ${x.group.length}\nWINNING MATCH RECORDS: ${x
  el('convoAskAgain').onclick=()=>{if(!previousQuestion){respond();return;}el('convoReply').textContent='Give me the missing carry, pin position, or safe landing area and tap Review again. I need facts, not adrenaline.';el('convoDescription').focus();};
  renderHall();
 })();
+
+
+// 4.9.3: game desk expansion, cleaner club recap, and separate game selectors.
+const HM_ACTIVE='dagger_hammer_active',HM_HISTORY='dagger_hammer_history';
+let hm=read(HM_ACTIVE,null),hmh=read(HM_HISTORY,[]);
+function hmCalc(g){let a=0,b=0;for(const h of g.holes){const units=Number(h.mult)||1;if(h.win==='A'){a+=units;b-=units}else if(h.win==='B'){a-=units;b+=units}}return [a,b];}
+function hmRender(){ $('hmActive').hidden=!hm; if(hm){const idx=hm.holes.length;$('hmHole').textContent=Math.min(idx+1,18);$('hmMult').value=String(hm.base||1);const pts=hmCalc(hm);const dollars=(hm.stake||0);$('hmStandings').textContent=`Team A (${hm.players[0]} & ${hm.players[1]}): ${pts[0]} units${dollars?` · ${money(pts[0]*dollars)}`:''} · Team B (${hm.players[2]} & ${hm.players[3]}): ${pts[1]} units${dollars?` · ${money(pts[1]*dollars)}`:''}`;}const tally={};hmh.forEach(g=>{const pts=hmCalc(g), stake=g.stake||0;g.players.forEach((n,i)=>{const v=i<2?pts[0]*stake:pts[1]*stake;tally[n]=(tally[n]||0)+v;});});$('hmLifetime').textContent=hmh.length?hmh.length+' archived Hammer games · '+Object.entries(tally).map(([n,v])=>`${n}: ${money(v)}`).join(' · '):'No Hammer sessions archived yet.';}
+function hmStore(){store(HM_ACTIVE,hm);store(HM_HISTORY,hmh);hmRender();}
+$('hmStart').onclick=()=>{const players=['hmP1','hmP2','hmP3','hmP4'].map(id=>$(id).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}hm={players,stake:Math.max(0,Number($('hmStake').value)||0),base:Math.max(1,Number($('hmBase').value)||1),holes:[],started:Date.now()};hmStore();};
+$('hmSave').onclick=()=>{if(!hm)return;if(hm.holes.length>=18){alert('Archive the match after 18 holes.');return;}const mult=Math.max(1,Number($('hmMult').value)||1);hm.holes.push({win:$('hmWinner').value,mult});hmStore();};
+$('hmUndo').onclick=()=>{if(hm&&hm.holes.length){hm.holes.pop();hmStore();}};
+$('hmArchive').onclick=()=>{if(hm&&hm.holes.length&&confirm('Archive this Hammer game?')){hm.ended=Date.now();hmh.push(hm);hm=null;hmStore();}};
+$('hmDiscard').onclick=()=>{if(hm&&confirm('Discard this Hammer game?')){hm=null;hmStore();}};
+
+const RR_ACTIVE='dagger_rr_active',RR_HISTORY='dagger_rr_history';
+let rr=read(RR_ACTIVE,null),rrh=read(RR_HISTORY,[]);
+function rrTeams(i){if(i<6)return [[0,1],[2,3]];if(i<12)return [[0,2],[1,3]];return [[0,3],[1,2]];}
+function rrCalc(g){const pts=[0,0,0,0];for(let i=0;i<g.holes.length;i++){const [a,b]=rrTeams(i),sc=g.holes[i].scores,aa=Math.min(sc[a[0]],sc[a[1]]),bb=Math.min(sc[b[0]],sc[b[1]]);if(aa===bb)continue;const aw=aa<bb;[...a].forEach(j=>pts[j]+=aw?1:-1);[...b].forEach(j=>pts[j]+=aw?-1:1);}return pts;}
+function rrRender(){ $('rrActive').hidden=!rr; if(rr){const idx=rr.holes.length;$('rrHole').textContent=Math.min(idx+1,18);const [a,b]=rrTeams(idx);$('rrTeams').innerHTML=`<span class="robin-badge">${rr.players[a[0]]} + ${rr.players[a[1]]}</span> vs <span class="robin-badge">${rr.players[b[0]]} + ${rr.players[b[1]]}</span>`;$('rrScores').innerHTML='';rr.players.forEach((n,j)=>{let d=document.createElement('div'),label=document.createElement('label'),inp=document.createElement('input');label.textContent=n+' strokes';inp.type='number';inp.min='1';inp.max='20';inp.id='rrScore'+j;d.append(label,inp);$('rrScores').append(d)});const pts=rrCalc(rr);$('rrStandings').textContent=rr.players.map((n,j)=>`${n}: ${pts[j]} pts${rr.stake?` (${money(pts[j]*(rr.stake||0))})`:''}`).join(' · ');}const sums={};rrh.forEach(g=>g.players.forEach((n,j)=>sums[n]=(sums[n]||0)+rrCalc(g)[j]));$('rrLifetime').textContent=rrh.length?rrh.length+' archived 6-6-6 rounds · '+Object.entries(sums).map(([n,p])=>`${n}: ${p} pts`).join(' · '):'No 6-6-6 rounds archived yet.';}
+function rrStore(){store(RR_ACTIVE,rr);store(RR_HISTORY,rrh);rrRender();}
+$('rrStart').onclick=()=>{const players=['rrP1','rrP2','rrP3','rrP4'].map(id=>$(id).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}rr={players,stake:Math.max(0,Number($('rrStake').value)||0),holes:[],started:Date.now()};rrStore();};
+$('rrSave').onclick=()=>{if(!rr)return;if(rr.holes.length>=18){alert('Archive the round after 18 holes.');return;}const scores=[0,1,2,3].map(j=>Number($('rrScore'+j).value));if(scores.some(x=>!Number.isInteger(x)||x<1||x>20)){alert('Enter valid scores for all four players.');return;}rr.holes.push({scores});rrStore();};
+$('rrUndo').onclick=()=>{if(rr&&rr.holes.length){rr.holes.pop();rrStore();}};
+$('rrArchive').onclick=()=>{if(rr&&rr.holes.length&&confirm('Archive this 6-6-6 round?')){rr.ended=Date.now();rrh.push(rr);rr=null;rrStore();}};
+$('rrDiscard').onclick=()=>{if(rr&&confirm('Discard this 6-6-6 round?')){rr=null;rrStore();}};
+
+const SN_ACTIVE='dagger_sn_active',SN_HISTORY='dagger_sn_history';
+let sn=read(SN_ACTIVE,null),snh=read(SN_HISTORY,[]);
+function snCounts(g){const counts={};g.players.forEach(n=>counts[n]=0);g.events.forEach(e=>{if(counts[e.player]!=null)counts[e.player]++;});return counts;}
+function snRender(){ $('snActive').hidden=!sn; if(sn){$('snEvent').textContent=String(sn.events.length+1);$('snWho').innerHTML='';sn.players.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;$('snWho').append(o)});const counts=snCounts(sn);$('snStandings').textContent=Object.entries(counts).map(([n,c])=>`${n}: ${c} snake${c===1?'':'s'}${sn.stake?` (${money(c*sn.stake)})`:''}`).join(' · ');}const totals={};snh.forEach(g=>{const c=snCounts(g);for(const [n,v] of Object.entries(c))totals[n]=(totals[n]||0)+v;});$('snLifetime').textContent=snh.length?`${snh.length} archived Snake sessions · `+Object.entries(totals).map(([n,v])=>`${n}: ${v}`).join(' · '):'No Snake sessions archived yet.';}
+function snStore(){store(SN_ACTIVE,sn);store(SN_HISTORY,snh);snRender();}
+$('snStart').onclick=()=>{const players=['snP1','snP2','snP3','snP4'].map(id=>$(id).value.trim()).filter(Boolean);if(players.length<2||new Set(players.map(x=>x.toLowerCase())).size!==players.length){alert('Enter at least two different names.');return;}sn={players,stake:Math.max(0,Number($('snStake').value)||0),events:[],started:Date.now()};snStore();};
+$('snSave').onclick=()=>{if(!sn)return;sn.events.push({player:$('snWho').value,hole:Number($('snHole').value)||null,ts:Date.now()});$('snHole').value='';snStore();};
+$('snUndo').onclick=()=>{if(sn&&sn.events.length){sn.events.pop();snStore();}};
+$('snArchive').onclick=()=>{if(sn&&sn.events.length&&confirm('Archive this Snake session?')){sn.ended=Date.now();snh.push(sn);sn=null;snStore();}};
+$('snDiscard').onclick=()=>{if(sn&&confirm('Discard this Snake session?')){sn=null;snStore();}};
+
+function renderRecap(){
+ const gsafe=k=>{try{const x=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(x)?x:[]}catch{return[]}};
+ const records=[...gsafe('dagger_foursome_history'),...gsafe('dagger_vegas_wolf_history'),...gsafe('dagger_room_archives'),...hmh,...rrh,...snh];
+ const shots=gsafe('dagger_shot_log'); const decisions=gsafe('dagger_decision_history');
+ const net=(records.reduce((sum,r)=>{
+  if(Array.isArray(r.payouts)){return sum + ((r.payouts[0]||0));}
+  if(r.type==='vegas') try{return sum + ((vwCalc(r)[0]||0)*(r.stake||0));}catch{return sum}
+  if(r.players&&r.players.length===4&&r.holes&&r.base!=null){return sum + ((hmCalc(r)[0]||0)*(r.stake||0));}
+  if(r.players&&r.players.length===4&&r.holes&&r.started&&r.stake!=null&&r.events==null&&r.base==null&&r.type==null&&r.format==null){return sum + ((rrCalc(r)[0]||0)*(r.stake||0));}
+  if(r.players&&r.events){return sum - ((snCounts(r)[r.players[0]]||0)*(r.stake||0));}
+  return sum;
+ },0));
+ const trouble=shots.filter(s=>s.result==='Trouble').length;
+ const good=shots.filter(s=>s.result==='Good').length;
+ const clubs=decisions.filter(d=>d.club).slice(-20).reduce((m,x)=>((m[x.club]=(m[x.club]||0)+1),m),{});
+ const fav=Object.entries(clubs).sort((a,b)=>b[1]-a[1])[0]?.[0]||'No favorite yet';
+ $('recapGrid').innerHTML=[['Archived events',records.length],['Recorded net',money(net)],['Good / Trouble',`${good} / ${trouble}`],['Favorite club call',fav]].map(([a,b])=>`<div class="recap-item"><strong>${a}</strong><div>${b}</div></div>`).join('');
+ const cName=CADDIES[selectedCaddie]?.name||'Keith';
+ const voice=selectedCaddie==='reginald' ? `The committee notes ${records.length} archived competitions, a recorded net of ${money(net)}, and a frankly moving attachment to ${fav}.` : selectedCaddie==='vinny' ? `Ledger says ${records.length} archived events, net ${money(net)}, and ${fav} keeps showing up like it owes you money.` : selectedCaddie==='kyle' ? `BROTHER. Operational review: ${records.length} archived events, net ${money(net)}, favorite club ${fav}. That is hard data, unlike my deployment history.` : `You've now got ${records.length} archived events, net ${money(net)}, and ${fav} has become your comfort blanket. We can work with that.`;
+ $('recapNarrative').textContent=voice;
+}
+$('buildRecap').onclick=renderRecap;
+hmRender();rrRender();snRender();renderRecap();
+let shownClubGame='bingo';
+function showClubGame(type){
+ shownClubGame=type;
+ $('bingoGameCard').classList.toggle('game-hidden',type!=='bingo');
+ $('vwGameCard').classList.toggle('game-hidden',!['vegas','wolf'].includes(type));
+ $('hammerGameCard').classList.toggle('game-hidden',type!=='hammer');
+ $('robinGameCard').classList.toggle('game-hidden',type!=='robin');
+ $('snakeGameCard').classList.toggle('game-hidden',type!=='snake');
+ if(['vegas','wolf'].includes(type)){
+  $('vwType').value=type;
+  $('vwGameHeading').textContent=type==='wolf'?'Wolf':'Vegas';
+  $('vwSelectedBadge').textContent=type==='wolf'?'Wolf':'Vegas';
+  $('vwSelectedNote').textContent=type==='wolf'?'Rotating wolf. Pick a partner or go lone and live with the consequences.':'Fixed teams. Calm bookkeeping. Violent arguments optional.';
+  $('vegasRules').hidden=type!=='vegas';$('wolfRules').hidden=type!=='wolf';
+  $('vwLifetimeLabel').textContent=(type==='wolf'?'Wolf':'Vegas')+' lifetime records';
+  if(vw&&vw.type!==type){$('vwActive').hidden=true;$('vwGameHeading').textContent=(type==='wolf'?'Wolf':'Vegas')+' · Start a new round';}
+  else if(vw&&vw.type===type){vwRender();}
+ }
+ document.querySelectorAll('[data-game]').forEach(b=>b.classList.toggle('selected',b.dataset.game===type));
+}
+document.querySelectorAll('[data-game]').forEach(b=>b.addEventListener('click',()=>showClubGame(b.dataset.game)));
+showClubGame('bingo');
+// Purely fictional competitive banter, keyed to selected caddie and real entered opponent name.
+const OPPONENT_ZING={
+ keith:['{name} swings like a man trying to swat a hornet in a phone booth. You hit the middle and let him self-destruct.','{name} has the course-management instincts of a Labrador near traffic. Play the percentage and collect the money.','If {name} had any discipline, we would have to respect him. Fortunately, we do not. Safe side, smooth swing.'],
+ reginald:['{name} appears to confuse confidence with evidence. We shall let him continue, sir.','I would call {name} reckless, but that would suggest intent. He is mostly decorative panic in a visor.','One need not attack {name}; one simply waits. His golf does the character assassination for us.'],
+ vinny:['{name} is one hot dog at the turn away from a complete financial collapse. Middle green, sweetheart.','Nothing personal, but {name} looks like easy money wearing spikes. Keep it boring and cash out later.','We do not need fireworks. {name} is already setting his own wallet on fire.'],
+ kyle:['BROTHER. {name} is a civilian-grade disaster with a Tour-level opinion of himself. Stay tactical.','If swagger counted, {name} would be dangerous. Sadly for him, we are scoring golf.','{name} is operating with elite confidence and JV talent. Center green and let the mission fail on his side.']
+};
+let roastIndex=0;
+$('roastOpponent').onclick=()=>{
+ const name=($('roastOpponentName').value||$('betOpponent').value||'your opponent').trim().slice(0,35);
+ const lines=OPPONENT_ZING[selectedCaddie]||OPPONENT_ZING.keith;
+ $('opponentRoastLine').textContent=CADDIES[selectedCaddie].name+': “'+lines[(roastIndex++)%lines.length].replaceAll('{name}',name)+'”';
+};
 </script>
 <script type="module" src="money-room.js"></script>
 </body>

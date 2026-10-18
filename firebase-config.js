@@ -1,6 +1,10 @@
-// STEP 1: Create a Firebase project; enable Anonymous Authentication and Firestore.
-// STEP 2: Replace this object with Firebase's web-app configuration.
-// STEP 3: Deploy firestore.rules in Firebase console.
-// Firebase web config is a public identifier, NOT a secret API key.
-export const firebaseConfig = null;
-// Example: export const firebaseConfig = { apiKey: '...', authDomain: '...', projectId:'...', appId:'...' };
+// Dagger Caddie web-only Firebase configuration.
+// This is a PUBLIC web-app identifier, not a server admin key.
+export const firebaseConfig = {
+  apiKey: "AIzaSyBFzUbTaH-6kzMMEMwWB9ZUAJzV5y7Dl1o",
+  authDomain: "dagger-caddie-money-room.firebaseapp.com",
+  projectId: "dagger-caddie-money-room",
+  storageBucket: "dagger-caddie-money-room.firebasestorage.app",
+  messagingSenderId: "525846621852",
+  appId: "1:525846621852:web:bf6cd73504fd8e646f8759"
+};

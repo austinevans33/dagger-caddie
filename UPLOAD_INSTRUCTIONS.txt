@@ -1,0 +1,18 @@
+DAGGER CADDIE — FIREBASE CONNECTED PACKAGE
+
+Upload these files to the ROOT of your GitHub repository:
+- index.html
+- money-room.js
+- firebase-config.js
+- keith_portrait.png, reginald_portrait.png, vinny_portrait.png, kyle_portrait.png
+
+Your repository may already have the portrait PNGs, so you can leave them unchanged if they work.
+Keep your existing manifest.json, icon.svg, profile.json, and any other existing assets.
+Do not upload an enclosing version folder; place the files alongside index.html.
+
+You already enabled Anonymous Authentication and published Firestore rules.
+Before relying on any winnings or live scorekeeping, test a sample round on TWO PHONES.
+
+NOTE: Firebase web configuration does not itself prove successful connections.
+The same web app MUST be served from GitHub Pages, with a working network connection.
+The scorekeeper's login is anonymous and tied to their browser; losing browser storage may lose edit permission.
