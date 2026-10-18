@@ -167,6 +167,27 @@ body{background:#e9e1d0}
 #trendTable td,#trendTable th{font-size:12px}
 @media(max-width:390px){.tabbar button{font-size:10px}.club-battle{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.tabbar button{transition:none}}
+
+/* 4.6 caddie master's office — deliberately compact and consistent with 4.5 */
+.caddie-roster{background:#f7f1e5;border:1px solid #c7b691;border-radius:16px;padding:10px 11px;margin:0 0 8px}
+.roster-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:10px;letter-spacing:.13em;color:#556453;font-weight:700}
+.roster-file-link{width:auto;padding:4px 7px;font-size:12px;letter-spacing:0;text-transform:none;background:transparent;color:#1b4534;border:1px solid #c7b691}
+.staff-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.staff-pick{min-width:0;padding:8px 3px 7px;border-radius:11px;border:1px solid #c8b895;background:#ede5d3;color:#1e3d2e;display:flex;align-items:center;flex-direction:column;gap:1px;line-height:1.1}
+.staff-pick.active{background:#173b2d;color:#f9efd9;border-color:#aa915f;box-shadow:inset 0 0 0 1px #bba26a}
+.staff-pick .staff-icon{font-size:22px;font-weight:bold;height:23px;color:#aa8753}
+.staff-pick.active .staff-icon{color:#e3c78e}
+.staff-pick strong{font-size:13px}
+.staff-pick small{font-size:9px;opacity:.8;white-space:normal}
+.staff-file{border-top:1px solid #c9bb9d;margin-top:11px;padding-top:11px;color:#253b30}
+.staff-file[hidden]{display:none}
+.file-eyebrow{font-size:10px;letter-spacing:.12em;color:#7c765f}
+.staff-file h3{margin:4px 0;font-size:19px}
+.file-sub{font-size:12px;font-style:italic;color:#756846;margin-bottom:8px}
+.staff-file p{font-size:13px;line-height:1.45}
+.file-quote{font-size:14px;background:#eae0c9;border-left:3px solid #b29a6e;padding:9px 11px;font-style:italic;border-radius:0 9px 9px 0}
+.file-foot{font-size:11px;color:#6f6755;margin-top:8px}
+@media(max-width:390px){.staff-pick strong{font-size:12px}.staff-pick small{font-size:8px}.caddie-roster{padding:9px 7px}.staff-grid{gap:4px}}
 </style>
 </head>
 <body>
@@ -177,10 +198,10 @@ body{background:#e9e1d0}
       <div class="brandrow">
         <div style="width:100%">
           <div class="h1">Dagger Caddie</div>
-          <div class="sub" style="margin-top:5px">Caddie on duty: <strong>Keith</strong> · Club first. Bullshit later.</div>
+          <div class="sub" style="margin-top:5px">On the bag: <strong id="onBagName">Keith</strong> · Private-club service. Municipal-course language.</div>
         </div>
       </div>
-      <div class="quip"><img class="portrait" src="keith.svg" alt="Keith, Dagger Country Club’s permanently unimpressed caddie"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
+      <div class="quip"><img class="portrait" id="staffPortrait" src="keith.svg" alt="Keith, Dagger Country Club’s permanently unimpressed caddie"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
     </div>
 
     <div class="content">
@@ -208,19 +229,29 @@ body{background:#e9e1d0}
         </div>
       </section>
 
+      <section class="caddie-roster" data-tab="play" aria-label="Choose your caddie">
+        <div class="roster-heading"><span>CADDIE MASTER'S OFFICE</span><button class="roster-file-link" id="toggleStaffFile" type="button" aria-expanded="false">Personnel file ▾</button></div>
+        <div class="staff-grid" id="caddieChoices">
+          <button type="button" class="staff-pick active" data-caddie="keith" aria-pressed="true"><span class="staff-icon">♣</span><strong>Keith</strong><small>Head caddie</small></button>
+          <button type="button" class="staff-pick" data-caddie="reginald" aria-pressed="false"><span class="staff-icon">✦</span><strong>Reginald</strong><small>Traditions</small></button>
+          <button type="button" class="staff-pick" data-caddie="vinny" aria-pressed="false"><span class="staff-icon">$</span><strong>Vinny</strong><small>Wagering</small></button>
+          <button type="button" class="staff-pick" data-caddie="kyle" aria-pressed="false"><span class="staff-icon">⚑</span><strong>Kyle</strong><small>Almost enlisted</small></button>
+        </div>
+        <div class="staff-file" id="staffFile" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><h3 id="fileName">KEITH · HEAD CADDIE</h3><div class="file-sub" id="fileTitle"></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
+      </section>
       <section class="card green" data-tab="play">
         <div class="inline" style="justify-content:space-between">
           <div>
             <h2>Round mode</h2>
             <div class="muted">Fast inputs for the course. Big buttons. No dissertations.</div>
           </div>
-          <span class="badge">Keith Mode</span>
+          <span class="badge" id="activeCaddieBadge">Keith Mode</span>
         </div>
         <div class="callout" style="margin-top:8px" id="answer">
           <div class="club-big">READY, WHEN YOU ARE</div>
           <div class="target">Enter yardage · Ask Keith</div>
           <p>Keith has the bag. He just needs a number.</p>
-          <div class="keith"><strong>Keith says:</strong> Nice and easy. No need to turn a stock 7-iron into a federal case.</div>
+          <div class="keith"><strong><span class="caddie-label">Keith</span> says:</strong> Nice and easy. No need to turn a stock 7-iron into a federal case.</div>
         </div>
         <div class="pulse-wrap" id="pulseBox" aria-live="polite">
           <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB</div><strong>PUCKER FACTOR</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
@@ -228,10 +259,10 @@ body{background:#e9e1d0}
           <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
         </div>
 
-        <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Keith</button></div><div id="voiceStatus" style="color:#d7cfb9;margin-top:3px" aria-live="polite">Voice optional; manual controls always work.</div>
+        <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddie</button></div><div id="voiceStatus" style="color:#d7cfb9;margin-top:3px" aria-live="polite">Voice optional; manual controls always work.</div>
         <div class="distance-line">
           <div><label>Yards to target</label><input id="yards" type="number" min="1" max="700" value="168" inputmode="numeric"></div>
-          <button class="btn-primary" id="call">ASK KEITH →</button>
+          <button class="btn-primary" id="call">ASK CADDIE →</button>
         </div>
         <div style="margin-top:12px">
           <label>Lie</label>
@@ -535,7 +566,7 @@ function renderMastQuip(){
   if(p==='pro') msg='Keith remains calm, composed, and only mildly disappointed in your course management.';
   else if(p==='dry') msg= roast>1 ? 'Keith will be polite enough to help and rude enough to be memorable.' : 'Keith is quietly judgmental, just like a proper club caddie.';
   else if(roast>=3) msg='Keith loves you enough to help and respects you little enough to tell the truth.';
-  $('mastquip').textContent=msg;
+  $('mastquip').textContent=selectedCaddie==='keith'?msg:(CADDIES[selectedCaddie]?.mast||msg);
 }
 function syncManualField(){
   const p=profile[Number($('manualclub').value)];
@@ -554,6 +585,7 @@ function render(){
   $('w100').value = wedgeFeels[100] ?? '';
   $('setupCard').classList.toggle('hidden', read('dagger_setup_complete', false));
   renderMastQuip();
+  renderStaff();
   renderBets();
 }
 function chooseProfile(mode){
@@ -603,7 +635,7 @@ const keithLines={
  ]
 };
 let keithQuipSequence=0;
-function getKeithLine(kind){
+function getOriginalKeithLine(kind){
   const mode=$('personality').value, roast=Number($('roast').value);
   if(mode==='pro')return ({normal:'Choose a reliable target, commit to the club, and make your normal swing. Surprisingly solid plan.',long:'Favor the safest verified landing area and accept a boring good result.',recover:'Recover to a clear position before attacking. That counts as wisdom, even from you.'})[kind];
   if(mode==='dry')return ({normal:'A stock shot. Aim middle, stay balanced, and try not to decorate it.',long:'The smart option is rarely glamorous, but it does keep money in your pocket.',recover:'Punch out, take the easy angle, and pretend it was strategic all along.'})[kind];
@@ -614,6 +646,43 @@ function getKeithLine(kind){
   if(roast>=3) return phrase+' If you can avoid freelancing, we might all get home at a decent hour.';
   return phrase;
 }
+
+
+const CADDIES={
+ keith:{name:'Keith',title:'Head Caddie',subtitle:'Forty years of service. Four remaining ounces of patience.',bio:'Keith has carried every type of bag at Dagger Country Club and has never once mistaken enthusiasm for competence. He is indispensable, irritable, and legally discouraged from addressing the board.',quote:'"That is the right club. A rare triumph of judgment. Try not to ruin it by swinging."',foot:'Performance: Excellent · Member relations: Under review',mast:'Your head caddie is on duty. Please keep the hero golf to a medically acceptable minimum.'},
+ reginald:{name:'Reginald',title:'Senior Keeper of Traditions',subtitle:'Polite enough to make an insult sound hereditary.',bio:'Reginald believes golf reached perfection before anyone invented performance polos. He calls clubs implements, says sir when deeply offended, and considers a pushed eight-iron a breach of etiquette.',quote:'"A seven-iron is indicated, sir. Assuming you have previously enjoyed a successful encounter with one."',foot:'Dress code violations issued: 1,284 · Smiles observed: 2',mast:'Reginald is carrying today. Kindly resist any behavior unbecoming a gentleman or a golfer.'},
+ vinny:{name:'Vinny',title:'Director of Informal Wagering',subtitle:'Knows every handicap, every press, and who still owes him twenty.',bio:'Vinny has run the Tuesday money game since 1997, despite repeated attempts by the Greens Committee to discover who authorized it. A silver-tongued hustler who loves a Nassau but hates giving away a hole.',quote:'"Center green, sweetheart. Birdie is nice, but a par that wins ten bucks is gorgeous."',foot:'Outstanding IOUs: Classified · Financial judgment: Selectively excellent',mast:'Vinny has the bag. The objective is to leave with more money and no unnecessary hero shots.'},
+ kyle:{name:'Kyle',title:'Tactical Operations Consultant (Self-Appointed)',subtitle:'Service record: Classified. Because it does not exist.',bio:'Kyle almost enlisted, but says he would definitely have punched a drill sergeant who got in his face. He wears white wraparound Oakleys inside, calls every fairway a battlespace, and once nearly qualified for an imaginary special operations selection. Surprisingly decent at reading a lie.',quote:'"BROTHER. Tactical seven iron. I would explain the doctrine but I was basically going to be Special Forces."',foot:'Actual service: None · Sunglasses: White Oakleys · Recruiter stories: Unverified',mast:'Kyle is carrying. He almost joined six branches of the military, but luckily had time for your tee time.'}
+};
+const CADDIE_LINES={
+ reginald:{normal:['A stock swing to the middle, sir. A sensible decision, which is pleasantly unlike you.','The correct implement is in hand. Kindly give it a balanced swing and spare us the theatrics.','Favor the generous part of the green. This is almost the behavior of a member in good standing.'],long:['The spacious landing area is the gentlemanly choice. One assumes your restraint will survive the backswing.','A controlled swing, sir. Distance without dignity is merely noise.'],recover:['Take the broadest exit to the fairway. A dignified retreat is preferable to a vulgar double.','Advance to safety, sir. The trees have already expressed their opinion.']},
+ vinny:{normal:['Middle green, kid. Par keeps the cash moving in the right direction. Try not to get fancy.','That is a good number. Smooth tempo and a safe miss. I love when the investment practically manages itself.','Hit the big part of the green. The flag is not paying your entry fee.'],long:['Three steady shots beat one beautiful disaster. Protect the wallet, pal.','Take the wide side. I have seen guys lose a Nassau with a single heroic thought.','Stock shape, safe landing area. Win the hole before you chase the highlight.'],recover:['Punch out, sweetheart. A bogey that halves the hole still spends.','Get back in play. Gambling is one thing; donating strokes is another.']},
+ kyle:{normal:['BROTHER. Seven-iron protocol: center green, smooth swing. I almost taught this at BUD/S.','Maintain tactical tempo, warrior. A balanced finish is basically special operations. I was gonna enlist.','Target acquired: fat side of green. No need for a kinetic overreaction. I have trained mentally for this.'],long:['Establish fairway superiority with a controlled swing. My recruiter said I had leadership potential.','Widest landing zone, BROTHER. I would have been a sniper but my eyes are too good.','This calls for precision, not brute force. Which is what I would have told my drill sergeant.'],recover:['TACTICAL WITHDRAWAL. Punch out to daylight. I almost went Ranger, trust me.','Reposition behind cover—sorry, in the fairway. That is a strategic reset, brother.']}
+};
+let selectedCaddie='keith';
+let staffLineCounter={reginald:0,vinny:0,kyle:0};
+function getKeithLine(kind){
+ if(selectedCaddie==='keith') return getOriginalKeithLine(kind);
+ const c=CADDIE_LINES[selectedCaddie]||CADDIE_LINES.reginald;
+ const pool=c[kind]||c.normal; const i=staffLineCounter[selectedCaddie]++;
+ return pool[i%pool.length];
+}
+function renderStaff(){
+ const c=CADDIES[selectedCaddie]||CADDIES.keith;
+ $('onBagName').textContent=c.name;
+ $('activeCaddieBadge').textContent=c.name+' Mode';
+ $('mastquip').textContent=c.mast;
+ $('fileName').textContent=c.name.toUpperCase()+' · '+c.title;
+ $('fileTitle').textContent=c.subtitle;
+ $('fileBio').textContent=c.bio;
+ $('fileQuote').textContent=c.quote;
+ $('fileFoot').textContent=c.foot;
+ document.querySelectorAll('.staff-pick').forEach(b=>{const on=b.dataset.caddie===selectedCaddie;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
+ document.querySelectorAll('.caddie-label').forEach(e=>e.textContent=c.name);
+ // Keep the original portrait for Keith; use the proper club monogram for other staff.
+ $('staffPortrait').style.display=selectedCaddie==='keith'?'':'none';
+}
+function selectCaddie(id){if(!CADDIES[id])return;selectedCaddie=id;store('dagger_selected_caddie',id);renderStaff();}
 
 function decide(){
   const y=Number($('yards').value);
@@ -660,7 +729,7 @@ function decide(){
   pucker({yards:y,lie,wind,danger,club,confidence});
   currentClub=club;lastDecision={club,yards:y,lie,wind,danger,ts:new Date().toISOString()};
   const kind = (club==='RECOVERY FIRST' || club==='SAFE LAYUP') ? 'recover' : (y>210 ? 'long' : 'normal');
-  $('answer').innerHTML=`<div class="club-big">${escapeHTML(club)}</div><div class="target">${escapeHTML(target)}</div><p>${escapeHTML(note)}</p>${noteText?`<p><strong>Course note:</strong> ${escapeHTML(noteText)}</p>`:''}<div class="keith"><strong>Keith says:</strong> ${getKeithLine(kind)}</div><div class="note">Provisional call based on your saved yardages, lie, and limited context.</div>`;
+  $('answer').innerHTML=`<div class="club-big">${escapeHTML(club)}</div><div class="target">${escapeHTML(target)}</div><p>${escapeHTML(note)}</p>${noteText?`<p><strong>Course note:</strong> ${escapeHTML(noteText)}</p>`:''}<div class="keith"><strong>${escapeHTML(CADDIES[selectedCaddie].name)} says:</strong> ${escapeHTML(getKeithLine(kind))}</div><div class="note">Provisional call based on your saved yardages, lie, and limited context.</div>`;
 }
 function csvRows(s){let rows=[],row=[],cell='',quoted=false;for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'){if(quoted&&s[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&s[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows}
 
@@ -702,17 +771,17 @@ $('returnToPlay').onclick=()=>switchTab('play');
 document.querySelectorAll('[data-trigger]').forEach(b=>b.onclick=()=>{resetTrigger=b.dataset.trigger;renderReset();$('resetStatus').textContent='Read your three steps, then tap the button.'});
 $('resetNow').onclick=()=>{resetCount++;$('resetStatus').textContent='Reset #'+resetCount+' complete. You cannot get that swing back. Play the next one.'; if(resetCount%3===0)$('resetKeith').textContent='“A fresh shot. A clean slate. Try not to decorate it with bullshit.”';};
 renderReset();
-$('heroCheck').onclick=()=>{if(!lastDecision){$('answer').innerHTML='<div class="club-big">HOLD UP</div><p>Give me the yardage and tap Ask Keith first, cowboy.</p>';return;}$('answer').innerHTML=`<div class="club-big">THE BORING PLAY</div><div class="target">Protect the safe side</div><p>Do not challenge a hazard or forced carry unless you know the clearance and you can cover it reliably. Choose a layup or center target when in doubt.</p><div class="keith"><strong>Keith says:</strong> The fact that you pressed this button is all the information I needed.</div>`;};
+$('heroCheck').onclick=()=>{if(!lastDecision){$('answer').innerHTML='<div class="club-big">HOLD UP</div><p>Give me the yardage and tap Ask Keith first, cowboy.</p>';return;}$('answer').innerHTML=`<div class="club-big">THE BORING PLAY</div><div class="target">Protect the safe side</div><p>Do not challenge a hazard or forced carry unless you know the clearance and you can cover it reliably. Choose a layup or center target when in doubt.</p><div class="keith"><strong><span class="caddie-label">Keith</span> says:</strong> The fact that you pressed this button is all the information I needed.</div>`;};
 $('clearRound').onclick=()=>{ $('yards').value=''; $('coursenote').value=''; state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'}; store('dagger_round_state',state); setQuick('lieButtons',LIES,state.lie,v=>{state.lie=v;store('dagger_round_state',state)}); setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)}); setQuick('pinButtons',PINS,state.pin,v=>{state.pin=v;store('dagger_round_state',state)}); setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)}); };
 $('course').onchange=()=>store('dagger_course',$('course').value);
 const greenKey=()=>($('course').value||'unnamed').trim().toLowerCase()+'|'+$('hole').value;
 $('savegreen').onclick=()=>{ const lat=Number($('lat').value), lon=Number($('lon').value); if(!$('lat').value || !$('lon').value || Math.abs(lat)>90 || Math.abs(lon)>180){ $('status').textContent='Enter verified latitude and longitude for the green center.'; return; } greens[greenKey()]={lat,lon}; store('dagger_greens',greens); $('status').textContent='Green center saved locally for this course and hole.'; };
 $('gps').onclick=()=>{ const g=greens[greenKey()]; if(!g){ $('status').textContent='No green mapped for this course + hole yet. Save it first.'; return; } if(!navigator.geolocation){ $('status').textContent='GPS unavailable here. Try Safari over HTTPS.'; return; } $('status').textContent='Requesting GPS permission…'; navigator.geolocation.getCurrentPosition(p=>{ const R=6371000, toRad=v=>v*Math.PI/180, lat1=toRad(p.coords.latitude), lat2=toRad(g.lat), dLat=toRad(g.lat-p.coords.latitude), dLon=toRad(g.lon-p.coords.longitude), a=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2, d=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); const yd=Math.round(d*1.0936133); $('yards').value=yd; $('status').textContent=`GPS: ${yd} yards to saved green center (accuracy ±${Math.round(p.coords.accuracy*1.0936133)} yd).`; },e=>$('status').textContent='Location unavailable: '+e.message,{enableHighAccuracy:true,timeout:12000,maximumAge:10000}) };
 $('csv').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const content=await f.text();const sig=f.name+'|'+content.length+'|'+content.slice(0,250)+'|'+content.slice(-250);const seen=read('dagger_import_signatures',[]);if(seen.includes(sig)){$('uploadstatus').textContent='This file looks already imported; skipped to prevent double-counting.';return;} const rows=csvRows(content); const h=rows.shift().map(x=>x.trim()); const ix=n=>h.indexOf(n), ic=ix('Club Type'), iy=ix('Carry Distance'), io=ix('Carry Deviation Distance'); if([ic,iy,io].some(x=>x<0)){ $('uploadstatus').textContent='Wrong CSV format. Need Club Type, Carry Distance, Carry Deviation Distance.'; return; } let grouped={}; for(let r of rows){ let name=(r[ic]||'').trim(), carry=Number(r[iy]), off=Math.abs(Number(r[io])); if(!name || !Number.isFinite(carry) || carry<=0 || !Number.isFinite(off)) continue; if(!grouped[name]) grouped[name]=[]; grouped[name].push({carry,off}); } let count=0; for(let [name,shots] of Object.entries(grouped)){ const p=profile.find(x=>x.name===name); const n=shots.length, sum=shots.reduce((s,x)=>s+x.carry,0), offs=shots.reduce((s,x)=>s+x.off,0); if(p){ p.carry=(p.carry*p.n+sum)/(p.n+n); p.off=(p.off*p.n+offs)/(p.n+n); p.n+=n; } else profile.push({name,carry:sum/n,off:offs/n,n}); count+=n; } store('dagger_profile',profile);if(count>0){seen.push(sig);store('dagger_import_signatures',seen);} store('dagger_setup_complete',true); render(); $('uploadstatus').textContent=`Imported ${count} swings from ${f.name}. Back up your data now.`; };
-$('export').onclick=()=>{ const data={profile,greens,wedgeFeels,loggedShots,personality:$('personality').value,roast:$('roast').value}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dagger-backup.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); };
+$('export').onclick=()=>{ const data={profile,greens,wedgeFeels,loggedShots,selectedCaddie,personality:$('personality').value,roast:$('roast').value}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dagger-backup.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); };
 document.querySelectorAll('[data-feedback]').forEach(b=>b.onclick=()=>{if(!lastDecision){$('feedbackStatus').textContent='Ask Keith first, then log your result.';return;} const record={...lastDecision,result:b.dataset.feedback};loggedShots.push(record);store('dagger_shot_log',loggedShots);showLog();$('feedbackStatus').textContent='Logged: '+record.result+' with '+record.club+'.';});
 $('clearLog').onclick=()=>{if(confirm('Delete all saved shot feedback?')){loggedShots=[];store('dagger_shot_log',loggedShots);showLog();}};
-$('backupFile').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const d=JSON.parse(await f.text());if(!Array.isArray(d.profile)||!d.profile.every(x=>typeof x.name==='string'&&Number.isFinite(x.carry)&&Number.isFinite(x.n))){throw Error('Not a valid Dagger backup');}if(!confirm('Replace your current local profile and settings with this backup?'))return;profile=d.profile;greens=d.greens||{};wedgeFeels=d.wedgeFeels||{};loggedShots=Array.isArray(d.loggedShots)?d.loggedShots:[];store('dagger_profile',profile);store('dagger_greens',greens);store('dagger_wedges',wedgeFeels);store('dagger_shot_log',loggedShots);if(['pro','dry','smart'].includes(d.personality)){$('personality').value=d.personality;store('dagger_personality',d.personality);}if([0,1,2,3].includes(Number(d.roast))){$('roast').value=String(d.roast);store('dagger_roast',String(d.roast));}showLog();render();$('uploadstatus').textContent='Backup restored successfully.';}catch(err){$('uploadstatus').textContent='Unable to restore: '+err.message;}};
+$('backupFile').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const d=JSON.parse(await f.text());if(!Array.isArray(d.profile)||!d.profile.every(x=>typeof x.name==='string'&&Number.isFinite(x.carry)&&Number.isFinite(x.n))){throw Error('Not a valid Dagger backup');}if(!confirm('Replace your current local profile and settings with this backup?'))return;profile=d.profile;greens=d.greens||{};wedgeFeels=d.wedgeFeels||{};loggedShots=Array.isArray(d.loggedShots)?d.loggedShots:[];store('dagger_profile',profile);store('dagger_greens',greens);store('dagger_wedges',wedgeFeels);store('dagger_shot_log',loggedShots);if(CADDIES[d.selectedCaddie]){selectedCaddie=d.selectedCaddie;store('dagger_selected_caddie',selectedCaddie);}if(['pro','dry','smart'].includes(d.personality)){$('personality').value=d.personality;store('dagger_personality',d.personality);}if([0,1,2,3].includes(Number(d.roast))){$('roast').value=String(d.roast);store('dagger_roast',String(d.roast));}showLog();render();$('uploadstatus').textContent='Backup restored successfully.';}catch(err){$('uploadstatus').textContent='Unable to restore: '+err.message;}};
 $('reset').onclick=()=>{ if(confirm('Restore original club data and discard imported updates?')){ profile=structuredClone(baseline); store('dagger_profile',profile); render(); } };
 $('saveBetSettings').onclick=()=>{betState.opponent=$('betOpponent').value.trim(); betState.stake=Math.max(1,Number($('betStake').value)||10); saveBetState('Betting setup saved. Try not to get hustled.');};
 $('betWin').onclick=()=>logBetResult('W');
@@ -766,7 +835,7 @@ decide=function(){
   const pick=ranked[0];
   if(!pick){oldDecide();return;}
   const club=pick.p.name.toUpperCase();const msg='Tee mode: prioritizing reliable carry and dispersion. Confirm a safe landing area, not just a big number.';
-  $('answer').innerHTML=`<div class="club-big">${escapeHTML(club)}</div><div class="target">Widest safe landing area</div><p>${msg}</p><div class="keith"><strong>Keith says:</strong> Solid choice. You’ve briefly escaped the gravitational pull of your own ego. Smooth tempo and find the fairway.</div>`;
+  $('answer').innerHTML=`<div class="club-big">${escapeHTML(club)}</div><div class="target">Widest safe landing area</div><p>${msg}</p><div class="keith"><strong><span class="caddie-label">Keith</span> says:</strong> Solid choice. You’ve briefly escaped the gravitational pull of your own ego. Smooth tempo and find the fairway.</div>`;
   currentClub=club;lastDecision={club,yards:Number($('yards').value),lie:state.lie,wind:state.wind,danger:state.danger,ts:new Date().toISOString()};
   const c=pick.p.n<5?'Developing':pick.p.n>=15?'Trusted':'Provisional';
   $('clubTrust').textContent='Club confidence: '+c;
@@ -863,7 +932,7 @@ $('csv').onchange=async e=>{
 };
 const priorBackup45=$('export').onclick;
 $('export').onclick=()=>{
- const data={profile,greens,wedgeFeels,loggedShots,personality:$('personality').value,roast:$('roast').value,betState,rangeSessions:sessionHistory,holeNotes:read('dagger_hole_notes',{})};
+ const data={profile,greens,wedgeFeels,loggedShots,selectedCaddie,personality:$('personality').value,roast:$('roast').value,betState,rangeSessions:sessionHistory,holeNotes:read('dagger_hole_notes',{})};
  const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='dagger-backup-v45.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 const oldRestore45=$('backupFile').onchange;
@@ -876,6 +945,9 @@ $('backupFile').onchange=async e=>{
 };
 window.addEventListener('load',()=>{renderSessionHistory();renderMemory();rareEvent();matchContext();});
 
+document.querySelectorAll('.staff-pick').forEach(b=>b.addEventListener('click',()=>selectCaddie(b.dataset.caddie)));
+$('toggleStaffFile').onclick=()=>{const el=$('staffFile');el.hidden=!el.hidden;$('toggleStaffFile').setAttribute('aria-expanded',String(!el.hidden));$('toggleStaffFile').textContent=el.hidden?'Personnel file ▾':'Close personnel file ▴';};
+selectedCaddie=read('dagger_selected_caddie','keith');if(!CADDIES[selectedCaddie])selectedCaddie='keith';renderStaff();
 init();
 </script>
 </body>

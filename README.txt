@@ -1,25 +1,15 @@
-DAGGER CADDIE 4.5 — KEITH'S MEMORY / MEMBERS EDITION
-====================================================
-Base: 4.4 mobile-first app. No photo logo.
+DAGGER CADDIE 4.6 — CADDIE MASTER'S OFFICE
 
-New:
-- Thumb-friendly fixed bottom navigation (Play / Bag / Reset / Betting / Clubhouse)
-- More authentic subdued country-club styling
-- Keith's Memory based ONLY on your logged shot feedback
-- Club Battle comparison of two club carry estimates
-- Carry It or Forget It conservative clearance estimator
-- Match Play Keith commentary from the saved hole-by-hole betting results
-- Separate range-session summaries saved with future imported CSVs
-- Occasional humorous reactions to logged streaks
-- Retains Pucker Factor >8 shake, mobile club call, bag, voice, mental reset and GPS
-- Backup includes new range sessions and betting data
+Built on 4.5 Mobile First Members Edition.
 
-Important limitations:
-- Existing combined club averages cannot be decomposed into old session histories.
-- Carry clearance is heuristic and should not be treated as an exact success probability.
-- Match Play Keith's commentary does not calculate new match odds or override hazards.
-- A press counter is not a separate wager settlement ledger.
-- All data is saved on each device. Make a backup before uploading.
+NEW:
+- Four caddies selectable on the Play home screen: Keith, Reginald, Vinny, Kyle
+- Expandable personnel dossier, changes with selected caddie
+- Personalities vary only the delivery of golf advice, not club math
+- Remembers your selected caddie on this device
+- Keeps 4.5 mobile features, including Pucker Factor, Betting, Mental Reset, History
 
-Upload the contents of this folder (not the folder itself) to your GitHub repo root.
-For an existing 4.4 install, replacing index.html alone is sufficient.
+INSTALL:
+Upload the included files to the root of your GitHub Pages repository.
+If 4.5 supporting files are already there, replacing just index.html is sufficient.
+Back up your local app data first. Site files are public, your saved local data is not stored in the repo.
