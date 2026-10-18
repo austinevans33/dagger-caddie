@@ -43,6 +43,8 @@ function render(){
  if(!room)return;
  host=!!(user?.uid===room.hostUid);
  $('roomScoreSection').hidden=false;
+ $('roomEditor').hidden=!host; $('roomSpectator').hidden=host;
+ $('roomInvitationBanner').hidden=true;
  $('roomSetup').open=false;
  $('roomWho').textContent=`${room.name||'Dagger Money Room'} · ${roomLabel()} · ${room.players.join(' / ')} · ${room.format.toUpperCase()} · $${room.stake} unit${room.archived?' · ARCHIVED':''}`;
  $('roomHostName').value=room.hostName||'Scorekeeper';
@@ -63,6 +65,21 @@ function render(){
  $('roomTotalsCards').innerHTML=room.players.map((name,i)=>`<div class="betbox"><strong>${esc(name)}</strong><span style="font-size:17px">${money(x.totals[i])}</span></div>`).join('');
  $('roomLedgerHead').innerHTML='<tr><th>Hole</th>'+room.players.map(n=>'<th>'+esc(n)+'</th>').join('')+'<th>Result</th>'+room.players.map(n=>'<th>'+esc(n)+' $</th>').join('')+'</tr>';
  $('roomLedgerBody').innerHTML=x.ledger.map(row=>'<tr><td>'+row.hole+'</td>'+room.players.map((_,i)=>'<td>'+(row.scores?row.scores[i]:'—')+'</td>').join('')+'<td>'+esc(row.event)+'</td>'+room.players.map((_,i)=>'<td>'+(row.scores?money(row.totals[i]):'—')+'</td>').join('')+'</tr>').join('');
+ // A DOM card for each of 18 holes. No narrow multi-column table on iPhone.
+ const ledgerRoot=$('roomLedgerCards');ledgerRoot.replaceChildren();
+ for(const row of x.ledger){
+  const card=document.createElement('article');card.className='ledger-hole'+(row.scores?'':' pending');card.setAttribute('role','listitem');
+  const header=document.createElement('div');header.className='ledger-hole-head';
+  const number=document.createElement('strong');number.textContent='Hole '+row.hole;
+  const event=document.createElement('span');event.textContent=row.scores?row.event:'Not scored';header.append(number,event);card.append(header);
+  if(row.scores){
+   room.players.forEach((name,i)=>{const line=document.createElement('div');line.className='ledger-line';const player=document.createElement('span');player.textContent=name;const strokes=document.createElement('span');strokes.textContent=row.scores[i]+' strokes';line.append(player,strokes);card.append(line);});
+   const balance=document.createElement('div');balance.className='ledger-balances';
+   room.players.forEach((name,i)=>{const chip=document.createElement('span');chip.textContent=name+': '+money(row.totals[i]);balance.append(chip);});card.append(balance);
+  }else{const msg=document.createElement('div');msg.className='game-note';msg.textContent='Awaiting scores';card.append(msg);}
+  ledgerRoot.append(card);
+ }
+
  $('roomAudit').textContent=room.lastChange?`Last updated ${new Date(room.lastChange).toLocaleString()} by ${room.lastEditor||'scorekeeper'}. Score history includes the current official value for each hole.`:'';
  $('roomSaveHole').disabled=!host||room.archived;
  $('roomFinish').disabled=!host||room.archived;
@@ -72,7 +89,7 @@ function buildInputs(h){const scores=room?.holes?.[h]||[];$('roomScoreRows').inn
 const step=(sign)=>{const b=document.createElement('button');b.type='button';b.textContent=sign===1?'+':'−';b.disabled=!host||room.archived;b.setAttribute('aria-label',(sign===1?'Increase ':'Decrease ')+name+' score');b.onclick=()=>{input.value=String(Math.max(1,Math.min(20,(Number(input.value)||4)+sign)));};return b;};wrap.append(step(-1),input,step(1));td.append(wrap);tr.append(first,td);$('roomScoreRows').append(tr);});}
 $('roomHole').onchange=()=>{if(room)buildInputs(Number($('roomHole').value));};
 function archiveLocal(){if(!room)return;const k='dagger_room_archives',old=JSON.parse(localStorage.getItem(k)||'[]');const item={...room,roomId,ended:Date.now(),payouts:compute(room).totals};const i=old.findIndex(v=>v.roomId===roomId);if(i>=0)old[i]=item;else old.push(item);localStorage.setItem(k,JSON.stringify(old));}
-function roomLink(){const url=new URL(window.location.href);url.searchParams.set('room',roomId);url.searchParams.set('invite',invite);return url.toString();}
+function roomLink(){const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('room',roomId);url.searchParams.set('invite',invite);return url.toString();}
 function parseInvite(input){let s=input.trim();try{const url=new URL(s);return {id:url.searchParams.get('room')||'',code:url.searchParams.get('invite')||''};}catch{}let [id,code]=s.split(':');return{id:id||'',code:code||''};}
 const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('');};
 async function connect(id){if(roomUnsub)roomUnsub();roomId=id;
@@ -120,6 +137,7 @@ async function join(){
  }
 }
 $('roomCreate').onclick=create;$('roomJoin').onclick=join;
+$('roomQuickJoin').onclick=()=>{const name=$('roomQuickName').value.trim();if(!name){status('Enter your display name to join.');$('roomQuickName').focus();return;}$('roomMe').value=name;join();};
 const shareInvite=async()=>{if(!roomId){status('Create or join a room first.');return;}try{if(navigator.share)await navigator.share({title:'Dagger Money Room',url:roomLink()});else await navigator.clipboard.writeText(roomLink());}catch{status('Copy the room link manually: '+roomLink());}};
 $('roomCopy').onclick=shareInvite;
 $('roomShareCurrent').onclick=shareInvite;
@@ -134,6 +152,6 @@ async function init(){if(!isConfigured){status('Local mode · Live sync is not c
  const app=appMod.initializeApp(firebaseConfig);auth=authMod.getAuth(app);db=fsMod.getFirestore(app);functions=fsMod;
  user=(await authMod.signInAnonymously(auth)).user;
  status('Live sync ready. Create a Money Room, or paste an invite and join.');
- const url=new URL(window.location.href);let id=url.searchParams.get('room'),code=url.searchParams.get('invite');if(id&&code){$('roomCode').value=id+':'+code;status('Invite detected. Enter your name and tap Join room.');}
+ const url=new URL(window.location.href);let id=url.searchParams.get('room'),code=url.searchParams.get('invite');if(id&&code){$('roomCode').value=id+':'+code;$('roomInvitationBanner').hidden=false;$('roomSetup').open=false;if(typeof window.switchTab==='function')window.switchTab('bets');else document.getElementById('tab-bets')?.click();document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'});status('Invitation ready. Enter your name and tap Join live room.');}
  }catch(e){status('Live sync unavailable: '+e.message+'. Check Firebase setup and network.');}}
 init();

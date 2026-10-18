@@ -276,6 +276,12 @@ body{background:#e9e1d0}
 @keyframes listenPulse{from{box-shadow:0 0 0 rgba(240,186,104,0)}to{box-shadow:0 0 0 4px rgba(240,186,104,.27)}}
 @media(prefers-reduced-motion:reduce){.voice-indicator.listening{animation:none}}
 @media(max-width:390px){.tabbar button{font-size:10px}.nav-ico{font-size:18px}}
+
+/* 4.9.5 Money Room: phone-friendly ledger and role-based view */
+.invite-banner{padding:14px;background:#e8ddc4;border:2px solid #ad9059;border-radius:15px;margin:10px 0}.invite-banner strong{display:block;font:700 12px system-ui;letter-spacing:.11em;color:#173b2c;margin-bottom:10px}.invite-banner button{margin-top:10px}
+.spectator-banner{border:1px solid #b9a06f;border-radius:13px;background:#eee4cf;padding:12px;margin:10px 0;color:#1b3b2d}.spectator-banner strong{font:800 13px system-ui;letter-spacing:.12em}.spectator-banner p{font-size:13px;margin:4px 0 0}
+.ledger-cards{display:grid;gap:8px;margin-top:12px}.ledger-hole{border:1px solid #cbb992;background:#fffaf0;border-radius:11px;padding:10px 12px;min-width:0;overflow-wrap:anywhere}.ledger-hole.pending{opacity:.65}.ledger-hole-head{display:flex;gap:8px;justify-content:space-between;align-items:center;border-bottom:1px solid #d6c7a6;padding-bottom:6px;margin-bottom:6px}.ledger-hole-head strong{font-size:15px;color:#173a2b}.ledger-hole-head span{font-size:12px;color:#665941;text-align:right}.ledger-line{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;line-height:1.65}.ledger-line span:last-child{font-weight:700;text-align:right;white-space:nowrap}.ledger-balances{display:flex;flex-wrap:wrap;gap:5px 12px;border-top:1px dashed #d6c7a6;margin-top:6px;padding-top:5px;font-size:12px;color:#244432}.ledger-balances span{white-space:nowrap}.ledger-detail{margin-top:10px}.ledger-detail summary{font-size:13px}.ledger-detail .room-table{min-width:650px;table-layout:auto}.ledger-detail .room-table th{font-size:11px;white-space:nowrap}.ledger-detail .room-table td{font-size:12px;white-space:nowrap}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -536,6 +542,7 @@ body{background:#e9e1d0}
 <section class="card" data-tab="bets" id="moneyRoomSection">
 <div class="over" style="color:#806f4d">DAGGER COUNTRY CLUB · MONEY ROOM</div><h2>Live Money Room</h2>
 <p class="muted">One designated scorekeeper. Everyone else watches the same scorecard on their phone.</p>
+<div id="roomInvitationBanner" class="invite-banner" hidden><strong>YOU’RE INVITED TO A MONEY ROOM</strong><label for="roomQuickName">Your name</label><input id="roomQuickName" maxlength="24" placeholder="Enter your name to join"><button type="button" class="btn-primary" id="roomQuickJoin">Join live room →</button><p class="note">Invited players can watch the live scorecard. Only the scorekeeper edits scores.</p></div>
 <div class="room-status" id="roomStatus" aria-live="polite">Offline/local mode. Live sync needs Firebase configuration once.</div>
 <details id="roomSetup" open><summary>Room setup / invitation</summary><div class="room-grid" style="margin-top:10px">
 <div><label>Your display name</label><input id="roomMe" maxlength="24" placeholder="Member"></div>
@@ -549,12 +556,12 @@ body{background:#e9e1d0}
 <div id="roomScoreSection" hidden>
 <div class="bet-summary" style="grid-template-columns:repeat(3,1fr)"><div class="betbox"><strong>Format</strong><span id="roomFormatDisplay" style="font-size:15px">—</span></div><div class="betbox"><strong>Stake</strong><span id="roomStakeDisplay" style="font-size:15px">—</span></div><div class="betbox"><strong>Next hole</strong><span id="roomNextDisplay" style="font-size:15px">1</span></div></div>
 <div id="roomTotalsCards" class="room-grid" style="margin:8px 0"></div>
-<div class="room-grid" style="margin:10px 0"><div><label>Hole to record</label><select id="roomHole"></select></div><div><label>Scorekeeper</label><input id="roomHostName" readonly></div></div>
+<div id="roomEditor" class="room-editor"><div class="room-grid" style="margin:10px 0"><div><label>Hole to record</label><select id="roomHole"></select></div><div><label>Scorekeeper</label><input id="roomHostName" readonly></div></div>
 <div style="overflow-x:auto"><table class="room-table"><thead id="roomScoreHead"></thead><tbody id="roomScoreRows"></tbody></table></div>
 <div class="room-controls"><button class="btn-primary" id="roomSaveHole" type="button">Save hole</button><button class="btn-secondary" id="roomFinish" type="button">Archive match</button></div>
-<div class="notice-card" id="roomStandings"></div><div class="notice-card" id="roomCaddieBanter" aria-live="polite">Your caddie is studying the scoreboard and preparing a totally unnecessary remark.</div>
+</div><div id="roomSpectator" class="spectator-banner" hidden><strong>WATCHING LIVE</strong><p>Only the designated scorekeeper can enter or change scores. Your view updates automatically.</p></div><div class="notice-card" id="roomStandings"></div><div class="notice-card" id="roomCaddieBanter" aria-live="polite">Your caddie is studying the scoreboard and preparing a totally unnecessary remark.</div>
 <div class="tiny-print" id="roomAudit"></div>
-<div class="game-live"><h3>Hole-by-hole live ledger</h3><p class="game-note">Official strokes, hole result, and running payouts. Unscored holes stay blank; skins carry forward on ties.</p><div style="overflow-x:auto"><table class="room-table" id="roomLedgerTable"><thead id="roomLedgerHead"></thead><tbody id="roomLedgerBody"></tbody></table></div></div>
+<div class="game-live"><h3>Hole-by-hole live ledger</h3><p class="game-note">Official strokes, hole result, and running payouts. Unscored holes stay blank; skins carry forward on ties.</p><div id="roomLedgerCards" class="ledger-cards" role="list" aria-live="polite"><p>Waiting for the live scorecard…</p></div><details class="ledger-detail"><summary>Expanded payout table</summary><div style="overflow-x:auto"><table class="room-table" id="roomLedgerTable"><thead id="roomLedgerHead"></thead><tbody id="roomLedgerBody"></tbody></table></div></details></div>
 <div class="grid" style="margin-top:9px"><button id="roomShareCurrent" class="btn-secondary" type="button">Share invitation</button><button id="roomLocalArchive" class="btn-ghost" type="button">Save copy to this phone</button></div>
 </div>
 <p class="tiny-print" style="margin-top:10px">Scorekeeper alone can change scores; members can view. One gross-score entry per golfer per hole powers the chosen format. Live mode needs internet and an authenticated Firebase connection. No money transfers.</p>

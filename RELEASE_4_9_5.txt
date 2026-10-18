@@ -1,0 +1,7 @@
+DAGGER CADDIE 4.9.5 — LIVE ROOM UX HOTFIX
+
+Changes: always-visible 18-hole card ledger, expanded payout table, read-only spectator screen (no score entry), one-tap invite-to-join flow (enter display name + Join), clean share URLs.
+
+Upload index.html and money-room.js to GitHub repo root, replacing old copies. No Firebase rules changes necessary. Keep all existing assets in place.
+
+Important: This is a code-level fix. Two-device Safari validation is still required. Test with a NEW practice room and confirm a new score appears on the guest phone without refresh.
