@@ -172,14 +172,29 @@ body{background:#e9e1d0}
 .caddie-roster{background:#f7f1e5;border:1px solid #c7b691;border-radius:16px;padding:10px 11px;margin:0 0 8px}
 .roster-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:10px;letter-spacing:.13em;color:#556453;font-weight:700}
 .roster-file-link{width:auto;padding:4px 7px;font-size:12px;letter-spacing:0;text-transform:none;background:transparent;color:#1b4534;border:1px solid #c7b691}
-.staff-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-.staff-pick{min-width:0;padding:8px 3px 7px;border-radius:11px;border:1px solid #c8b895;background:#ede5d3;color:#1e3d2e;display:flex;align-items:center;flex-direction:column;gap:1px;line-height:1.1}
-.staff-pick.active{background:#173b2d;color:#f9efd9;border-color:#aa915f;box-shadow:inset 0 0 0 1px #bba26a}
-.staff-pick .staff-icon{font-size:22px;font-weight:bold;height:23px;color:#aa8753}
-.staff-pick.active .staff-icon{color:#e3c78e}
+.staff-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.staff-pick{min-width:0;padding:8px 4px 8px;border-radius:13px;border:1px solid #c8b895;background:linear-gradient(180deg,#f5efe1 0,#e8dfcb 100%);color:#1e3d2e;display:flex;align-items:center;flex-direction:column;gap:4px;line-height:1.1;box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 2px 4px rgba(0,0,0,.04)}
+.staff-pick.active{background:linear-gradient(180deg,#173b2d 0,#0f2e22 100%);color:#f9efd9;border-color:#aa915f;box-shadow:inset 0 0 0 1px #bba26a,0 4px 10px rgba(0,0,0,.12)}
+.staff-pick .staff-icon{display:none}
+.staff-thumb{width:48px;height:48px;border-radius:12px;object-fit:cover;border:2px solid #b89d69;background:#f3ead6;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.staff-pick.active .staff-thumb{border-color:#ead19a;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 4px 8px rgba(0,0,0,.18)}
+.staff-pick[data-caddie="keith"] .staff-thumb{border-color:#af8c58}
+.staff-pick[data-caddie="reginald"] .staff-thumb{border-color:#8d8f9a}
+.staff-pick[data-caddie="vinny"] .staff-thumb{border-color:#8e5f3e}
+.staff-pick[data-caddie="kyle"] .staff-thumb{border-color:#6f8c99}
 .staff-pick strong{font-size:13px}
-.staff-pick small{font-size:9px;opacity:.8;white-space:normal}
-.staff-file{border-top:1px solid #c9bb9d;margin-top:11px;padding-top:11px;color:#253b30}
+.staff-pick small{font-size:9px;opacity:.88;white-space:normal;min-height:18px}
+.staff-file{border-top:1px solid #c9bb9d;margin-top:11px;padding-top:11px;color:#253b30;background:linear-gradient(180deg,#fbf7ef 0,#efe4cd 100%);border-radius:14px;padding:12px;border:1px solid #d0c09f}
+.file-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.file-box{background:#f2e8d2;border:1px solid #d4c3a1;border-radius:10px;padding:8px}
+.file-box strong{display:block;font-size:10px;letter-spacing:.12em;color:#7a715b;text-transform:uppercase;margin-bottom:3px}
+.file-box span{font-size:12px;line-height:1.35;color:#22362c}
+.staff-file-top{display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:center}
+.staff-file-photo{width:78px;height:78px;border-radius:14px;object-fit:cover;border:2px solid #b79b68;background:#efe4cc}
+.staff-file[data-theme="keith"] .staff-file-photo{border-color:#af8c58}
+.staff-file[data-theme="reginald"] .staff-file-photo{border-color:#8c8e97}
+.staff-file[data-theme="vinny"] .staff-file-photo{border-color:#8e5f3e}
+.staff-file[data-theme="kyle"] .staff-file-photo{border-color:#6f8c99}
 .staff-file[hidden]{display:none}
 .file-eyebrow{font-size:10px;letter-spacing:.12em;color:#7c765f}
 .staff-file h3{margin:4px 0;font-size:19px}
@@ -187,7 +202,7 @@ body{background:#e9e1d0}
 .staff-file p{font-size:13px;line-height:1.45}
 .file-quote{font-size:14px;background:#eae0c9;border-left:3px solid #b29a6e;padding:9px 11px;font-style:italic;border-radius:0 9px 9px 0}
 .file-foot{font-size:11px;color:#6f6755;margin-top:8px}
-@media(max-width:390px){.staff-pick strong{font-size:12px}.staff-pick small{font-size:8px}.caddie-roster{padding:9px 7px}.staff-grid{gap:4px}}
+@media(max-width:390px){.staff-pick strong{font-size:12px}.staff-pick small{font-size:8px}.caddie-roster{padding:9px 7px}.staff-grid{gap:4px}.staff-thumb{width:42px;height:42px}.file-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -201,7 +216,7 @@ body{background:#e9e1d0}
           <div class="sub" style="margin-top:5px">On the bag: <strong id="onBagName">Keith</strong> · Private-club service. Municipal-course language.</div>
         </div>
       </div>
-      <div class="quip"><img class="portrait" id="staffPortrait" src="keith.svg" alt="Keith, Dagger Country Club’s permanently unimpressed caddie"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
+      <div class="quip"><img class="portrait" id="staffPortrait" src="keith_portrait.png" alt="Keith portrait"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
     </div>
 
     <div class="content">
@@ -232,12 +247,12 @@ body{background:#e9e1d0}
       <section class="caddie-roster" data-tab="play" aria-label="Choose your caddie">
         <div class="roster-heading"><span>CADDIE MASTER'S OFFICE</span><button class="roster-file-link" id="toggleStaffFile" type="button" aria-expanded="false">Personnel file ▾</button></div>
         <div class="staff-grid" id="caddieChoices">
-          <button type="button" class="staff-pick active" data-caddie="keith" aria-pressed="true"><span class="staff-icon">♣</span><strong>Keith</strong><small>Head caddie</small></button>
-          <button type="button" class="staff-pick" data-caddie="reginald" aria-pressed="false"><span class="staff-icon">✦</span><strong>Reginald</strong><small>Traditions</small></button>
-          <button type="button" class="staff-pick" data-caddie="vinny" aria-pressed="false"><span class="staff-icon">$</span><strong>Vinny</strong><small>Wagering</small></button>
-          <button type="button" class="staff-pick" data-caddie="kyle" aria-pressed="false"><span class="staff-icon">⚑</span><strong>Kyle</strong><small>Almost enlisted</small></button>
+          <button type="button" class="staff-pick active" data-caddie="keith" aria-pressed="true"><img class="staff-thumb" src="keith_portrait.png" alt="Keith portrait"><strong>Keith</strong><small>Head caddie</small></button>
+          <button type="button" class="staff-pick" data-caddie="reginald" aria-pressed="false"><img class="staff-thumb" src="reginald_portrait.png" alt="Reginald portrait"><strong>Reginald</strong><small>Traditions</small></button>
+          <button type="button" class="staff-pick" data-caddie="vinny" aria-pressed="false"><img class="staff-thumb" src="vinny_portrait.png" alt="Vinny portrait"><strong>Vinny</strong><small>Wagering</small></button>
+          <button type="button" class="staff-pick" data-caddie="kyle" aria-pressed="false"><img class="staff-thumb" src="kyle_portrait.png" alt="Kyle portrait"><strong>Kyle</strong><small>Almost enlisted</small></button>
         </div>
-        <div class="staff-file" id="staffFile" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><h3 id="fileName">KEITH · HEAD CADDIE</h3><div class="file-sub" id="fileTitle"></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
+        <div class="staff-file" id="staffFile" data-theme="keith" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><div class="staff-file-top"><img class="staff-file-photo" id="filePortrait" src="keith_portrait.png" alt="Keith dossier portrait"><div><h3 id="fileName">KEITH · HEAD CADDIE</h3><div class="file-sub" id="fileTitle"></div></div></div><div class="file-grid"><div class="file-box"><strong>Known for</strong><span id="fileKnown"></span></div><div class="file-box"><strong>Specialty</strong><span id="fileSpecialty"></span></div><div class="file-box"><strong>Club warning</strong><span id="fileWarning"></span></div></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
       </section>
       <section class="card green" data-tab="play">
         <div class="inline" style="justify-content:space-between">
@@ -649,18 +664,19 @@ function getOriginalKeithLine(kind){
 
 
 const CADDIES={
- keith:{name:'Keith',title:'Head Caddie',subtitle:'Forty years of service. Four remaining ounces of patience.',bio:'Keith has carried every type of bag at Dagger Country Club and has never once mistaken enthusiasm for competence. He is indispensable, irritable, and legally discouraged from addressing the board.',quote:'"That is the right club. A rare triumph of judgment. Try not to ruin it by swinging."',foot:'Performance: Excellent · Member relations: Under review',mast:'Your head caddie is on duty. Please keep the hero golf to a medically acceptable minimum.'},
- reginald:{name:'Reginald',title:'Senior Keeper of Traditions',subtitle:'Polite enough to make an insult sound hereditary.',bio:'Reginald believes golf reached perfection before anyone invented performance polos. He calls clubs implements, says sir when deeply offended, and considers a pushed eight-iron a breach of etiquette.',quote:'"A seven-iron is indicated, sir. Assuming you have previously enjoyed a successful encounter with one."',foot:'Dress code violations issued: 1,284 · Smiles observed: 2',mast:'Reginald is carrying today. Kindly resist any behavior unbecoming a gentleman or a golfer.'},
- vinny:{name:'Vinny',title:'Director of Informal Wagering',subtitle:'Knows every handicap, every press, and who still owes him twenty.',bio:'Vinny has run the Tuesday money game since 1997, despite repeated attempts by the Greens Committee to discover who authorized it. A silver-tongued hustler who loves a Nassau but hates giving away a hole.',quote:'"Center green, sweetheart. Birdie is nice, but a par that wins ten bucks is gorgeous."',foot:'Outstanding IOUs: Classified · Financial judgment: Selectively excellent',mast:'Vinny has the bag. The objective is to leave with more money and no unnecessary hero shots.'},
- kyle:{name:'Kyle',title:'Tactical Operations Consultant (Self-Appointed)',subtitle:'Service record: Classified. Because it does not exist.',bio:'Kyle almost enlisted, but says he would definitely have punched a drill sergeant who got in his face. He wears white wraparound Oakleys inside, calls every fairway a battlespace, and once nearly qualified for an imaginary special operations selection. Surprisingly decent at reading a lie.',quote:'"BROTHER. Tactical seven iron. I would explain the doctrine but I was basically going to be Special Forces."',foot:'Actual service: None · Sunglasses: White Oakleys · Recruiter stories: Unverified',mast:'Kyle is carrying. He almost joined six branches of the military, but luckily had time for your tee time.'}
+ keith:{name:'Keith',title:'Head Caddie',subtitle:'Forty years of service. Four remaining ounces of patience.',known:'Making excellent decisions sound like disciplinary action.',specialty:'Course management, restraint, and preventing preventable doubles.',warning:'Will absolutely judge any attempt to attack a sucker pin with a flyer lie.',bio:'Keith has carried every type of bag at Dagger Country Club and has never once mistaken enthusiasm for competence. He has survived five club presidents, twelve assistant pros, and roughly nine thousand members who thought they could cut a corner that did not, in fact, want cutting.',quote:'"That is the right club. A rare triumph of judgment. Make your usual balanced swing and try not to vandalize an otherwise sound decision."',foot:'Performance: Excellent · Member relations: Under review · Preferred beverage: whatever you are not touching',mast:'Your head caddie is on duty. Please keep the hero golf to a medically acceptable minimum.'},
+ reginald:{name:'Reginald',title:'Senior Keeper of Traditions',subtitle:'Polite enough to make an insult sound hereditary.',known:'Weaponized manners and deeply curated disappointment.',specialty:'Conservative strategy, etiquette, and making center-green targets feel aristocratic.',warning:'Considers cargo shorts, violent tempos, and flop shots from bad lies signs of moral erosion.',bio:'Reginald believes golf reached perfection shortly before modern society began collapsing into draw-biased drivers and untucked shirts. He calls clubs implements, addresses members as sir when he is furious, and can convey spiritual contempt with nothing more than a raised eyebrow and the phrase “interesting choice.”',quote:'"A seven-iron is indicated, sir. Favor the ample middle portion of the green and permit your follow-through a modicum of dignity."',foot:'Dress code violations issued: 1,284 · Smiles observed: 2 · Opinions on hoodies: unprintable',mast:'Reginald is carrying today. Kindly resist any behavior unbecoming a gentleman or a golfer.'},
+ vinny:{name:'Vinny',title:'Director of Informal Wagering',subtitle:'Knows every handicap, every press, and who still owes him twenty.',known:'Turning risk management into neighborhood extortion with manners.',specialty:'Match play, side bets, and identifying the safest shot that still protects the wallet.',warning:'Will remind you that “cute” swings are bad for both scoring and cash flow.',bio:'Vinny has quietly run the Tuesday money game since 1997 despite repeated attempts by the Greens Committee to discover who authorized it. He can read a green, a lie, and a man bluffing about his index in under ten seconds, and regards unnecessary hero shots as acts of financial self-harm.',quote:'"Center green, sweetheart. Par that wins money is sexier than a hero ball in the lake. Smooth tempo, safe miss, and let the other idiot blink first."',foot:'Outstanding IOUs: Classified · Financial judgment: Selectively excellent · Favorite phrase: “We’re not donating today.”',mast:'Vinny has the bag. The objective is to leave with more money and no unnecessary hero shots.'},
+ kyle:{name:'Kyle',title:'Tactical Operations Consultant (Self-Appointed)',subtitle:'Service record: Classified. Because it does not exist.',known:'White Oakleys, fantasy deployments, and motivational nonsense at battle volume.',specialty:'Commitment, overconfident club announcements, and accidentally decent recovery advice.',warning:'May refer to the rough as a hostile environment and your 7-iron as a weapons system.',bio:'Kyle almost enlisted, but says he definitely would have punched a drill sergeant who got in his face. He wears white wraparound Oakleys indoors, calls every fairway a battlespace, and has nearly been recruited by Marines, Rangers, SEALs, Delta, and one suspiciously patriotic personal trainer. In spite of all this, he is weirdly solid at reading lies and simplifying decisions.',quote:'"BROTHER. Tactical seven-iron. Target the fat side, maintain operational tempo, and finish like you mean it. I was basically one paperwork issue away from Special Forces."',foot:'Actual service: None · Sunglasses: White Oakleys · Verified branch memberships: zero',mast:'Kyle is carrying. He almost joined six branches of the military, but luckily had time for your tee time.'}
 };
 const CADDIE_LINES={
- reginald:{normal:['A stock swing to the middle, sir. A sensible decision, which is pleasantly unlike you.','The correct implement is in hand. Kindly give it a balanced swing and spare us the theatrics.','Favor the generous part of the green. This is almost the behavior of a member in good standing.'],long:['The spacious landing area is the gentlemanly choice. One assumes your restraint will survive the backswing.','A controlled swing, sir. Distance without dignity is merely noise.'],recover:['Take the broadest exit to the fairway. A dignified retreat is preferable to a vulgar double.','Advance to safety, sir. The trees have already expressed their opinion.']},
- vinny:{normal:['Middle green, kid. Par keeps the cash moving in the right direction. Try not to get fancy.','That is a good number. Smooth tempo and a safe miss. I love when the investment practically manages itself.','Hit the big part of the green. The flag is not paying your entry fee.'],long:['Three steady shots beat one beautiful disaster. Protect the wallet, pal.','Take the wide side. I have seen guys lose a Nassau with a single heroic thought.','Stock shape, safe landing area. Win the hole before you chase the highlight.'],recover:['Punch out, sweetheart. A bogey that halves the hole still spends.','Get back in play. Gambling is one thing; donating strokes is another.']},
- kyle:{normal:['BROTHER. Seven-iron protocol: center green, smooth swing. I almost taught this at BUD/S.','Maintain tactical tempo, warrior. A balanced finish is basically special operations. I was gonna enlist.','Target acquired: fat side of green. No need for a kinetic overreaction. I have trained mentally for this.'],long:['Establish fairway superiority with a controlled swing. My recruiter said I had leadership potential.','Widest landing zone, BROTHER. I would have been a sniper but my eyes are too good.','This calls for precision, not brute force. Which is what I would have told my drill sergeant.'],recover:['TACTICAL WITHDRAWAL. Punch out to daylight. I almost went Ranger, trust me.','Reposition behind cover—sorry, in the fairway. That is a strategic reset, brother.']}
+ reginald:{normal:['A stock swing to the middle, sir. A sensible decision, which is pleasantly unlike you. Do try to land in the vicinity of your own plan.','The correct implement is in hand. Kindly give it a balanced swing and spare us the theatrics.','Favor the generous part of the green. This is almost the behavior of a member in good standing.'],long:['The spacious landing area is the gentlemanly choice. One assumes your restraint will survive the backswing.','A controlled swing, sir. Distance without dignity is merely noise.'],recover:['Take the broadest exit to the fairway. A dignified retreat is preferable to a vulgar double.','Advance to safety, sir. The trees have already expressed their opinion.']},
+ vinny:{normal:['Middle green, kid. Par keeps the cash moving in the right direction. Try not to get fancy and light your stake on fire.','That is a good number. Smooth tempo and a safe miss. I love when the investment practically manages itself.','Hit the big part of the green. The flag is not paying your entry fee.'],long:['Three steady shots beat one beautiful disaster. Protect the wallet, pal.','Take the wide side. I have seen guys lose a Nassau with a single heroic thought.','Stock shape, safe landing area. Win the hole before you chase the highlight.'],recover:['Punch out, sweetheart. A bogey that halves the hole still spends.','Get back in play. Gambling is one thing; donating strokes is another.']},
+ kyle:{normal:['BROTHER. Seven-iron protocol: center green, smooth swing. I almost taught this at BUD/S. Spiritually.','Maintain tactical tempo, warrior. A balanced finish is basically special operations. I was gonna enlist.','Target acquired: fat side of green. No need for a kinetic overreaction. I have trained mentally for this.'],long:['Establish fairway superiority with a controlled swing. My recruiter said I had leadership potential.','Widest landing zone, BROTHER. I would have been a sniper but my eyes are too good.','This calls for precision, not brute force. Which is what I would have told my drill sergeant.'],recover:['TACTICAL WITHDRAWAL. Punch out to daylight. I almost went Ranger, trust me.','Reposition behind cover—sorry, in the fairway. That is a strategic reset, brother.']}
 };
 let selectedCaddie='keith';
 let staffLineCounter={reginald:0,vinny:0,kyle:0};
+const CADDIE_PORTRAITS={keith:'keith_portrait.png',reginald:'reginald_portrait.png',vinny:'vinny_portrait.png',kyle:'kyle_portrait.png'};
 function getKeithLine(kind){
  if(selectedCaddie==='keith') return getOriginalKeithLine(kind);
  const c=CADDIE_LINES[selectedCaddie]||CADDIE_LINES.reginald;
@@ -675,12 +691,20 @@ function renderStaff(){
  $('fileName').textContent=c.name.toUpperCase()+' · '+c.title;
  $('fileTitle').textContent=c.subtitle;
  $('fileBio').textContent=c.bio;
+ $('fileKnown').textContent=c.known;
+ $('fileSpecialty').textContent=c.specialty;
+ $('fileWarning').textContent=c.warning;
  $('fileQuote').textContent=c.quote;
  $('fileFoot').textContent=c.foot;
  document.querySelectorAll('.staff-pick').forEach(b=>{const on=b.dataset.caddie===selectedCaddie;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
  document.querySelectorAll('.caddie-label').forEach(e=>e.textContent=c.name);
- // Keep the original portrait for Keith; use the proper club monogram for other staff.
- $('staffPortrait').style.display=selectedCaddie==='keith'?'':'none';
+ const portrait=CADDIE_PORTRAITS[selectedCaddie]||CADDIE_PORTRAITS.keith;
+ $('staffPortrait').src=portrait;
+ $('staffPortrait').alt=c.name+' portrait';
+ $('staffPortrait').style.display='';
+ $('filePortrait').src=portrait;
+ $('filePortrait').alt=c.name+' dossier portrait';
+ $('staffFile').dataset.theme=selectedCaddie;
 }
 function selectCaddie(id){if(!CADDIES[id])return;selectedCaddie=id;store('dagger_selected_caddie',id);renderStaff();}
 
