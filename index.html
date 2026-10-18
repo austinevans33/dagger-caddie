@@ -3,549 +3,508 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#143126">
+<meta name="theme-color" content="#102a21">
 <link rel="manifest" href="manifest.json">
-<title>Dagger Caddie · Keith</title>
+<title>Dagger Caddie · Keith at Dagger Country Club</title>
 <style>
-  :root{
-    --green:#143126;
-    --green-2:#1f4335;
-    --green-3:#355847;
-    --cream:#f5f0e5;
-    --cream-2:#ece4d2;
-    --ink:#1d231f;
-    --gold:#b79c62;
-    --line:#ccbfa5;
-    --soft:#6d6a60;
-    --red:#7c342c;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--cream);color:var(--ink)}
-  body{font:16px/1.4 Georgia, Cambria, 'Times New Roman', serif}
-  main{max-width:720px;margin:0 auto;padding:18px 14px 60px}
-  .app-shell{background:linear-gradient(180deg,#f7f3ea 0%, #f2ebdd 100%);border:1px solid var(--line);border-radius:26px;box-shadow:0 8px 24px rgba(24,34,26,.09);overflow:hidden}
-  .mast{background:linear-gradient(180deg,#17372b 0%,#122c22 100%);color:var(--cream);padding:22px 18px 20px;position:relative;border-bottom:4px solid var(--gold)}
-  .over{letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:#d7cab0;margin-bottom:6px}
-  .brandrow{display:flex;justify-content:space-between;gap:12px;align-items:start}
-  .h1{font-size:34px;line-height:1;margin:0;font-weight:700;letter-spacing:.01em}
-  .sub{margin:6px 0 0;color:#d6ddd3;font-size:14px}
-  .badge{display:inline-block;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:5px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.06)}
-  .crest{width:54px;height:54px;border:1px solid rgba(255,255,255,.25);border-radius:50%;display:grid;place-items:center;font-size:24px;background:rgba(255,255,255,.06)}
-  .quip{margin-top:12px;padding:10px 12px;background:rgba(245,240,229,.08);border:1px solid rgba(245,240,229,.12);border-radius:14px;color:#d8d4c8;font-size:14px}
-  .content{padding:16px}
-  .card{background:#fbf8f0;border:1px solid var(--line);border-radius:18px;padding:16px;margin:14px 0}
-  .card.green{background:linear-gradient(180deg,#203f32 0%,#19372c 100%);color:var(--cream);border-color:#355646}
-  h2,h3{margin:0 0 10px}
-  h2{font-size:23px;font-weight:700;color:var(--green)}
-  .green h2,.green h3{color:var(--cream)}
-  h3{font-size:17px;color:var(--green)}
-  .muted{color:var(--soft);font-size:13px}
-  .green .muted{color:#d9d2c3}
-  label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.1em;margin:0 0 6px;color:#4d5b54}
-  .green label{color:#d8d4c6}
-  input,select,button{font:inherit}
-  input,select{
-    width:100%;padding:12px 13px;border:1px solid #cfc2a6;border-radius:12px;background:white;color:var(--ink)
-  }
-  button{width:100%;padding:13px 15px;border:0;border-radius:12px;cursor:pointer;font-weight:700}
-  .btn-primary{background:var(--green);color:var(--cream)}
-  .btn-secondary{background:var(--cream-2);color:var(--green);border:1px solid #d5c6a7}
-  .btn-ghost{background:#f9f5eb;color:var(--green);border:1px dashed #baa77f}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .triple{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .quad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .quick{display:flex;flex-wrap:wrap;gap:8px}
-  .quick button{width:auto;min-width:78px;padding:10px 12px;background:#f5eee0;color:var(--green);border:1px solid #d5c4a1;border-radius:999px;font-size:14px}
-  .quick button.active{background:var(--green);color:var(--cream);border-color:var(--green)}
-  .setup-options{display:grid;grid-template-columns:1fr;gap:10px}
-  .setup-option{padding:14px;border:1px solid var(--line);border-radius:16px;background:#fffdf9}
-  .setup-option strong{display:block;color:var(--green);margin-bottom:4px}
-  .callout{background:linear-gradient(180deg,#f3eee2 0%,#eee4d0 100%);border:1px solid #d2c29d;border-radius:18px;padding:16px;color:var(--ink)}
-  .club-big{font-size:32px;font-weight:800;letter-spacing:.02em;color:var(--green)}
-  .target{font-size:18px;font-weight:700;margin-top:4px;color:var(--green)}
-  .callout p,.callout .keith,.callout .keith strong{color:var(--ink)}
-  .callout .note{color:#635d51}
-  .keith{margin-top:10px;padding-top:10px;border-top:1px solid #d8ccb4}
-  .status{font-size:13px;color:#58655d}
-  .tag{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border:1px solid #c8ba9d;border-radius:999px;color:#5c5a53;background:#faf6ed}
-  details summary{cursor:pointer;font-weight:700;color:var(--green)}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{padding:8px 4px;border-bottom:1px solid #e0d5bd;text-align:left}
-  th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#546056}
-  .note{font-size:12px;color:#6f6b63;margin-top:8px}
-  .pulse-wrap{margin-top:12px;padding:13px;border:1px solid #c7b996;border-radius:14px;background:#eee3cb;color:#19372b}
-  .pulse-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-  .pulse-score{font-size:28px;font-weight:800}
-  .pulse-track{height:15px;border-radius:100px;background:linear-gradient(90deg,#52775a,#b7a263,#b76a4a,#8c352e);overflow:hidden;position:relative;margin:10px 0 5px}
-  .pulse-marker{height:22px;width:5px;background:#f9f1e0;border:1px solid #183628;position:absolute;top:-3px;left:0;box-shadow:0 0 0 2px #183628}
-  .pulse-reason{font-size:12px;color:#46564b}
-  .answer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
-  .answer-actions button{padding:9px 5px;font-size:12px;background:#e6dcc6;color:#19372b;border:1px solid #cabc9c}
-  .tabbar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}
-  .tabbar button{font-size:13px;padding:11px 4px;background:#e9e0cd;border:1px solid #c5b593;color:#17372a}
-  .tabbar button.active{background:#17372a;color:#fff7e8}
-  .hidden-panel{display:none !important}
-  .card.green .callout{color:#1d3125}
-  .card.green .callout p,.card.green .callout .keith,.card.green .callout .target,.card.green .callout strong{color:#233b2e}
-  .card.green .callout .note{color:#665e4c}
-  .portrait{width:106px;max-width:32%;border-radius:12px;border:2px solid #b79c62;object-fit:cover;float:right;margin:0 0 10px 12px}
-  .reset-panel{background:#19392d;color:#f3e9d6;border-radius:18px;padding:16px;margin-top:12px}
-  .reset-quote{background:#f3ead7;color:#17382b;border-radius:15px;padding:18px;font-size:23px;font-weight:700;line-height:1.28;text-align:center}
-  .reset-options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
-  .reset-options button{padding:12px 5px;background:#eee2cd;color:#17382b;border:1px solid #b8a77e;font-size:13px}
-  .reset-options button.active{background:#183a2d;color:#f4eddf}
-  .reset-steps{padding:12px 18px;margin:8px 0 14px;background:#eae0ca;color:#203d30;border-radius:12px;line-height:1.7}
-  .character-strip{display:flex;gap:12px;align-items:center;background:#e9dec7;border-radius:14px;padding:9px;color:#243c30}
-  .character-strip img{width:74px;height:77px;object-fit:cover;border-radius:9px}
-  .footer{font-size:12px;color:#6d6a60;text-align:center;padding:6px 0 0}
-  .hidden{display:none !important}
-  .inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .smallbtn{width:auto;padding:10px 12px}
-  @media (max-width:560px){
-    .grid,.triple,.quad{grid-template-columns:1fr 1fr}
-    .h1{font-size:30px}
-  }
+:root{
+  --bg:#efe7d5;
+  --paper:#f7f1e5;
+  --paper2:#f1e7d2;
+  --paper3:#e8dcc2;
+  --ink:#1c241f;
+  --muted:#667168;
+  --green:#102a21;
+  --green2:#17392d;
+  --green3:#24483a;
+  --gold:#ba9c60;
+  --gold2:#d6c18e;
+  --line:#c6b48f;
+  --danger:#7c322c;
+  --shadow:0 10px 26px rgba(28,26,20,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:radial-gradient(circle at top,#f5efdf 0,#e9dfca 100%);color:var(--ink)}
+body{font:16px/1.4 Georgia, 'Times New Roman', serif}
+main{max-width:760px;margin:0 auto;padding:14px 12px 56px}
+.app{overflow:hidden;border:1px solid #b8a67f;border-radius:30px;background:linear-gradient(180deg,#fbf8f0 0,#efe6d2 100%);box-shadow:var(--shadow)}
+.header{background:radial-gradient(circle at 15% 5%,rgba(255,255,255,.08),transparent 30%),linear-gradient(180deg,#163629 0,#0f281f 100%);color:#f5ecd8;border-bottom:4px solid var(--gold);padding:20px 18px 16px;position:relative}
+.header:after{content:"";position:absolute;inset:0;background-image:linear-gradient(to right,transparent 0,rgba(255,255,255,.03) 50%,transparent 100%);pointer-events:none}
+.over{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#d8cba8}
+.brand{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-top:4px}
+.brand h1{margin:0;font-size:38px;line-height:.95;font-weight:700;letter-spacing:.01em}
+.tagline{font-size:14px;color:#d9dfd5;margin-top:6px}
+.crest{width:64px;height:64px;border-radius:50%;border:1px solid rgba(255,255,255,.23);display:grid;place-items:center;background:rgba(255,255,255,.05);overflow:hidden}
+.club-quote{display:grid;grid-template-columns:90px 1fr;gap:14px;align-items:center;margin-top:14px;padding:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);border-radius:18px}
+.club-quote img{width:90px;height:90px;border-radius:14px;border:2px solid rgba(218,196,140,.75);object-fit:cover;background:#e8dcc2}
+.club-quote strong{display:block;font-size:17px;color:#fff7e8}
+.club-quote .quote{font-size:14px;color:#e4dfd2}
+.content{padding:14px}
+.topnav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.topnav button{padding:11px 6px;border-radius:14px;border:1px solid #c9b88f;background:#efe5cf;color:var(--green);font-weight:700;font-size:13px}
+.topnav button.active{background:var(--green);color:#fff2d8;border-color:#0f281f;box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:linear-gradient(180deg,#fbf8f1 0,#f2e8d4 100%);border:1px solid var(--line);border-radius:22px;padding:15px;margin-bottom:14px;box-shadow:0 3px 0 rgba(0,0,0,.04)}
+.card.dark{background:linear-gradient(180deg,#18382d 0,#122e24 100%);color:#f5ecd8;border-color:#335041}
+.card.dark h2,.card.dark h3,.card.dark label,.card.dark .small,.card.dark .muted,.card.dark .section-title{color:#efe5cf}
+h2,h3,p{margin:0 0 10px}
+h2{font-size:26px;color:var(--green)}
+h3{font-size:18px;color:var(--green2)}
+.small,.muted,.note{font-size:13px;color:var(--muted)}
+label{display:block;margin:0 0 6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#53645a}
+input,select,button{font:inherit}
+input,select{width:100%;padding:12px 13px;border-radius:14px;border:1px solid #cbbb98;background:#fffefb;color:var(--ink)}
+button{width:100%;cursor:pointer;border:0;border-radius:14px;padding:13px 14px;font-weight:700}
+.primary{background:var(--green);color:#fff4dd}
+.secondary{background:#efe3ca;color:var(--green);border:1px solid #cfbc93}
+.ghost{background:#f8f3e7;color:var(--green);border:1px dashed #baa77f}
+.danger{background:#7b342b;color:#fff0e2}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.quick{display:flex;flex-wrap:wrap;gap:8px}
+.quick button{width:auto;min-width:80px;padding:9px 12px;border-radius:999px;background:#f8f1e3;color:var(--green2);border:1px solid #cfbc93;font-weight:700}
+.quick button.active{background:var(--green);color:#ffefcf;border-color:var(--green)}
+.playhead{display:grid;grid-template-columns:1.25fr .95fr;gap:12px}
+.plaque{background:linear-gradient(180deg,#102b21 0,#15362b 100%);color:#f8efdc;border-radius:22px;padding:16px;border:1px solid #2f4c3e;position:relative;overflow:hidden}
+.plaque:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 0,rgba(255,255,255,.09),transparent 34%);pointer-events:none}
+.plaque .yard{font-size:70px;line-height:.9;font-weight:800;letter-spacing:-.02em}
+.plaque .ydlabel{font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:#d8caab}
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.kbox{padding:9px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08)}
+.kbox strong{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#d5c7a5}
+.kbox span{font-size:21px;font-weight:700;color:#fff5df}
+.member-card{background:linear-gradient(180deg,#fbf5e8 0,#efe3ca 100%);border-radius:22px;border:1px solid #c9b88f;padding:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+.member-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.member-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#e8dbc0;border:1px solid #c9b88f;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#536057}
+.keith-call{background:linear-gradient(180deg,#f9f4e8 0,#ecdfc3 100%);border:1px solid #ccb98f;border-radius:18px;padding:14px;position:relative;overflow:hidden}
+.keith-call .club{font-size:42px;line-height:.96;color:var(--green);font-weight:800;letter-spacing:.02em}
+.keith-call .target{font-size:18px;color:var(--green2);font-weight:700;margin-top:4px}
+.keith-says{display:grid;grid-template-columns:66px 1fr;gap:12px;align-items:start;margin-top:12px;padding-top:12px;border-top:1px solid #d8c8a2}
+.keith-says img{width:66px;height:66px;border-radius:12px;border:1px solid #c3af82;background:#e9ddc5}
+.keith-copy{font-size:15px;color:#24352d}
+.pucker{margin-top:12px;background:linear-gradient(180deg,#203e31 0,#173125 100%);border-radius:18px;padding:14px;color:#fff1da;border:1px solid #355343}
+.pucker-head{display:flex;justify-content:space-between;gap:10px;align-items:end}
+.pucker .score{font-size:34px;font-weight:800}
+.track{height:16px;border-radius:999px;background:linear-gradient(90deg,#547a5b 0,#94a45f 28%,#bd9960 52%,#b15d48 77%,#7d302a 100%);position:relative;margin:10px 0 6px;overflow:hidden}
+.marker{position:absolute;top:-3px;left:0;height:22px;width:6px;border-radius:4px;background:#fff2de;border:1px solid #23382d;box-shadow:0 0 0 2px rgba(35,56,45,.7)}
+.feedback{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px}
+.feedback button{padding:10px 4px;font-size:12px;background:#efe4cd;border:1px solid #c7b389;color:#1c352a}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.section-title{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6d6554;margin-bottom:5px}
+.reset-hero{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center}
+.reset-hero img{width:96px;height:96px;border-radius:16px;border:2px solid #c8b07b;background:#e8dcc2}
+.reset-board{background:linear-gradient(180deg,#153429 0,#102a20 100%);border:1px solid #355241;border-radius:22px;padding:16px;color:#f6ead3}
+.reset-quote{background:#f2e6ce;color:var(--green2);border-radius:16px;padding:16px;font-size:28px;font-weight:800;text-align:center;line-height:1.16}
+.reset-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.reset-options button{padding:12px 6px;background:#efe3cb;color:#17362a;border:1px solid #bca77a;font-size:13px}
+.reset-options button.active{background:var(--green);color:#ffeed0}
+.steps{background:#ecdfc4;color:#1f352a;border-radius:14px;padding:12px 14px;line-height:1.65;margin-bottom:12px}
+.lockercard{background:linear-gradient(180deg,#f9f4e9 0,#ecdfc3 100%);border:1px solid #ccb88f;border-radius:20px;padding:14px}
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table th,.table td{padding:8px 4px;border-bottom:1px solid #ddd0b7;text-align:left}
+.table th{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:#617067}
+.setup-options{display:grid;gap:10px}
+.setup-option{padding:14px;background:#fffaf0;border-radius:16px;border:1px solid #d7c59d}
+.setup-option strong{display:block;color:var(--green);margin-bottom:4px}
+.hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.listbox{display:flex;flex-wrap:wrap;gap:8px}
+.pill{padding:7px 10px;background:#efe3ca;border:1px solid #cbb78d;border-radius:999px;font-size:13px;color:#183629}
+.hidden{display:none !important}
+.footer{text-align:center;color:#6c6a60;font-size:12px;padding-top:4px}
+@media (max-width:620px){
+  .playhead,.feature-grid,.grid2,.grid3{grid-template-columns:1fr}
+  .feedback{grid-template-columns:repeat(3,1fr)}
+  .brand h1{font-size:34px}
+  .club-quote{grid-template-columns:78px 1fr}
+  .club-quote img{width:78px;height:78px}
+  .kgrid{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 <body>
 <main>
-  <div class="app-shell">
-    <div class="mast">
-      <div class="over">Dagger Country Club • Personal Edition</div>
-      <div class="brandrow">
-        <div>
-          <div class="h1">Dagger Caddie</div>
-          <div class="sub">Caddie on duty: <strong>Keith</strong> · Club first. Bullshit later.</div>
-        </div>
-        <div class="crest" title="Dagger Country Club">⚑</div>
+<div class="app">
+  <header class="header">
+    <div class="over">Dagger Country Club · Private-club service. Municipal-course language.</div>
+    <div class="brand">
+      <div>
+        <h1>Dagger Caddie</h1>
+        <div class="tagline">On the bag today: <strong>Keith</strong> — crotchety, qualified, and already disappointed in your target selection.</div>
       </div>
-      <div class="quip"><img class="portrait" src="keith.svg" alt="Keith, Dagger Country Club’s permanently unimpressed caddie"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
+      <div class="crest"><img src="icon.svg" alt="Dagger Country Club crest" style="width:100%;height:100%"></div>
     </div>
+    <div class="club-quote">
+      <img src="keith.svg" alt="Keith, Dagger Country Club caddie">
+      <div>
+        <strong>Keith’s standing order</strong>
+        <div class="quote" id="mastquip">Distance is a number. Decisions are a skill. You are currently better at one than the other.</div>
+      </div>
+    </div>
+  </header>
 
-    <div class="content">
-      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ MY BAG</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-settings" type="button">⚙ CLUBHOUSE</button></nav>
+  <div class="content">
+    <nav class="topnav" aria-label="Sections">
+      <button id="tab-play" class="active" type="button">Play</button>
+      <button id="tab-reset" type="button">Reset</button>
+      <button id="tab-bag" type="button">My Bag</button>
+      <button id="tab-clubhouse" type="button">Clubhouse</button>
+    </nav>
 
-      <section class="card" id="setupCard">
-        <h2>Welcome to Dagger Caddie</h2>
-        <p class="muted">Before Keith starts judging your choices, pick how you want to start.</p>
-        <div class="setup-options">
-          <div class="setup-option">
-            <strong>Use starter profile</strong>
-            <div class="muted">Loads the existing range-session distances so you can try the app instantly.</div>
-            <button class="btn-secondary" id="useAustin">Use starter profile</button>
+    <section class="card" id="setupCard">
+      <h2>Welcome, Member</h2>
+      <p class="muted">Pick how you want to start before Keith starts grading your decision-making.</p>
+      <div class="setup-options">
+        <div class="setup-option">
+          <strong>Use starter profile</strong>
+          <div class="muted">Load the built-in profile and start testing immediately.</div>
+          <button class="secondary" id="useStarter">Use starter profile</button>
+        </div>
+        <div class="setup-option">
+          <strong>Build my own bag</strong>
+          <div class="muted">Start empty and manually enter your club carries.</div>
+          <button class="secondary" id="buildMine">Build my bag</button>
+        </div>
+        <div class="setup-option">
+          <strong>Upload range data</strong>
+          <div class="muted">Import a launch-monitor CSV and let Keith build your profile from actual shots.</div>
+          <button class="secondary" id="jumpUpload">Go to range data</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel active" data-panel="play">
+      <div class="playhead">
+        <div class="plaque">
+          <div class="over">Dagger Country Club · On-course desk</div>
+          <div style="margin-top:6px;display:flex;justify-content:space-between;gap:8px;align-items:end">
+            <div>
+              <div class="yard" id="displayYards">168</div>
+              <div class="ydlabel">yards to target</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#d8caab">Course</div>
+              <div id="displayCourse" style="font-size:20px;font-weight:700">Bayonet at Puppy Creek</div>
+            </div>
           </div>
-          <div class="setup-option">
-            <strong>Build my own bag</strong>
-            <div class="muted">Start with an empty bag and enter your carry distances manually.</div>
-            <button class="btn-secondary" id="buildMine">Build my bag</button>
-          </div>
-          <div class="setup-option">
-            <strong>Upload range data</strong>
-            <div class="muted">Import a launch-monitor CSV and let Keith build your profile from actual shots.</div>
-            <button class="btn-secondary" id="jumpUpload">Take me to upload</button>
+          <div class="kgrid">
+            <div class="kbox"><strong>Hole</strong><span id="displayHole">1</span></div>
+            <div class="kbox"><strong>Pin</strong><span id="displayPin">Middle</span></div>
+            <div class="kbox"><strong>Lie</strong><span id="displayLie">Fairway</span></div>
           </div>
         </div>
-      </section>
-
-      <section class="card green" data-tab="play">
-        <div class="inline" style="justify-content:space-between">
-          <div>
-            <h2>Round mode</h2>
-            <div class="muted">Fast inputs for the course. Big buttons. No dissertations.</div>
+        <div class="member-card">
+          <div class="member-top">
+            <div>
+              <div class="section-title">Quick course tools</div>
+              <h3 style="margin-bottom:4px">Tomorrow’s test run</h3>
+            </div>
+            <span class="member-badge">Bayonet ready</span>
           </div>
-          <span class="badge">Keith Mode</span>
+          <div class="hero-actions">
+            <button class="secondary" id="useBayonet">Use Bayonet</button>
+            <button class="secondary" id="useLastCourse">Use last course</button>
+          </div>
+          <div style="margin-top:12px" class="small">Keith’s advice works best when the course name, hole, lie, and yardage are actually correct. Revolutionary concept.</div>
         </div>
-        <div class="grid" style="margin-top:10px">
+      </div>
+
+      <div class="card dark">
+        <div class="grid2">
           <div>
             <label>Distance (yards)</label>
             <input id="yards" type="number" min="1" max="700" value="168" inputmode="numeric">
           </div>
           <div>
             <label>Course note</label>
-            <input id="coursenote" placeholder="e.g. uphill / forced carry / dogleg">
-          </div>
-        </div>
-        <div style="margin-top:12px">
-          <label>Lie</label>
-          <div class="quick" id="lieButtons"></div>
-        </div>
-        <div style="margin-top:12px">
-          <label>Wind</label>
-          <div class="quick" id="windButtons"></div>
-        </div>
-        <div style="margin-top:12px">
-          <label>Pin</label>
-          <div class="quick" id="pinButtons"></div>
-        </div>
-        <div style="margin-top:12px">
-          <label>Danger (optional)</label>
-          <div class="quick" id="dangerButtons"></div>
-        </div>
-        <div class="grid" style="margin-top:12px">
-          <button class="btn-primary" id="call">Ask Keith</button>
-          <button class="btn-secondary" id="clearRound">Reset shot</button>
-        </div>
-        <div style="margin-top:9px"><button class="btn-secondary" id="quickReset" type="button">↻ MENTAL RESET · 10 SECONDS</button></div>
-        <div style="margin-top:9px"><button class="btn-secondary" id="heroCheck" type="button">⚠ I'M ABOUT TO DO SOMETHING STUPID</button></div>
-        <div class="pulse-wrap" id="pulseBox" aria-live="polite">
-          <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB</div><strong>PUCKER FACTOR</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
-          <div class="pulse-track"><div class="pulse-marker" id="pulseMarker"></div></div>
-          <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
-        </div>
-        <div class="callout" style="margin-top:14px" id="answer">
-          <div class="club-big">7 IRON</div>
-          <div class="target">Center green · Smooth swing</div>
-          <p>Keith's waiting. Tap Ask Keith for the actual recommendation.</p>
-          <div class="keith"><strong>Keith says:</strong> Nice and easy. No need to turn a stock 7-iron into a federal case.</div>
-        </div>
-        <div class="answer-actions" aria-label="Quick shot feedback"><button data-feedback="Good">✓ Good</button><button data-feedback="Short">↓ Short</button><button data-feedback="Long">↑ Long</button><button data-feedback="Left">← Left</button><button data-feedback="Right">→ Right</button><button data-feedback="Trouble">! Trouble</button></div>
-        <p class="muted" id="feedbackStatus" style="color:#d6d6cb">Optional: one tap records the last shot outcome on this phone. No scorekeeping.</p>
-        <div class="note" style="color:#e4dcc9">Recommendations are only as good as your yardage, lie, carry requirement, and hazard info. Keith is sarcastic, not psychic.</div>
-      </section>
-
-      <section class="card" data-tab="reset">
-        <div class="inline" style="justify-content:space-between"><div><div class="over" style="color:#6b644c">DAGGER COUNTRY CLUB · MENTAL PERFORMANCE DEPARTMENT</div><h2>Keith’s Emergency Services</h2><p class="muted">Because apparently we need this. No lectures, no swing rebuilding.</p></div><span class="tag">10 SECOND RESET</span></div>
-        <div class="character-strip"><img src="keith.svg" alt="Keith looking profoundly unimpressed"><div><strong>Keith, Head of Emotional Damage Control</strong><div style="font-size:13px;margin-top:4px">“You’re allowed one bad swing. A full psychological collapse is extra.”</div></div></div>
-        <div class="reset-panel">
-          <div class="over" style="color:#d9c69e">THE LAST SHOT IS DEAD</div>
-          <div class="reset-quote">The last shot is dead.<br>Stop digging it up.</div>
-          <div style="margin-top:12px;color:#f1e8d4"><strong>What’s happening?</strong></div>
-          <div class="reset-options" id="resetOptions"><button type="button" data-trigger="angry">I’m pissed</button><button type="button" data-trigger="hard">Swinging too hard</button><button type="button" data-trigger="lost">Completely lost it</button></div>
-          <div class="reset-steps" id="resetSteps"><strong>1.</strong> Exhale slowly for 6 seconds.<br><strong>2.</strong> Loosen your hands and shoulders.<br><strong>3.</strong> Pick one safe target and commit.</div>
-          <p id="resetKeith" style="color:#f3ead7;font-style:italic">“That shot is dead. We’re not holding a fucking memorial service.”</p>
-          <button id="resetNow" class="btn-secondary" type="button">FUCK IT. NEXT SHOT.</button>
-          <div id="resetStatus" style="margin-top:9px;color:#d5cbaF;font-size:13px">Take the breath before pressing the button.</div>
-        </div>
-        <p class="muted">Keith roasts the decision, not you. A reset is for recovering composure, not forcing a hero shot.</p>
-        <button class="btn-primary" type="button" id="returnToPlay">RETURN TO PLAY</button>
-      </section>
-
-      <section class="card" data-tab="bag">
-        <h2>Quick wedges</h2>
-        <p class="muted">Make short-game calls way more useful. Enter your reliable carry for these stock feels.</p>
-        <div class="triple">
-          <div><label>50-yard shot</label><input id="w50" type="number" min="10" max="200" placeholder="50"></div>
-          <div><label>75-yard shot</label><input id="w75" type="number" min="10" max="200" placeholder="75"></div>
-          <div><label>100-yard shot</label><input id="w100" type="number" min="10" max="200" placeholder="100"></div>
-        </div>
-        <div class="grid" style="margin-top:12px">
-          <button class="btn-secondary" id="saveWedges">Save wedge feels</button>
-          <button class="btn-ghost" id="clearWedges">Clear wedge feels</button>
-        </div>
-        <div id="wedgestatus" class="status" style="margin-top:8px">Optional, but extremely useful for actual scoring golf.</div>
-      </section>
-
-      <section class="card" data-tab="settings">
-        <h2>Course & GPS</h2>
-        <div class="grid">
-          <div><label>Course</label><input id="course" placeholder="e.g. Bayonet at Puppy Creek"></div>
-          <div><label>Hole</label><input id="hole" type="number" min="1" max="18" value="1"></div>
-          <div><label>Green center latitude</label><input id="lat" type="number" step="any" placeholder="35.1234"></div>
-          <div><label>Green center longitude</label><input id="lon" type="number" step="any" placeholder="-79.1234"></div>
-        </div>
-        <div class="grid" style="margin-top:12px">
-          <button class="btn-secondary" id="savegreen">Save green center</button>
-          <button class="btn-primary" id="gps">Use phone GPS</button>
-        </div>
-        <p id="status" class="status">GPS gives straight-line distance to your saved green center. It does not know the flag, bunker lip, or whether you just short-sided yourself like a maniac.</p>
-      </section>
-
-      <section class="card" data-tab="settings">
-        <h2>Keith's personality</h2>
-        <div class="grid">
-          <div>
-            <label>Style</label>
-            <select id="personality">
-              <option value="pro">Classic club professional</option>
-              <option value="dry">Dry sarcasm</option>
-              <option value="smart" selected>Unfiltered smartass</option>
-            </select>
+            <input id="coursenote" placeholder="uphill / forced carry / dogleg / wind note">
           </div>
           <div>
-            <label>Roast level</label>
-            <select id="roast">
-              <option value="0">0 · Nice guy</option>
-              <option value="1">1 · Light jab</option>
-              <option value="2" selected>2 · Smartass caddie</option>
-              <option value="3">3 · Ruthless little gremlin</option>
-            </select>
+            <label>Course</label>
+            <input id="course" placeholder="Bayonet at Puppy Creek">
+          </div>
+          <div class="grid2" style="gap:8px">
+            <div><label>Hole</label><input id="hole" type="number" min="1" max="18" value="1"></div>
+            <div><label>Pin</label><select id="pinSelect"><option>Front</option><option selected>Middle</option><option>Back</option></select></div>
           </div>
         </div>
-        <div class="note">Personality changes Keith's delivery, not the shot decision.</div>
-      </section>
+        <div style="margin-top:12px"><label>Lie</label><div class="quick" id="lieButtons"></div></div>
+        <div style="margin-top:12px"><label>Wind</label><div class="quick" id="windButtons"></div></div>
+        <div style="margin-top:12px"><label>Danger / miss penalty</label><div class="quick" id="dangerButtons"></div></div>
+        <div class="hero-actions">
+          <button class="primary" id="askKeith">Ask Keith</button>
+          <button class="secondary" id="clearRound">Reset shot</button>
+        </div>
+        <div class="hero-actions">
+          <button class="secondary" id="quickReset">10-second Mental Reset</button>
+          <button class="danger" id="heroCheck">I’m About to Do Something Stupid</button>
+        </div>
+      </div>
 
-      <section class="card" data-tab="bag">
-        <h2>Member's bag</h2>
-        <p class="muted">Enter your normal carry distance. Manual yardages take priority over range-session averages.</p>
-        <div class="grid">
-          <div><label>Club</label><select id="manualclub"></select></div>
-          <div><label>Carry (yards)</label><input id="manualcarry" type="number" min="10" max="400" placeholder="165"></div>
-        </div>
-        <div class="grid" style="margin-top:12px">
-          <button class="btn-secondary" id="savemanual">Save distance</button>
-          <button class="btn-ghost" id="clearmanual">Clear override</button>
-        </div>
-        <details style="margin-top:12px">
-          <summary>Add a club not listed</summary>
-          <div class="grid" style="margin-top:12px">
-            <div><label>Club name</label><input id="newclub" placeholder="e.g. 56 Wedge"></div>
-            <div><label>Carry (yards)</label><input id="newcarry" type="number" min="10" max="400" placeholder="85"></div>
+      <div class="feature-grid">
+        <div class="keith-call">
+          <div class="section-title">Keith recommends</div>
+          <div class="club" id="clubText">7 IRON</div>
+          <div class="target" id="targetText">Aim center green · Stock swing</div>
+          <p class="muted" id="decisionNote">Keith’s waiting. Ask for the actual recommendation.</p>
+          <div class="keith-says">
+            <img src="keith.svg" alt="Keith">
+            <div class="keith-copy"><strong>Keith says:</strong> <span id="keithLine">Nice and easy. Don’t turn a stock 7-iron into a congressional hearing.</span></div>
           </div>
-          <button class="btn-secondary" style="margin-top:12px" id="addclub">Add this club</button>
-        </details>
-        <div class="grid" style="margin-top:12px">
-          <button class="btn-ghost" id="fresh">Start with an empty bag</button>
-          <button class="btn-secondary" id="useAustinMini">Reload starter profile</button>
         </div>
-        <p id="manualstatus" class="status" style="margin-top:8px">Your changes are saved on this device.</p>
-        <details open>
-          <summary>Your current distances</summary>
-          <table>
-            <thead><tr><th>Club</th><th>Carry</th><th>Source</th></tr></thead>
-            <tbody id="manualtable"></tbody>
-          </table>
-        </details>
-      </section>
+        <div>
+          <div class="pucker">
+            <div class="pucker-head">
+              <div><div class="over" style="margin:0;color:#d7c79f">Pressure gauge</div><strong>Pucker Factor</strong></div>
+              <div class="score" id="puckerScore">—</div>
+            </div>
+            <div class="track"><div class="marker" id="puckerMarker"></div></div>
+            <div id="puckerTier" style="font-weight:700">Awaiting shot</div>
+            <div class="small" id="puckerReason" style="color:#e2d7be;margin-top:4px">Keith needs your lie, yardage, and trouble first.</div>
+          </div>
+          <div class="card" style="margin:12px 0 0;background:linear-gradient(180deg,#f7f1e2 0,#eadcbf 100%)">
+            <div class="section-title">Keith’s notebook</div>
+            <div class="feedback">
+              <button data-feedback="Good">✓ Good</button>
+              <button data-feedback="Short">↓ Short</button>
+              <button data-feedback="Long">↑ Long</button>
+              <button data-feedback="Left">← Left</button>
+              <button data-feedback="Right">→ Right</button>
+              <button data-feedback="Trouble">! Trouble</button>
+            </div>
+            <div class="small" id="feedbackStatus" style="margin-top:8px">Optional shot logging. No scorekeeping, no drama.</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <section class="card" id="uploadSection" data-tab="bag">
-        <h2>Update your range data</h2>
+    <section class="panel" data-panel="reset">
+      <div class="card">
+        <div class="reset-hero">
+          <img src="keith.svg" alt="Keith looking unimpressed">
+          <div>
+            <div class="section-title">Dagger Country Club · Mental performance department</div>
+            <h2>Keith’s Emergency Services</h2>
+            <p class="muted">For when one shitty swing tries to recruit the next four.</p>
+          </div>
+        </div>
+      </div>
+      <div class="reset-board">
+        <div class="over">The last shot is dead</div>
+        <div class="reset-quote">Stop digging it up.</div>
+        <div class="reset-options" id="resetOptions">
+          <button type="button" data-trigger="angry">I’m pissed</button>
+          <button type="button" data-trigger="hard">Swinging too hard</button>
+          <button type="button" data-trigger="lost">Completely lost it</button>
+        </div>
+        <div class="steps" id="resetSteps"><strong>1.</strong> Exhale slowly for six seconds.<br><strong>2.</strong> Relax your hands and shoulders.<br><strong>3.</strong> Pick one safe target and commit.</div>
+        <p id="resetKeith" style="margin-bottom:12px">“That shot is dead. We’re not holding a fucking memorial service.”</p>
+        <div class="grid2">
+          <button class="secondary" id="resetNow">FUCK IT. NEXT SHOT.</button>
+          <button class="primary" id="returnToPlay">Return to Play</button>
+        </div>
+        <div class="small" id="resetStatus" style="margin-top:8px;color:#dccfb1">Take the breath. Then hit the next shot in front of you.</div>
+      </div>
+    </section>
+
+    <section class="panel" data-panel="bag">
+      <div class="grid2">
+        <div class="lockercard">
+          <div class="section-title">Quick wedges</div>
+          <h3>Stock feels</h3>
+          <div class="grid3">
+            <div><label>50-yard</label><input id="w50" type="number" min="10" max="200" placeholder="50"></div>
+            <div><label>75-yard</label><input id="w75" type="number" min="10" max="200" placeholder="75"></div>
+            <div><label>100-yard</label><input id="w100" type="number" min="10" max="200" placeholder="100"></div>
+          </div>
+          <div class="grid2" style="margin-top:12px"><button class="secondary" id="saveWedges">Save wedge feels</button><button class="ghost" id="clearWedges">Clear</button></div>
+          <div class="small" id="wedgestatus" style="margin-top:8px">Useful for scoring. Shockingly relevant.</div>
+        </div>
+        <div class="lockercard">
+          <div class="section-title">Member’s bag</div>
+          <h3>Manual carry distances</h3>
+          <div class="grid2">
+            <div><label>Club</label><select id="manualclub"></select></div>
+            <div><label>Carry (yds)</label><input id="manualcarry" type="number" min="10" max="400" placeholder="165"></div>
+          </div>
+          <div class="grid2" style="margin-top:12px"><button class="secondary" id="savemanual">Save distance</button><button class="ghost" id="clearmanual">Clear override</button></div>
+          <details style="margin-top:12px"><summary>Add a club not listed</summary><div class="grid2" style="margin-top:10px"><div><label>Club name</label><input id="newclub" placeholder="56 Wedge"></div><div><label>Carry</label><input id="newcarry" type="number" min="10" max="400" placeholder="85"></div></div><button class="secondary" style="margin-top:10px" id="addclub">Add club</button></details>
+          <div class="grid2" style="margin-top:12px"><button class="ghost" id="fresh">Start empty</button><button class="secondary" id="useStarterMini">Reload starter</button></div>
+          <div class="small" id="manualstatus" style="margin-top:8px">Your changes save on this phone.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Current bag</div>
+        <table class="table"><thead><tr><th>Club</th><th>Carry</th><th>Source</th></tr></thead><tbody id="manualtable"></tbody></table>
+      </div>
+
+      <div class="lockercard" id="uploadSection">
+        <div class="section-title">Range Data Room</div>
+        <h3>Update your profile</h3>
         <label>Launch-monitor CSV</label>
-        <input type="file" id="csv" accept=".csv,text/csv">
-        <p id="uploadstatus" class="status">Starting profile: October 16, 2026 · 60 shots.</p>
-        <div class="grid">
-          <button class="btn-secondary" id="export">Back up data</button>
-          <button class="btn-ghost" id="reset">Restore original</button>
-        </div>
+        <input id="csv" type="file" accept=".csv,text/csv">
+        <div class="small" id="uploadstatus" style="margin-top:8px">Starting profile: October 16, 2026 · 60 shots.</div>
+        <div class="grid2" style="margin-top:12px"><button class="secondary" id="export">Back up data</button><button class="ghost" id="resetProfile">Restore original</button></div>
         <div style="margin-top:12px"><label>Restore a saved backup</label><input id="backupFile" type="file" accept=".json,application/json"></div>
-        <div style="margin-top:12px"><strong>Keith's notebook</strong><p class="muted" id="shotLogInfo">No results logged yet.</p><button class="btn-ghost" id="clearLog">Clear shot feedback</button></div>
-        <details style="margin-top:12px">
-          <summary>Profile summary</summary>
-          <table>
-            <thead><tr><th>Club</th><th>Carry</th><th>Shots</th><th>Avg offline</th></tr></thead>
-            <tbody id="clubs"></tbody>
-          </table>
-        </details>
-        <div class="note">Range files are parsed on this device. Back up after importing if you don't want Keith to forget everything.</div>
-      </section>
+        <div class="small" id="shotLogInfo" style="margin-top:12px">No results logged yet.</div>
+        <button class="ghost" id="clearLog" style="margin-top:8px">Clear shot feedback</button>
+        <details style="margin-top:12px"><summary>Profile summary</summary><table class="table"><thead><tr><th>Club</th><th>Carry</th><th>Shots</th><th>Avg offline</th></tr></thead><tbody id="clubs"></tbody></table></details>
+      </div>
+    </section>
 
-      <div class="footer">Dagger Caddie · Keith’s Country Club Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
-    </div>
+    <section class="panel" data-panel="clubhouse">
+      <div class="grid2">
+        <div class="card">
+          <div class="section-title">Favorite courses</div>
+          <h3>Quick course presets</h3>
+          <div class="grid2">
+            <div><label>Course name</label><input id="favCourseName" placeholder="Bayonet at Puppy Creek"></div>
+            <div style="display:flex;align-items:end"><button class="secondary" id="addFavoriteCourse">Add favorite</button></div>
+          </div>
+          <div class="listbox" id="favoriteCourses" style="margin-top:12px"></div>
+          <div class="small" style="margin-top:8px">Tap a favorite to load it into Play. Bayonet is preloaded because apparently tomorrow matters.</div>
+        </div>
+        <div class="card">
+          <div class="section-title">Course & GPS</div>
+          <h3>Map your greens</h3>
+          <div class="grid2">
+            <div><label>Green center latitude</label><input id="lat" type="number" step="any" placeholder="35.1234"></div>
+            <div><label>Green center longitude</label><input id="lon" type="number" step="any" placeholder="-79.1234"></div>
+          </div>
+          <div class="grid2" style="margin-top:12px"><button class="secondary" id="savegreen">Save green center</button><button class="primary" id="gps">Use phone GPS</button></div>
+          <div class="small" id="status" style="margin-top:8px">Straight-line yardage to your saved green center. It cannot see bunker lips, tucked pins, or bad ideas.</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="section-title">Keith’s personality</div>
+          <h3>Choose your abuse level</h3>
+          <div class="grid2">
+            <div><label>Style</label><select id="personality"><option value="pro">Classic club professional</option><option value="dry">Dry sarcasm</option><option value="smart" selected>Unfiltered smartass</option></select></div>
+            <div><label>Roast level</label><select id="roast"><option value="0">0 · Nice guy</option><option value="1">1 · Light jab</option><option value="2" selected>2 · Smartass caddie</option><option value="3">3 · Borderline mean</option></select></div>
+          </div>
+          <div class="small" style="margin-top:8px">Changes Keith’s tone, not the underlying decision engine.</div>
+        </div>
+        <div class="card">
+          <div class="section-title">Member bulletin</div>
+          <h3>Bayonet test checklist</h3>
+          <ul style="margin:0;padding-left:20px;color:#304138;line-height:1.6">
+            <li>Confirm course, hole, and lie before trusting the recommendation.</li>
+            <li>If GPS is messy, type the yardage manually and keep moving.</li>
+            <li>Log a few outcomes so Keith can see which clubs betray you most often.</li>
+            <li>If Pucker Factor is high, stop being cute.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">Dagger Caddie 5.0 · Keith at Dagger Country Club · No subscription · No scorekeeping · No patience for hero golf</div>
   </div>
+</div>
 </main>
-<script>
-const $=id=>document.getElementById(id);
-const escapeHTML=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let currentClub='', lastDecision=null, loggedShots=[];
-function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','reset','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
-['play','bag','reset','settings'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
-const resetAdvice={
- angry:{steps:'<strong>1.</strong> Exhale for six seconds. Unclench your jaw.<br><strong>2.</strong> Name what happened without assigning blame.<br><strong>3.</strong> Choose the safest target. Swing only when ready.',quote:'“Yes, that was crap. Giving the next ball the same punishment would be even dumber.”'},
- hard:{steps:'<strong>1.</strong> Loosen your grip and take one slow breath.<br><strong>2.</strong> Make ONE smooth rehearsal at 75% effort.<br><strong>3.</strong> Pick a target and swing with balance.',quote:'“Distance is not an emergency, you overcaffeinated lumberjack.”'},
- lost:{steps:'<strong>1.</strong> Six-second exhale. Drop your shoulders.<br><strong>2.</strong> Forget mechanics. Choose a generous landing area.<br><strong>3.</strong> Commit to one simple shot.',quote:'“We are not fixing your entire golf swing on the seventh tee, professor.”'},
- general:{steps:'<strong>1.</strong> Exhale slowly for six seconds.<br><strong>2.</strong> Relax your hands and shoulders.<br><strong>3.</strong> Pick one safe target and commit.',quote:'“The last shot is dead. We’re not holding a fucking memorial service.”'}
-};
-let resetTrigger='general',resetCount=0;
-function renderReset(){const a=resetAdvice[resetTrigger];$('resetSteps').innerHTML=a.steps;$('resetKeith').textContent=a.quote;document.querySelectorAll('[data-trigger]').forEach(b=>b.classList.toggle('active',b.dataset.trigger===resetTrigger));}
-function showLog(){ $('shotLogInfo').textContent=loggedShots.length?`${loggedShots.length} outcomes saved. Latest: ${loggedShots[loggedShots.length-1].result} (${loggedShots[loggedShots.length-1].club}). These don't silently change your carry distances.`:'No results logged yet.'; }
-function pucker({yards,lie,wind,danger,club,confidence}){
-  let val=1.5, reasons=[];
-  const bump=(v,t)=>{val+=v;reasons.push(t)};
-  if(lie==='Rough')bump(1,'rough lie');
-  if(lie==='Deep rough')bump(2.4,'deep rough');
-  if(lie==='Trees / recovery'||lie==='Bunker')bump(3.2,'recovery lie');
-  if(danger!=='none')bump(2.1,'reported trouble '+danger);
-  if(wind==='Headwind'||wind==='Crosswind')bump(.6,'wind');
-  if(yards>190&&yards<=285)bump(.9,'long approach');
-  if(yards>285)bump(.7,'long position shot');
-  if(confidence==='low')bump(1.3,'uncertain club data');
-  if(!reasons.length) reasons.push('stock situation; no reported trouble');
-  val=Math.min(10,Math.max(1,Math.round(val*10)/10));
-  const tier=val<3?'Sunday Stroll':val<5?'Member Bounce':val<7?'Firm Handshake':val<9?'Pucker Time':'Card-Wrecker';
-  $('pulseNumber').textContent=val.toFixed(1)+' / 10';$('pulseTier').textContent=tier;
-  $('pulseMarker').style.left=`calc(${Math.max(0,Math.min(99,(val-1)/9*100))}% - 2px)`;
-  $('pulseReason').textContent=reasons.join(' · ')+'. Situation estimate, not a measured probability.';
-}
 
-let baseline=[], profile=[], greens={}, wedgeFeels={}, state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'};
+<script>
+const $ = id => document.getElementById(id);
+const esc = v => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const store=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)); return v??d}catch{return d}};
+const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}};
+let baseline=[], profile=[], greens={}, wedgeFeels={}, loggedShots=[], favorites=[];
+let state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'};
+let lastDecision=null, resetCount=0, resetTrigger='general';
 const LIES=['Tee','Fairway','Rough','Deep rough','Trees / recovery','Bunker'];
 const WINDS=['Calm','Headwind','Tailwind','Crosswind'];
-const PINS=['Front','Middle','Back'];
 const DANGERS=[['none','No info'],['short','Trouble short'],['long','Trouble long'],['left','Trouble left'],['right','Trouble right']];
-
-function activeCarry(p){return Number.isFinite(p.manualCarry)?p.manualCarry:p.carry}
-function setQuick(containerId, values, selected, onPick){
-  const root=$(containerId); root.innerHTML='';
-  values.forEach(v=>{
-    const value=Array.isArray(v)?v[0]:v, label=Array.isArray(v)?v[1]:v;
-    const b=document.createElement('button'); b.type='button'; b.textContent=label; if(value===selected)b.classList.add('active');
-    b.onclick=()=>{ onPick(value); setQuick(containerId, values, value, onPick)};
-    root.appendChild(b);
-  });
-}
-function renderMastQuip(){
-  const p=$('personality').value, roast=Number($('roast').value);
-  let msg='Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.';
-  if(p==='pro') msg='Keith remains calm, composed, and only mildly disappointed in your course management.';
-  else if(p==='dry') msg= roast>1 ? 'Keith will be polite enough to help and rude enough to be memorable.' : 'Keith is quietly judgmental, just like a proper club caddie.';
-  else if(roast>=3) msg='Keith loves you enough to help and respects you little enough to tell the truth.';
-  $('mastquip').textContent=msg;
-}
-function syncManualField(){
-  const p=profile[Number($('manualclub').value)];
-  $('manualcarry').value=p?Math.round(activeCarry(p)):'';
-}
-function validCarry(input){let n=Number(input);return String(input).trim()!==''&&Number.isFinite(n)&&n>=10&&n<=400?n:null}
-function render(){
-  $('clubs').innerHTML=profile.length?profile.map(p=>`<tr><td>${escapeHTML(p.name)}</td><td>${activeCarry(p).toFixed(0)} yd</td><td>${p.n}</td><td>${(p.off??15).toFixed(0)} yd</td></tr>`).join(''):'<tr><td colspan="4">No clubs loaded yet.</td></tr>';
-  const prior=$('manualclub').value;
-  $('manualclub').innerHTML=profile.length?profile.map((p,i)=>`<option value="${i}">${escapeHTML(p.name)}</option>`).join(''):'<option value="">No clubs yet</option>';
-  if(profile.length){ $('manualclub').value = profile.some((p,i)=>String(i)===prior)?prior:'0'; syncManualField(); }
-  else $('manualcarry').value='';
-  $('manualtable').innerHTML=profile.length?profile.map(p=>`<tr><td>${escapeHTML(p.name)}</td><td>${activeCarry(p).toFixed(0)} yd</td><td>${Number.isFinite(p.manualCarry)?'Manual':'Range'}</td></tr>`).join(''):'<tr><td colspan="3">No clubs yet. Add one above.</td></tr>';
-  $('w50').value = wedgeFeels[50] ?? '';
-  $('w75').value = wedgeFeels[75] ?? '';
-  $('w100').value = wedgeFeels[100] ?? '';
-  $('setupCard').classList.toggle('hidden', read('dagger_setup_complete', false));
-  renderMastQuip();
-}
-function chooseProfile(mode){
-  if(mode==='austin'){
-    profile = structuredClone(baseline);
-    store('dagger_profile',profile);
-    store('dagger_setup_mode','austin');
-    $('manualstatus').textContent='Starter profile loaded.';
-  } else if(mode==='empty') {
-    profile = [];
-    store('dagger_profile',profile);
-    store('dagger_setup_mode','empty');
-    $('manualstatus').textContent='Empty bag ready. Add your own clubs below.';
-  }
-  store('dagger_setup_complete', true);
-  render();switchTab(mode==='empty'?'bag':'play');
-}
-function getPartialCall(y){
-  const feels=[50,75,100].filter(k=>Number.isFinite(wedgeFeels[k]));
-  if(!feels.length) return null;
-  const nearest = feels.map(k=>({k,d:Math.abs(y-wedgeFeels[k])})).sort((a,b)=>a.d-b.d)[0];
-  if(nearest && nearest.d<=12) return nearest.k;
-  return null;
-}
-const keithLines={
- normal:["Beautiful. A stock shot. Resist the urge to turn it into a hostage negotiation.","The flag has no idea who you are. Aim at the middle.","A normal swing would be a refreshing change of policy.","Let the club do its job. Management has requested you stop interfering.","You don't need to prove anything to that golf ball. It has no mortgage.","Center of green. What an appallingly reasonable concept."],
- long:["You came here to shoot lower, not to audition for a long-drive circus.","That fairway's wider than your excuses. Pick a side and commit.","The heroic line is tempting. So is arson. Let's do neither.","A full send here would be a beautiful monument to terrible judgment.","It turns out you can hit a three-wood without making it a constitutional crisis."],
- recover:["Punch out. We're a country club, not an emergency rescue documentary.","The trees don't give a shit about your swing speed.","Take your medicine. The comeback shot is the NEXT one.","You cannot negotiate with a pine tree, despite your confidence.","We can save bogey. We cannot save your dignity if you try the gap."]
+const resetAdvice={
+ general:{steps:'<strong>1.</strong> Exhale for six seconds.<br><strong>2.</strong> Let your shoulders drop.<br><strong>3.</strong> Pick the safest target and commit.',quote:'That shot is dead. We’re not holding a fucking memorial service.'},
+ angry:{steps:'<strong>1.</strong> Exhale for six seconds and unclench your jaw.<br><strong>2.</strong> Describe the miss without the drama.<br><strong>3.</strong> Choose the boring target and move on.',quote:'Yes, that was crap. Don’t donate the next ball to the same tantrum.'},
+ hard:{steps:'<strong>1.</strong> Lighten your grip.<br><strong>2.</strong> Make one 75% rehearsal swing.<br><strong>3.</strong> Hit the next shot like you have a mortgage, not a launch monitor.',quote:'Distance is not an emergency, you overcaffeinated lumberjack.'},
+ lost:{steps:'<strong>1.</strong> Exhale. Forget mechanics.<br><strong>2.</strong> Choose a very generous target.<br><strong>3.</strong> Make one committed, simple swing.',quote:'We are not fixing your whole golf swing on the seventh hole, professor.'}
 };
-let keithQuipSequence=0;
-function getKeithLine(kind){
-  const mode=$('personality').value, roast=Number($('roast').value);
-  if(mode==='pro')return ({normal:'Choose a reliable target and commit to the shot.',long:'Favor the safest verified landing area.',recover:'Recover to a clear position before attacking.'})[kind];
-  if(mode==='dry')return ({normal:'A stock shot. Try not to improve upon it.',long:'The smart option rarely gets a standing ovation.',recover:'Punch out. The highlights can wait.'})[kind];
-  const pool=keithLines[kind]||keithLines.normal;
-  const phrase=pool[keithQuipSequence++%pool.length];
-  if(roast===0)return 'One target. One smooth swing. Next shot.';
-  if(roast===1)return phrase.replace(/shit|fucking|hell/gi,'trouble');
-  if(roast>=3)return phrase+' Please spare the membership another demonstration.';
-  return phrase;
+function switchPanel(name){document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===name));['play','reset','bag','clubhouse'].forEach(n=>$('tab-'+n).classList.toggle('active',n===name));}
+['play','reset','bag','clubhouse'].forEach(n=>$('tab-'+n).onclick=()=>switchPanel(n));
+function setQuick(id, values, selected, onPick){const root=$(id);root.innerHTML='';values.forEach(v=>{const val=Array.isArray(v)?v[0]:v,label=Array.isArray(v)?v[1]:v;const b=document.createElement('button');b.type='button';b.textContent=label;if(val===selected)b.classList.add('active');b.onclick=()=>{onPick(val);setQuick(id,values,val,onPick);syncDisplays();};root.appendChild(b);});}
+function activeCarry(p){return Number.isFinite(p.manualCarry)?p.manualCarry:p.carry}
+function validCarry(v){const n=Number(v);return String(v).trim()!==''&&Number.isFinite(n)&&n>=10&&n<=400?n:null}
+function syncDisplays(){$('displayYards').textContent=$('yards').value||'—';$('displayCourse').textContent=$('course').value||'Course not set';$('displayHole').textContent=$('hole').value||'—';$('displayPin').textContent=state.pin;$('displayLie').textContent=state.lie;}
+function renderFavorites(){const root=$('favoriteCourses');root.innerHTML='';if(!favorites.length){root.innerHTML='<span class="pill">No favorites yet</span>';return;} favorites.forEach((name,i)=>{const btn=document.createElement('button');btn.className='pill';btn.style.cursor='pointer';btn.textContent=name;btn.onclick=()=>{$('course').value=name;store('dagger_course',$('course').value);syncDisplays();switchPanel('play');};root.appendChild(btn);});}
+function renderReset(){const a=resetAdvice[resetTrigger]||resetAdvice.general;$('resetSteps').innerHTML=a.steps;$('resetKeith').textContent='“'+a.quote+'”';document.querySelectorAll('[data-trigger]').forEach(b=>b.classList.toggle('active',b.dataset.trigger===resetTrigger));}
+function renderMast(){const style=$('personality').value, roast=Number($('roast').value);let q='Distance is a number. Decisions are a skill. You are currently better at one than the other.';if(style==='pro')q='Club selection, target discipline, and composure. Try all three today.';if(style==='dry')q=roast>1?'A mature golf plan would be refreshing.':'Keith remains pleasantly unimpressed.';if(style==='smart'&&roast>=3)q='Keith wants you to score better and act less like a feral goblin with a driver.';$('mastquip').textContent=q;}
+function showLog(){ $('shotLogInfo').textContent = loggedShots.length ? `${loggedShots.length} outcomes saved. Latest: ${loggedShots[loggedShots.length-1].result} with ${loggedShots[loggedShots.length-1].club}.` : 'No results logged yet.'; }
+function render(){
+  $('manualclub').innerHTML=profile.length?profile.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join(''):'<option value="">No clubs yet</option>';
+  const idx=Number($('manualclub').value||0), p=profile[idx]; $('manualcarry').value=p?Math.round(activeCarry(p)):'';
+  $('manualtable').innerHTML=profile.length?profile.map(p=>`<tr><td>${esc(p.name)}</td><td>${activeCarry(p).toFixed(0)} yd</td><td>${Number.isFinite(p.manualCarry)?'Manual':'Range'}</td></tr>`).join(''):'<tr><td colspan="3">No clubs yet. Add some numbers.</td></tr>';
+  $('clubs').innerHTML=profile.length?profile.map(p=>`<tr><td>${esc(p.name)}</td><td>${activeCarry(p).toFixed(0)} yd</td><td>${p.n}</td><td>${(p.off??15).toFixed(0)} yd</td></tr>`).join(''):'<tr><td colspan="4">No clubs loaded.</td></tr>';
+  $('w50').value=wedgeFeels[50]??''; $('w75').value=wedgeFeels[75]??''; $('w100').value=wedgeFeels[100]??'';
+  $('setupCard').classList.toggle('hidden', read('dagger_setup_complete',false));
+  renderFavorites(); renderMast(); showLog(); syncDisplays();
 }
-
-function decide(){
-  const y=Number($('yards').value);
-  const lie=state.lie, wind=state.wind, danger=state.danger;
-  const noteText = $('coursenote').value.trim();
-  if(!y || y<1){ $('answer').innerHTML='<div class="club-big">ENTER YARDAGE</div><p>Keith needs a number before he can judge you.</p>'; return; }
-  if(!profile.length && !Object.keys(wedgeFeels).length){ $('answer').innerHTML='<div class="club-big">SET UP YOUR BAG</div><p>Add your carry distances in My Bag or Quick Wedges first.</p>'; return; }
-  let target='Center of green', club='', note='';
-  let adjust = wind==='Headwind'?8:wind==='Tailwind'?-7:0;
-  if(/uphill/i.test(noteText)) adjust += 5;
-  if(/downhill/i.test(noteText)) adjust -= 5;
-  const partial = y<=110 ? getPartialCall(y) : null;
-  if(lie==='Trees / recovery' || lie==='Bunker'){
-    club='RECOVERY FIRST'; target='Safest clear opening'; note='Exact club depends on clearance, lip, and lie. Keith recommends getting back into the fight before getting cute.';
-  } else if(partial){
-    club=`${partial}-YARD WEDGE`; note=`Using your saved short-game feel around ${wedgeFeels[partial]} yards. Verify the lie and exact carry.`;
-  } else if(y>285){
-    const teeCandidates=profile.filter(p=>activeCarry(p)>110&&p.name.toLowerCase()!=='driver').sort((a,b)=>(activeCarry(b)-Math.max(0,(b.off??15)-12)*.6)-(activeCarry(a)-Math.max(0,(a.off??15)-12)*.6));
-    club=teeCandidates[0]?teeCandidates[0].name.toUpperCase():'SAFE LAYUP'; target='Widest verified safe landing area'; note='This is a position shot. We are not trying to solve the hole in one swing.';
-    if(lie==='Deep rough') {club='SAFE LAYUP'; note='Deep rough makes carry and spin unreliable. Advance it safely.'}
-  } else {
-    let effective=y+adjust;
-    let options=profile.filter(p=>p.name.toLowerCase()!=='driver');
-    if(!options.length) options=profile.slice();
-    const choices=options.map(p=>({
-      ...p,
-      delta:Math.abs(activeCarry(p)-effective),
-      risk:Math.abs(activeCarry(p)-effective)+Math.max(0,(p.off??15)-12)*0.22+(p.n>0&&p.n<5?3:0)+(lie==='Deep rough'?6:0)
-    })).sort((a,b)=>a.risk-b.risk);
-    const pick=choices[0];
-    if(!pick){ club='ADD YOUR CLUBS'; note='Keith cannot recommend a club until you give him a bag to work with.'; }
-    else {
-      club=pick.name.toUpperCase();
-      note=Number.isFinite(pick.manualCarry)?`Manual carry ${pick.manualCarry.toFixed(0)} yd. Range this against the actual situation.`:`Range carry ${pick.carry.toFixed(0)} yd from ${pick.n} swings. Good starting point, not gospel.`;
-      if(lie==='Deep rough') note='Deep rough makes carry weird. Keith favors a safer advance unless the lie is cleaner than advertised.';
-    }
-    if(danger==='short') target='Safe section beyond short trouble';
-    else if(danger==='long') target='Conservative green-center / short side';
-    else if(danger==='left') target='Center-right safe area';
-    else if(danger==='right') target='Center-left safe area';
+function chooseProfile(mode){if(mode==='starter'){profile=structuredClone(baseline);store('dagger_profile',profile);$('manualstatus').textContent='Starter profile loaded.';}else{profile=[];store('dagger_profile',profile);$('manualstatus').textContent='Empty bag ready.';}store('dagger_setup_complete',true);render();}
+function getPartial(y){const opts=[50,75,100].filter(k=>Number.isFinite(wedgeFeels[k]));if(!opts.length||y>110)return null;const near=opts.map(k=>({k,d:Math.abs(y-wedgeFeels[k])})).sort((a,b)=>a.d-b.d)[0];return near.d<=12?near.k:null;}
+function pickKeithLine(kind){const style=$('personality').value, roast=Number($('roast').value);
+  const bank={
+    pro:{normal:['Commit to the target and make a balanced swing.','Center of the green is a very respectable life choice.','Simple shot. Simple plan. Let’s keep it civilized.'],long:['Position first. Pride later.','Long shot. Calm decision.','Take the widest safe landing area and behave.'],recover:['Advance it safely. We’ll discuss your life choices later.','Take your medicine and get back in position.','The smart bogey beats the stupid double.']},
+    dry:{normal:['A stock swing would solve this nicely.','Middle of the green. An underused concept.','Try not to make this more complicated than it is.'],long:['Distance is cute. In play is useful.','Play to the fat side and spare us the opera.','Long and dumb remains a poor combination.'],recover:['Punch out and claim it was tactical.','Hero golf keeps testing poorly.','Get back in play before your scorecard needs counseling.']},
+    smart:{normal:['Middle of the green, chief. The flag does not owe you shit.','Make one decent swing and avoid turning this into a hostage situation.','Nice and smooth. We are playing golf, not auditioning for a long-drive carnival.','You don’t need a miracle here. Just competence.'],long:['This is not the moment to let your ego start drawing plays in crayon.','Find the safe side and keep the big miss out of it, genius.','A sensible play would be deeply out of character, but let’s try it anyway.','Long shot. Small brain impulses. Ignore the second one.'],recover:['Punch out. The tree has already won this round.','Take your medicine, you creative little disaster.','This is a recovery, not an action movie.','Get it back in play before you compound the felony.']}
+  };
+  const arr=(bank[style]||bank.smart)[kind]||bank.smart.normal; let i=Math.floor(Math.random()*arr.length);
+  if(style==='smart' && roast===3 && kind==='normal') return ['Center green and shut the hell up about the pin.','You are one bad decision from inventing a triple. Choose wisely.','You do not need more effort. You need fewer stupid thoughts.'][Math.floor(Math.random()*3)];
+  return arr[i];
+}
+function evaluatePucker(yards, confidence){let val=1.4, why=[]; const add=(n,t)=>{val+=n;why.push(t)}; if(state.lie==='Rough')add(1,'rough lie'); if(state.lie==='Deep rough')add(2.2,'deep rough'); if(state.lie==='Trees / recovery'||state.lie==='Bunker')add(3,'recovery lie'); if(state.danger!=='none')add(2,'trouble '+state.danger); if(state.wind==='Headwind'||state.wind==='Crosswind')add(.7,'wind'); if(yards>190&&yards<=285)add(1,'long approach'); if(yards>285)add(.8,'long position shot'); if(confidence==='low')add(1.2,'thin club data'); val=Math.max(1,Math.min(10,Math.round(val*10)/10)); const tier=val<3?'Sunday Stroll':val<5?'Member Bounce':val<7?'Firm Handshake':val<9?'Pucker Time':'Card-Wrecker'; $('puckerScore').textContent=val.toFixed(1)+'/10'; $('puckerTier').textContent=tier; $('puckerReason').textContent=(why.length?why.join(' · '):'stock situation; no reported trouble')+'.'; $('puckerMarker').style.left=`calc(${((val-1)/9)*100}% - 3px)`; }
+function decide(){const yards=Number($('yards').value); const note=$('coursenote').value.trim(); if(!yards){$('clubText').textContent='ENTER YARDAGE';$('targetText').textContent='Keith needs a number';$('decisionNote').textContent='No recommendation until you provide a yardage.'; $('keithLine').textContent='As thrilling as your vibes are, I still need a distance.'; return;} if(!profile.length && !Object.keys(wedgeFeels).length){$('clubText').textContent='SET UP YOUR BAG';$('targetText').textContent='Add club distances first';$('decisionNote').textContent='Use My Bag to enter your carries.'; $('keithLine').textContent='I cannot caddie for a man who arrives with vibes and no numbers.'; return;}
+  let club='', target='Center green · Stock swing', noteText='', confidence='high', kind='normal';
+  const adjust=(state.wind==='Headwind'?8:state.wind==='Tailwind'?-7:0)+(/uphill/i.test(note)?5:0)+(/downhill/i.test(note)?-5:0);
+  const partial=getPartial(yards); let effective=yards+adjust;
+  if(state.lie==='Trees / recovery'||state.lie==='Bunker'){club='RECOVERY FIRST'; target='Safest opening · Advance it'; noteText='Exact club depends on clearance, lip, and lie. Keith strongly prefers “in play” over “creative nonsense.”'; confidence='low'; kind='recover';}
+  else if(partial){club=partial+'-YARD WEDGE'; target='Play your stock feel · Favor a safe side'; noteText=`Using your saved short-game feel around ${wedgeFeels[partial]} yards.`; confidence='medium';}
+  else if(yards>285){const three=profile.find(p=>p.name.toLowerCase()==='3 wood'); club=three?'3 WOOD':'SAFE LAYUP'; target='Widest safe landing area · Position shot'; noteText='We are not solving the hole in one swing. Get to your favorite yardage.'; confidence='medium'; kind='long';}
+  else {
+    let options=profile.filter(p=>p.name.toLowerCase()!=='driver'); if(!options.length) options=profile.slice();
+    const scored=options.map(p=>({p,carry:activeCarry(p),risk:Math.abs(activeCarry(p)-effective)+(p.off??15)*0.18+(p.n<5?4:0)+(state.lie==='Deep rough'?5:0)})).sort((a,b)=>a.risk-b.risk);
+    const pick=scored[0]; if(!pick){club='ADD A CLUB';target='No profile yet';noteText='Keith requires numbers.';confidence='low';}
+    else {club=pick.p.name.toUpperCase(); if(pick.p.n<5 && !Number.isFinite(pick.p.manualCarry)) confidence='low'; else if(Number.isFinite(pick.p.manualCarry)) confidence='medium'; noteText=Number.isFinite(pick.p.manualCarry)?`Manual carry ${pick.p.manualCarry.toFixed(0)} yd.`:`Range carry ${pick.p.carry.toFixed(0)} yd from ${pick.p.n} swings.`; if(state.lie==='Deep rough'){noteText='Deep rough makes carry sketchy. Keith favors a more conservative advance.'; confidence='low';} if(yards>205)kind='long';}
+    if(state.danger==='short') target='Favor the safe section beyond the short trouble';
+    if(state.danger==='long') target='Center / front-safe target';
+    if(state.danger==='left') target='Favor center-right';
+    if(state.danger==='right') target='Favor center-left';
   }
-  const selected=profile.find(p=>p.name.toUpperCase()===club);
-  const confidence=!selected||selected.n<5&& !Number.isFinite(selected.manualCarry)?'low':'medium';
-  pucker({yards:y,lie,wind,danger,club,confidence});
-  currentClub=club;lastDecision={club,yards:y,lie,wind,danger,ts:new Date().toISOString()};
-  const kind = (club==='RECOVERY FIRST' || club==='SAFE LAYUP') ? 'recover' : (y>210 ? 'long' : 'normal');
-  $('answer').innerHTML=`<div class="club-big">${escapeHTML(club)}</div><div class="target">${escapeHTML(target)}</div><p>${escapeHTML(note)}</p>${noteText?`<p><strong>Course note:</strong> ${escapeHTML(noteText)}</p>`:''}<div class="keith"><strong>Keith says:</strong> ${getKeithLine(kind)}</div><div class="note">Provisional call based on your saved yardages, lie, and limited context.</div>`;
+  $('clubText').textContent=club; $('targetText').textContent=target; $('decisionNote').textContent=noteText+(note?(' Note: '+note+'.'):''); $('keithLine').textContent=pickKeithLine(kind);
+  lastDecision={time:Date.now(),club, yards, lie:state.lie, danger:state.danger, wind:state.wind, target, note}; evaluatePucker(yards, confidence);
 }
-function csvRows(s){let rows=[],row=[],cell='',quoted=false;for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'){if(quoted&&s[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&s[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows}
-
-async function init(){
-  baseline=await (await fetch('profile.json')).json();
-  profile=read('dagger_profile', structuredClone(baseline));
-  greens=read('dagger_greens',{});
-  wedgeFeels=read('dagger_wedges',{});
-  $('personality').value=read('dagger_personality','smart');
-  $('roast').value=read('dagger_roast','2');
-  $('course').value=read('dagger_course','');
-  state=read('dagger_round_state',state);
-  setQuick('lieButtons',LIES,state.lie,v=>{state.lie=v;store('dagger_round_state',state)});
-  setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)});
-  setQuick('pinButtons',PINS,state.pin,v=>{state.pin=v;store('dagger_round_state',state)});
-  setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)});
-  loggedShots=read('dagger_shot_log',[]);showLog();switchTab('play');render();
-}
-
-$('manualclub').onchange=syncManualField;
-$('savemanual').onclick=()=>{const p=profile[Number($('manualclub').value)], v=validCarry($('manualcarry').value); if(!p||v===null){$('manualstatus').textContent='Choose a club and enter a carry between 10 and 400 yards.';return} p.manualCarry=v; store('dagger_profile',profile); render(); $('manualstatus').textContent=`Saved ${p.name}: ${v} yd carry.`;};
-$('clearmanual').onclick=()=>{const p=profile[Number($('manualclub').value)]; if(!p) return; if(p.n===0){ profile=profile.filter(x=>x!==p); $('manualstatus').textContent='Removed manually added club.'; } else { delete p.manualCarry; $('manualstatus').textContent=`Restored ${p.name} to range-session average.`; } store('dagger_profile',profile); render(); };
-$('addclub').onclick=()=>{const name=$('newclub').value.trim(), v=validCarry($('newcarry').value); if(!name||v===null){$('manualstatus').textContent='Enter a club name and carry between 10 and 400 yards.';return} let found=profile.find(p=>p.name.toLowerCase()===name.toLowerCase()); if(found) found.manualCarry=v; else profile.push({name,carry:v,off:15,n:0,manualCarry:v}); store('dagger_profile',profile); render(); $('newclub').value=''; $('newcarry').value=''; $('manualstatus').textContent=`Saved ${name}: ${v} yd carry.`;};
-$('fresh').onclick=()=>{ if(!confirm('Replace your current bag with an empty one?')) return; profile=[]; store('dagger_profile',profile); store('dagger_setup_complete', true); render(); $('manualstatus').textContent='Empty bag ready.'; };
-$('useAustinMini').onclick=()=>chooseProfile('austin');
-$('useAustin').onclick=()=>chooseProfile('austin');
-$('buildMine').onclick=()=>chooseProfile('empty');
-$('jumpUpload').onclick=()=>{ store('dagger_setup_complete',true); render(); switchTab('bag'); $('uploadSection').scrollIntoView({behavior:'smooth',block:'start'}); };
-$('saveWedges').onclick=()=>{ let vals={}; [50,75,100].forEach(k=>{const v=validCarry($(k===50?'w50':k===75?'w75':'w100').value); if(v!==null) vals[k]=v;}); wedgeFeels=vals; store('dagger_wedges',wedgeFeels); $('wedgestatus').textContent=Object.keys(vals).length? 'Saved wedge feels locally.' : 'No wedge feels saved.'; };
-$('clearWedges').onclick=()=>{ wedgeFeels={}; store('dagger_wedges',wedgeFeels); $('wedgestatus').textContent='Cleared wedge feels.'; render(); };
-$('personality').onchange=()=>{store('dagger_personality',$('personality').value); renderMastQuip();};
-$('roast').onchange=()=>{store('dagger_roast',$('roast').value); renderMastQuip();};
-$('call').onclick=decide;
-$('quickReset').onclick=()=>{switchTab('reset');$('resetStatus').textContent='Exhale. Then choose one reasonable shot.'};
-$('returnToPlay').onclick=()=>switchTab('play');
-document.querySelectorAll('[data-trigger]').forEach(b=>b.onclick=()=>{resetTrigger=b.dataset.trigger;renderReset();$('resetStatus').textContent='Read your three steps, then tap the button.'});
-$('resetNow').onclick=()=>{resetCount++;$('resetStatus').textContent='Reset #'+resetCount+' complete. You cannot get that swing back. Play the next one.'; if(resetCount%3===0)$('resetKeith').textContent='“A fresh shot. A clean slate. Try not to decorate it with bullshit.”';};
-renderReset();
-$('heroCheck').onclick=()=>{if(!lastDecision){$('answer').innerHTML='<div class="club-big">HOLD UP</div><p>Give me the yardage and tap Ask Keith first, cowboy.</p>';return;}$('answer').innerHTML=`<div class="club-big">THE BORING PLAY</div><div class="target">Protect the safe side</div><p>Do not challenge a hazard or forced carry unless you know the clearance and you can cover it reliably. Choose a layup or center target when in doubt.</p><div class="keith"><strong>Keith says:</strong> The fact that you pressed this button is all the information I needed.</div>`;};
-$('clearRound').onclick=()=>{ $('yards').value=''; $('coursenote').value=''; state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'}; store('dagger_round_state',state); setQuick('lieButtons',LIES,state.lie,v=>{state.lie=v;store('dagger_round_state',state)}); setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)}); setQuick('pinButtons',PINS,state.pin,v=>{state.pin=v;store('dagger_round_state',state)}); setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)}); };
-$('course').onchange=()=>store('dagger_course',$('course').value);
+function csvRows(s){let rows=[],row=[],cell='',q=false;for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'){if(q&&s[i+1]==='"'){cell+='"';i++;}else q=!q;}else if(c===','&&!q){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&s[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell='';}else cell+=c;}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows;}
+$('useStarter').onclick=()=>chooseProfile('starter'); $('buildMine').onclick=()=>chooseProfile('empty'); $('jumpUpload').onclick=()=>{store('dagger_setup_complete',true);render();switchPanel('bag');$('uploadSection').scrollIntoView({behavior:'smooth'});};
+$('manualclub').onchange=()=>{const p=profile[Number($('manualclub').value)];$('manualcarry').value=p?Math.round(activeCarry(p)):'';};
+$('savemanual').onclick=()=>{const p=profile[Number($('manualclub').value)],v=validCarry($('manualcarry').value); if(!p||v===null){$('manualstatus').textContent='Choose a club and enter a valid carry.';return;} p.manualCarry=v; store('dagger_profile',profile); render(); $('manualstatus').textContent=`Saved ${p.name}: ${v} yd.`;};
+$('clearmanual').onclick=()=>{const p=profile[Number($('manualclub').value)]; if(!p)return; if(p.n===0){profile=profile.filter(x=>x!==p);$('manualstatus').textContent='Removed manually added club.';} else {delete p.manualCarry;$('manualstatus').textContent=`Restored ${p.name} to range-session average.`;} store('dagger_profile',profile); render();};
+$('addclub').onclick=()=>{const name=$('newclub').value.trim(),v=validCarry($('newcarry').value); if(!name||v===null){$('manualstatus').textContent='Enter a club name and valid carry.';return;} let found=profile.find(p=>p.name.toLowerCase()===name.toLowerCase()); if(found)found.manualCarry=v; else profile.push({name,carry:v,off:15,n:0,manualCarry:v}); store('dagger_profile',profile); $('newclub').value=''; $('newcarry').value=''; render(); $('manualstatus').textContent=`Saved ${name}: ${v} yd.`;};
+$('fresh').onclick=()=>{if(confirm('Replace your current bag with an empty one?')){profile=[];store('dagger_profile',profile);store('dagger_setup_complete',true);render();$('manualstatus').textContent='Empty bag ready.';}};
+$('useStarterMini').onclick=()=>chooseProfile('starter');
+$('saveWedges').onclick=()=>{let vals={}; [50,75,100].forEach(k=>{const v=validCarry($(k===50?'w50':k===75?'w75':'w100').value); if(v!==null) vals[k]=v;}); wedgeFeels=vals; store('dagger_wedges',wedgeFeels); $('wedgestatus').textContent=Object.keys(vals).length?'Saved wedge feels locally.':'No wedge feels saved.';};
+$('clearWedges').onclick=()=>{wedgeFeels={};store('dagger_wedges',wedgeFeels);render();$('wedgestatus').textContent='Cleared wedge feels.';};
+$('askKeith').onclick=decide;
+$('clearRound').onclick=()=>{$('yards').value='';$('coursenote').value='';state={lie:'Fairway',wind:'Calm',pin:'Middle',danger:'none'};$('pinSelect').value='Middle';setQuick('lieButtons',LIES,state.lie,v=>{state.lie=v;store('dagger_round_state',state)});setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)});setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)});syncDisplays();};
+$('quickReset').onclick=()=>switchPanel('reset'); $('returnToPlay').onclick=()=>switchPanel('play'); $('heroCheck').onclick=()=>{if(!lastDecision){$('clubText').textContent='HOLD IT';$('targetText').textContent='Ask Keith first';$('decisionNote').textContent='Need a recommendation before the anti-stupidity department can intervene.';$('keithLine').textContent='The fact that you pressed this button is information in itself.';return;} $('clubText').textContent='THE BORING PLAY'; $('targetText').textContent='Protect the safe side'; $('decisionNote').textContent='If you do not know the carry and consequence, choose the more conservative play.'; $('keithLine').textContent='You don’t need a hero shot. You need fewer future apologies.';};
+document.querySelectorAll('[data-trigger]').forEach(b=>b.onclick=()=>{resetTrigger=b.dataset.trigger;renderReset();$('resetStatus').textContent='Read the steps, then tap the button.';});
+$('resetNow').onclick=()=>{resetCount++; $('resetStatus').textContent=`Reset #${resetCount} complete. Fresh shot. Fresh mistake, if you insist.`; if(resetCount%3===0) $('resetKeith').textContent='“Brand-new shot. Try not to parent it with the last one.”';};
+$('course').onchange=()=>{store('dagger_course',$('course').value);syncDisplays();}; $('hole').onchange=syncDisplays; $('yards').oninput=syncDisplays; $('pinSelect').onchange=()=>{state.pin=$('pinSelect').value;store('dagger_round_state',state);syncDisplays();};
+$('addFavoriteCourse').onclick=()=>{const name=$('favCourseName').value.trim(); if(!name)return; if(!favorites.includes(name))favorites.push(name); store('dagger_favorite_courses',favorites); $('favCourseName').value=''; renderFavorites();};
+$('useBayonet').onclick=()=>{$('course').value='Bayonet at Puppy Creek'; if(!favorites.includes('Bayonet at Puppy Creek')){favorites.unshift('Bayonet at Puppy Creek');favorites=[...new Set(favorites)];store('dagger_favorite_courses',favorites);} store('dagger_course',$('course').value); syncDisplays();};
+$('useLastCourse').onclick=()=>{$('course').value=read('dagger_course',''); syncDisplays();};
 const greenKey=()=>($('course').value||'unnamed').trim().toLowerCase()+'|'+$('hole').value;
-$('savegreen').onclick=()=>{ const lat=Number($('lat').value), lon=Number($('lon').value); if(!$('lat').value || !$('lon').value || Math.abs(lat)>90 || Math.abs(lon)>180){ $('status').textContent='Enter verified latitude and longitude for the green center.'; return; } greens[greenKey()]={lat,lon}; store('dagger_greens',greens); $('status').textContent='Green center saved locally for this course and hole.'; };
-$('gps').onclick=()=>{ const g=greens[greenKey()]; if(!g){ $('status').textContent='No green mapped for this course + hole yet. Save it first.'; return; } if(!navigator.geolocation){ $('status').textContent='GPS unavailable here. Try Safari over HTTPS.'; return; } $('status').textContent='Requesting GPS permission…'; navigator.geolocation.getCurrentPosition(p=>{ const R=6371000, toRad=v=>v*Math.PI/180, lat1=toRad(p.coords.latitude), lat2=toRad(g.lat), dLat=toRad(g.lat-p.coords.latitude), dLon=toRad(g.lon-p.coords.longitude), a=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2, d=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); const yd=Math.round(d*1.0936133); $('yards').value=yd; $('status').textContent=`GPS: ${yd} yards to saved green center (accuracy ±${Math.round(p.coords.accuracy*1.0936133)} yd).`; },e=>$('status').textContent='Location unavailable: '+e.message,{enableHighAccuracy:true,timeout:12000,maximumAge:10000}) };
-$('csv').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const content=await f.text();const sig=f.name+'|'+content.length+'|'+content.slice(0,250)+'|'+content.slice(-250);const seen=read('dagger_import_signatures',[]);if(seen.includes(sig)){$('uploadstatus').textContent='This file looks already imported; skipped to prevent double-counting.';return;} const rows=csvRows(content); const h=rows.shift().map(x=>x.trim()); const ix=n=>h.indexOf(n), ic=ix('Club Type'), iy=ix('Carry Distance'), io=ix('Carry Deviation Distance'); if([ic,iy,io].some(x=>x<0)){ $('uploadstatus').textContent='Wrong CSV format. Need Club Type, Carry Distance, Carry Deviation Distance.'; return; } let grouped={}; for(let r of rows){ let name=(r[ic]||'').trim(), carry=Number(r[iy]), off=Math.abs(Number(r[io])); if(!name || !Number.isFinite(carry) || carry<=0 || !Number.isFinite(off)) continue; if(!grouped[name]) grouped[name]=[]; grouped[name].push({carry,off}); } let count=0; for(let [name,shots] of Object.entries(grouped)){ const p=profile.find(x=>x.name===name); const n=shots.length, sum=shots.reduce((s,x)=>s+x.carry,0), offs=shots.reduce((s,x)=>s+x.off,0); if(p){ p.carry=(p.carry*p.n+sum)/(p.n+n); p.off=(p.off*p.n+offs)/(p.n+n); p.n+=n; } else profile.push({name,carry:sum/n,off:offs/n,n}); count+=n; } store('dagger_profile',profile);if(count>0){seen.push(sig);store('dagger_import_signatures',seen);} store('dagger_setup_complete',true); render(); $('uploadstatus').textContent=`Imported ${count} swings from ${f.name}. Back up your data now.`; };
-$('export').onclick=()=>{ const data={profile,greens,wedgeFeels,loggedShots,personality:$('personality').value,roast:$('roast').value}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dagger-backup.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); };
-document.querySelectorAll('[data-feedback]').forEach(b=>b.onclick=()=>{if(!lastDecision){$('feedbackStatus').textContent='Ask Keith first, then log your result.';return;} const record={...lastDecision,result:b.dataset.feedback};loggedShots.push(record);store('dagger_shot_log',loggedShots);showLog();$('feedbackStatus').textContent='Logged: '+record.result+' with '+record.club+'.';});
+$('savegreen').onclick=()=>{const lat=Number($('lat').value),lon=Number($('lon').value); if(!$('lat').value||!$('lon').value||Math.abs(lat)>90||Math.abs(lon)>180){$('status').textContent='Enter a valid latitude and longitude.';return;} greens[greenKey()]={lat,lon}; store('dagger_greens',greens); $('status').textContent='Green center saved locally for this course and hole.';};
+$('gps').onclick=()=>{const g=greens[greenKey()]; if(!g){$('status').textContent='No green saved for this course + hole yet.';return;} if(!navigator.geolocation){$('status').textContent='GPS unavailable here.';return;} $('status').textContent='Requesting GPS permission…'; navigator.geolocation.getCurrentPosition(pos=>{const R=6371000,toRad=v=>v*Math.PI/180,lat1=toRad(pos.coords.latitude),lat2=toRad(g.lat),dLat=toRad(g.lat-pos.coords.latitude),dLon=toRad(g.lon-pos.coords.longitude),a=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2,d=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); const yd=Math.round(d*1.0936133); $('yards').value=yd; syncDisplays(); $('status').textContent=`GPS: ${yd} yards to saved green center (accuracy ±${Math.round(pos.coords.accuracy*1.0936133)} yd).`;},err=>$('status').textContent='Location unavailable: '+err.message,{enableHighAccuracy:true,timeout:12000,maximumAge:10000});};
+$('personality').onchange=()=>{store('dagger_personality',$('personality').value);renderMast();}; $('roast').onchange=()=>{store('dagger_roast',$('roast').value);renderMast();};
+$('csv').onchange=async e=>{const f=e.target.files[0]; if(!f)return; const content=await f.text(); const sig=f.name+'|'+content.length+'|'+content.slice(0,250)+'|'+content.slice(-250); const seen=read('dagger_import_signatures',[]); if(seen.includes(sig)){$('uploadstatus').textContent='This file appears to have already been imported.'; return;} const rows=csvRows(content); const h=rows.shift().map(x=>x.trim()); const ix=n=>h.indexOf(n), ic=ix('Club Type'), iy=ix('Carry Distance'), io=ix('Carry Deviation Distance'); if([ic,iy,io].some(x=>x<0)){$('uploadstatus').textContent='Wrong CSV format. Need Club Type, Carry Distance, Carry Deviation Distance.';return;} let grouped={}; for(const r of rows){const name=(r[ic]||'').trim(), carry=Number(r[iy]), off=Math.abs(Number(r[io])); if(!name||!Number.isFinite(carry)||carry<=0||!Number.isFinite(off))continue; if(!grouped[name])grouped[name]=[]; grouped[name].push({carry,off});} let count=0; for(const [name,shots] of Object.entries(grouped)){const p=profile.find(x=>x.name===name); const n=shots.length,sum=shots.reduce((s,x)=>s+x.carry,0),offs=shots.reduce((s,x)=>s+x.off,0); if(p){p.carry=(p.carry*p.n+sum)/(p.n+n);p.off=(p.off*p.n+offs)/(p.n+n);p.n+=n;} else profile.push({name,carry:sum/n,off:offs/n,n}); count+=n;} store('dagger_profile',profile); if(count>0){seen.push(sig);store('dagger_import_signatures',seen);} store('dagger_setup_complete',true); render(); $('uploadstatus').textContent=`Imported ${count} swings from ${f.name}. Back up your data if you care about your future self.`;};
+$('export').onclick=()=>{const data={profile,greens,wedgeFeels,loggedShots,personality:$('personality').value,roast:$('roast').value,favorites}; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dagger-backup.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+$('resetProfile').onclick=()=>{if(confirm('Restore original club data and discard imported updates?')){profile=structuredClone(baseline);store('dagger_profile',profile);render();}};
+document.querySelectorAll('[data-feedback]').forEach(b=>b.onclick=()=>{if(!lastDecision){$('feedbackStatus').textContent='Ask Keith first, then log the result.';return;} const rec={...lastDecision,result:b.dataset.feedback}; loggedShots.push(rec); store('dagger_shot_log',loggedShots); showLog(); $('feedbackStatus').textContent=`Logged: ${rec.result} with ${rec.club}.`;});
 $('clearLog').onclick=()=>{if(confirm('Delete all saved shot feedback?')){loggedShots=[];store('dagger_shot_log',loggedShots);showLog();}};
-$('backupFile').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const d=JSON.parse(await f.text());if(!Array.isArray(d.profile)||!d.profile.every(x=>typeof x.name==='string'&&Number.isFinite(x.carry)&&Number.isFinite(x.n))){throw Error('Not a valid Dagger backup');}if(!confirm('Replace your current local profile and settings with this backup?'))return;profile=d.profile;greens=d.greens||{};wedgeFeels=d.wedgeFeels||{};loggedShots=Array.isArray(d.loggedShots)?d.loggedShots:[];store('dagger_profile',profile);store('dagger_greens',greens);store('dagger_wedges',wedgeFeels);store('dagger_shot_log',loggedShots);if(['pro','dry','smart'].includes(d.personality)){$('personality').value=d.personality;store('dagger_personality',d.personality);}if([0,1,2,3].includes(Number(d.roast))){$('roast').value=String(d.roast);store('dagger_roast',String(d.roast));}showLog();render();$('uploadstatus').textContent='Backup restored successfully.';}catch(err){$('uploadstatus').textContent='Unable to restore: '+err.message;}};
-$('reset').onclick=()=>{ if(confirm('Restore original club data and discard imported updates?')){ profile=structuredClone(baseline); store('dagger_profile',profile); render(); } };
+$('backupFile').onchange=async e=>{try{const f=e.target.files[0]; if(!f)return; const d=JSON.parse(await f.text()); if(!Array.isArray(d.profile)) throw Error('Not a valid Dagger backup'); if(!confirm('Replace current local profile/settings with this backup?')) return; profile=d.profile; greens=d.greens||{}; wedgeFeels=d.wedgeFeels||{}; loggedShots=Array.isArray(d.loggedShots)?d.loggedShots:[]; favorites=Array.isArray(d.favorites)?d.favorites:favorites; store('dagger_profile',profile); store('dagger_greens',greens); store('dagger_wedges',wedgeFeels); store('dagger_shot_log',loggedShots); store('dagger_favorite_courses',favorites); if(['pro','dry','smart'].includes(d.personality)){$('personality').value=d.personality;store('dagger_personality',d.personality);} if([0,1,2,3].includes(Number(d.roast))){$('roast').value=String(d.roast);store('dagger_roast',String(d.roast));} render(); $('uploadstatus').textContent='Backup restored successfully.';} catch(err){$('uploadstatus').textContent='Unable to restore: '+err.message;}};
+async function init(){baseline=await (await fetch('profile.json')).json(); profile=read('dagger_profile',structuredClone(baseline)); greens=read('dagger_greens',{}); wedgeFeels=read('dagger_wedges',{}); loggedShots=read('dagger_shot_log',[]); favorites=read('dagger_favorite_courses',['Bayonet at Puppy Creek']); state=read('dagger_round_state',state); $('personality').value=read('dagger_personality','smart'); $('roast').value=read('dagger_roast','2'); $('course').value=read('dagger_course','Bayonet at Puppy Creek'); $('pinSelect').value=state.pin; setQuick('lieButtons',LIES,state.lie,v=>{state.lie=v;store('dagger_round_state',state)}); setQuick('windButtons',WINDS,state.wind,v=>{state.wind=v;store('dagger_round_state',state)}); setQuick('dangerButtons',DANGERS,state.danger,v=>{state.danger=v;store('dagger_round_state',state)}); renderReset(); render(); evaluatePucker(Number($('yards').value)||168,'medium'); }
 init();
 </script>
 </body>

@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="90" fill="#17382c"/><rect x="29" y="29" width="454" height="454" rx="65" fill="none" stroke="#b8a274" stroke-width="10"/><circle cx="256" cy="195" r="126" fill="none" stroke="#eee7d7" stroke-width="8"/><path d="M242 95v233" stroke="#eee7d7" stroke-width="15" stroke-linecap="round"/><path d="M252 105l108 44-108 43z" fill="#eee7d7"/><path d="M161 335h190" stroke="#b8a274" stroke-width="6"/><text x="256" y="395" font-family="Georgia,serif" font-size="45" font-weight="bold" fill="#f3eada" text-anchor="middle">DAGGER</text><text x="256" y="441" font-family="Georgia,serif" font-size="31" letter-spacing="4" fill="#b8a274" text-anchor="middle">KEITH</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#102a21"/>
+  <rect x="28" y="28" width="456" height="456" rx="82" fill="none" stroke="#ba9c60" stroke-width="14"/>
+  <circle cx="256" cy="238" r="122" fill="none" stroke="#f3e6cb" stroke-width="12"/>
+  <path d="M244 126v216" stroke="#f3e6cb" stroke-width="18" stroke-linecap="round"/>
+  <path d="M252 134 372 182 252 232Z" fill="#f3e6cb"/>
+  <path d="M138 355h236" stroke="#ba9c60" stroke-width="10" stroke-linecap="round"/>
+  <text x="256" y="402" text-anchor="middle" font-family="Georgia, serif" font-size="52" font-weight="700" fill="#f3e6cb">DCC</text>
+  <text x="256" y="446" text-anchor="middle" font-family="Georgia, serif" font-size="26" letter-spacing="4" fill="#ba9c60">AS IT LIES</text>
+</svg>

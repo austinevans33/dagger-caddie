@@ -1,62 +1,12 @@
 [
-  {
-    "name": "Pitching Wedge",
-    "carry": 124.3,
-    "n": 3,
-    "off": 5.6
-  },
-  {
-    "name": "9 Iron",
-    "carry": 136.4,
-    "n": 5,
-    "off": 2.2
-  },
-  {
-    "name": "8 Iron",
-    "carry": 154.6,
-    "n": 4,
-    "off": 5.1
-  },
-  {
-    "name": "7 Iron",
-    "carry": 168.0,
-    "n": 3,
-    "off": 8.0
-  },
-  {
-    "name": "6 Iron",
-    "carry": 185.1,
-    "n": 4,
-    "off": 14.8
-  },
-  {
-    "name": "5 Iron",
-    "carry": 188.6,
-    "n": 3,
-    "off": 11.3
-  },
-  {
-    "name": "4 Iron",
-    "carry": 203.6,
-    "n": 4,
-    "off": 15.4
-  },
-  {
-    "name": "4 Hybrid",
-    "carry": 220.1,
-    "n": 4,
-    "off": 13.3
-  },
-  {
-    "name": "3 Wood",
-    "carry": 229.8,
-    "n": 4,
-    "off": 9.9
-  },
-  {
-    "name": "Driver",
-    "carry": 196.7,
-    "n": 26,
-    "off": 27.1
-  }
+  {"name":"Pitching Wedge","carry":124.3,"n":3,"off":5.6},
+  {"name":"9 Iron","carry":136.4,"n":5,"off":2.2},
+  {"name":"8 Iron","carry":154.6,"n":4,"off":5.1},
+  {"name":"7 Iron","carry":168.0,"n":3,"off":8.0},
+  {"name":"6 Iron","carry":185.1,"n":4,"off":14.8},
+  {"name":"5 Iron","carry":188.6,"n":3,"off":11.3},
+  {"name":"4 Iron","carry":203.6,"n":4,"off":15.4},
+  {"name":"4 Hybrid","carry":220.1,"n":4,"off":13.3},
+  {"name":"3 Wood","carry":229.8,"n":4,"off":9.9},
+  {"name":"Driver","carry":196.7,"n":26,"off":27.1}
 ]
