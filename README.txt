@@ -1,26 +1,25 @@
-DAGGER CADDIE 4.4 — FIELD INTELLIGENCE
-Based on mobile-first 4.3.1.
+DAGGER CADDIE 4.5 — KEITH'S MEMORY / MEMBERS EDITION
+====================================================
+Base: 4.4 mobile-first app. No photo logo.
 
-NEW
-- Tee Shot Mode for selecting a reliable club off the tee
-- Safe Miss indicator when you identify left/right/short/long trouble
-- Club Confidence: Trusted, Provisional, Developing (provisional sample-size labels)
-- Keith's situational reaction label
-- Optional Talk to Keith voice parsing (browser support varies)
-- Keith's Yardage Book in Clubhouse with local hole notes
-- Keeps persistent Pucker Factor shake when above 8 (Reduce Motion supported)
-- Keeps Betting, Mental Reset, manual bag distances and CSV uploads
+New:
+- Thumb-friendly fixed bottom navigation (Play / Bag / Reset / Betting / Clubhouse)
+- More authentic subdued country-club styling
+- Keith's Memory based ONLY on your logged shot feedback
+- Club Battle comparison of two club carry estimates
+- Carry It or Forget It conservative clearance estimator
+- Match Play Keith commentary from the saved hole-by-hole betting results
+- Separate range-session summaries saved with future imported CSVs
+- Occasional humorous reactions to logged streaks
+- Retains Pucker Factor >8 shake, mobile club call, bag, voice, mental reset and GPS
+- Backup includes new range sessions and betting data
 
-SAFETY/ACCURACY
-- Safe Miss is directional strategy, not verified course mapping.
-- No GPS course data is preloaded. Continue entering yardages manually until verified green coordinates exist.
-- Voice recognition is optional, not available on all iPhone browsers.
-- Tee mode is a conservative heuristic, not a guarantee of fairway or carry.
+Important limitations:
+- Existing combined club averages cannot be decomposed into old session histories.
+- Carry clearance is heuristic and should not be treated as an exact success probability.
+- Match Play Keith's commentary does not calculate new match odds or override hazards.
+- A press counter is not a separate wager settlement ledger.
+- All data is saved on each device. Make a backup before uploading.
 
-DEPLOY
-1. Back up your data in My Bag.
-2. Replace index.html in GitHub repository root (keep exact filename).
-3. Other existing files can remain unchanged.
-4. Wait for GitHub Pages then reload in Safari.
-
-Keep a backup before clearing Safari website data.
+Upload the contents of this folder (not the folder itself) to your GitHub repo root.
+For an existing 4.4 install, replacing index.html alone is sufficient.

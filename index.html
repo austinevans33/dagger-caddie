@@ -140,6 +140,33 @@
 #voiceStatus,#notebookStatus{font-size:12px;color:#6a665b}
 #clubMood{font-weight:700;color:#294e38}
 @media(max-width:390px){.field-row button{min-width:88px}.keith-intel span{font-size:10px}}
+
+/* Dagger CC 4.5: engraved scorecard trim and thumb navigation */
+:root{--green:#143126;--cream:#f5f0e5;--gold:#b79c62}
+body{background:#e9e1d0}
+.app-shell{border-color:#ae9a72;box-shadow:0 12px 32px #1a2a1e22}
+.mast{background:linear-gradient(120deg,#122b21,#1d4332);border-bottom:3px double #c7ad74}
+.mast .over{letter-spacing:.22em;color:#dfcfa7}
+.mast .h1{letter-spacing:.025em;font-weight:700}
+.content{padding-bottom:78px}
+.card{border-color:#c9b78d;box-shadow:0 1px 0 #fff8e8 inset}
+.card:not(.green) h2{border-bottom:1px solid #c9b78d;padding-bottom:8px}
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(720px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0;padding:7px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#f0e7d2;border-top:2px solid #b99d64;box-shadow:0 -7px 22px #172a1b24;z-index:100;border-radius:15px 15px 0 0}
+.tabbar button{min-width:0;min-height:48px;font:700 10px/1.2 system-ui,-apple-system,sans-serif;border-radius:9px;padding:7px 2px;white-space:normal}
+.card.green .callout{box-shadow:0 2px 0 #bda77a}
+.club-battle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.battle-option{padding:9px;border:1px solid #bdad88;border-radius:10px;background:#f4eddf;color:#1f3b2e}
+.battle-option strong{font-size:17px;display:block}
+.battle-option small{font-size:12px;color:#526559}
+.compact-tools{margin-top:8px;border:1px solid #a9b19b;border-radius:10px;padding:8px;color:#eee4d2}
+.compact-tools summary{color:#eee4d2;font:700 12px system-ui}
+.compact-tools label{margin-top:8px}
+.mini-note{font-size:12px;color:#e7d8b5;margin-top:6px}
+#memoryStatus,#battleStatus,#carryStatus,#matchKeith,#trendSummary,#rarityLine{font-size:12px;line-height:1.5}
+#matchKeith{background:#eee1c7;padding:10px;border-radius:9px;color:#193628;margin-top:8px}
+#trendTable td,#trendTable th{font-size:12px}
+@media(max-width:390px){.tabbar button{font-size:10px}.club-battle{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){.tabbar button{transition:none}}
 </style>
 </head>
 <body>
@@ -225,6 +252,12 @@
 <div style="margin-top:12px"><label>Course note</label><input id="coursenote" placeholder="uphill / forced carry / dogleg"></div></div></details>
         <div class="keith-intel" id="shotIntel"><span id="clubTrust">Club confidence: —</span><span id="safeMiss">Safe miss: unknown</span><span id="keithMood">Keith: unimpressed</span></div><div class="shot-toolbar"><button class="btn-secondary" id="clearRound">Clear</button><button class="btn-secondary" id="quickReset" type="button">↻ Mental Reset</button><button class="btn-secondary" id="heroCheck" type="button">⚠ Bad Idea?</button></div>
 
+        <details class="compact-tools" id="fieldIntel"><summary>Keith’s field intelligence · club battle · carry test</summary>
+          <div style="margin-top:10px"><strong>Club Battle</strong><div id="clubBattle" class="club-battle"><div class="battle-option">Ask Keith to compare two clubs.</div></div><div id="battleStatus" class="mini-note">Estimates only. Choose the safe miss for this hole.</div></div>
+          <div style="margin-top:12px"><label>Carry needed to clear hazard (yd)</label><div class="grid"><input id="carryBarrier" type="number" min="1" max="400" inputmode="numeric" placeholder="e.g. 205"><button id="checkCarry" class="btn-secondary" type="button">Carry it?</button></div><div id="carryStatus" class="mini-note">Tell me the carry, not the distance to the flag.</div></div>
+          <div style="margin-top:12px"><strong>Keith’s memory</strong><div id="memoryStatus" class="mini-note">Log shots to build evidence.</div></div>
+        </details>
+        <div id="rarityLine" class="mini-note" aria-live="polite"></div>
         <div class="answer-actions" aria-label="Quick shot feedback"><button data-feedback="Good">✓ Good</button><button data-feedback="Short">↓ Short</button><button data-feedback="Long">↑ Long</button><button data-feedback="Left">← Left</button><button data-feedback="Right">→ Right</button><button data-feedback="Trouble">! Trouble</button></div>
         <p class="muted" id="feedbackStatus" style="color:#d6d6cb">Optional: one tap records the last shot outcome on this phone. No scorekeeping.</p>
         <div class="note" style="color:#e4dcc9">Recommendations are only as good as your yardage, lie, carry requirement, and hazard info. Keith is sarcastic, not psychic.</div>
@@ -359,7 +392,7 @@
             <tbody id="clubs"></tbody>
           </table>
         </details>
-        <div class="note">Range files are parsed on this device. Back up after importing if you don't want Keith to forget everything.</div>
+        <div class="note">Range files are parsed on this device. Back up after importing if you don't want Keith to forget everything.</div><details style="margin-top:12px"><summary>Range-session trend</summary><div id="trendSummary" class="note">Import a new range CSV to start your session history. Existing averages do not contain past individual-session data.</div><table id="trendTable"><thead><tr><th>Session</th><th>Swings</th><th>Clubs</th></tr></thead><tbody id="trendRows"></tbody></table></details>
       </section>
 
             <section class="card" data-tab="bets">
@@ -387,6 +420,7 @@
           <button class="btn-ghost" id="betUndo">Undo last hole</button>
           <button class="btn-secondary" id="betPress">Start a simple press</button>
         </div>
+        <div id="matchKeith">Keith will adjust his risk commentary using your logged match position. Wagers don’t change your bag distances.</div>
         <p class="muted" id="betStatus" style="margin-top:10px">Log each hole result and Keith will keep the running tally.</p>
         <details style="margin-top:12px" open>
           <summary>Hole-by-hole ledger</summary>
@@ -749,6 +783,99 @@ decide=function(){
 };
 const origInit=init;
 init=async function(){await origInit();setDaggerMode(read('dagger_shot_mode','approach'));$('noteCourse').value=$('course').value;$('holeNote').value=holeNotes[nkey()]||'';};
+
+// ===== v4.5: privacy-friendly on-device field intelligence =====
+let sessionHistory=read('dagger_range_sessions',[]);
+const valNum=v=>Number.isFinite(Number(v))?Number(v):0;
+function recentMisses(club){
+ const entries=loggedShots.filter(x=>x.club===club).slice(-12);
+ const misses={Left:0,Right:0,Short:0,Long:0,Trouble:0,Good:0};
+ entries.forEach(x=>{if(Object.hasOwn(misses,x.result))misses[x.result]++;});
+ return {entries,misses};
+}
+function renderMemory(){
+ const shots=lastDecision?recentMisses(lastDecision.club):{entries:loggedShots.slice(-12),misses:{}};
+ let text='Log shots to give Keith a memory. No fabricated misses.';
+ if(shots.entries.length){
+  const counts={};shots.entries.forEach(x=>counts[x.result]=(counts[x.result]||0)+1);
+  const bad=Object.entries(counts).filter(([k])=>k!=='Good').sort((a,b)=>b[1]-a[1])[0];
+  text=`${shots.entries.length} recorded ${lastDecision?'with '+lastDecision.club:'recent outcomes'}. `+(bad?`${bad[1]} ${bad[0].toLowerCase()} results. That’s evidence, not a personality test.`:'No logged misses. Keith remains suspicious.');
+ }
+ $('memoryStatus').textContent=text;
+}
+function clubPair(){
+ const yard=Number($('yards').value);if(!yard||!profile.length)return;
+ const clubs=profile.filter(x=>x.name.toLowerCase()!=='driver'||daggerMode==='tee');
+ const sorted=clubs.map(p=>({p,carry:activeCarry(p),delta:Math.abs(activeCarry(p)-yard)})).sort((a,b)=>a.delta-b.delta).slice(0,2);
+ $('clubBattle').innerHTML=sorted.map(x=>`<div class="battle-option"><strong>${escapeHTML(x.p.name)}</strong><small>${Math.round(x.carry)} yd carry · ${Math.round(x.delta)} yd from target</small></div>`).join('');
+ const danger=state.danger;
+ $('battleStatus').textContent=sorted.length===2?`${danger==='short'?'Short is costly: verify enough carry. ':danger==='long'?'Long is costly: favor the shorter miss. ':'Compare your normal miss, lie and landing area. '}Not a ball-flight prediction.`:'Enter more clubs to compare.';
+}
+function carryTest(){
+ const needed=Number($('carryBarrier').value),club=profile.find(p=>p.name.toUpperCase()===currentClub);
+ if(!(needed>0)){$('carryStatus').textContent='Enter the distance required to clear trouble.';return;}
+ if(!club){$('carryStatus').textContent='Keith needs a specific club. Ask Keith, then test the carry.';return;}
+ const reliable=activeCarry(club)-Math.max(8,Math.min(24,(club.off||15)*.55));
+ const margin=reliable-needed;
+ $('carryStatus').textContent=margin>=0?`Provisional margin: +${Math.round(margin)} yd using a conservative ${Math.round(reliable)}-yd estimate. Verify the lie and actual clearance. Keith is reluctantly impressed you checked.`:`Short by roughly ${Math.round(-margin)} yd on a conservative estimate. Forget the hero shot, you ambitious idiot.`;
+}
+$('checkCarry').onclick=carryTest;
+function matchContext(){
+ const played=betState.results.filter(x=>x!==null).length;
+ const w=betState.results.filter(x=>x==='W').length,l=betState.results.filter(x=>x==='L').length;
+ const diff=w-l,remaining=18-played;
+ let msg=played===0?'No match results yet. Play your usual sensible golf.':diff>0?`You’re ${diff} up with ${remaining} holes unlogged. A conservative target protects a lead. Astonishing concept.`:diff<0?`You’re ${Math.abs(diff)} down with ${remaining} holes unlogged. Consider risk only where the reward justifies it—not because you’re angry.`:'All square. Win the hole by making the better decision, not the louder swing.';
+ $('matchKeith').textContent='Keith’s match-play advice: '+msg;
+}
+function renderSessionHistory(){
+ $('trendRows').innerHTML=sessionHistory.slice(-12).reverse().map(s=>`<tr><td>${escapeHTML(s.date||'Session')}</td><td>${s.shots||0}</td><td>${escapeHTML((s.clubs||[]).join(', '))}</td></tr>`).join('');
+ const previous=sessionHistory.length>1?sessionHistory.at(-2):null,latest=sessionHistory.at(-1);
+ if(!latest){$('trendSummary').textContent='Import a new CSV to begin session-to-session trends. Historical averages lack a session breakdown.';return;}
+ let line=`${sessionHistory.length} tracked import session(s). Latest: ${latest.shots} shots.`;
+ if(previous&&latest.byClub&&previous.byClub){const common=Object.keys(latest.byClub).filter(c=>previous.byClub[c]);if(common.length){let c=common[0],d=latest.byClub[c].carry-previous.byClub[c].carry;line+=` ${c} carry ${d>=0?'+':''}${d.toFixed(1)} yd versus previous upload (not necessarily an improvement).`;}}
+ $('trendSummary').textContent=line;
+}
+function rareEvent(){
+ const a=loggedShots.slice(-5);let msg='';
+ if(a.length===5&&a.every(s=>s.result==='Good'))msg='Five good shots. I’ve notified the club board. They suspect identity theft.';
+ else if(a.length>=3&&a.slice(-3).every(s=>s.result==='Trouble'))msg='Three trips to trouble. Keith is considering requesting hazard pay.';
+ $('rarityLine').textContent=msg;
+}
+const previousCall45=$('call').onclick;
+$('call').onclick=()=>{previousCall45();clubPair();renderMemory();matchContext();};
+const previousFeedback45=[...document.querySelectorAll('[data-feedback]')].map(x=>({b:x,fn:x.onclick}));
+previousFeedback45.forEach(({b,fn})=>b.onclick=()=>{fn();renderMemory();rareEvent();});
+const previousBet45=['betWin','betPush','betLose','betUndo','resetBetRound'].map(id=>({id,fn:$(id).onclick}));
+previousBet45.forEach(({id,fn})=>$(id).onclick=()=>{fn();matchContext();});
+const previousCSV45=$('csv').onchange;
+$('csv').onchange=async e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ let report=null;
+ try{const raw=await file.text(),r=csvRows(raw),header=(r.shift()||[]).map(x=>x.trim()),ic=header.indexOf('Club Type'),iy=header.indexOf('Carry Distance');
+ if(ic>=0&&iy>=0){const groups={};r.forEach(row=>{const club=(row[ic]||'').trim(),yd=Number(row[iy]);if(club&&yd>0&&Number.isFinite(yd)){(groups[club]??=[]).push(yd);}});
+ const byClub={};for(const [club,values] of Object.entries(groups))byClub[club]={carry:values.reduce((a,b)=>a+b,0)/values.length,n:values.length};
+ report={date:new Date().toLocaleDateString(),shots:Object.values(groups).reduce((n,v)=>n+v.length,0),clubs:Object.keys(groups),byClub};}}
+ catch(_){}
+ const before=read('dagger_import_signatures',[]).length;
+ await previousCSV45(e);
+ const after=read('dagger_import_signatures',[]).length;
+ if(report&&report.shots&&after>before){sessionHistory.push(report);store('dagger_range_sessions',sessionHistory);renderSessionHistory();}
+};
+const priorBackup45=$('export').onclick;
+$('export').onclick=()=>{
+ const data={profile,greens,wedgeFeels,loggedShots,personality:$('personality').value,roast:$('roast').value,betState,rangeSessions:sessionHistory,holeNotes:read('dagger_hole_notes',{})};
+ const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='dagger-backup-v45.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+const oldRestore45=$('backupFile').onchange;
+$('backupFile').onchange=async e=>{
+ const f=e.target.files?.[0];if(!f)return;let extra={};try{extra=JSON.parse(await f.text())}catch(_){}
+ await oldRestore45(e);
+ if(Array.isArray(extra.rangeSessions)){sessionHistory=extra.rangeSessions;store('dagger_range_sessions',sessionHistory);renderSessionHistory();}
+ if(extra.betState&&Array.isArray(extra.betState.results)){betState=extra.betState;store('dagger_bet_state',betState);renderBets();matchContext();}
+ if(extra.holeNotes&&typeof extra.holeNotes==='object')store('dagger_hole_notes',extra.holeNotes);
+};
+window.addEventListener('load',()=>{renderSessionHistory();renderMemory();rareEvent();matchContext();});
+
 init();
 </script>
 </body>
