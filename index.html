@@ -82,7 +82,7 @@
   .pulse-reason{font-size:12px;color:#46564b}
   .answer-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
   .answer-actions button{padding:9px 5px;font-size:12px;background:#e6dcc6;color:#19372b;border:1px solid #cabc9c}
-  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
+  .tabbar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0}
   .tabbar button{font-size:12px;padding:11px 4px;background:#e9e0cd;border:1px solid #c5b593;color:#17372a}
   .bet-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
   .betbox{padding:10px;border-radius:12px;background:#f4eddf;border:1px solid #d3c4a5;text-align:center}
@@ -151,7 +151,7 @@ body{background:#e9e1d0}
 .content{padding-bottom:78px}
 .card{border-color:#c9b78d;box-shadow:0 1px 0 #fff8e8 inset}
 .card:not(.green) h2{border-bottom:1px solid #c9b78d;padding-bottom:8px}
-.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(720px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0;padding:7px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#f0e7d2;border-top:2px solid #b99d64;box-shadow:0 -7px 22px #172a1b24;z-index:100;border-radius:15px 15px 0 0}
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(720px,100%);display:grid;grid-template-columns:repeat(7,minmax(0,1fr));margin:0;padding:7px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#f0e7d2;border-top:2px solid #b99d64;box-shadow:0 -7px 22px #172a1b24;z-index:100;border-radius:15px 15px 0 0}
 .tabbar button{min-width:0;min-height:48px;font:700 10px/1.2 system-ui,-apple-system,sans-serif;border-radius:9px;padding:7px 2px;white-space:normal}
 .card.green .callout{box-shadow:0 2px 0 #bda77a}
 .club-battle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
@@ -203,6 +203,34 @@ body{background:#e9e1d0}
 .file-quote{font-size:14px;background:#eae0c9;border-left:3px solid #b29a6e;padding:9px 11px;font-style:italic;border-radius:0 9px 9px 0}
 .file-foot{font-size:11px;color:#6f6755;margin-top:8px}
 @media(max-width:390px){.staff-pick strong{font-size:12px}.staff-pick small{font-size:8px}.caddie-roster{padding:9px 7px}.staff-grid{gap:4px}.staff-thumb{width:42px;height:42px}.file-grid{grid-template-columns:1fr}}
+
+/* 4.6.3 — staff-house identity */
+:root{--staff-accent:#b79c62;--staff-accent-soft:#ebdfc5}
+.caddie-roster{border-color:var(--staff-accent)}
+.staff-pick.active{border-color:var(--staff-accent);box-shadow:inset 0 0 0 1px var(--staff-accent)}
+.staff-pick.active .staff-thumb{border-color:var(--staff-accent)}
+.staff-badge{font:700 10px/1.3 system-ui;letter-spacing:.07em;text-transform:uppercase;background:var(--staff-accent-soft);color:#213b2d;border:1px solid var(--staff-accent);border-radius:100px;padding:3px 8px}
+.staff-file{border-color:var(--staff-accent)}
+.staff-office{background:linear-gradient(180deg,#faf6eb,#eae0cb);border:1px solid #c7b591;border-radius:17px;padding:13px;margin:8px 0}
+.office-header{display:flex;gap:10px;align-items:center;border-bottom:1px solid #c6b48f;padding-bottom:10px;margin-bottom:10px}
+.office-header img{height:64px;width:64px;object-fit:cover;border-radius:12px;border:2px solid var(--staff-accent)}
+.office-title{font-size:21px;color:#153529;font-weight:700;line-height:1.1}
+.notice-card{padding:12px;background:#f3e9d2;border:1px solid #d1bf99;border-radius:12px;margin:9px 0;font-size:13px;line-height:1.5;color:#2c3d32}
+.notice-eyebrow{font:700 10px system-ui;letter-spacing:.12em;color:#796648;margin-bottom:6px}
+#officeRoster{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.office-person{display:flex;align-items:center;gap:9px;background:#eee3cd;border:1px solid #cbb997;border-radius:12px;padding:8px;text-align:left}
+.office-person img{width:43px;height:43px;object-fit:cover;border-radius:10px}
+.office-person span{font-size:13px;color:#223e2f}
+#staffBanter,#puckerStaffLine{line-height:1.4}
+#staffBanter{margin-top:8px;font-size:12px;color:#5b5548;font-style:italic}
+#puckerStaffLine{margin-top:5px;font-size:12px;font-weight:700;color:#203f30}
+@media(max-width:390px){.tabbar button{font-size:9px}.staff-pick .staff-thumb{width:42px;height:42px}}
+
+/* 4.7 mobile: 7 compact thumb targets; wrap text rather than overcrowd content. */
+.tabbar{gap:2px;padding-left:4px;padding-right:4px}.tabbar button{font-size:9px;min-height:52px;padding:7px 1px}
+.wager-panel{background:#f9f5ec;border:1px solid #cdbc98;padding:10px;border-radius:12px;margin-top:12px}.wager-panel>summary{font-size:14px}
+[data-tab="games"] input,[data-tab="bets"] input{font-size:16px}
+@media(max-width:390px){.tabbar button{font-size:8px}}
 </style>
 </head>
 <body>
@@ -216,11 +244,11 @@ body{background:#e9e1d0}
           <div class="sub" style="margin-top:5px">On the bag: <strong id="onBagName">Keith</strong> · Private-club service. Municipal-course language.</div>
         </div>
       </div>
-      <div class="quip"><img class="portrait" id="staffPortrait" src="keith_portrait.png" alt="Keith portrait"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
+      <div class="quip"><img class="portrait" id="staffPortrait" src="keith_portrait.webp" alt="Keith portrait"><span id="mastquip">Keith is here to help you shoot lower scores and make slightly fewer stupid decisions.</span><div style="clear:both"></div></div>
     </div>
 
     <div class="content">
-      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ MY BAG</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-bets" type="button">$ BETTING</button><button id="tab-settings" type="button">⚙ CLUBHOUSE</button></nav>
+      <nav class="tabbar" aria-label="App sections"><button id="tab-play" class="active" type="button">⛳ PLAY</button><button id="tab-bag" type="button">♣ MY BAG</button><button id="tab-reset" type="button">↻ RESET</button><button id="tab-bets" type="button">$ BETTING</button><button id="tab-settings" type="button">⚙ CLUB</button><button id="tab-office" type="button">♜ OFFICE</button><button id="tab-games" type="button">★ GAMES</button></nav>
 
       <section class="card" id="setupCard">
         <h2>Welcome to Dagger Caddie</h2>
@@ -247,12 +275,12 @@ body{background:#e9e1d0}
       <section class="caddie-roster" data-tab="play" aria-label="Choose your caddie">
         <div class="roster-heading"><span>CADDIE MASTER'S OFFICE</span><button class="roster-file-link" id="toggleStaffFile" type="button" aria-expanded="false">Personnel file ▾</button></div>
         <div class="staff-grid" id="caddieChoices">
-          <button type="button" class="staff-pick active" data-caddie="keith" aria-pressed="true"><img class="staff-thumb" src="keith_portrait.png" alt="Keith portrait"><strong>Keith</strong><small>Head caddie</small></button>
-          <button type="button" class="staff-pick" data-caddie="reginald" aria-pressed="false"><img class="staff-thumb" src="reginald_portrait.png" alt="Reginald portrait"><strong>Reginald</strong><small>Traditions</small></button>
-          <button type="button" class="staff-pick" data-caddie="vinny" aria-pressed="false"><img class="staff-thumb" src="vinny_portrait.png" alt="Vinny portrait"><strong>Vinny</strong><small>Wagering</small></button>
-          <button type="button" class="staff-pick" data-caddie="kyle" aria-pressed="false"><img class="staff-thumb" src="kyle_portrait.png" alt="Kyle portrait"><strong>Kyle</strong><small>Almost enlisted</small></button>
+          <button type="button" class="staff-pick active" data-caddie="keith" aria-pressed="true"><img class="staff-thumb" src="keith_portrait.webp" alt="Keith portrait"><strong>Keith</strong><small>Head caddie</small></button>
+          <button type="button" class="staff-pick" data-caddie="reginald" aria-pressed="false"><img class="staff-thumb" src="reginald_portrait.webp" alt="Reginald portrait"><strong>Reginald</strong><small>Traditions</small></button>
+          <button type="button" class="staff-pick" data-caddie="vinny" aria-pressed="false"><img class="staff-thumb" src="vinny_portrait.webp" alt="Vinny portrait"><strong>Vinny</strong><small>Wagering</small></button>
+          <button type="button" class="staff-pick" data-caddie="kyle" aria-pressed="false"><img class="staff-thumb" src="kyle_portrait.webp" alt="Kyle portrait"><strong>Kyle</strong><small>Almost enlisted</small></button>
         </div>
-        <div class="staff-file" id="staffFile" data-theme="keith" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><div class="staff-file-top"><img class="staff-file-photo" id="filePortrait" src="keith_portrait.png" alt="Keith dossier portrait"><div><h3 id="fileName">KEITH · HEAD CADDIE</h3><div class="file-sub" id="fileTitle"></div></div></div><div class="file-grid"><div class="file-box"><strong>Known for</strong><span id="fileKnown"></span></div><div class="file-box"><strong>Specialty</strong><span id="fileSpecialty"></span></div><div class="file-box"><strong>Club warning</strong><span id="fileWarning"></span></div></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
+        <div id="staffBanter" aria-live="polite"></div><div class="staff-file" id="staffFile" data-theme="keith" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><div class="staff-file-top"><img class="staff-file-photo" id="filePortrait" src="keith_portrait.webp" alt="Keith dossier portrait"><div><h3 id="fileName">KEITH · HEAD CADDIE</h3><div class="file-sub" id="fileTitle"></div></div></div><div class="file-grid"><div class="file-box"><strong>Known for</strong><span id="fileKnown"></span></div><div class="file-box"><strong>Specialty</strong><span id="fileSpecialty"></span></div><div class="file-box"><strong>Club warning</strong><span id="fileWarning"></span></div></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
       </section>
       <section class="card green" data-tab="play">
         <div class="inline" style="justify-content:space-between">
@@ -271,10 +299,11 @@ body{background:#e9e1d0}
         <div class="pulse-wrap" id="pulseBox" aria-live="polite">
           <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB</div><strong>PUCKER FACTOR</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
           <div class="pulse-track"><div class="pulse-marker" id="pulseMarker"></div></div>
-          <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
+          <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div id="puckerStaffLine" aria-live="polite"></div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
         </div>
 
         <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddie</button></div><div id="voiceStatus" style="color:#d7cfb9;margin-top:3px" aria-live="polite">Voice optional; manual controls always work.</div>
+        <details class="shot-extra" style="margin-top:6px"><summary>Full shot description / voice transcript <span>＋</span></summary><div class="extra-inner"><label for="fullShotDescription">Describe your entire situation</label><textarea id="fullShotDescription" rows="4" placeholder="I'm 176 out, light downhill lie in right rough. Crosswind left to right, bunker short, water long, flag back right..." style="width:100%;border-radius:10px;padding:10px;font:14px system-ui"></textarea><div class="grid"><button class="btn-secondary" type="button" id="parseDescription">Extract shot details</button><button class="btn-secondary" type="button" id="useDescription">Apply details & ask caddie</button></div><p id="descriptionStatus" style="color:#efe3cc;font-size:12px;margin:7px 0 0">Caddie interprets recognized yardage, lie, wind, pin and hazards. Other context is preserved as a note, not automatically understood or verified.</p></div></details>
         <div class="distance-line">
           <div><label>Yards to target</label><input id="yards" type="number" min="1" max="700" value="168" inputmode="numeric"></div>
           <button class="btn-primary" id="call">ASK CADDIE →</button>
@@ -475,7 +504,44 @@ body{background:#e9e1d0}
             <tbody id="betTable"></tbody>
           </table>
         </details>
+
+        <details class="wager-panel" id="newWagers" style="margin-top:12px" open><summary>Four-player wagering · Skins / Nassau / hole match</summary>
+          <div style="padding:10px 0"><p class="muted">A separate money game. Enter gross strokes for each hole; settle and archive when finished. Nassau and hole match compare you with one opponent; skins covers everyone.</p>
+            <div class="grid"><div><label>Your name</label><input id="wMyName" value="Me" maxlength="24"></div><div><label>Opponent 1</label><input id="wP2" value="Player 2" maxlength="24"></div><div><label>Opponent 2 (optional)</label><input id="wP3" maxlength="24" placeholder="Player 3"></div><div><label>Opponent 3 (optional)</label><input id="wP4" maxlength="24" placeholder="Player 4"></div></div>
+            <div class="grid" style="margin-top:8px"><div><label>Game type</label><select id="wFormat"><option value="skins">Skins · Gross</option><option value="hole">Hole match · 1 vs 1</option><option value="nassau">Nassau · 1 vs 1</option></select></div><div><label>Stake ($)</label><input type="number" min="0" max="10000" step="0.5" value="5" id="wStake"></div></div>
+            <p class="muted">For skins, stake is the cost per skin paid by each other player. For Nassau, stake applies separately to front, back and overall. No automatic presses or handicaps.</p>
+            <button class="btn-secondary" id="wStart" type="button">Start foursome game</button>
+            <div id="wPlaying" hidden><div class="bet-summary" style="grid-template-columns:repeat(2,1fr)"><div class="betbox"><strong>Hole</strong><span id="wHole">1</span></div><div class="betbox"><strong>Result</strong><span id="wLead">All square</span></div></div>
+              <p class="muted" id="wInstruction">Enter gross strokes for this hole, then save.</p>
+              <div class="grid" id="wScoreFields"></div>
+              <div class="grid" style="margin-top:8px"><button class="btn-primary" id="wSaveHole">Save hole scores</button><button class="btn-ghost" id="wUndoHole">Undo last hole</button></div>
+              <p class="status" id="wStatus">Ready to score.</p>
+              <div class="grid" style="margin-top:8px"><button class="btn-secondary" id="wFinish">Settle & archive</button><button class="btn-ghost" id="wAbandon">Discard active game</button></div>
+            </div>
+          </div>
+        </details>
+        <details class="wager-panel"><summary>Lifetime wagering ledger</summary><div id="wLifetime" class="note" style="margin-top:10px"></div><table><thead><tr><th>Date</th><th>Game</th><th>Your net</th></tr></thead><tbody id="wHistory"></tbody></table><button class="btn-ghost" id="wExport" type="button">Export wager history CSV</button><div style="margin-top:9px"><label>Restore games & bets backup</label><input id="restoreGames" type="file" accept=".json,application/json"></div><p id="restoreGamesStatus" class="note"></p></details>
       </section>
+
+<section class="staff-office" data-tab="office" aria-label="Caddie Master's Office">
+  <div class="notice-eyebrow">DAGGER COUNTRY CLUB · EST. UNDER PROTEST</div>
+  <h2>Caddie Master's Office</h2>
+  <p class="muted">A private club with extraordinarily public personnel problems.</p>
+  <div class="office-header"><img id="officePortrait" src="keith_portrait.webp" alt="Selected caddie"><div><div class="office-title" id="officeName">Keith · Head Caddie</div><span class="staff-badge" id="officeBadge">Veteran Menace</span></div></div>
+  <div class="notice-card"><div class="notice-eyebrow">CONFIDENTIAL PERSONNEL RECORD</div><div id="officePersonnel">Select a caddie to inspect their dubious credentials.</div></div>
+  <div class="notice-card"><div class="notice-eyebrow">LATEST FROM THE STAFF ROOM</div><div id="officeGossip">Keith has issued a noise complaint against Kyle.</div><button id="officeNewGossip" class="btn-secondary" type="button" style="margin-top:10px">Another staff-room complaint</button></div>
+  <h3>Staff directory</h3><div id="officeRoster"></div>
+  <p class="note">Staff rumors are fictional. Their golf recommendations still use your actual bag data.</p>
+</section>
+<section class="card" data-tab="games"><div class="over" style="color:#776344">DAGGER COUNTRY CLUB · COMPETITION COMMITTEE</div><h2>Club Games</h2><p class="muted">The club has approved structured chaos. Start with Bingo Bango Bongo.</p>
+  <details open><summary>How to play · Bingo Bango Bongo</summary><div style="padding:10px 0"><p>Each hole offers <strong>three independent points</strong>:</p><p><strong>Bingo:</strong> First player to get their ball on the green.<br><strong>Bango:</strong> Closest to the hole once every ball is on the green.<br><strong>Bongo:</strong> First player to hole out.</p><p class="note">Keep proper order of play, especially for Bingo and Bongo. No points are automatically awarded for a tie; choose the applicable player or leave unawarded. It's a points game, not normal stroke-play scoring.</p></div></details>
+  <div class="grid"><div><label>Player 1</label><input id="gP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="gP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="gP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="gP4" maxlength="24" placeholder="Optional"></div></div>
+  <button class="btn-secondary" id="gStart" type="button" style="margin-top:10px">Start new Bingo Bango Bongo round</button>
+  <div id="gPlaying" hidden><div class="bet-summary" style="grid-template-columns:repeat(2,1fr)"><div class="betbox"><strong>Hole</strong><span id="gHole">1</span></div><div class="betbox"><strong>Points awarded</strong><span id="gTotal">0</span></div></div>
+  <div class="grid"><div><label>Bingo · First on green</label><select id="gBingo"></select></div><div><label>Bango · Closest when all on</label><select id="gBango"></select></div><div><label>Bongo · First holed</label><select id="gBongo"></select></div></div>
+  <button class="btn-primary" id="gSave" style="margin-top:10px">Save hole & next</button><div class="grid" style="margin-top:8px"><button class="btn-ghost" id="gUndo">Undo last hole</button><button class="btn-secondary" id="gFinish">Archive game</button></div><div id="gStandings" class="note" style="margin-top:10px"></div><p id="gStatus" class="status"></p></div>
+  <details style="margin-top:12px"><summary>Past games & lifetime points</summary><div id="gLifetime" class="note" style="margin-top:10px"></div><div id="gHistory" class="note"></div></details>
+</section>
 
 <div class="footer">Dagger Caddie · Keith’s Country Club Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
     </div>
@@ -486,8 +552,8 @@ const $=id=>document.getElementById(id);
 const escapeHTML=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let currentClub='', lastDecision=null, loggedShots=[];
 let betState={opponent:'',stake:10,currentHole:1,results:Array(18).fill(null),presses:0};
-function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','reset','bets','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
-['play','bag','reset','bets','settings'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','reset','bets','settings','office','games'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
+['play','bag','reset','bets','settings','office','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
 const resetAdvice={
  angry:{steps:'<strong>1.</strong> Exhale for six seconds. Unclench your jaw.<br><strong>2.</strong> Name what happened without assigning blame.<br><strong>3.</strong> Choose the safest target. Swing only when ready.',quote:'“Yes, that was crap. Giving the next ball the same punishment would be even dumber.”'},
  hard:{steps:'<strong>1.</strong> Loosen your grip and take one slow breath.<br><strong>2.</strong> Make ONE smooth rehearsal at 75% effort.<br><strong>3.</strong> Pick a target and swing with balance.',quote:'“Distance is not an emergency, you overcaffeinated lumberjack.”'},
@@ -552,6 +618,7 @@ function pucker({yards,lie,wind,danger,club,confidence}){
   $('pulseNumber').textContent=val.toFixed(1)+' / 10';$('pulseTier').textContent=tier;
   $('pulseMarker').style.left=`calc(${Math.max(0,Math.min(99,(val-1)/9*100))}% - 2px)`;
   $('pulseReason').textContent=reasons.join(' · ')+'. Situation estimate, not a measured probability.';
+  renderPressureVoice(val);
   const box=$('pulseBox'); box.classList.remove('pucker-shake','pucker-glow');
   if(val>8){box.classList.add('pucker-glow');if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){box.classList.add('pucker-shake');}}
 
@@ -676,7 +743,7 @@ const CADDIE_LINES={
 };
 let selectedCaddie='keith';
 let staffLineCounter={reginald:0,vinny:0,kyle:0};
-const CADDIE_PORTRAITS={keith:'keith_portrait.png',reginald:'reginald_portrait.png',vinny:'vinny_portrait.png',kyle:'kyle_portrait.png'};
+const CADDIE_PORTRAITS={keith:'keith_portrait.webp',reginald:'reginald_portrait.webp',vinny:'vinny_portrait.webp',kyle:'kyle_portrait.webp'};
 function getKeithLine(kind){
  if(selectedCaddie==='keith') return getOriginalKeithLine(kind);
  const c=CADDIE_LINES[selectedCaddie]||CADDIE_LINES.reginald;
@@ -705,6 +772,9 @@ function renderStaff(){
  $('filePortrait').src=portrait;
  $('filePortrait').alt=c.name+' dossier portrait';
  $('staffFile').dataset.theme=selectedCaddie;
+ refreshOffice();
+ if(Math.random()<0.2) $('staffBanter').textContent=nextStaffGossip();
+ const score=parseFloat($('pulseNumber').textContent);if(Number.isFinite(score))renderPressureVoice(score);
 }
 function selectCaddie(id){if(!CADDIES[id])return;selectedCaddie=id;store('dagger_selected_caddie',id);renderStaff();}
 
@@ -969,10 +1039,135 @@ $('backupFile').onchange=async e=>{
 };
 window.addEventListener('load',()=>{renderSessionHistory();renderMemory();rareEvent();matchContext();});
 
+
+const STAFF_STYLE={
+ keith:{accent:'#a98b50',soft:'#ebe0c7',badge:'HEAD CADDIE · TENURED MENACE'},
+ reginald:{accent:'#858a8e',soft:'#e4e5e0',badge:'TRADITIONS · ETIQUETTE ENFORCER'},
+ vinny:{accent:'#a16b41',soft:'#f0deca',badge:'WAGERING · CASH OFFICE'},
+ kyle:{accent:'#758d9b',soft:'#dce5e6',badge:'TACTICAL · NEVER SERVED'}
+};
+const STAFF_GOSSIP=[
+ ['keith','"Kyle has been almost deployed six times this month. The clubhouse has asked him to stop saluting the beverage cart."'],
+ ['reginald','"Vinny refers to an unpaid wager as a gentleman’s agreement. I refer to it as an indictment."'],
+ ['vinny','"Reginald tried to pay his Nassau with a handwritten apology. Beautiful penmanship. Still owes me forty."'],
+ ['kyle','"BROTHER, Keith said I have no military experience. That’s exactly what they’d WANT you to think. Anyway, hit the fat side."'],
+ ['keith','"Reginald irons his golf gloves. I watched him do it. The man is a danger to civilization."'],
+ ['vinny','"Kyle almost joined every branch and somehow still missed the signup deadline for our scramble."'],
+ ['reginald','"Keith’s vocabulary is the only thing on this property more dangerous than a plugged bunker lie."'],
+ ['kyle','"Vinny said the whole match was a financial ambush. That is literally tactical doctrine, brother."']
+];
+const PRESSURE_VOICES={
+ keith:{low:'Stock shot. Act like a member for once.',mid:'Find the safe side. Your ego is not insured.',high:'This is where scorecards go to die. Take the boring escape, you lunatic.'},
+ reginald:{low:'A civilized undertaking, sir. Maintain your decorum.',mid:'Some restraint is indicated. I beg you to display it.',high:'A most unfortunate circumstance. Favor safety before you bring shame upon the committee.'},
+ vinny:{low:'Easy money. Don’t get creative, sweetheart.',mid:'Protect the cash and the wide side, kid.',high:'THE RENT MONEY IS IN THE WATER. Play the safest available shot and stop donating.'},
+ kyle:{low:'GREEN ZONE, BROTHER. Operational tempo.',mid:'YELLOW ALERT. Reassess the battlespace—by which I mean the fairway.',high:'CODE WHITE OAKLEY. TACTICAL RETREAT. My nonexistent commander would approve.'}
+};
+let gossipCounter=0;
+function nextStaffGossip(){const entry=STAFF_GOSSIP[gossipCounter++%STAFF_GOSSIP.length];return CADDIES[entry[0]].name+' says: '+entry[1];}
+function refreshOffice(){
+ const c=CADDIES[selectedCaddie],s=STAFF_STYLE[selectedCaddie];
+ document.documentElement.style.setProperty('--staff-accent',s.accent);
+ document.documentElement.style.setProperty('--staff-accent-soft',s.soft);
+ $('officePortrait').src=CADDIE_PORTRAITS[selectedCaddie];
+ $('officePortrait').alt=c.name+' portrait';
+ $('officeName').textContent=c.name+' · '+c.title;
+ $('officeBadge').textContent=s.badge;
+ $('officePersonnel').textContent=c.bio+' '+c.foot;
+ $('officeRoster').innerHTML='';
+ for(const [id,member] of Object.entries(CADDIES)){
+  const b=document.createElement('button');b.type='button';b.className='office-person';
+  const pic=document.createElement('img');pic.src=CADDIE_PORTRAITS[id];pic.alt=member.name;
+  const txt=document.createElement('span');txt.textContent=member.name+' · '+member.title;
+  b.append(pic,txt);b.onclick=()=>{selectCaddie(id);$('officeGossip').textContent=nextStaffGossip();};
+  $('officeRoster').append(b);
+ }
+}
+function renderPressureVoice(score){
+ const mood=score>8?'high':score>=5?'mid':'low';
+ $('puckerStaffLine').textContent=(CADDIES[selectedCaddie]||CADDIES.keith).name+': '+PRESSURE_VOICES[selectedCaddie][mood];
+}
+$('officeNewGossip').onclick=()=>{$('officeGossip').textContent=nextStaffGossip();};
 document.querySelectorAll('.staff-pick').forEach(b=>b.addEventListener('click',()=>selectCaddie(b.dataset.caddie)));
 $('toggleStaffFile').onclick=()=>{const el=$('staffFile');el.hidden=!el.hidden;$('toggleStaffFile').setAttribute('aria-expanded',String(!el.hidden));$('toggleStaffFile').textContent=el.hidden?'Personnel file ▾':'Close personnel file ▴';};
 selectedCaddie=read('dagger_selected_caddie','keith');if(!CADDIES[selectedCaddie])selectedCaddie='keith';renderStaff();
 init();
+
+// 4.7 · VOICE-FIRST FIELD NOTES AND MULTIPLAYER CLUB GAMES
+function descriptionParse(raw){
+ const t=String(raw||'').trim();if(!t)return false;
+ const ok=voiceParse(t);const s=t.toLowerCase();
+ // Preserve the full description, including facts not handled by the simple parser.
+ $('coursenote').value=t.slice(0,900);
+ const hazards=[];
+ for(const [name,re] of [['water',/\bwater|pond|lake|creek\b/],['bunker',/\bbunker|sand|trap\b/],['trees',/\btrees|branches|woods\b/],['out of bounds',/\bob|out of bounds\b/],['forced carry',/\bcarry over|must clear|forced carry\b/]]) if(re.test(s)) hazards.push(name);
+ $('descriptionStatus').textContent='Interpreted'+(ok?' known shot fields':' description only')+(hazards.length?' · Mentions: '+hazards.join(', '):'')+'. Verify target, penalty area, carry and numbers yourself. Full context is saved for the caddie.';
+ return ok;
+}
+$('parseDescription').onclick=()=>descriptionParse($('fullShotDescription').value);
+$('useDescription').onclick=()=>{descriptionParse($('fullShotDescription').value);$('call').click();};
+// Override microphone result to keep complete natural-language context, while retaining manual fallback.
+$('voiceShot').onclick=()=>{
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){$('voiceStatus').textContent='Voice recognition unavailable; tap the description box and use iPhone keyboard dictation.';$('fullShotDescription').focus();return;}
+ const r=new SR();r.lang='en-US';r.interimResults=false;r.maxAlternatives=1;
+ $('voiceStatus').textContent='Listening. Describe the entire hole: distance, lie, wind, hazards, flag and the shot you want.';
+ r.onresult=e=>{const heard=e.results[0][0].transcript;$('fullShotDescription').value=heard;descriptionParse(heard);$('voiceStatus').textContent='Heard your full description. Review it and tap Apply details & ask caddie.';};
+ r.onerror=e=>$('voiceStatus').textContent='Mic unavailable: '+e.error+'. Keyboard dictation still works.';
+ try{r.start();}catch(e){$('voiceStatus').textContent='Microphone could not start. Use keyboard dictation.';}
+};
+const freshWager=()=>({players:[],format:'skins',stake:5,holes:[],started:Date.now()});
+let activeW=read('dagger_foursome_active',null),wHistory=read('dagger_foursome_history',[]);
+const wStore=()=>{store('dagger_foursome_active',activeW);store('dagger_foursome_history',wHistory);};
+const wVal=(n)=>Number.isFinite(+n)&&+n>0?+n:null;
+function wagerMath(game){
+ const names=game.players,score=names.map(()=>0),stake=Number(game.stake)||0;
+ let carry=1;
+ if(game.format==='skins'){
+  game.holes.forEach(h=>{const vals=h.filter(x=>x!==null);if(vals.length!==names.length)return;const low=Math.min(...vals),winners=h.map((v,i)=>v===low?i:-1).filter(i=>i>=0);if(winners.length===1){const wi=winners[0];score[wi]+=stake*carry*(names.length-1);score.forEach((_,j)=>{if(j!==wi)score[j]-=stake*carry;});carry=1;}else carry++;});
+ }else if(game.format==='hole'){
+  game.holes.forEach(h=>{if(h[0]===null||h[1]===null)return;if(h[0]<h[1]){score[0]+=stake;score[1]-=stake;}if(h[0]>h[1]){score[0]-=stake;score[1]+=stake;}});
+ }else{
+  for(const [start,end] of [[0,9],[9,18],[0,18]]){
+    let wins=0;game.holes.slice(start,end).forEach(h=>{if(h[0]!==null&&h[1]!==null)wins+=h[0]<h[1]?1:h[0]>h[1]?-1:0;});
+    if(wins){score[0]+=Math.sign(wins)*stake;score[1]-=Math.sign(wins)*stake;}
+  }
+ }
+ return {score,carry};
+}
+function money(v){return(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);}
+function renderFoursome(){
+ $('wPlaying').hidden=!activeW;
+ if(activeW){const g=activeW,idx=Math.min(g.holes.length,17);$('wHole').textContent=String(idx+1);const result=wagerMath(g);$('wLead').textContent=money(result.score[0])+(g.format==='skins'&&result.carry>1?' · '+result.carry+' skins at stake':'');
+  $('wScoreFields').innerHTML='';g.players.forEach((p,i)=>{const d=document.createElement('div'),l=document.createElement('label'),inpt=document.createElement('input');l.textContent=p+' strokes';inpt.id='ws'+i;inpt.type='number';inpt.min='1';inpt.max='20';inpt.placeholder='Strokes';d.append(l,inpt);$('wScoreFields').append(d);});
+  $('wInstruction').textContent=g.format==='skins'?'Lowest unique gross score wins the skin; ties carry over.':g.format==='nassau'?'Front 9, back 9 and overall are three separate matches.':'Every hole won or lost changes the balance by the stake.';
+ }
+ $('wHistory').innerHTML='';let total=0;
+ wHistory.forEach(g=>{const net=wagerMath(g).score[0];total+=net;const row=document.createElement('tr');[new Date(g.ended).toLocaleDateString(),g.format,money(net)].forEach(v=>{const cell=document.createElement('td');cell.textContent=v;row.append(cell)});$('wHistory').append(row);});
+ $('wLifetime').textContent=wHistory.length+' archived games · lifetime net '+money(total)+'. Saved only on this device; back up your app data.';
+}
+$('wStart').onclick=()=>{if(activeW&&!confirm('Replace your current unarchived foursome game?'))return;const names=[$('wMyName').value,$('wP2').value,$('wP3').value,$('wP4').value].map(x=>x.trim()).filter(Boolean),format=$('wFormat').value,stake=Number($('wStake').value);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length||stake<0||!Number.isFinite(stake)){alert('Enter at least two different player names and a valid stake.');return;}const players=format==='skins'?names:names.slice(0,2);activeW={...freshWager(),players,format,stake};wStore();renderFoursome();};
+$('wSaveHole').onclick=()=>{if(!activeW)return;if(activeW.holes.length>=18){$('wStatus').textContent='18 holes completed. Archive the match.';return;}const h=activeW.players.map((_,i)=>wVal($('ws'+i).value));if(h.some(x=>x===null)){ $('wStatus').textContent='Enter a valid stroke score for every player.';return;}activeW.holes.push(h);wStore();renderFoursome();$('wStatus').textContent='Hole saved. Nice work, accountants.';};
+$('wUndoHole').onclick=()=>{if(activeW&&activeW.holes.length){activeW.holes.pop();wStore();renderFoursome();}};
+$('wFinish').onclick=()=>{if(!activeW||!activeW.holes.length)return;if(!confirm('Archive this game and its current results?'))return;activeW.ended=Date.now();wHistory.push(activeW);activeW=null;wStore();renderFoursome();};
+$('wAbandon').onclick=()=>{if(activeW&&confirm('Discard the active game without adding it to lifetime history?')){activeW=null;wStore();renderFoursome();}};
+$('wExport').onclick=()=>{const csv=['date,format,players,holes,your_net',...wHistory.map(g=>[new Date(g.ended).toISOString().slice(0,10),g.format,'"'+g.players.join(' vs ').replaceAll('"','""')+'"',g.holes.length,wagerMath(g).score[0].toFixed(2)].join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='dagger-lifetime-wagers.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);};
+const freshGame=()=>({players:[],holes:[],started:Date.now()});
+let activeG=read('dagger_bbb_active',null),gHistory=read('dagger_bbb_history',[]);
+const gStore=()=>{store('dagger_bbb_active',activeG);store('dagger_bbb_history',gHistory);};
+function bbbScore(game){const pts=game.players.map(()=>0);game.holes.forEach(h=>h.forEach(i=>{if(i!==null&&i>=0&&i<pts.length)pts[i]++;}));return pts;}
+function renderBBB(){ $('gPlaying').hidden=!activeG;
+ if(activeG){const g=activeG; $('gHole').textContent=Math.min(18,g.holes.length+1);$('gTotal').textContent=g.holes.flat().filter(x=>x!==null).length;['gBingo','gBango','gBongo'].forEach(id=>{const sel=$(id);sel.innerHTML='';[['','No point / tie'],...g.players.map((p,i)=>[String(i),p])].forEach(([value,name])=>{const o=document.createElement('option');o.value=value;o.textContent=name;sel.append(o);});}); $('gStandings').textContent=g.players.map((p,i)=>p+': '+bbbScore(g)[i]+' pts').join(' · ');}
+ const totals={};gHistory.forEach(g=>g.players.forEach((p,i)=>{totals[p]=(totals[p]||0)+bbbScore(g)[i]})); $('gLifetime').textContent=gHistory.length+' archived games · Lifetime: '+(Object.entries(totals).map(([p,n])=>p+' '+n).join(' · ')||'No games yet');$('gHistory').innerHTML='';gHistory.slice(-8).reverse().forEach(g=>{const p=document.createElement('p');p.textContent=new Date(g.ended).toLocaleDateString()+' · '+g.players.map((name,i)=>name+' '+bbbScore(g)[i]).join(' | ');$('gHistory').append(p);});}
+$('gStart').onclick=()=>{if(activeG&&!confirm('Replace the active Bingo Bango Bongo game?'))return;const names=[$('gP1').value,$('gP2').value,$('gP3').value,$('gP4').value].map(x=>x.trim()).filter(Boolean);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length){alert('Enter two to four distinct players.');return;}activeG={...freshGame(),players:names};gStore();renderBBB();};
+$('gSave').onclick=()=>{if(!activeG)return;if(activeG.holes.length>=18){$('gStatus').textContent='All 18 holes scored. Archive the game.';return;}activeG.holes.push(['gBingo','gBango','gBongo'].map(id=>$(id).value===''?null:Number($(id).value)));gStore();renderBBB();$('gStatus').textContent='Hole recorded. Three opportunities for glory; zero for dignity.';};
+$('gUndo').onclick=()=>{if(activeG&&activeG.holes.length){activeG.holes.pop();gStore();renderBBB();}};
+$('gFinish').onclick=()=>{if(activeG&&activeG.holes.length&&confirm('Archive this Bingo Bango Bongo game?')){activeG.ended=Date.now();gHistory.push(activeG);activeG=null;gStore();renderBBB();}};
+// Export all new local game data with the existing app backup, without changing prior keys.
+const priorExport47=$('export').onclick;
+$('export').onclick=()=>{priorExport47();const a=document.createElement('a'),data={activeW,wHistory,activeG,gHistory};a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='dagger-games-and-bets-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);};
+$('restoreGames').onchange=async e=>{try{const f=e.target.files?.[0];if(!f)return;const d=JSON.parse(await f.text());if(!Array.isArray(d.wHistory)||!Array.isArray(d.gHistory))throw Error('Not a Dagger games backup');if(!confirm('Replace locally saved games and betting history from this backup?'))return;wHistory=d.wHistory;gHistory=d.gHistory;activeW=d.activeW??null;activeG=d.activeG??null;wStore();gStore();renderFoursome();renderBBB();$('restoreGamesStatus').textContent='Games and betting history restored.';}catch(err){$('restoreGamesStatus').textContent='Restore failed: '+err.message;}};
+renderFoursome();renderBBB();
+
 </script>
 </body>
 </html>
