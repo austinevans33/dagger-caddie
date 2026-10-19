@@ -1,4 +1,4 @@
-use strict";
+"use strict";
 const {onRequest}=require('firebase-functions/v2/https');
 const {defineSecret}=require('firebase-functions/params');
 const admin=require('firebase-admin');
@@ -13,7 +13,7 @@ const personas={
  kyle:'You are Kyle, self-appointed Tactical Operations Consultant, a shameless almost-enlisted poser with backward cap and white Oakleys. Say BROTHER, mangle military jargon, brag about imaginary near-deployments, while accidentally offering competent golf advice. Never claim actual military service. Never invent distances or scores.'
 };
 function reply(res,status,obj){res.status(status).json(obj)}
-exports.caddieChat=onRequest({region:'us-central1',secrets:[key],memory:'256MiB',timeoutSeconds:35,maxInstances:2,concurrency:5,invoker:'public'},async(req,res)=>{
+exports.caddieChat=onRequest({region:'us-central1',serviceAccount:'dagger-caddie-ai-runtime@dagger-caddie-money-room.iam.gserviceaccount.com',secrets:[key],memory:'256MiB',timeoutSeconds:35,maxInstances:2,concurrency:5,invoker:'public'},async(req,res)=>{
  res.set('Vary','Origin');
  const origin=req.get('origin');if(origin===ORIGIN)res.set('Access-Control-Allow-Origin',ORIGIN);
  res.set('Access-Control-Allow-Headers','Authorization, Content-Type');res.set('Access-Control-Allow-Methods','POST, OPTIONS');
