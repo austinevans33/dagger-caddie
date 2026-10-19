@@ -1,4 +1,4 @@
-"use strict";
+use strict";
 const {onRequest}=require('firebase-functions/v2/https');
 const {defineSecret}=require('firebase-functions/params');
 const admin=require('firebase-admin');
@@ -41,4 +41,3 @@ exports.caddieChat=onRequest({region:'us-central1',secrets:[key],memory:'256MiB'
  if(!output){reply(res,502,{error:'AI returned no response'});return;}
  reply(res,200,{reply:output,caddie:who});
  }catch(e){console.error('Chat failure',e.name||'error');reply(res,503,{error:'AI could not connect. Try again.'});}
-});
