@@ -21,7 +21,14 @@ exports.caddieChat=onRequest({region:'us-central1',serviceAccount:'dagger-caddie
  if(origin!==ORIGIN){reply(res,403,{error:'Unrecognized website origin'});return;}
  if(req.method!=='POST'){reply(res,405,{error:'POST required'});return;}
  const auth=req.get('authorization')||'';if(!auth.startsWith('Bearer ')){reply(res,401,{error:'Sign in required'});return;}
- let uid;try{uid=(await admin.auth().verifyIdToken(auth.slice(7),true)).uid;}catch{reply(res,401,{error:'Invalid login token'});return;}
+ let uid;
+try {
+  uid = (await admin.auth().verifyIdToken(auth.slice(7), true)).uid;
+} catch (e) {
+  console.error('Firebase token verification failed:', e.code || 'unknown', e.message || 'No details');
+  reply(res, 401, {error: 'Invalid login token'});
+  return;
+}
  if(PROJECT!==process.env.GCLOUD_PROJECT && process.env.GCLOUD_PROJECT){reply(res,500,{error:'Wrong Firebase project'});return;}
  const body=req.body||{};
  const who=typeof body.caddie==='string'&&personas[body.caddie]?body.caddie:'keith';
