@@ -1,0 +1,1 @@
+{"name":"dagger-caddie-ai-functions","version":"5.0.0","private":true,"type":"commonjs","engines":{"node":"22"},"main":"index.js","dependencies":{"firebase-admin":"^13.0.0","firebase-functions":"^6.0.0"}}
