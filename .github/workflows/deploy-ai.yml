@@ -32,4 +32,4 @@ jobs:
         run: npm install --prefix functions
 
       - name: Deploy AI function
-        run: firebase deploy --only functions:caddieChat --project dagger-caddie-money-room --non-interactive
+        run: firebase deploy --only functions:caddieChat --project dagger-caddie-money-room --non-interactive --force
