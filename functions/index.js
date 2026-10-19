@@ -41,3 +41,4 @@ exports.caddieChat=onRequest({region:'us-central1',serviceAccount:'dagger-caddie
  if(!output){reply(res,502,{error:'AI returned no response'});return;}
  reply(res,200,{reply:output,caddie:who});
  }catch(e){console.error('Chat failure',e.name||'error');reply(res,503,{error:'AI could not connect. Try again.'});}
+});
