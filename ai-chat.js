@@ -11,7 +11,26 @@ abuseSelect.addEventListener('change', () => {
 const URL='https://us-central1-dagger-caddie-money-room.cloudfunctions.net/caddieChat';
 const ui={status:$('aiStatus'),history:$('aiHistory'),field:$('aiInput'),send:$('aiSend'),mic:$('aiMic'),speak:$('aiSpeak')};
 function activeCaddie(){const el=document.querySelector('.staff-pick.active');return el?.dataset?.caddie||'keith';}
-function add(role,content){const p=document.createElement('div');p.className='ai-bubble '+role;const label=document.createElement('strong');label.textContent=role==='user'?'You':caddies[activeCaddie()]||'Caddie';const text=document.createElement('div');text.textContent=content;p.append(label,text);ui.history.append(p);ui.history.scrollTop=ui.history.scrollHeight;}
+function add(role,content){
+  const p=document.createElement('div');
+  p.className='ai-bubble '+role;
+  const label=document.createElement('strong');
+  label.textContent=role==='user'?'You':caddies[activeCaddie()]||'Caddie';
+  const text=document.createElement('div');
+  text.textContent=content;
+  p.append(label,text);
+  ui.history.append(p);
+
+  if(role==='assistant'){
+    requestAnimationFrame(()=>{
+      const top=p.getBoundingClientRect().top;
+      const containerTop=ui.history.getBoundingClientRect().top;
+      ui.history.scrollTop+=top-containerTop-8;
+    });
+  }else{
+    ui.history.scrollTop=ui.history.scrollHeight;
+  }
+}
 function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
 return {yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
