@@ -2,6 +2,12 @@ import {firebaseConfig} from './firebase-config.js';
 const $=id=>document.getElementById(id);
 const caddies={keith:'Keith',reginald:'Reginald',vinny:'Vinny',kyle:'Kyle'};
 let conversation=[],working=false,authPromise=null;
+const abuseSelect = document.getElementById('aiAbuseLevel');
+const savedAbuse = localStorage.getItem('dagger_ai_abuse');
+abuseSelect.value = ['1','2','3'].includes(savedAbuse) ? savedAbuse : '3';
+abuseSelect.addEventListener('change', () => {
+  localStorage.setItem('dagger_ai_abuse', abuseSelect.value);
+});
 const URL='https://us-central1-dagger-caddie-money-room.cloudfunctions.net/caddieChat';
 const ui={status:$('aiStatus'),history:$('aiHistory'),field:$('aiInput'),send:$('aiSend'),mic:$('aiMic'),speak:$('aiSpeak')};
 function activeCaddie(){const el=document.querySelector('.staff-pick.active');return el?.dataset?.caddie||'keith';}
@@ -12,7 +18,7 @@ return {yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .activ
 async function getAuth(){if(authPromise)return authPromise;authPromise=(async()=>{const [{initializeApp,getApps},{getAuth,signInAnonymously,onAuthStateChanged}]=await Promise.all([import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js')]);const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);const auth=getAuth(app);if(auth.currentUser)return auth.currentUser;return (await signInAnonymously(auth)).user;})();try{return await authPromise}catch(e){authPromise=null;throw e;}}
 function speak(txt){if(!('speechSynthesis'in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.rate=.95;u.lang='en-US';window.speechSynthesis.speak(u);}
 async function send(){const text=ui.field.value.trim();if(!text||working)return;working=true;ui.send.disabled=true;ui.status.textContent='Your caddie is considering his words…';ui.field.value='';add('user',text);conversation.push({role:'user',content:text});conversation=conversation.slice(-12);
-try{const user=await getAuth();const token=await user.getIdToken();const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({caddie:activeCaddie(),messages:conversation,context:context()})});const j=await r.json();if(!r.ok)throw Error(j.error||'Could not connect');conversation.push({role:'assistant',content:j.reply});add('assistant',j.reply);ui.status.textContent='Conversation active · Ask a follow-up';if(ui.speak.checked)speak(j.reply);}catch(e){ui.status.textContent='AI not connected: '+e.message+' · Manual caddie remains available.';conversation.pop();}
+try{const user=await getAuth();const token=await user.getIdToken();const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({caddie:activeCaddie(),messages:conversation,context:context(),abuseLevel:Number(abuseSelect.value)})});const j=await r.json();if(!r.ok)throw Error(j.error||'Could not connect');conversation.push({role:'assistant',content:j.reply});add('assistant',j.reply);ui.status.textContent='Conversation active · Ask a follow-up';if(ui.speak.checked)speak(j.reply);}catch(e){ui.status.textContent='AI not connected: '+e.message+' · Manual caddie remains available.';conversation.pop();}
 finally{working=false;ui.send.disabled=false;}}
 ui.send.addEventListener('click',send);ui.field.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
 $('aiReset').addEventListener('click',()=>{conversation=[];ui.history.replaceChildren();ui.status.textContent='New conversation · Ready to listen';window.speechSynthesis?.cancel();});
