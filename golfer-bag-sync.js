@@ -53,12 +53,20 @@ section.innerHTML = `
     Upload My Bag to Cloud
   </button>
 
-  <button id="checkCloudBag"
+    <button id="checkCloudBag"
           type="button"
           class="btn-secondary"
           style="margin-top:8px;"
           disabled>
     Check Saved Cloud Bag
+  </button>
+
+  <button id="downloadCloudBag"
+          type="button"
+          class="btn-secondary"
+          style="margin-top:8px;"
+          disabled>
+    Download Cloud Bag to This Device
   </button>
 
   <p id="bagSyncStatus"
@@ -85,6 +93,7 @@ const $ = id => document.getElementById(id);
 
 const uploadButton = $('uploadCloudBag');
 const checkButton = $('checkCloudBag');
+const downloadButton = $('downloadCloudBag');
 const preview = $('bagSyncPreview');
 const status = $('bagSyncStatus');
 
@@ -199,6 +208,7 @@ function updateButtons() {
     busy || !signedIn || showLocalBag().length === 0;
 
   checkButton.disabled = busy || !signedIn;
+  downloadButton.disabled = busy || !signedIn;
 }
 
 onAuthStateChanged(auth, user => {
@@ -353,6 +363,155 @@ uploadButton.addEventListener('click', async () => {
     updateButtons();
   }
 });
+downloadButton.addEventListener('click', async () => {
+  if (busy) return;
 
+  busy = true;
+  updateButtons();
+
+  try {
+    const user = activeMember();
+    const uid = user.uid;
+
+    status.textContent = 'Loading cloud golf bag...';
+
+    const snapshot = await getDoc(doc(db, 'golfers', uid));
+
+    if (auth.currentUser?.uid !== uid) {
+      throw new Error('Account changed. Download canceled.');
+    }
+
+    if (!snapshot.exists()) {
+      throw new Error('No cloud golfer profile found.');
+    }
+
+    const cloudClubs = snapshot.data().clubs;
+
+    if (!Array.isArray(cloudClubs) ||
+        cloudClubs.length === 0 ||
+        cloudClubs.length > 30) {
+      throw new Error('Cloud golf bag is empty or invalid.');
+    }
+
+    const validated = cloudClubs.map((club, index) => {
+      if (!club ||
+          typeof club.name !== 'string' ||
+          !club.name.trim() ||
+          club.name.length > 100) {
+        throw new Error('Invalid cloud club #' + (index + 1));
+      }
+
+      const saved = {name: club.name.trim()};
+
+      for (const field of ['carry', 'manualCarry']) {
+        if (club[field] != null) {
+          const value = Number(club[field]);
+
+          if (!Number.isFinite(value) ||
+              value < 0 ||
+              value > 400) {
+            throw new Error(
+              'Invalid cloud distance for ' + club.name
+            );
+          }
+
+          saved[field] = value;
+        }
+      }
+
+      if (saved.carry == null &&
+          saved.manualCarry == null) {
+        throw new Error(
+          'No carry distance for ' + club.name
+        );
+      }
+
+      return saved;
+    });
+
+    const existingRaw = localStorage.getItem('dagger_profile');
+    const existing = existingRaw
+      ? JSON.parse(existingRaw)
+      : [];
+
+    if (!Array.isArray(existing)) {
+      throw new Error('Existing local bag is invalid.');
+    }
+
+    const proceed = window.confirm(
+      'DOWNLOAD CLOUD BAG?\n\n' +
+      describeBag(validated) +
+      '\n\nThis will replace the local club list on ' +
+      'THIS DEVICE ONLY.\n\n' +
+      'Your old local bag will be backed up first. ' +
+      'Your cloud data and Handicap Index stay unchanged.'
+    );
+
+    if (!proceed) {
+      status.textContent = 'Download canceled. No changes made.';
+      return;
+    }
+
+    if (auth.currentUser?.uid !== uid) {
+      throw new Error('Account changed. Download canceled.');
+    }
+
+    // Preserve any existing club details not included
+    // in the cloud record, matching by club name.
+    const merged = validated.map(cloudClub => {
+      const old = existing.find(
+        c => c?.name === cloudClub.name
+      );
+
+      return {
+        ...(old || {}),
+        ...cloudClub
+      };
+    });
+
+    // Backup and replacement use separate keys.
+    // If the replacement fails, restore the old bag.
+    const backupKey = 'dagger_profile_backup_before_cloud';
+    const previousBackup = localStorage.getItem(backupKey);
+
+    try {
+      localStorage.setItem(
+        backupKey,
+        existingRaw || '[]'
+      );
+
+      localStorage.setItem(
+        'dagger_profile',
+        JSON.stringify(merged)
+      );
+    } catch (error) {
+      if (existingRaw === null) {
+        localStorage.removeItem('dagger_profile');
+      } else {
+        localStorage.setItem('dagger_profile', existingRaw);
+      }
+
+      if (previousBackup === null) {
+        localStorage.removeItem(backupKey);
+      } else {
+        localStorage.setItem(backupKey, previousBackup);
+      }
+
+      throw error;
+    }
+
+    status.textContent =
+      'Cloud bag downloaded. Reloading the golf tools...';
+
+    window.location.reload();
+
+  } catch (error) {
+    status.textContent =
+      'Download issue: ' + error.message;
+  } finally {
+    busy = false;
+    updateButtons();
+  }
+});
 // Keep the local preview current when returning to the app.
 window.addEventListener('focus', updateButtons);
