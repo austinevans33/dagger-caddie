@@ -138,7 +138,26 @@ function getLocalBag() {
     return saved;
   });
 }
+function sameBag(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b)) return false;
+  if (a.length !== b.length) return false;
 
+  return a.every((club, i) => {
+    const other = b[i];
+    if (!other || club.name !== other.name) return false;
+
+    for (const field of ['carry', 'manualCarry']) {
+      const x = club[field];
+      const y = other[field];
+
+      if (x == null && y == null) continue;
+      if (x == null || y == null) return false;
+      if (Number(x) !== Number(y)) return false;
+    }
+
+    return true;
+  });
+}
 function describeBag(bag) {
   if (!bag.length) return 'No clubs saved on this device.';
 
@@ -301,8 +320,7 @@ uploadButton.addEventListener('click', async () => {
       // changed the cloud bag while we were confirming.
       const currentClubs = snapshot.data().clubs || [];
 
-      if (JSON.stringify(currentClubs) !==
-          JSON.stringify(previousClubs)) {
+      if (!sameBag(currentClubs, previousClubs)) {
         throw new Error(
           'Cloud bag changed on another device. ' +
           'Check it again before uploading.'
@@ -318,7 +336,7 @@ uploadButton.addEventListener('click', async () => {
     const verified = await getDoc(reference);
     const cloudClubs = verified.data()?.clubs || [];
 
-    if (JSON.stringify(cloudClubs) !== JSON.stringify(bag)) {
+    if (!sameBag(cloudClubs, bag)) {
       throw new Error(
         'Upload finished but verification was inconclusive.'
       );
