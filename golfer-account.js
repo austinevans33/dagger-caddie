@@ -8,6 +8,8 @@ import {
 import {
   getAuth,
   onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
   signInAnonymously,
   signInWithEmailAndPassword,
   EmailAuthProvider,
@@ -19,6 +21,12 @@ const app = getApps().length
   : initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+
+// Keep golfer accounts signed in across app restarts.
+const persistenceReady = setPersistence(
+  auth,
+  browserLocalPersistence
+);
 
 // This module never deletes or overwrites golfer data.
 const section = document.createElement('section');
@@ -173,6 +181,7 @@ async function runAction(action) {
 
   try {
     const { email, password } = credentials();
+    await persistenceReady;
 
     if (action === 'register') {
       status('Creating your membership...');
