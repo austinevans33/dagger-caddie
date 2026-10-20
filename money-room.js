@@ -150,7 +150,10 @@ async function init(){if(!isConfigured){status('Local mode · Live sync is not c
  const authMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');
  const fsMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
  const app=appMod.initializeApp(firebaseConfig);auth=authMod.getAuth(app);db=fsMod.getFirestore(app);functions=fsMod;
- user=(await authMod.signInAnonymously(auth)).user;
+ await auth.authStateReady();
+
+user = auth.currentUser ||
+  (await authMod.signInAnonymously(auth)).user;
  status('Live sync ready. Create a Money Room, or paste an invite and join.');
  const url=new URL(window.location.href);let id=url.searchParams.get('room'),code=url.searchParams.get('invite');if(id&&code){$('roomCode').value=id+':'+code;$('roomInvitationBanner').hidden=false;$('roomSetup').open=false;if(typeof window.switchTab==='function')window.switchTab('bets');else document.getElementById('tab-bets')?.click();document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'});status('Invitation ready. Enter your name and tap Join live room.');}
  }catch(e){status('Live sync unavailable: '+e.message+'. Check Firebase setup and network.');}}
