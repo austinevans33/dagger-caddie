@@ -135,11 +135,18 @@ try {
            }))
          : [],
 
-       tendencies: Array.isArray(profile.tendencies)
-         ? profile.tendencies.slice(0, 20)
-         : [],
+      tendencies: Array.isArray(profile.tendencies)
+  ? profile.tendencies.slice(0, 20)
+  : [],
 
-       preferences: profile.preferences &&
+memories: Array.isArray(profile.memories)
+  ? profile.memories
+      .filter(m => typeof m === 'string')
+      .slice(0, 50)
+      .map(m => m.slice(0, 300))
+  : [],
+
+preferences: profile.preferences &&
          typeof profile.preferences === 'object'
            ? profile.preferences
            : {}
