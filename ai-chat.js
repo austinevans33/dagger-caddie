@@ -1,15 +1,47 @@
 import {firebaseConfig} from './firebase-config.js';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  runTransaction,
+  serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const $=id=>document.getElementById(id);
 const caddies={keith:'Keith',reginald:'Reginald',vinny:'Vinny',kyle:'Kyle'};
 let conversation=[],working=false,authPromise=null;
+let latestMemoryCandidate = null;
 const abuseSelect = document.getElementById('aiAbuseLevel');
 const savedAbuse = localStorage.getItem('dagger_ai_abuse');
 abuseSelect.value = ['1','2','3'].includes(savedAbuse) ? savedAbuse : '3';
 abuseSelect.addEventListener('change', () => {
   localStorage.setItem('dagger_ai_abuse', abuseSelect.value);
 });
+let memoryDb = null;
+
+async function getMemoryDb() {
+  if (memoryDb) return memoryDb;
+
+  const { initializeApp, getApps } = await import(
+    'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js'
+  );
+
+  const app = getApps().length
+    ? getApps()[0]
+    : initializeApp(firebaseConfig);
+
+  memoryDb = getFirestore(app);
+  return memoryDb;
+}
 const URL='https://us-central1-dagger-caddie-money-room.cloudfunctions.net/caddieChat';
-const ui={status:$('aiStatus'),history:$('aiHistory'),field:$('aiInput'),send:$('aiSend'),mic:$('aiMic'),speak:$('aiSpeak')};
+const ui={
+  status:$('aiStatus'),
+  history:$('aiHistory'),
+  field:$('aiInput'),
+  send:$('aiSend'),
+  mic:$('aiMic'),
+  speak:$('aiSpeak'),
+  saveMemory:$('aiSaveMemory')
+};
 function activeCaddie(){const el=document.querySelector('.staff-pick.active');return el?.dataset?.caddie||'keith';}
 function add(role,content){
   const p=document.createElement('div');
@@ -34,15 +66,195 @@ function add(role,content){
 function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
 return {yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
-async function getAuth(){if(authPromise)return authPromise;authPromise=(async()=>{const [{initializeApp,getApps},{getAuth,signInAnonymously,onAuthStateChanged}]=await Promise.all([import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js')]);const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);const auth=getAuth(app);if(auth.currentUser)return auth.currentUser;return (await signInAnonymously(auth)).user;})();try{return await authPromise}catch(e){authPromise=null;throw e;}}
+async function getAuth() {
+  if (!authPromise) {
+    authPromise = (async () => {
+      const [{initializeApp, getApps}, {getAuth}] =
+        await Promise.all([
+          import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js'),
+          import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js')
+        ]);
+
+      const app = getApps().length
+        ? getApps()[0]
+        : initializeApp(firebaseConfig);
+
+      return getAuth(app);
+    })();
+  }
+
+  try {
+    const auth = await authPromise;
+
+    // Wait for Firebase to restore the saved account.
+    await auth.authStateReady();
+
+    // Always return the CURRENT identity, not a cached user.
+    return auth.currentUser;
+  } catch (error) {
+    authPromise = null;
+    throw error;
+  }
+}
 function speak(txt){if(!('speechSynthesis'in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.rate=.95;u.lang='en-US';window.speechSynthesis.speak(u);}
-async function send(){const text=ui.field.value.trim();if(!text||working)return;working=true;ui.send.disabled=true;ui.status.textContent='Your caddie is considering his words…';ui.field.value='';add('user',text);conversation.push({role:'user',content:text});conversation=conversation.slice(-12);
-try{const user=await getAuth();const token=await user.getIdToken();const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({caddie:activeCaddie(),messages:conversation.slice(-12).map(m=>({
+async function send() {
+  const text = ui.field.value.trim();
+  if (!text || working) return;
+
+  working = true;
+  ui.send.disabled = true;
+
+  // A new question replaces the previous memory candidate.
+  latestMemoryCandidate = null;
+  ui.saveMemory.disabled = true;
+
+  ui.status.textContent =
+    'Your caddie is considering his words…';ui.field.value='';add('user',text);conversation.push({role:'user',content:text});conversation=conversation.slice(-12);
+try {
+  const user = await getAuth();
+
+  if (!user) {
+    throw new Error(
+      'Please sign in under Club → Golfer Account.'
+    );
+  }
+
+  const token = await user.getIdToken();const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({caddie:activeCaddie(),messages:conversation.slice(-12).map(m=>({
   role:m.role,
   content:m.content.slice(0,950)
-})),context:context(),abuseLevel:Number(abuseSelect.value)})});const j=await r.json();if(!r.ok)throw Error(j.error||'Could not connect');conversation.push({role:'assistant',content:j.reply});add('assistant',j.reply);ui.status.textContent='Conversation active · Ask a follow-up';if(ui.speak.checked)speak(j.reply);}catch(e){ui.status.textContent='AI not connected: '+e.message+' · Manual caddie remains available.';conversation.pop();}
-finally{working=false;ui.send.disabled=false;}}
+})),context:context(),abuseLevel:Number(abuseSelect.value)})});const j=await r.json();if(!r.ok)throw Error(j.error||'Could not connect');conversation.push({role:'assistant',content:j.reply});
+add('assistant',j.reply);
+
+latestMemoryCandidate = {
+  golferStatement: text,
+  caddieResponse: j.reply
+};
+
+ui.saveMemory.disabled = false;
+
+ui.status.textContent =
+  'Conversation active · Ask a follow-up';
+
+if (ui.speak.checked) speak(j.reply);
+
+} catch(e) {
+  ui.status.textContent =
+    'AI not connected: ' + e.message +
+    ' · Manual caddie remains available.';
+
+  conversation.pop();
+} finally {
+  working = false;
+  ui.send.disabled = false;
+}
+}
+ui.saveMemory.addEventListener('click', async () => {
+  if (!latestMemoryCandidate || working) return;
+
+  const candidate = latestMemoryCandidate;
+
+  const edited = window.prompt(
+    'What should your caddies remember?\n\n' +
+    'Edit this into one useful, lasting golf fact:',
+    candidate.golferStatement.slice(0, 300)
+  );
+
+  if (edited === null) return;
+
+  const memory = edited.trim();
+
+  if (!memory || memory.length > 300) {
+    ui.status.textContent =
+      'Memory must contain 1–300 characters.';
+    return;
+  }
+
+  if (!window.confirm(
+    'Save this to your permanent Golfer Memory?\n\n' +
+    memory
+  )) return;
+
+  ui.saveMemory.disabled = true;
+
+  try {
+    const user = await getAuth();
+
+    if (!user || user.isAnonymous) {
+      throw new Error(
+        'Sign in to your permanent golfer account first.'
+      );
+    }
+
+    const db = await getMemoryDb();
+const uid = user.uid;
+const reference = doc(db, 'golfers', uid);
+
+if ((await getAuth())?.uid !== uid) {
+  throw new Error('Account changed. Memory save canceled.');
+}
+
+    await runTransaction(db, async transaction => {
+      const snapshot = await transaction.get(reference);
+
+      if (!snapshot.exists()) {
+        throw new Error('Cloud golfer profile not found.');
+      }
+
+      const memories = snapshot.data().memories || [];
+
+      if (!Array.isArray(memories)) {
+        throw new Error('Saved memories are invalid.');
+      }
+
+      if (memories.length >= 50) {
+        throw new Error(
+          'Golfer Memory is full (50 memories).'
+        );
+      }
+
+      if (memories.includes(memory)) {
+        throw new Error('That memory is already saved.');
+      }
+
+      transaction.update(reference, {
+        memories: [...memories, memory],
+        updatedAt: serverTimestamp()
+      });
+    });
+
+    ui.status.textContent =
+      'Saved! All four caddies can now use this memory.';
+
+    latestMemoryCandidate = null;
+
+  } catch (error) {
+    ui.status.textContent =
+      'Memory not saved: ' + error.message;
+  } finally {
+    ui.saveMemory.disabled =
+      latestMemoryCandidate === null;
+  }
+});
 ui.send.addEventListener('click',send);ui.field.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
-$('aiReset').addEventListener('click',()=>{conversation=[];ui.history.replaceChildren();ui.status.textContent='New conversation · Ready to listen';window.speechSynthesis?.cancel();});
+$('aiReset').addEventListener('click', () => {
+  conversation = [];
+  latestMemoryCandidate = null;
+  ui.saveMemory.disabled = true;
+  ui.history.replaceChildren();
+  ui.status.textContent = 'New conversation · Ready to listen';
+  window.speechSynthesis?.cancel();
+});
 ui.mic.addEventListener('click',()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){ui.status.textContent='Speech recognition unavailable in Safari. Type here or use your keyboard microphone.';ui.field.focus();return;}const r=new SR();r.lang='en-US';r.onstart=()=>{ui.status.textContent='● LIVE MICROPHONE — SPEAK NOW';ui.mic.classList.add('listening');};r.onresult=e=>{ui.field.value=e.results[0][0].transcript;ui.status.textContent='Heard you · Tap Send or edit';};r.onerror=e=>{ui.status.textContent='Microphone error: '+e.error+' · Use keyboard dictation';};r.onend=()=>ui.mic.classList.remove('listening');try{r.start()}catch{ui.status.textContent='Microphone unavailable · Type instead';}});
-document.querySelectorAll('.staff-pick').forEach(b=>b.addEventListener('click',()=>{$('aiHeading').textContent='Talk to '+caddies[activeCaddie()];conversation=[];ui.history.replaceChildren();ui.status.textContent='New caddie selected · Start talking';}));
+document.querySelectorAll('.staff-pick').forEach(b =>
+  b.addEventListener('click', () => {
+    $('aiHeading').textContent =
+      'Talk to ' + caddies[activeCaddie()];
+
+    conversation = [];
+    latestMemoryCandidate = null;
+    ui.saveMemory.disabled = true;
+    ui.history.replaceChildren();
+    ui.status.textContent =
+      'New caddie selected · Start talking';
+  })
+);
