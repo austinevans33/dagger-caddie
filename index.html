@@ -505,6 +505,53 @@ body{background:#e9e1d0}
   font: 13px system-ui, sans-serif;
 }
 
+/* DCC 5.2 — The Risk Desk */
+#pulseBox {
+  margin: 14px 0 0;
+  padding: 17px;
+  border: 1px solid #b79c62;
+  border-radius: 15px;
+  background: #eee5d3;
+  color: #143126;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .1);
+}
+
+#pulseBox .pulse-head {
+  align-items: center;
+  gap: 12px;
+}
+
+#pulseBox .pulse-head strong {
+  display: block;
+  margin-top: 5px;
+  color: #143126;
+  font: 700 21px Georgia, serif;
+  letter-spacing: -.025em;
+}
+
+#pulseBox .pulse-score {
+  color: #143126;
+  font: 800 26px system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+#pulseBox .pulse-track {
+  height: 12px;
+  margin-top: 15px;
+  border: 1px solid rgba(20, 49, 38, .15);
+}
+
+#pulseBox .pulse-reason {
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+#pulseBox #puckerStaffLine {
+  margin-top: 6px;
+  color: #315340;
+  font-style: italic;
+}
+
 </style>
 </head>
 <body>
@@ -707,7 +754,7 @@ body{background:#e9e1d0}
           <div class="keith"><strong><span class="caddie-label">Keith</span> says:</strong> Nice and easy. No need to turn a stock 7-iron into a federal case.</div>
         </div>
         <div class="pulse-wrap" id="pulseBox" aria-live="polite">
-          <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB</div><strong>PUCKER FACTOR</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
+          <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB · SHOT INTELLIGENCE</div><strong>THE RISK DESK</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
           <div class="pulse-track"><div class="pulse-marker" id="pulseMarker"></div></div>
           <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div id="puckerStaffLine" aria-live="polite"></div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
         </div>
@@ -1368,6 +1415,16 @@ $('personality').onchange=()=>{store('dagger_personality',$('personality').value
 $('roast').onchange=()=>{store('dagger_roast',$('roast').value); renderMastQuip();};
 $('call').onclick=decide;
 $('quickReset').onclick=()=>{switchTab('reset');$('resetStatus').textContent='Exhale. Then choose one reasonable shot.'};
+
+// DCC 5.2 — move the existing live risk meter onto Play.
+// Moving the element preserves its ID and existing calculations.
+const riskMeter = document.getElementById('pulseBox');
+const resetShortcut = document.getElementById('playMentalReset');
+
+if (riskMeter && resetShortcut) {
+  resetShortcut.before(riskMeter);
+}
+
 $('returnToPlay').onclick=()=>switchTab('play');
 
 $('playMentalReset').onclick = () => {
