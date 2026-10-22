@@ -448,6 +448,31 @@ body{background:#e9e1d0}
   font: 700 11px system-ui, sans-serif;
 }
 
+/* DCC 5.2 — premium on-course caddy heading */
+.dcc-caddy-heading {
+  margin-bottom: 18px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(183,156,98,.35);
+}
+
+.dcc-service-label {
+  color: #d5b978;
+  font: 700 10px system-ui, sans-serif;
+  letter-spacing: .16em;
+  margin-bottom: 10px;
+}
+
+.ai-card .dcc-caddy-heading h2 {
+  margin: 0 0 9px;
+}
+
+.ai-card .dcc-service-intro {
+  color: #e8ddc5;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+}
+
 </style>
 </head>
 <body>
@@ -532,8 +557,17 @@ body{background:#e9e1d0}
         <div id="staffBanter" aria-live="polite"></div><div class="staff-file" id="staffFile" data-theme="keith" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><div class="staff-file-top"><img class="staff-file-photo" id="filePortrait" src="keith_portrait.png" alt="Keith dossier portrait"><div><h3 id="fileName">KEITH · HEAD CADDY</h3><div class="file-sub" id="fileTitle"></div></div></div><div class="file-grid"><div class="file-box"><strong>Known for</strong><span id="fileKnown"></span></div><div class="file-box"><strong>Specialty</strong><span id="fileSpecialty"></span></div><div class="file-box"><strong>Club warning</strong><span id="fileWarning"></span></div></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
       </section>
       <section class="ai-card" data-tab="play" aria-label="AI caddie conversation">
-      <h2 id="aiHeading">Talk to Keith</h2>
-      <p>Real back-and-forth golf conversation. Ask about the shot, clarify the carry, or discuss the money game. Your manual golf tools remain below.</p>
+     
+<div class="dcc-caddy-heading">
+  <div class="dcc-service-label">
+    DAGGER CADDY · ON-COURSE SERVICE
+  </div>
+  <h2 id="aiHeading">Talk to Keith</h2>
+  <p class="dcc-service-intro">
+    Your caddy is on the bag. Tell him what you're facing.
+  </p>
+</div>
+
       <button id="aiMic" type="button" class="ai-mic">🎙 TALK TO CADDY</button>
       <div class="ai-status" id="aiStatus" role="status" aria-live="polite">Ready to talk · AI backend connection required</div>
       <div id="aiHistory" class="ai-history" role="log" aria-live="polite"><div class="ai-bubble">Describe the shot or ask your caddie a question. Voice input availability depends on Safari.</div></div>
