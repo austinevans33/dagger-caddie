@@ -757,6 +757,59 @@ body{background:#e9e1d0}
           <div class="pulse-head"><div><div class="over" style="color:#61705b;margin:0">DAGGER COUNTRY CLUB · SHOT INTELLIGENCE</div><strong>THE RISK DESK</strong></div><div class="pulse-score" id="pulseNumber">— / 10</div></div>
           <div class="pulse-track"><div class="pulse-marker" id="pulseMarker"></div></div>
           <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div id="puckerStaffLine" aria-live="polite"></div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
+          
+<details id="riskDeskInputs" style="margin-top:12px;">
+  <summary style="color:#143126;font-weight:700;padding:10px 0;">
+    Assess This Shot
+  </summary>
+
+  <div style="display:grid;gap:10px;padding-top:8px;">
+    <div>
+      <label for="riskYards">Yards to Target</label>
+      <input id="riskYards" type="number"
+             min="1" max="700" inputmode="numeric"
+             placeholder="e.g. 165">
+    </div>
+
+    <div>
+      <label for="riskLie">Lie</label>
+      <select id="riskLie">
+        <option value="Tee">Tee</option>
+        <option value="Fairway" selected>Fairway</option>
+        <option value="Rough">Rough</option>
+        <option value="Deep rough">Deep rough</option>
+        <option value="Trees / recovery">Trees / recovery</option>
+        <option value="Bunker">Bunker</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="riskWind">Wind</label>
+      <select id="riskWind">
+        <option value="Calm">Calm / Unknown</option>
+        <option value="Headwind">Headwind</option>
+        <option value="Tailwind">Tailwind</option>
+        <option value="Crosswind">Crosswind</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="riskDanger">Trouble</label>
+      <select id="riskDanger">
+        <option value="none">None reported / Unknown</option>
+        <option value="short">Short</option>
+        <option value="long">Long</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+      </select>
+    </div>
+
+    <button id="riskAssess" type="button" class="btn-primary">
+      ASSESS SHOT
+    </button>
+  </div>
+</details>
+
         </div>
         
 <div class="answer-actions" aria-label="Quick shot feedback">
