@@ -72,6 +72,47 @@ shotReport.miss.forEach(button => {
 
 updateShotReport();
 
+shotReport.record.addEventListener('click', () => {
+  if (!shotQuality) return;
+
+  const report = {
+    result: [shotQuality, shotHorizontal, shotVertical]
+      .filter(Boolean).join(' · '),
+    quality: shotQuality,
+    horizontal: shotHorizontal,
+    vertical: shotVertical,
+    club: 'AI Caddy',
+    caddie: activeCaddie(),
+    source: 'ai-chat',
+    date: new Date().toISOString()
+  };
+
+  try {
+    const key = 'dagger_shot_log';
+    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+
+    if (!Array.isArray(existing)) {
+      throw new Error('Shot history is invalid.');
+    }
+
+    existing.push(report);
+    localStorage.setItem(key, JSON.stringify(existing));
+
+    shotQuality = null;
+    shotHorizontal = null;
+    shotVertical = null;
+    updateShotReport();
+
+    shotReport.status.textContent =
+      'Shot recorded: ' + report.result +
+      '. Saved to this device.';
+  } catch (error) {
+    shotReport.status.textContent =
+      'Could not record shot: ' + error.message;
+  }
+});
+
+
 const abuseSelect = document.getElementById('aiAbuseLevel');
 const savedAbuse = localStorage.getItem('dagger_ai_abuse');
 abuseSelect.value = ['1','2','3'].includes(savedAbuse) ? savedAbuse : '3';
