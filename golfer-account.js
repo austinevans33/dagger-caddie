@@ -30,8 +30,11 @@ const persistenceReady = setPersistence(
 
 // This module never deletes or overwrites golfer data.
 const section = document.createElement('section');
+
 section.className = 'card';
 section.dataset.tab = 'settings';
+section.classList.add('hidden-panel');
+
 
 section.innerHTML = `
   <h2>Golfer Account</h2>
