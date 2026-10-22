@@ -10,6 +10,68 @@ const $=id=>document.getElementById(id);
 const caddies={keith:'Keith',reginald:'Reginald',vinny:'Vinny',kyle:'Kyle'};
 let conversation=[],working=false,authPromise=null;
 let latestMemoryCandidate = null;
+
+let shotQuality = null;
+let shotHorizontal = null;
+let shotVertical = null;
+
+const shotReport = {
+  quality: document.querySelectorAll('#aiShotQuality [data-quality]'),
+  miss: document.querySelectorAll('#aiShotMiss [data-miss]'),
+  record: document.getElementById('aiRecordShot'),
+  status: document.getElementById('aiShotStatus')
+};
+
+function updateShotReport() {
+  shotReport.quality.forEach(button => {
+    const selected = button.dataset.quality === shotQuality;
+    button.style.background = selected ? '#b79c62' : '';
+    button.style.color = selected ? '#143126' : '';
+    button.setAttribute('aria-pressed', String(selected));
+  });
+
+  shotReport.miss.forEach(button => {
+    const selected =
+      button.dataset.miss === shotHorizontal ||
+      button.dataset.miss === shotVertical;
+
+    button.style.background = selected ? '#b79c62' : '';
+    button.style.color = selected ? '#143126' : '';
+    button.setAttribute('aria-pressed', String(selected));
+  });
+
+  shotReport.record.disabled = !shotQuality;
+
+  const details = [shotQuality, shotHorizontal, shotVertical].filter(Boolean);
+
+  shotReport.status.textContent = shotQuality
+    ? 'Selected: ' + details.join(' · ') + '. Ready to record.'
+    : 'Select Good or Bad, then optionally select where it missed.';
+}
+
+shotReport.quality.forEach(button => {
+  button.addEventListener('click', () => {
+    shotQuality = button.dataset.quality;
+    updateShotReport();
+  });
+});
+
+shotReport.miss.forEach(button => {
+  button.addEventListener('click', () => {
+    const miss = button.dataset.miss;
+
+    if (miss === 'Left' || miss === 'Right') {
+      shotHorizontal = shotHorizontal === miss ? null : miss;
+    } else {
+      shotVertical = shotVertical === miss ? null : miss;
+    }
+
+    updateShotReport();
+  });
+});
+
+updateShotReport();
+
 const abuseSelect = document.getElementById('aiAbuseLevel');
 const savedAbuse = localStorage.getItem('dagger_ai_abuse');
 abuseSelect.value = ['1','2','3'].includes(savedAbuse) ? savedAbuse : '3';
