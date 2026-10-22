@@ -202,6 +202,34 @@ const ui={
   speak:$('aiSpeak'),
   saveMemory:$('aiSaveMemory')
 };
+
+// DCC 5.2 — Autofill explicit target yardage from golfer messages.
+function autofillShotYardage(message) {
+  const text = String(message || '').trim();
+
+  // Only recognize distances explicitly described as the target.
+  const patterns = [
+    /\b(?:i'm|im|we're|were)\s+(\d{1,3})\s*(?:yards?|yds?)?\s*out\b/i,
+    /\b(\d{1,3})\s*(?:yards?|yds?)?\s*(?:out|to the (?:pin|flag|hole|green))\b/i,
+    /\b(?:distance to (?:the )?(?:pin|flag|hole|green)|yards to target)\s*(?:is|:)?\s*(\d{1,3})\b/i
+  ];
+
+  const match = patterns
+    .map(pattern => text.match(pattern))
+    .find(Boolean);
+
+  if (!match) return;
+
+  const yards = Number(match[1]);
+  if (yards < 1 || yards > 700) return;
+
+  const shotYards = document.getElementById('aiShotYards');
+  const riskYards = document.getElementById('riskYards');
+
+  if (shotYards) shotYards.value = String(yards);
+  if (riskYards) riskYards.value = String(yards);
+}
+
 function activeCaddie(){const el=document.querySelector('.staff-pick.active');return el?.dataset?.caddie||'keith';}
 function add(role,content){
   const p=document.createElement('div');
@@ -260,6 +288,7 @@ function speak(txt){if(!('speechSynthesis'in window))return;window.speechSynthes
 async function send() {
   const text = ui.field.value.trim();
   if (!text || working) return;
+  autofillShotYardage(text);
 
   working = true;
   ui.send.disabled = true;
