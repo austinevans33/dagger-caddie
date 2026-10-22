@@ -15,6 +15,57 @@ let shotQuality = null;
 let shotHorizontal = null;
 let shotVertical = null;
 
+function refreshShotClubs() {
+  const select = document.getElementById('aiShotClub');
+  if (!select) return;
+
+  const previous = select.value;
+  let clubs = [];
+
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem('dagger_profile') || '[]'
+    );
+
+    if (Array.isArray(saved)) {
+      clubs = saved
+        .filter(club =>
+          club &&
+          typeof club.name === 'string' &&
+          club.name.trim()
+        )
+        .map(club => club.name.trim());
+    }
+  } catch (error) {
+    console.warn('Could not read saved golf bag:', error);
+  }
+
+  select.replaceChildren(
+    new Option(
+      clubs.length ? 'Select club' : 'No clubs in bag',
+      ''
+    )
+  );
+
+  [...new Set(clubs)].forEach(name => {
+    select.add(new Option(name, name));
+  });
+
+  if (clubs.includes(previous)) {
+    select.value = previous;
+  }
+}
+
+refreshShotClubs();
+
+// Refresh the list whenever the golfer opens the selector.
+document.getElementById('aiShotClub')
+  .addEventListener('focus', refreshShotClubs);
+
+// Also refresh after returning to the app.
+window.addEventListener('pageshow', refreshShotClubs);
+
+
 const shotReport = {
   quality: document.querySelectorAll('#aiShotQuality [data-quality]'),
   miss: document.querySelectorAll('#aiShotMiss [data-miss]'),
@@ -81,10 +132,13 @@ shotReport.record.addEventListener('click', () => {
     quality: shotQuality,
     horizontal: shotHorizontal,
     vertical: shotVertical,
-    club: 'AI Caddy',
-    caddie: activeCaddie(),
-    source: 'ai-chat',
-    date: new Date().toISOString()
+    
+club: document.getElementById('aiShotClub').value || 'Club not selected',
+yards: Number(document.getElementById('aiShotYards').value) || null,
+caddie: activeCaddie(),
+source: 'ai-chat',
+date: new Date().toISOString()
+
   };
 
   try {
@@ -99,9 +153,12 @@ shotReport.record.addEventListener('click', () => {
     localStorage.setItem(key, JSON.stringify(existing));
 
     shotQuality = null;
-    shotHorizontal = null;
-    shotVertical = null;
-    updateShotReport();
+shotHorizontal = null;
+shotVertical = null;
+
+document.getElementById('aiShotYards').value = '';
+
+updateShotReport();
 
     shotReport.status.textContent =
       'Shot recorded: ' + report.result +
