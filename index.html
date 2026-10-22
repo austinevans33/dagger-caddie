@@ -440,6 +440,36 @@ body{background:#e9e1d0}
     Save Memory
   </button>
 </div>
+      
+<div id="aiShotReport" style="margin-top:14px;padding:12px;border:1px solid #b79c62;border-radius:13px;background:#254637;">
+  <div style="color:#dec58e;font:700 11px system-ui;letter-spacing:.12em;">
+    DAGGER COUNTRY CLUB · SHOT REPORT
+  </div>
+  <h3 style="color:#fff1d8;margin:7px 0 10px;">
+    How'd that one go?
+  </h3>
+
+  <div class="grid" id="aiShotQuality">
+    <button type="button" class="btn-secondary" data-quality="Good">✓ Good</button>
+    <button type="button" class="btn-secondary" data-quality="Bad">✕ Bad</button>
+  </div>
+
+  <div class="quad" id="aiShotMiss" style="margin-top:8px;">
+    <button type="button" class="btn-secondary" data-miss="Left">← Left</button>
+    <button type="button" class="btn-secondary" data-miss="Right">Right →</button>
+    <button type="button" class="btn-secondary" data-miss="Short">↓ Short</button>
+    <button type="button" class="btn-secondary" data-miss="Long">↑ Long</button>
+  </div>
+
+  <button id="aiRecordShot" type="button" class="btn-primary" disabled style="margin-top:10px;background:#b79c62;color:#143126;">
+    RECORD SHOT
+  </button>
+
+  <p id="aiShotStatus" style="color:#f0e3c8;font-size:12px;margin:8px 0 0;" role="status">
+    Select Good or Bad, then optionally select where it missed.
+  </p>
+</div>
+
       <p style="font-size:11px">Uses paid AI requests when connected. Don't share private financial or personal information. Golf and money calculations remain based on saved app data.</p>
       </section>
       <section class="card green" data-tab="play">
