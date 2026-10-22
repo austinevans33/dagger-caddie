@@ -461,6 +461,19 @@ body{background:#e9e1d0}
           <div class="pulse-track"><div class="pulse-marker" id="pulseMarker"></div></div>
           <div id="pulseTier" style="font-weight:bold">Awaiting shot</div><div id="puckerStaffLine" aria-live="polite"></div><div class="pulse-reason" id="pulseReason">Keith needs your yardage and lie first.</div>
         </div>
+        
+<div class="answer-actions" aria-label="Quick shot feedback">
+  <button data-feedback="Good">✓ Good</button>
+  <button data-feedback="Short">↓ Short</button>
+  <button data-feedback="Long">↑ Long</button>
+  <button data-feedback="Left">← Left</button>
+  <button data-feedback="Right">→ Right</button>
+  <button data-feedback="Trouble">! Trouble</button>
+</div>
+<p class="muted" id="feedbackStatus" style="color:#d6d6cb">
+  Optional: one tap records the last shot outcome on this phone. No scorekeeping.
+</p>
+
 
         <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddie</button></div><div id="voiceStatus" class="voice-indicator" role="status" aria-live="polite">Voice optional; manual controls always work.</div>
         <details class="shot-extra" style="margin-top:6px"><summary>Full shot description / voice transcript <span>＋</span></summary><div class="extra-inner"><label for="fullShotDescription">Describe your entire situation</label><textarea id="fullShotDescription" rows="4" placeholder="I'm 176 out, light downhill lie in right rough. Crosswind left to right, bunker short, water long, flag back right..." style="width:100%;border-radius:10px;padding:10px;font:14px system-ui"></textarea><div class="grid"><button class="btn-secondary" type="button" id="parseDescription">Extract shot details</button><button class="btn-secondary" type="button" id="useDescription">Apply details & ask caddie</button></div><p id="descriptionStatus" style="color:#efe3cc;font-size:12px;margin:7px 0 0">Caddie interprets recognized yardage, lie, wind, pin and hazards. Other context is preserved as a note, not automatically understood or verified.</p></div></details>
@@ -501,8 +514,6 @@ body{background:#e9e1d0}
           <div style="margin-top:12px"><strong>Keith’s memory</strong><div id="memoryStatus" class="mini-note">Log shots to build evidence.</div></div>
         </details>
         <div id="rarityLine" class="mini-note" aria-live="polite"></div>
-        <div class="answer-actions" aria-label="Quick shot feedback"><button data-feedback="Good">✓ Good</button><button data-feedback="Short">↓ Short</button><button data-feedback="Long">↑ Long</button><button data-feedback="Left">← Left</button><button data-feedback="Right">→ Right</button><button data-feedback="Trouble">! Trouble</button></div>
-        <p class="muted" id="feedbackStatus" style="color:#d6d6cb">Optional: one tap records the last shot outcome on this phone. No scorekeeping.</p>
         <div class="note" style="color:#e4dcc9">Recommendations are only as good as your yardage, lie, carry requirement, and hazard info. Keith is sarcastic, not psychic.</div>
       </section>
 
