@@ -1467,6 +1467,27 @@ $('clearWedges').onclick=()=>{ wedgeFeels={}; store('dagger_wedges',wedgeFeels);
 $('personality').onchange=()=>{store('dagger_personality',$('personality').value); renderMastQuip();};
 $('roast').onchange=()=>{store('dagger_roast',$('roast').value); renderMastQuip();};
 $('call').onclick=decide;
+
+// DCC 5.2 — Risk Desk standalone assessment
+$('riskAssess').onclick = () => {
+  const yards = Number($('riskYards').value);
+
+  if (!Number.isFinite(yards) || yards < 1 || yards > 700) {
+    $('pulseReason').textContent =
+      'Enter a target distance between 1 and 700 yards.';
+    return;
+  }
+
+  pucker({
+    yards,
+    lie: $('riskLie').value,
+    wind: $('riskWind').value,
+    danger: $('riskDanger').value,
+    club: '',
+    confidence: 'unknown'
+  });
+};
+
 $('quickReset').onclick=()=>{switchTab('reset');$('resetStatus').textContent='Exhale. Then choose one reasonable shot.'};
 
 // DCC 5.2 — move the existing live risk meter onto Play.
