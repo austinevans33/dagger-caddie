@@ -420,6 +420,34 @@ body{background:#e9e1d0}
   color: #b79c62;
 }
 
+/* DCC 5.2 — compact caddy abuse selector */
+.roster-abuse {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.roster-abuse label {
+  margin: 0;
+  color: #596951;
+  font: 700 9px system-ui, sans-serif;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+.roster-abuse select {
+  width: auto;
+  max-width: 105px;
+  min-height: 34px;
+  padding: 5px 3px;
+  border: 1px solid #c7b691;
+  border-radius: 8px;
+  background: #eee4d2;
+  color: #143126;
+  font: 700 11px system-ui, sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -472,26 +500,35 @@ body{background:#e9e1d0}
       </section>
 
       <section class="caddie-roster" data-tab="play" aria-label="Choose your caddie">
-        <div class="roster-heading"><span>CADDIE MASTER'S OFFICE</span><button class="roster-file-link" id="toggleStaffFile" type="button" aria-expanded="false">Personnel file ▾</button></div>
+        
+<div class="roster-heading">
+  <span>CADDY MASTER'S OFFICE</span>
+
+  <div class="roster-abuse">
+    <label for="aiAbuseLevel">☠️ ABUSE</label>
+    <select id="aiAbuseLevel" aria-label="Caddy abuse level">
+      <option value="1">1 · Mild</option>
+      <option value="2">2 · Ruthless</option>
+      <option value="3" selected>3 · Unhinged</option>
+    </select>
+  </div>
+
+  <button
+    class="roster-file-link"
+    id="toggleStaffFile"
+    type="button"
+    aria-expanded="false"
+    hidden
+  >Personnel file ▾</button>
+</div>
+
         <div class="staff-grid" id="caddieChoices">
           <button type="button" class="staff-pick active" data-caddie="keith" aria-pressed="true"><img class="staff-thumb" src="keith_portrait.png" alt="Keith portrait"><strong>Keith</strong><small>Head caddie</small></button>
           <button type="button" class="staff-pick" data-caddie="reginald" aria-pressed="false"><img class="staff-thumb" src="reginald_portrait.png" alt="Reginald portrait"><strong>Reginald</strong><small>Traditions</small></button>
           <button type="button" class="staff-pick" data-caddie="vinny" aria-pressed="false"><img class="staff-thumb" src="vinny_portrait.png" alt="Vinny portrait"><strong>Vinny</strong><small>Wagering</small></button>
           <button type="button" class="staff-pick" data-caddie="kyle" aria-pressed="false"><img class="staff-thumb" src="kyle_portrait.png" alt="Kyle portrait"><strong>Kyle</strong><small>Almost enlisted</small></button>
         </div>
-        <div class="ai-abuse-control" style="margin:12px 0 8px;padding:12px;border:1px solid #b79c62;border-radius:12px;background:#eee4d2;">
-          <label for="aiAbuseLevel" style="font-weight:700;color:#143126;">
-            ☠️ CADDY ABUSE
-          </label>
-          <select id="aiAbuseLevel" style="margin-top:6px;width:100%;">
-            <option value="1">Level 1 — Country Club Menace</option>
-            <option value="2">Level 2 — Ruthless Bastard</option>
-            <option value="3" selected>Level 3 — Absolutely Unhinged</option>
-          </select>
-          <p style="font-size:12px;color:#526052;margin:7px 0 0;">
-            Select your caddie. Set the abuse. Question your life choices.
-          </p>
-        </div>
+        
         <div id="staffBanter" aria-live="polite"></div><div class="staff-file" id="staffFile" data-theme="keith" hidden><div class="file-eyebrow">DAGGER COUNTRY CLUB · PERSONNEL DIVISION</div><div class="staff-file-top"><img class="staff-file-photo" id="filePortrait" src="keith_portrait.png" alt="Keith dossier portrait"><div><h3 id="fileName">KEITH · HEAD CADDY</h3><div class="file-sub" id="fileTitle"></div></div></div><div class="file-grid"><div class="file-box"><strong>Known for</strong><span id="fileKnown"></span></div><div class="file-box"><strong>Specialty</strong><span id="fileSpecialty"></span></div><div class="file-box"><strong>Club warning</strong><span id="fileWarning"></span></div></div><p id="fileBio"></p><div class="file-quote" id="fileQuote"></div><div class="file-foot" id="fileFoot"></div></div>
       </section>
       <section class="ai-card" data-tab="play" aria-label="AI caddie conversation">
