@@ -317,6 +317,38 @@ body{background:#e9e1d0}
 .ai-status{color:#f6e4c0;font:700 12px system-ui;margin:8px 0}
 .ai-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}.ai-tools label{color:#eee0c5;letter-spacing:0;text-transform:none;margin:0}.ai-tools button{width:auto;padding:9px 11px;background:#315340;color:#fff4dc;font-size:12px}
 @media(prefers-reduced-motion:reduce){.ai-mic.listening{animation:none}}
+
+/* Dagger Country Club 5.2 — compact mobile masthead */
+.mast .brandrow {
+  align-items: center;
+  gap: 10px;
+}
+
+.mast .brandtext {
+  min-width: 0;
+}
+
+.mast .scriptword {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(19px, 5.4vw, 28px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  white-space: nowrap;
+  text-shadow: none;
+}
+
+.mast .club-mark {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+}
+
+.mast .club-kicker {
+  font-size: 9px;
+  letter-spacing: .11em;
+}
+
 </style>
 </head>
 <body>
@@ -1547,38 +1579,6 @@ $('roastOpponent').onclick=()=>{
  const lines=OPPONENT_ZING[selectedCaddie]||OPPONENT_ZING.keith;
  $('opponentRoastLine').textContent=CADDIES[selectedCaddie].name+': “'+lines[(roastIndex++)%lines.length].replaceAll('{name}',name)+'”';
 };
-
-/* Dagger Country Club 5.2 — compact mobile masthead */
-.mast .brandrow {
-  align-items: center;
-  gap: 10px;
-}
-
-.mast .brandtext {
-  min-width: 0;
-}
-
-.mast .scriptword {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(19px, 5.4vw, 28px);
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-  font-weight: 700;
-  white-space: nowrap;
-  text-shadow: none;
-}
-
-.mast .club-mark {
-  width: 52px;
-  height: 52px;
-  flex: 0 0 52px;
-}
-
-.mast .club-kicker {
-  font-size: 9px;
-  letter-spacing: .11em;
-}
-
 </script>
 <script type="module" src="money-room.js"></script>
 <script type="module" src="ai-chat.js"></script>
