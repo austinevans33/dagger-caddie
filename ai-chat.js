@@ -237,9 +237,11 @@ function autofillShotClub(message) {
   if (!select) return;
 
   // Only act when the golfer describes choosing or using a club.
-  const choice = text.match(
-    /\b(?:hitting|playing|using|taking|hit|played|used|take)\s+(?:my|the|a|an)?\s*(\d{1,2})[\s-]*(?:iron|hybrid|wood)\b/i
-  );
+  
+const choice = text.match(
+  /\b(?:hitting|playing|using|taking|hit|played|used|take)\s+(?:my|the|a|an)?\s*(\d{1,2})[\s-]*(iron|hybrid|wood)\b/i
+);
+
 
   if (!choice) return;
 
