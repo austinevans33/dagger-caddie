@@ -819,7 +819,22 @@ const $=id=>document.getElementById(id);
 const escapeHTML=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let currentClub='', lastDecision=null, loggedShots=[];
 let betState={opponent:'',stake:10,currentHole:1,results:Array(18).fill(null),presses:0};
-function switchTab(tab){document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('hidden-panel',el.dataset.tab!==tab));['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));}
+
+function switchTab(tab) {
+  document.querySelectorAll('[data-tab]').forEach(el =>
+    el.classList.toggle('hidden-panel', el.dataset.tab !== tab)
+  );
+
+  ['play', 'bag', 'bets', 'settings', 'games'].forEach(t =>
+    $('tab-' + t).classList.toggle('active', t === tab)
+  );
+
+  // Always display the latest saved shots when opening Locker.
+  if (tab === 'bag') {
+    renderLocker();
+  }
+}
+
 ['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
 const resetAdvice={
  angry:{steps:'<strong>1.</strong> Exhale for six seconds. Unclench your jaw.<br><strong>2.</strong> Name what happened without assigning blame.<br><strong>3.</strong> Choose the safest target. Swing only when ready.',quote:'“Yes, that was crap. Giving the next ball the same punishment would be even dumber.”'},
