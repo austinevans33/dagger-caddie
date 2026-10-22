@@ -448,6 +448,31 @@ body{background:#e9e1d0}
   <h3 style="color:#fff1d8;margin:7px 0 10px;">
     How'd that one go?
   </h3>
+  
+<div class="grid" style="margin-bottom:10px;">
+  <div>
+    <label for="aiShotClub" style="color:#f0e3c8;">
+      Club Used
+    </label>
+    <select id="aiShotClub">
+      <option value="">Select club</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="aiShotYards" style="color:#f0e3c8;">
+      Yards to Target
+    </label>
+    <input
+      id="aiShotYards"
+      type="number"
+      min="1"
+      max="700"
+      inputmode="numeric"
+      placeholder="e.g. 165"
+    >
+  </div>
+</div>
 
   <div class="grid" id="aiShotQuality">
     <button type="button" class="btn-secondary" data-quality="Good">✓ Good</button>
