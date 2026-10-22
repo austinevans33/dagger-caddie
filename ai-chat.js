@@ -230,6 +230,36 @@ function autofillShotYardage(message) {
   if (riskYards) riskYards.value = String(yards);
 }
 
+// DCC 5.2 — Suggest a club from the golfer's explicit choice.
+function autofillShotClub(message) {
+  const text = String(message || '').toLowerCase();
+  const select = document.getElementById('aiShotClub');
+  if (!select) return;
+
+  // Only act when the golfer describes choosing or using a club.
+  const choice = text.match(
+    /\b(?:hitting|playing|using|taking|hit|played|used|take)\s+(?:my|the|a|an)?\s*(\d{1,2})[\s-]*(?:iron|hybrid|wood)\b/i
+  );
+
+  if (!choice) return;
+
+  refreshShotClubs();
+
+  const number = choice[1];
+  const type = choice[2].toLowerCase();
+
+  const option = Array.from(select.options).find(opt => {
+    const name = opt.value.toLowerCase();
+    return new RegExp(
+      '\\b' + number + '[\\s-]*' + type + '\\b'
+    ).test(name);
+  });
+
+  if (option) {
+    select.value = option.value;
+  }
+}
+
 function activeCaddie(){const el=document.querySelector('.staff-pick.active');return el?.dataset?.caddie||'keith';}
 function add(role,content){
   const p=document.createElement('div');
@@ -289,6 +319,7 @@ async function send() {
   const text = ui.field.value.trim();
   if (!text || working) return;
   autofillShotYardage(text);
+  autofillShotClub(text);
 
   working = true;
   ui.send.disabled = true;
