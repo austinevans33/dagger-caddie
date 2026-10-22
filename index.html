@@ -473,6 +473,38 @@ body{background:#e9e1d0}
   margin: 0;
 }
 
+/* DCC 5.2 — The Reset */
+.dcc-reset-shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 15px;
+  border: 1px solid #b79c62;
+  border-radius: 14px;
+  background: #254637;
+  color: #f5ead4;
+  text-align: left;
+}
+
+.dcc-reset-label {
+  color: #d5b978;
+  font: 700 10px system-ui, sans-serif;
+  letter-spacing: .1em;
+}
+
+.dcc-reset-title {
+  color: #f5ead4;
+  font: 700 19px Georgia, serif;
+}
+
+.dcc-reset-description {
+  color: #d6dfd1;
+  font: 13px system-ui, sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -644,6 +676,18 @@ body{background:#e9e1d0}
     Select Good or Bad, then optionally select where it missed.
   </p>
 </details>
+
+<button
+  id="playMentalReset"
+  type="button"
+  class="dcc-reset-shortcut"
+>
+  <span class="dcc-reset-label">MENTAL PERFORMANCE DEPARTMENT</span>
+  <span class="dcc-reset-title">THE RESET ↗</span>
+  <span class="dcc-reset-description">
+    Bad swing? Leave it behind.
+  </span>
+</button>
 
       <p style="font-size:11px">Uses paid AI requests when connected. Don't share private financial or personal information. Golf and money calculations remain based on saved app data.</p>
       </section>
@@ -1325,6 +1369,15 @@ $('roast').onchange=()=>{store('dagger_roast',$('roast').value); renderMastQuip(
 $('call').onclick=decide;
 $('quickReset').onclick=()=>{switchTab('reset');$('resetStatus').textContent='Exhale. Then choose one reasonable shot.'};
 $('returnToPlay').onclick=()=>switchTab('play');
+
+$('playMentalReset').onclick = () => {
+  switchTab('settings');
+  $('resetNow').closest('section').scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+};
+
 document.querySelectorAll('[data-trigger]').forEach(b=>b.onclick=()=>{resetTrigger=b.dataset.trigger;renderReset();$('resetStatus').textContent='Read your three steps, then tap the button.'});
 $('resetNow').onclick=()=>{resetCount++;$('resetStatus').textContent='Reset #'+resetCount+' complete. You cannot get that swing back. Play the next one.'; if(resetCount%3===0)$('resetKeith').textContent='“A fresh shot. A clean slate. Try not to decorate it with bullshit.”';};
 renderReset();
