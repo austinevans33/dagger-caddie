@@ -2367,6 +2367,35 @@ showClubGame('bingo');
   firstClubSection.before(office);
 })();
   
+/* A3.7 — The Clubhouse header */
+(function addClubhouseHeader() {
+  const office = document.querySelector(
+    '.staff-office[data-tab="settings"]'
+  );
+  if (!office || document.getElementById('clubhouseHeader')) return;
+
+  const header = document.createElement('section');
+  header.id = 'clubhouseHeader';
+  header.className = 'card';
+  header.dataset.tab = 'settings';
+
+  header.innerHTML = `
+    <div class="over" style="color:#756344">
+      DAGGER COUNTRY CLUB · MEMBERS ONLY
+    </div>
+    <h2 style="font:700 28px Georgia,serif;color:#143126;margin:8px 0">
+      The Clubhouse
+    </h2>
+    <p class="muted" style="margin-bottom:0">
+      Home of the caddies, questionable judgment,
+      and the membership committee.
+    </p>
+  `;
+
+  office.before(header);
+})();
+
+  
 /* A3.6 — Organize Club Member Services
    Presentation only. Preserve all existing IDs,
    listeners, local profiles, and recap data.
