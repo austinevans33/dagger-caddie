@@ -45,11 +45,35 @@ section.innerHTML = `
 
   <details class="dcc-handicap-details">
    
-<summary style="cursor:pointer;color:#143126;font:700 17px Georgia,serif;padding:4px 0;">
-  <span style="display:block;font:700 10px system-ui;letter-spacing:1px;color:#796648;margin-bottom:5px;">DAGGER COUNTRY CLUB · HANDICAP INDEX</span>
-  <span id="golferHandicapDisplay" style="display:inline-block;font:700 32px Georgia,serif;color:#143126;margin-right:12px;">—</span>
-  <span style="font:600 12px system-ui;color:#796648;">VIEW / EDIT</span>
+
+<summary style="cursor:pointer;list-style:none;color:#143126;padding:3px 0;">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #d7c7a9;padding-bottom:10px;margin-bottom:12px;">
+    <span style="font:700 10px system-ui;letter-spacing:1.5px;color:#796648;">
+      DCC / MEMBER RECORD
+    </span>
+    <span style="font:700 14px Georgia,serif;color:#b79c62;">
+      ◆
+    </span>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div>
+      <div style="font:500 12px system-ui;color:#536254;margin-bottom:3px;">
+        Handicap Index
+      </div>
+      <div id="golferHandicapDisplay" style="font:700 34px Georgia,serif;color:#143126;line-height:1.1;">
+        —
+      </div>
+    </div>
+
+    <span style="flex-shrink:0;display:inline-block;border:1px solid #b79c62;border-radius:999px;padding:9px 15px;font:700 11px system-ui;letter-spacing:1px;color:#143126;">
+      EDIT ✎
+    </span>
+  </div>
+
 </summary>
+
 
     <div style="padding-top:12px;">
 
