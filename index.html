@@ -1889,6 +1889,9 @@ $('call').onclick=()=>{priorCall48();const y=Number($('yards').value);if(Number.
 function renderShotTendencies() {
   const container = document.getElementById('shotTendenciesContent');
   if (!container) return;
+  
+document.getElementById('lockerStats')?.after(document.getElementById('shotTendencies'));
+
 
   const saved = read('dagger_shot_log', []);
   const shots = Array.isArray(saved) ? saved : [];
