@@ -37,6 +37,13 @@ section.classList.add('hidden-panel');
 
 
 section.innerHTML = `
+
+  <details class="dcc-account-drawer">
+    <summary style="cursor:pointer;color:#143126;font:700 18px Georgia,serif;padding:6px 0;">
+      Member Account · Sign In / Membership
+    </summary>
+    <div style="padding-top:12px;">
+
   <h2>Golfer Account</h2>
   <p class="muted">
     Your permanent Dagger Country Club membership.
@@ -86,8 +93,12 @@ section.innerHTML = `
     </p>
   </div>
 
+  
   <p class="tiny-print" id="accountIdentity"></p>
+    </div>
+  </details>
 `;
+
 
 const settingsPanel =
   document.querySelector('[data-tab="settings"]');
