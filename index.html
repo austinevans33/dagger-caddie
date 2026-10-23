@@ -2011,6 +2011,7 @@ const clubHeading = document.createElement('summary');
 clubHeading.style.cssText =
   'cursor:pointer;color:#d8ba77;padding:5px 0;';
 
+title.style.display = 'inline';
 clubHeading.append(title);
 clubDrawer.append(clubHeading, card);
 container.append(clubDrawer);
@@ -2132,6 +2133,16 @@ lockerMaintenance.append(maintenanceButtons, dangerPanel);
   rangeDrawer.append(rangeHeading);
   rangeDrawer.append(rangeSection);
   lockerMaintenance.append(rangeDrawer);
+  
+// Keep raw shot history available, but out of the everyday Locker.
+const shotHistory = document.getElementById('lockerShots')
+  ?.closest('details');
+
+if (shotHistory) {
+  shotHistory.open = false;
+  lockerMaintenance.append(shotHistory);
+}
+
 
   // Keep background controls and data available, not duplicated
   // throughout the everyday Locker interface.
