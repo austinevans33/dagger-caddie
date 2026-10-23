@@ -2364,6 +2364,78 @@ showClubGame('bingo');
 
   firstClubSection.before(office);
 })();
+  
+/* A3.6 — Organize Club Member Services
+   Presentation only. Preserve all existing IDs,
+   listeners, local profiles, and recap data.
+*/
+(function organizeMemberServices() {
+  const recap = document.getElementById('memberRecapSection');
+
+  const profilesHeading = [...document.querySelectorAll(
+    'section[data-tab="settings"] h2'
+  )].find(h => h.textContent.trim() === 'Member Profiles');
+
+  const profiles = profilesHeading?.closest('section');
+
+  if (!profiles || !recap) return;
+
+  const services = document.createElement('details');
+  services.className = 'dcc-member-services';
+services.dataset.tab = 'settings';
+  services.style.cssText =
+    'margin-top:14px;padding:14px;' +
+    'border:1px solid #b79c62;border-radius:14px;' +
+    'background:#173528;color:#f3e9d3;';
+
+  const heading = document.createElement('summary');
+  heading.textContent = 'Member Services';
+  heading.style.cssText =
+    'cursor:pointer;font:700 19px Georgia,serif;' +
+    'color:#d8ba77;padding:4px 0;';
+
+  const intro = document.createElement('p');
+  intro.textContent =
+    'Local profiles, member recaps, and administrative records.';
+  intro.style.cssText =
+    'font-size:13px;color:#e1dbc9;margin:10px 0;';
+
+  services.append(heading, intro);
+
+  [profiles, recap].forEach(section => {
+    const drawer = document.createElement('details');
+    drawer.style.cssText =
+      'margin-top:10px;padding:12px;' +
+      'border:1px solid #b79c62;border-radius:10px;' +
+      'background:#f5f0e5;color:#143126;';
+
+    const label = document.createElement('summary');
+    label.textContent = section === profiles
+      ? 'Member Profiles'
+      : 'Round & Member Recap';
+
+    label.style.cssText =
+      'cursor:pointer;font:700 16px Georgia,serif;';
+
+    drawer.append(label, section);
+    services.append(drawer);
+  });
+
+  // Keep Member Services in the Club's existing content area.
+  const originalParent = profiles.parentElement;
+  // The sections have already moved into their drawers,
+  // so use the recap's original location via the page footer.
+  const footer = document.querySelector('main .footer');
+
+  if (footer && footer.parentElement) {
+    footer.before(services);
+  } else {
+    document.querySelector(
+      '.staff-office[data-tab="settings"]'
+    )?.after(services);
+  }
+})();
+
 
 
 
