@@ -862,10 +862,10 @@ section[data-tab="bag"]:has(#saveWedges) {
 </p>
 
 
-        <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddie</button></div><div id="voiceStatus" class="voice-indicator" role="status" aria-live="polite">Voice optional; manual controls always work.</div>
-        <details class="shot-extra" style="margin-top:6px"><summary>Full shot description / voice transcript <span>＋</span></summary><div class="extra-inner"><label for="fullShotDescription">Describe your entire situation</label><textarea id="fullShotDescription" rows="4" placeholder="I'm 176 out, light downhill lie in right rough. Crosswind left to right, bunker short, water long, flag back right..." style="width:100%;border-radius:10px;padding:10px;font:14px system-ui"></textarea><div class="grid"><button class="btn-secondary" type="button" id="parseDescription">Extract shot details</button><button class="btn-secondary" type="button" id="useDescription">Apply details & ask caddie</button></div><p id="descriptionStatus" style="color:#efe3cc;font-size:12px;margin:7px 0 0">Caddie interprets recognized yardage, lie, wind, pin and hazards. Other context is preserved as a note, not automatically understood or verified.</p></div></details>
+        <div class="field-row" id="shotModeRow"><button id="modeApproach" class="selected" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddy</button></div><div id="voiceStatus" class="voice-indicator" role="status" aria-live="polite">Voice optional; manual controls always work.</div>
+        <details class="shot-extra" style="margin-top:6px"><summary>Full shot description / voice transcript <span>＋</span></summary><div class="extra-inner"><label for="fullShotDescription">Describe your entire situation</label><textarea id="fullShotDescription" rows="4" placeholder="I'm 176 out, light downhill lie in right rough. Crosswind left to right, bunker short, water long, flag back right..." style="width:100%;border-radius:10px;padding:10px;font:14px system-ui"></textarea><div class="grid"><button class="btn-secondary" type="button" id="parseDescription">Extract shot details</button><button class="btn-secondary" type="button" id="useDescription">Apply details & ask caddy</button></div><p id="descriptionStatus" style="color:#efe3cc;font-size:12px;margin:7px 0 0">Caddie interprets recognized yardage, lie, wind, pin and hazards. Other context is preserved as a note, not automatically understood or verified.</p></div></details>
         <details class="compact-tools" style="margin-top:8px" id="caddieConversation">
-<summary>Talk it through · Detailed Caddie Consultation</summary>
+<summary>Talk it through · Detailed Caddy Consultation</summary>
 <p class="mini-note">Describe the lie, target, required carry, obstacles, pin, wind and what shot you're considering. Speech dictation or typing both work.</p>
 <textarea id="convoDescription" rows="4" style="width:100%;border-radius:10px;padding:10px;background:#fffdf8;color:#13271e;font:15px/1.45 system-ui" placeholder="I'm 182 out in heavy rough, ball below my feet, water from 165 to 190 short right, pin front left. Thinking 6 iron... "></textarea>
 <div class="room-controls"><button type="button" id="convoReview" class="btn-secondary">Review with caddie</button><button type="button" id="convoAskAgain" class="btn-ghost">Ask follow-up</button></div>
@@ -1144,9 +1144,9 @@ section[data-tab="bag"]:has(#saveWedges) {
 
 <section class="staff-office" data-tab="settings" aria-label="Caddy Master's Office">
   <div class="notice-eyebrow">DAGGER COUNTRY CLUB · EST. UNDER PROTEST</div>
-  <h2>Caddie Master's Office</h2>
+  <h2>Caddy Master's Office</h2>
   <p class="muted">A private club with extraordinarily public personnel problems.</p>
-  <div class="office-header"><img id="officePortrait" src="keith_portrait.png" alt="Selected caddie"><div><div class="office-title" id="officeName">Keith · Head Caddie</div><span class="staff-badge" id="officeBadge">Veteran Menace</span></div></div>
+  <div class="office-header"><img id="officePortrait" src="keith_portrait.png" alt="Selected caddie"><div><div class="office-title" id="officeName">Keith · Head Caddy</div><span class="staff-badge" id="officeBadge">Veteran Menace</span></div></div>
   <div class="notice-card"><div class="notice-eyebrow">CONFIDENTIAL PERSONNEL RECORD</div><div id="officePersonnel">Select a caddie to inspect their dubious credentials.</div></div>
   <div class="notice-card"><div class="notice-eyebrow">LATEST FROM THE STAFF ROOM</div><div id="officeGossip">Keith has issued a noise complaint against Kyle.</div><button id="officeNewGossip" class="btn-secondary" type="button" style="margin-top:10px">Another staff-room complaint</button></div>
   <h3>Staff directory</h3><div id="officeRoster"></div>
@@ -1396,7 +1396,7 @@ function getOriginalKeithLine(kind){
 
 
 const CADDIES={
- keith:{name:'Keith',title:'Head Caddie',subtitle:'Forty years of service. Four remaining ounces of patience.',known:'Making excellent decisions sound like disciplinary action.',specialty:'Course management, restraint, and preventing preventable doubles.',warning:'Will absolutely judge any attempt to attack a sucker pin with a flyer lie.',bio:'Keith has carried every type of bag at Dagger Country Club and has never once mistaken enthusiasm for competence. He has survived five club presidents, twelve assistant pros, and roughly nine thousand members who thought they could cut a corner that did not, in fact, want cutting.',quote:'"That is the right club. A rare triumph of judgment. Make your usual balanced swing and try not to vandalize an otherwise sound decision."',foot:'Performance: Excellent · Member relations: Under review · Preferred beverage: whatever you are not touching',mast:'Your head caddie is on duty. Please keep the hero golf to a medically acceptable minimum.'},
+ keith:{name:'Keith',title:'Head Caddy',subtitle:'Forty years of service. Four remaining ounces of patience.',known:'Making excellent decisions sound like disciplinary action.',specialty:'Course management, restraint, and preventing preventable doubles.',warning:'Will absolutely judge any attempt to attack a sucker pin with a flyer lie.',bio:'Keith has carried every type of bag at Dagger Country Club and has never once mistaken enthusiasm for competence. He has survived five club presidents, twelve assistant pros, and roughly nine thousand members who thought they could cut a corner that did not, in fact, want cutting.',quote:'"That is the right club. A rare triumph of judgment. Make your usual balanced swing and try not to vandalize an otherwise sound decision."',foot:'Performance: Excellent · Member relations: Under review · Preferred beverage: whatever you are not touching',mast:'Your head caddie is on duty. Please keep the hero golf to a medically acceptable minimum.'},
  reginald:{name:'Reginald',title:'Senior Keeper of Traditions',subtitle:'Polite enough to make an insult sound hereditary.',known:'Weaponized manners and deeply curated disappointment.',specialty:'Conservative strategy, etiquette, and making center-green targets feel aristocratic.',warning:'Considers cargo shorts, violent tempos, and flop shots from bad lies signs of moral erosion.',bio:'Reginald believes golf reached perfection shortly before modern society began collapsing into draw-biased drivers and untucked shirts. He calls clubs implements, addresses members as sir when he is furious, and can convey spiritual contempt with nothing more than a raised eyebrow and the phrase “interesting choice.”',quote:'"A seven-iron is indicated, sir. Favor the ample middle portion of the green and permit your follow-through a modicum of dignity."',foot:'Dress code violations issued: 1,284 · Smiles observed: 2 · Opinions on hoodies: unprintable',mast:'Reginald is carrying today. Kindly resist any behavior unbecoming a gentleman or a golfer.'},
  vinny:{name:'Vinny',title:'Director of Informal Wagering',subtitle:'Knows every handicap, every press, and who still owes him twenty.',known:'Turning risk management into neighborhood extortion with manners.',specialty:'Match play, side bets, and identifying the safest shot that still protects the wallet.',warning:'Will remind you that “cute” swings are bad for both scoring and cash flow.',bio:'Vinny has quietly run the Tuesday money game since 1997 despite repeated attempts by the Greens Committee to discover who authorized it. He can read a green, a lie, and a man bluffing about his index in under ten seconds, and regards unnecessary hero shots as acts of financial self-harm.',quote:'"Center green, sweetheart. Par that wins money is sexier than a hero ball in the lake. Smooth tempo, safe miss, and let the other idiot blink first."',foot:'Outstanding IOUs: Classified · Financial judgment: Selectively excellent · Favorite phrase: “We’re not donating today.”',mast:'Vinny has the bag. The objective is to leave with more money and no unnecessary hero shots.'},
  kyle:{name:'Kyle',title:'Tactical Operations Consultant (Self-Appointed)',subtitle:'Service record: Classified. Because it does not exist.',known:'White Oakleys, fantasy deployments, and motivational nonsense at battle volume.',specialty:'Commitment, overconfident club announcements, and accidentally decent recovery advice.',warning:'May refer to the rough as a hostile environment and your 7-iron as a weapons system.',bio:'Kyle almost enlisted, but says he definitely would have punched a drill sergeant who got in his face. He wears white wraparound Oakleys indoors, calls every fairway a battlespace, and has nearly been recruited by Marines, Rangers, SEALs, Delta, and one suspiciously patriotic personal trainer. In spite of all this, he is weirdly solid at reading lies and simplifying decisions.',quote:'"BROTHER. Tactical seven-iron. Target the fat side, maintain operational tempo, and finish like you mean it. I was basically one paperwork issue away from Special Forces."',foot:'Actual service: None · Sunglasses: White Oakleys · Verified branch memberships: zero',mast:'Kyle is carrying. He almost joined six branches of the military, but luckily had time for your tee time.'}
@@ -1820,7 +1820,7 @@ function descriptionParse(raw){
 }
 $('parseDescription').onclick=()=>descriptionParse($('fullShotDescription').value);
 $('useDescription').onclick=()=>{descriptionParse($('fullShotDescription').value);$('call').click();};
-function voiceStopIndicator(){$('voiceStatus').classList.remove('listening');$('voiceShot').classList.remove('mic-active');$('voiceShot').textContent='🎙 Talk to Caddie';}
+function voiceStopIndicator(){$('voiceStatus').classList.remove('listening');$('voiceShot').classList.remove('mic-active');$('voiceShot').textContent='🎙 Talk to Caddy';}
 // Override microphone result to keep complete natural-language context, while retaining manual fallback.
 $('voiceShot').onclick=()=>{
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -2393,6 +2393,51 @@ showClubGame('bingo');
   `;
 
   office.before(header);
+})();
+
+/* A4.1 — Unified DCC navigation icons
+   Presentation only. Existing button IDs and handlers stay.
+*/
+(function refreshClubNavigation() {
+  const icons = {
+    play: '<path d="M5 21V4m0 0 15 5-15 5"/>',
+    bets: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/>',
+    games: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1"/><circle cx="16" cy="8" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="8" cy="16" r="1"/><circle cx="16" cy="16" r="1"/>',
+    bag: '<rect x="4" y="7" width="16" height="14" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2M4 12h16"/>',
+    settings: '<path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-8h6v8M3 9l9-7 9 7"/>'
+  };
+
+  Object.entries(icons).forEach(([tab, paths]) => {
+    const button = document.getElementById('tab-' + tab);
+    const icon = button?.querySelector('.nav-ico');
+    if (!icon) return;
+
+    icon.innerHTML =
+      '<svg viewBox="0 0 24 24" width="23" height="23"' +
+      ' fill="none" stroke="currentColor"' +
+      ' stroke-width="1.7" stroke-linecap="round"' +
+      ' stroke-linejoin="round" aria-hidden="true">' +
+      paths + '</svg>';
+  });
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .tabbar .nav-ico {
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      color:#b79c62;
+      height:26px;
+    }
+    .tabbar button.active .nav-ico {
+      color:#d8ba77;
+    }
+    .tabbar .nav-ico svg {
+      display:block;
+      flex-shrink:0;
+    }
+  `;
+  document.head.append(style);
 })();
 
   
