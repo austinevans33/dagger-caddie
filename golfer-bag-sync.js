@@ -89,15 +89,6 @@ if (locker) {
   }
 }
 
-
-  if (profile) {
-    const profileSection = profile.closest('.notice-card');
-    profileSection?.insertAdjacentElement('afterend', section);
-  } else {
-    locker.insertAdjacentElement('afterbegin', section);
-  }
-}
-
 const $ = id => document.getElementById(id);
 
 const uploadButton = $('uploadCloudBag');
