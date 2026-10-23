@@ -53,16 +53,6 @@ section.innerHTML = `
 
     <div style="padding-top:12px;">
 
-  <div style="font:700 10px system-ui;
-              letter-spacing:.12em;color:#796648;">
-    DAGGER COUNTRY CLUB · MEMBER RECORDS
-  </div>
-
-  <p class="muted">
-    Your shared golfer profile, available to all four
-    caddies and linked to your permanent account.
-  </p>
-
   <label for="golferHandicap">
     Current Handicap Index
   </label>
