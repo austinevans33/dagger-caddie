@@ -39,6 +39,31 @@ section.style.borderRadius = '14px';
 
 section.classList.add('dcc-cloud-utility');
 
+/* A2.1 — Match the Shot Tendencies color system */
+const cloudStyle = document.createElement('style');
+cloudStyle.textContent = `
+  .dcc-cloud-utility h3 {
+    color: #f3e9d3 !important;
+    font-family: Georgia, serif;
+    font-size: 23px;
+  }
+
+  .dcc-cloud-utility .tiny-print,
+  .dcc-cloud-utility .status,
+  .dcc-cloud-utility p,
+  .dcc-cloud-utility #bagSyncPreview,
+  .dcc-cloud-utility #bagSyncStatus {
+    color: #f3e9d3 !important;
+  }
+
+  .dcc-cloud-utility .btn-primary,
+  .dcc-cloud-utility .btn-secondary {
+    border-color: #b79c62;
+  }
+`;
+document.head.append(cloudStyle);
+
+
 
 section.innerHTML = `
   <h3>Cloud Golf Bag</h3>
