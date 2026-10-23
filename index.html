@@ -1942,7 +1942,7 @@ if (excludedClubs.includes(
 
   [...groups.entries()]
     .sort((a, b) => b[1].length - a[1].length)
-    .forEach(([club, records]) => {
+    .forEach(([club, records], index) => {
       const total = records.length;
 
       const count = predicate =>
@@ -1999,8 +1999,22 @@ if (excludedClubs.includes(
           : 'No directional misses recorded yet.';
       }
 
-      card.append(title, stats, note);
-      container.append(card);
+     
+card.append(stats, note);
+
+const clubDrawer = document.createElement('details');
+clubDrawer.open = index < 2;
+clubDrawer.style.cssText =
+  'border-top:1px solid #536b57;padding:12px 0;';
+
+const clubHeading = document.createElement('summary');
+clubHeading.style.cssText =
+  'cursor:pointer;color:#d8ba77;padding:5px 0;';
+
+clubHeading.append(title);
+clubDrawer.append(clubHeading, card);
+container.append(clubDrawer);
+
     });
 }
 
@@ -2010,6 +2024,12 @@ renderShotTendencies();
 }
 
 document.getElementById('lockerStats').after(document.getElementById('shotTendencies'));
+
+/* A2.4 — Hide redundant legacy range summary */
+document.getElementById('lockerRange')
+  ?.closest('details')
+  ?.style.setProperty('display', 'none', 'important');
+
 
 document.getElementById('shotTendencies').before(document.getElementById('manualclub').closest('section'));
 
@@ -2067,7 +2087,7 @@ lockerMaintenance.append(maintenanceButtons, dangerPanel);
     ?.closest('details');
 
   if (distances) {
-    distances.open = true;
+    distances.open = false;
     distances.querySelector('summary').textContent =
       'Your Clubs & Carry Distances';
 
