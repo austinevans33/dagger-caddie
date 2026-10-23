@@ -2185,6 +2185,59 @@ function showClubGame(type){
 }
 document.querySelectorAll('[data-game]').forEach(b=>b.addEventListener('click',()=>showClubGame(b.dataset.game)));
 showClubGame('bingo');
+
+/* DCC RELEASE A1 — CLUBHOUSE PRESENTATION
+   Visual labels and default panel states only.
+   No scoring, betting, account, or AI logic changes.
+*/
+(function polishClubhouse() {
+  const renameHeading = (section, oldText, newText) => {
+    const root = document.querySelector(section);
+    if (!root) return;
+    const heading = [...root.querySelectorAll('h2')]
+      .find(h => h.textContent.trim() === oldText);
+    if (heading) heading.textContent = newText;
+  };
+
+  renameHeading(
+    '#opponentRoastSection',
+    'Competitive encouragement',
+    'Competitive Encouragement'
+  );
+
+  renameHeading(
+    '#gamesMenu',
+    'Choose your game',
+    'Choose Your Game'
+  );
+
+  document.querySelectorAll('[data-tab="bets"] h2')
+    .forEach(h => {
+      if (h.textContent.trim() === 'Betting') {
+        h.textContent = 'The Match Desk';
+      }
+    });
+
+  const roastButton = document.getElementById('roastOpponent');
+  if (roastButton) roastButton.textContent = 'Roast Opponent';
+
+  // Collapse instructions, not active games or scorecards.
+  document.querySelectorAll('[data-tab="games"] details')
+    .forEach(panel => {
+      const title = panel.querySelector('summary')
+        ?.textContent.trim().toLowerCase() || '';
+
+      if (title.includes('how to play')) {
+        panel.open = false;
+      }
+    });
+
+  // Keep historical records available without cluttering Locker.
+  const history = document.getElementById('lockerShots')
+    ?.closest('details');
+  if (history) history.open = false;
+})();
+
 // Purely fictional competitive banter, keyed to selected caddie and real entered opponent name.
 const OPPONENT_ZING={
  keith:['{name} swings like a man trying to swat a hornet in a phone booth. You hit the middle and let him self-destruct.','{name} has the course-management instincts of a Labrador near traffic. Play the percentage and collect the money.','If {name} had any discipline, we would have to respect him. Fortunately, we do not. Safe side, smooth swing.'],
