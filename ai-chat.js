@@ -204,28 +204,10 @@ const ui={
 };
 
 // DCC 5.2 — Autofill explicit target yardage from golfer messages.
+
 function autofillShotYardage(message) {
   const text = String(message || '').trim();
   
-const spokenNumbers = {
-  one: '1',
-  two: '2',
-  three: '3',
-  four: '4',
-  five: '5',
-  six: '6',
-  seven: '7',
-  eight: '8',
-  nine: '9',
-  ten: '10'
-};
-
-const normalized = text.replace(
-  /\b(one|two|three|four|five|six|seven|eight|nine|ten)(?=[\s-]+(?:iron|hybrid|wood)\b)/g,
-  word => spokenNumbers[word]
-);
-
-
   // Only recognize distances explicitly described as the target.
   const patterns = [
     /\b(?:i'm|im|we're|were)\s+(\d{1,3})\s*(?:yards?|yds?)?\s*out\b/i,
