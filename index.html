@@ -406,6 +406,12 @@ body{background:#e9e1d0}
   font-weight: 700;
 }
 
+/* DCC 5.2 — Retire the visible legacy round interface.
+   Preserve its DOM for existing calculations and compatibility. */
+#legacyRoundTools {
+  display: none !important;
+}
+
 /* DCC 5.2 — readable legacy tools header */
 #legacyRoundTools > summary {
   color: #f5ead4;
