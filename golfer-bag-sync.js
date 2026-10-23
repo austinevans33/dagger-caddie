@@ -34,11 +34,6 @@ section.style.padding = '14px';
 
 section.innerHTML = `
   <h3>Cloud Golf Bag</h3>
-  <p class="muted">
-    Upload this device's golf bag to your permanent
-    golfer account. Nothing is automatically
-    downloaded or replaced.
-  </p>
 
   <div id="bagSyncPreview"
        class="tiny-print"
