@@ -35,8 +35,8 @@ section.className = 'notice-card';
 section.style.margin = '12px 0';
 section.style.padding = '14px';
 
-section.style.background = '#f5f0e5';
-section.style.color = '#143126';
+section.style.background = '#173528';
+section.style.color = '#f5ead4';
 section.style.border = '1px solid #b79c62';
 section.style.borderRadius = '14px';
 
