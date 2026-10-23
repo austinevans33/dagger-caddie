@@ -41,7 +41,7 @@ section.innerHTML = `
     DAGGER COUNTRY CLUB · MEMBER RECORDS
   </div>
 
-  <h3 style="margin:8px 0;">Golfer Profile</h3>
+  <h3 style="margin:6px 0;color:#f5ead4;font-family:Georgia,serif;">Handicap Index</h3>
 
   <p class="muted">
     Your shared golfer profile, available to all four
