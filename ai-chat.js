@@ -252,6 +252,25 @@ const normalized = text.replace(
 // DCC 5.2 — Suggest a club from the golfer's explicit choice.
 function autofillShotClub(message) {
   const text = String(message || '').toLowerCase();
+  
+const spokenNumbers = {
+  one: '1',
+  two: '2',
+  three: '3',
+  four: '4',
+  five: '5',
+  six: '6',
+  seven: '7',
+  eight: '8',
+  nine: '9',
+  ten: '10'
+};
+
+const normalized = text.replace(
+  /\b(one|two|three|four|five|six|seven|eight|nine|ten)(?=[\s-]+(?:iron|hybrid|wood)\b)/g,
+  word => spokenNumbers[word]
+);
+
   const select = document.getElementById('aiShotClub');
   if (!select) return;
 
