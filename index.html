@@ -652,10 +652,34 @@ body{background:#e9e1d0}
       <div id="aiHistory" class="ai-history" role="log" aria-live="polite"><div class="ai-bubble">Describe the shot or ask your caddie a question. Voice input availability depends on Safari.</div></div>
       <div class="ai-row"><textarea id="aiInput" rows="2" placeholder="I'm 175 out, water short right. Can I hit 7-iron?"></textarea><button id="aiSend" type="button">Send →</button></div>
      <div class="ai-tools">
-  <label>
-    <input type="checkbox" id="aiSpeak" style="width:auto">
-    Read replies aloud
-  </label>
+  
+<input type="checkbox" id="aiSpeak" hidden>
+
+<button
+  type="button"
+  id="aiVoiceToggle"
+  aria-pressed="false"
+  onclick="
+    const voice = document.getElementById('aiSpeak');
+    voice.checked = !voice.checked;
+    this.setAttribute('aria-pressed', String(voice.checked));
+    this.textContent = voice.checked
+      ? '◉ Caddy Voice On'
+      : '◌ Caddy Voice Off';
+    this.style.background = voice.checked
+      ? '#b79c62'
+      : '#315340';
+    this.style.color = voice.checked
+      ? '#143126'
+      : '#fff4dc';
+    if (!voice.checked && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  "
+>
+  ◌ Caddy Voice Off
+</button>
+
   <button type="button" id="aiReset">New chat</button>
   <button type="button" id="aiSaveMemory" disabled>
     Save Memory
