@@ -250,12 +250,30 @@ const choice = text.match(
   const number = choice[1];
   const type = choice[2].toLowerCase();
 
-  const option = Array.from(select.options).find(opt => {
-    const name = opt.value.toLowerCase();
-    return new RegExp(
-      '\\b' + number + '[\\s-]*' + type + '\\b'
-    ).test(name);
+  
+const option = Array.from(select.options).find(opt => {
+  const name = opt.value.toLowerCase().trim();
+
+  const aliases = {
+    iron: ['iron', 'i'],
+    hybrid: ['hybrid', 'h'],
+    wood: ['wood', 'w']
+  };
+
+  return aliases[type].some(alias => {
+    const pattern = new RegExp(
+      '(?:^|[^a-z0-9])' +
+      number +
+      '[\\s-]*' +
+      alias +
+      '(?![a-z0-9])',
+      'i'
+    );
+
+    return pattern.test(name);
   });
+});
+
 
   if (option) {
     select.value = option.value;
