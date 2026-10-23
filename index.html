@@ -2138,10 +2138,24 @@ lockerMaintenance.append(maintenanceButtons, dangerPanel);
 const shotHistory = document.getElementById('lockerShots')
   ?.closest('details');
 
+
 if (shotHistory) {
   shotHistory.open = false;
+  shotHistory.className = 'dcc-shot-history-drawer';
+  shotHistory.style.cssText =
+    'margin-top:12px;padding:12px;border:1px solid #b79c62;' +
+    'border-radius:12px;background:#f5f0e5;color:#143126;';
+
+  const historyHeading = shotHistory.querySelector('summary');
+  if (historyHeading) {
+    historyHeading.textContent = 'On-Course Shot Records';
+    historyHeading.style.cssText =
+      'cursor:pointer;font:700 16px Georgia,serif;';
+  }
+
   lockerMaintenance.append(shotHistory);
 }
+
 
 
   // Keep background controls and data available, not duplicated
