@@ -38,13 +38,21 @@ section.classList.add('hidden-panel');
 
 section.innerHTML = `
 
-  <details class="dcc-account-drawer">
-    <summary style="cursor:pointer;color:#143126;font:700 18px Georgia,serif;padding:6px 0;">
-      Member Account · Sign In / Membership
-    </summary>
-    <div style="padding-top:12px;">
+ 
+<details class="dcc-account-drawer" style="background:#173528;color:#F3E9D3;border:1px solid #B79C62;border-radius:14px;padding:14px;">
 
-  <h2>Golfer Account</h2>
+    
+<summary style="cursor:pointer;color:#D8BA77;font:700 19px Georgia,serif;padding:6px 0;">
+  Member Account · Sign In / Membership
+</summary>
+
+    
+<div class="dcc-account-body" style="padding:14px;margin-top:12px;border:1px solid #B79C62;border-radius:10px;background:#F5F0E5;color:#143126;">
+
+
+  
+<h2 style="color:#143126;font-family:Georgia,serif;">Membership Office</h2>
+
   <p class="muted">
     Your permanent Dagger Country Club membership.
     One identity for all four caddies.
