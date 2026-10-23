@@ -2349,6 +2349,22 @@ showClubGame('bingo');
 
   section.append(details);
 })();
+  
+/* A3.5 — Make the Caddie Master's Office the Club centerpiece */
+(function prioritizeCaddieOffice() {
+  const office = document.querySelector(
+    '.staff-office[data-tab="settings"]'
+  );
+
+  const firstClubSection = document.querySelector(
+    'section[data-tab="settings"]'
+  );
+
+  if (!office || !firstClubSection || office === firstClubSection) return;
+
+  firstClubSection.before(office);
+})();
+
 
 
 /* DCC RELEASE A1 — CLUBHOUSE PRESENTATION
