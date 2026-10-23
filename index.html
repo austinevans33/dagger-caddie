@@ -964,8 +964,10 @@ section[data-tab="bag"]:has(#saveWedges) {
 <div class="grid" style="margin-top:10px"><button class="btn-primary" id="saveHoleNote">Save note</button><button class="btn-secondary" id="loadHoleNote">Load note into shot</button></div>
 <p id="notebookStatus" style="margin-top:8px">Saved locally on this phone.</p>
 </section>
-<section class="card" data-tab="settings">
-        <h2>Course & GPS</h2>
+
+<section class="card" data-tab="settings" id="legacyCourseTools">
+        <h2 style="display:none">Course & GPS</h2>
+
         <div class="grid">
           <div><label>Course</label><input id="course" placeholder="e.g. Bayonet at Puppy Creek"></div>
           <div><label>Hole</label><input id="hole" type="number" min="1" max="18" value="1"></div>
@@ -2322,6 +2324,32 @@ function showClubGame(type){
 }
 document.querySelectorAll('[data-game]').forEach(b=>b.addEventListener('click',()=>showClubGame(b.dataset.game)));
 showClubGame('bingo');
+  
+/* A3.4 — Retain legacy course tools without cluttering Club */
+(function organizeCourseTools() {
+  const section = document.getElementById('legacyCourseTools');
+  if (!section) return;
+
+  const details = document.createElement('details');
+  details.className = 'dcc-course-tools';
+  details.style.cssText =
+    'padding:12px;border:1px solid #b79c62;' +
+    'border-radius:12px;background:#f5f0e5;';
+
+  const summary = document.createElement('summary');
+  summary.textContent = 'Course Intelligence · Manual Tools';
+  summary.style.cssText =
+    'cursor:pointer;font:700 16px Georgia,serif;color:#143126;';
+
+  details.append(summary);
+
+  while (section.firstChild) {
+    details.append(section.firstChild);
+  }
+
+  section.append(details);
+})();
+
 
 /* DCC RELEASE A1 — CLUBHOUSE PRESENTATION
    Visual labels and default panel states only.
