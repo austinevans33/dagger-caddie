@@ -2000,6 +2000,8 @@ $('lockerRange').append(ss);
 renderShotTendencies();
 }
 
+document.getElementById('lockerStats').after(document.getElementById('shotTendencies'));
+
 $('lockerRebuild').onclick=renderLocker;
 $('lockerExport').onclick=()=>{const data={profile,shots:read('dagger_shot_log',[]),decisions:read('dagger_decision_history',[]),sessions:read('dagger_range_sessions',[]),notes:read('dagger_hole_notes',{})};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='dagger-players-locker.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
 $('wyndhamPunch').onclick=()=>{if(!confirm('WYNDHAM PUNCH? This destroys your active member’s shot records, range history, saved bag changes and notes. Money ledger and games remain.'))return;let phrase=prompt('Type WYNDHAM PUNCH to confirm the destruction of the locker data.');if(phrase!=='WYNDHAM PUNCH'){ $('punchStatus').textContent='Cancelled. Locker survives another day.';return;}for(const k of ['dagger_profile','dagger_shot_log','dagger_decision_history','dagger_range_sessions','dagger_hole_notes','dagger_import_signatures','dagger_wedges'])localStorage.removeItem(k);snapshotMember(localStorage.getItem(MEMBER_ACTIVE));location.reload();};
