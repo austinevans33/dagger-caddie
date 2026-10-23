@@ -78,8 +78,17 @@ section.innerHTML = `
   </p>
 `;
 
+
 if (locker) {
-  const profile = document.getElementById('golferHandicap');
+  const maintenance = locker.querySelector('.dcc-locker-maintenance');
+
+  if (maintenance) {
+    maintenance.append(section);
+  } else {
+    locker.append(section);
+  }
+}
+
 
   if (profile) {
     const profileSection = profile.closest('.notice-card');
