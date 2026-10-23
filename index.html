@@ -914,9 +914,10 @@ body{background:#e9e1d0}
         <button class="btn-primary" type="button" id="returnToPlay">RETURN TO PLAY</button>
       </section>
 
-      <section class="card" data-tab="bag" id="playersLocker"><div class="over" style="color:#756344">DAGGER COUNTRY CLUB · MEMBER ARCHIVES</div><h2>Players Locker</h2><p class="muted">Your actual entered yardages, launch monitor summaries, voice descriptions and on-course shot feedback. Saved to this profile on this phone.</p><div id="lockerStats" class="bet-summary" style="grid-template-columns:repeat(3,1fr)"></div><details open><summary>On-course shot records</summary><div id="lockerShots"></div></details><details style="margin-top:12px"><summary>Range sessions and club numbers</summary><div id="lockerRange"></div></details><div class="grid" style="margin-top:12px"><button class="btn-secondary" id="lockerExport">Export locker JSON</button><button class="btn-ghost" id="lockerRebuild">Refresh records</button></div><div style="margin-top:12px;border:1px solid #973f39;border-radius:12px;padding:12px;background:#f8eee4"><strong style="color:#7c342c">DANGER · CLEAR PERSONAL SHOT DATA</strong><p class="note">This destroys the active profile’s club distance overrides, shot logs, range histories and course notes. Games and money ledgers are preserved. Export a backup first.</p><button class="btn-primary" style="background:#7c342c" id="wyndhamPunch">WYNDHAM PUNCH</button><p id="punchStatus" class="note"></p></div></section>
-      
-<div id="shotTendencies" style="margin:16px 0;padding:16px;border:1px solid #b79c62;border-radius:14px;background:#173528;color:#f3e9d3;">
+      <section class="card" data-tab="bag" id="playersLocker"><div class="over" style="color:#756344">DAGGER COUNTRY CLUB · MEMBER ARCHIVES</div><h2>Players Locker</h2><p class="muted">Your actual entered yardages, launch monitor summaries, voice descriptions and on-course shot feedback. Saved to this profile on this phone.</p><div id="lockerStats" class="bet-summary" style="grid-template-columns:repeat(3,1fr)"></div><details open><summary>On-course shot records</summary><div id="lockerShots"></div></details><details style="margin-top:12px"><summary>Range sessions and club numbers</summary><div id="lockerRange"></div></details><div class="grid" style="margin-top:12px"><button class="btn-secondary" id="lockerExport">Export locker JSON</button><button class="btn-ghost" id="lockerRebuild">Refresh records</button></div><div style="margin-top:12px;border:1px solid #973f39;border-radius:12px;padding:12px;background:#f8eee4"><strong style="color:#7c342c">DANGER · CLEAR PERSONAL SHOT DATA</strong><p class="note">This destroys the active profile’s club distance overrides, shot logs, range histories and course notes. Games and money ledgers are preserved. Export a backup first.</p><button class="btn-primary" style="background:#7c342c" id="wyndhamPunch">WYNDHAM PUNCH</button><p id="punchStatus" class="note"></p></div>
+
+<div id="shotTendencies"
+ style="margin:16px 0;padding:16px;border:1px solid #b79c62;border-radius:14px;background:#173528;color:#f3e9d3;">
   <div style="color:#d8ba77;font-size:11px;font-weight:700;letter-spacing:1.5px;">
     THE PERFORMANCE DEPARTMENT
   </div>
@@ -924,9 +925,12 @@ body{background:#e9e1d0}
     Shot Tendencies
   </h3>
   <div id="shotTendenciesContent" style="font-size:13px;line-height:1.6;">
+   
     Analyzing your recorded shots...
   </div>
 </div>
+</section>
+
 
 <section class="card" data-tab="bag">
         <h2>Quick wedges</h2>
@@ -1891,8 +1895,20 @@ function renderShotTendencies() {
   const groups = new Map();
 
   shots.forEach(shot => {
-    if (!shot || !shot.club ||
-        shot.club === 'Club not selected') return;
+   
+if (!shot || !shot.club) return;
+
+const excludedClubs = [
+  'Club not selected',
+  'AI Caddy',
+  'Unknown',
+  'Club unknown'
+];
+
+if (excludedClubs.includes(
+  String(shot.club).trim()
+)) return;
+
 
     const club = String(shot.club).trim();
     if (!club) return;
