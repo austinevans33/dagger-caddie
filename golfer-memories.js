@@ -27,15 +27,24 @@ const locker = document.getElementById('playersLocker');
 
 if (locker) {
   const panel = document.createElement('div');
+ 
   panel.style.cssText =
-    'margin:16px 0;padding:14px;border:1px solid #b79c62;' +
-    'border-radius:14px;background:#f3ead7;';
+    'margin:16px 0;padding:16px;border:1px solid #b79c62;' +
+    'border-radius:14px;background:#173528;color:#f3e9d3;';
+
 
   const heading = document.createElement('h3');
   heading.textContent = 'Saved Golfer Memories';
+ 
+  heading.style.cssText =
+    'font:700 23px Georgia,serif;color:#f3e9d3;margin:0 0 8px;';
+
 
   const intro = document.createElement('p');
   intro.className = 'muted';
+  
+  intro.style.color = '#f3e9d3';
+
   intro.textContent =
     'Facts you approved for your caddies to remember. ' +
     'Stored in your cloud golfer profile.';
@@ -47,6 +56,9 @@ if (locker) {
 
   const status = document.createElement('p');
   status.className = 'status';
+  
+  status.style.color = '#d8ba77';
+
   status.setAttribute('role', 'status');
   status.textContent = 'Checking golfer account…';
 
@@ -62,6 +74,15 @@ if (locker) {
   } else {
     locker.append(panel);
   }
+  
+  // Put equipment before memories, while preserving both panels.
+  const memberBag = document.getElementById('manualclub')
+    ?.closest('section');
+
+  if (memberBag && memberBag.parentElement === locker) {
+    panel.before(memberBag);
+  }
+
 
   let busy = false;
 
