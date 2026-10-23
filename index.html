@@ -412,6 +412,13 @@ body{background:#e9e1d0}
   display: none !important;
 }
 
+/* DCC 5.4 — Hide redundant Quick Wedges controls.
+   Keep inputs and saved wedge data for compatibility. */
+section[data-tab="bag"]:has(#saveWedges) {
+  display: none !important;
+}
+
+
 /* DCC 5.2 — readable legacy tools header */
 #legacyRoundTools > summary {
   color: #f5ead4;
