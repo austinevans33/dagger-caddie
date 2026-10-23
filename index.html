@@ -915,6 +915,19 @@ body{background:#e9e1d0}
       </section>
 
       <section class="card" data-tab="bag" id="playersLocker"><div class="over" style="color:#756344">DAGGER COUNTRY CLUB · MEMBER ARCHIVES</div><h2>Players Locker</h2><p class="muted">Your actual entered yardages, launch monitor summaries, voice descriptions and on-course shot feedback. Saved to this profile on this phone.</p><div id="lockerStats" class="bet-summary" style="grid-template-columns:repeat(3,1fr)"></div><details open><summary>On-course shot records</summary><div id="lockerShots"></div></details><details style="margin-top:12px"><summary>Range sessions and club numbers</summary><div id="lockerRange"></div></details><div class="grid" style="margin-top:12px"><button class="btn-secondary" id="lockerExport">Export locker JSON</button><button class="btn-ghost" id="lockerRebuild">Refresh records</button></div><div style="margin-top:12px;border:1px solid #973f39;border-radius:12px;padding:12px;background:#f8eee4"><strong style="color:#7c342c">DANGER · CLEAR PERSONAL SHOT DATA</strong><p class="note">This destroys the active profile’s club distance overrides, shot logs, range histories and course notes. Games and money ledgers are preserved. Export a backup first.</p><button class="btn-primary" style="background:#7c342c" id="wyndhamPunch">WYNDHAM PUNCH</button><p id="punchStatus" class="note"></p></div></section>
+      
+<div id="shotTendencies" style="margin:16px 0;padding:16px;border:1px solid #b79c62;border-radius:14px;background:#173528;color:#f3e9d3;">
+  <div style="color:#d8ba77;font-size:11px;font-weight:700;letter-spacing:1.5px;">
+    THE PERFORMANCE DEPARTMENT
+  </div>
+  <h3 style="font-family:Georgia,serif;font-size:23px;color:#f3e9d3;margin:8px 0;">
+    Shot Tendencies
+  </h3>
+  <div id="shotTendenciesContent" style="font-size:13px;line-height:1.6;">
+    Analyzing your recorded shots...
+  </div>
+</div>
+
 <section class="card" data-tab="bag">
         <h2>Quick wedges</h2>
         <p class="muted">Make short-game calls way more useful. Enter your reliable carry for these stock feels.</p>
@@ -1867,7 +1880,110 @@ $('memberSwitch').onclick=()=>activateMember($('memberSelect').value);
 // Explicit record of structured decisions and descriptions, in addition to prior feedback.
 const priorCall48=$('call').onclick;
 $('call').onclick=()=>{priorCall48();const y=Number($('yards').value);if(Number.isFinite(y)&&y>0){let records=read('dagger_decision_history',[]);records.push({date:new Date().toISOString(),yards:y,club:currentClub||'',lie:state.lie,wind:state.wind,danger:state.danger,course:$('course').value,hole:$('hole').value,description:$('fullShotDescription')?.value||'',note:$('coursenote').value});store('dagger_decision_history',records.slice(-300));}};
-function renderLocker(){const shots=read('dagger_shot_log',[]),decisions=read('dagger_decision_history',[]),sessions=read('dagger_range_sessions',[]);$('lockerStats').innerHTML=[['Shot outcomes',shots.length],['Caddie calls',decisions.length],['Range sessions',sessions.length]].map(([l,n])=>`<div class="betbox"><strong>${l}</strong><span>${n}</span></div>`).join('');$('lockerShots').innerHTML='';const merged=[...decisions.map(x=>({...x,kind:'Call'})),...shots.map(x=>({...x,kind:'Feedback',date:x.date||x.ts||x.time||''}))].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,100);if(!merged.length)$('lockerShots').textContent='No on-course records yet.';for(const x of merged){const div=document.createElement('div');div.className='notice-card';div.style.margin='6px 0';div.textContent=`${x.kind} · ${x.club||'Club unknown'} · ${x.yards||'?'} yd · ${x.result||x.lie||''}${x.description?' · '+x.description:''}`; $('lockerShots').append(div);} $('lockerRange').innerHTML='';let p=document.createElement('p');p.textContent='Club carries: '+profile.map(x=>x.name+' '+Math.round(activeCarry(x))+' yd').join(' · ');$('lockerRange').append(p);let ss=document.createElement('p');ss.textContent='Imported sessions: '+sessions.length+'; current bag reflects all saved imported and manual distances.';$('lockerRange').append(ss);}
+  
+/* DCC 5.3 — Shot Tendencies: local, read-only analysis */
+function renderShotTendencies() {
+  const container = document.getElementById('shotTendenciesContent');
+  if (!container) return;
+
+  const saved = read('dagger_shot_log', []);
+  const shots = Array.isArray(saved) ? saved : [];
+  const groups = new Map();
+
+  shots.forEach(shot => {
+    if (!shot || !shot.club ||
+        shot.club === 'Club not selected') return;
+
+    const club = String(shot.club).trim();
+    if (!club) return;
+
+    if (!groups.has(club)) groups.set(club, []);
+    groups.get(club).push(shot);
+  });
+
+  container.replaceChildren();
+
+  if (!groups.size) {
+    container.textContent =
+      'No club-specific shots recorded yet. Record a few shots during Play to start building your tendencies.';
+    return;
+  }
+
+  const heading = document.createElement('p');
+  heading.textContent =
+    'Based on your recorded shots on this device. Percentages use all recorded shots for each club.';
+  heading.style.opacity = '.8';
+  container.append(heading);
+
+  [...groups.entries()]
+    .sort((a, b) => b[1].length - a[1].length)
+    .forEach(([club, records]) => {
+      const total = records.length;
+
+      const count = predicate =>
+        records.filter(predicate).length;
+
+      const good = count(s => s.quality === 'Good');
+      const right = count(s => s.horizontal === 'Right');
+      const left = count(s => s.horizontal === 'Left');
+      const short = count(s => s.vertical === 'Short');
+      const long = count(s => s.vertical === 'Long');
+
+      const percentage = n =>
+        Math.round(100 * n / total) + '%';
+
+      const card = document.createElement('div');
+      card.style.cssText =
+        'padding:13px 0;border-top:1px solid #64775f;';
+
+      const title = document.createElement('strong');
+      title.style.cssText =
+        'display:block;color:#d8ba77;font-size:16px;';
+      title.textContent = club + ' · ' + total +
+        ' recorded shot' + (total === 1 ? '' : 's');
+
+      const stats = document.createElement('p');
+      stats.style.margin = '8px 0';
+      stats.textContent =
+        'Good: ' + percentage(good) +
+        '  ·  Right: ' + percentage(right) +
+        '  ·  Left: ' + percentage(left) +
+        '  ·  Short: ' + percentage(short) +
+        '  ·  Long: ' + percentage(long);
+
+      const note = document.createElement('p');
+      note.style.cssText =
+        'margin:6px 0 0;color:#e4cf9f;font-style:italic;';
+
+      if (total < 10) {
+        note.textContent =
+          'Early sample — record at least 10 shots before treating these patterns as meaningful.';
+      } else {
+        const misses = [
+          ['right', right],
+          ['left', left],
+          ['short', short],
+          ['long', long]
+        ].sort((a, b) => b[1] - a[1]);
+
+        note.textContent = misses[0][1] > 0
+          ? 'Most frequently recorded miss: ' +
+            misses[0][0] + ' (' +
+            percentage(misses[0][1]) +
+            ' of shots).'
+          : 'No directional misses recorded yet.';
+      }
+
+      card.append(title, stats, note);
+      container.append(card);
+    });
+}
+
+function renderLocker(){const shots=read('dagger_shot_log',[]),decisions=read('dagger_decision_history',[]),sessions=read('dagger_range_sessions',[]);$('lockerStats').innerHTML=[['Shot outcomes',shots.length],['Caddie calls',decisions.length],['Range sessions',sessions.length]].map(([l,n])=>`<div class="betbox"><strong>${l}</strong><span>${n}</span></div>`).join('');$('lockerShots').innerHTML='';const merged=[...decisions.map(x=>({...x,kind:'Call'})),...shots.map(x=>({...x,kind:'Feedback',date:x.date||x.ts||x.time||''}))].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,100);if(!merged.length)$('lockerShots').textContent='No on-course records yet.';for(const x of merged){const div=document.createElement('div');div.className='notice-card';div.style.margin='6px 0';div.textContent=`${x.kind} · ${x.club||'Club unknown'} · ${x.yards||'?'} yd · ${x.result||x.lie||''}${x.description?' · '+x.description:''}`; $('lockerShots').append(div);} $('lockerRange').innerHTML='';let p=document.createElement('p');p.textContent='Club carries: '+profile.map(x=>x.name+' '+Math.round(activeCarry(x))+' yd').join(' · ');$('lockerRange').append(p);let ss=document.createElement('p');ss.textContent='Imported sessions: '+sessions.length+'; current bag reflects all saved imported and manual distances.';
+$('lockerRange').append(ss);
+renderShotTendencies();
+}
+
 $('lockerRebuild').onclick=renderLocker;
 $('lockerExport').onclick=()=>{const data={profile,shots:read('dagger_shot_log',[]),decisions:read('dagger_decision_history',[]),sessions:read('dagger_range_sessions',[]),notes:read('dagger_hole_notes',{})};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='dagger-players-locker.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
 $('wyndhamPunch').onclick=()=>{if(!confirm('WYNDHAM PUNCH? This destroys your active member’s shot records, range history, saved bag changes and notes. Money ledger and games remain.'))return;let phrase=prompt('Type WYNDHAM PUNCH to confirm the destruction of the locker data.');if(phrase!=='WYNDHAM PUNCH'){ $('punchStatus').textContent='Cancelled. Locker survives another day.';return;}for(const k of ['dagger_profile','dagger_shot_log','dagger_decision_history','dagger_range_sessions','dagger_hole_notes','dagger_import_signatures','dagger_wedges'])localStorage.removeItem(k);snapshotMember(localStorage.getItem(MEMBER_ACTIVE));location.reload();};
