@@ -2036,6 +2036,95 @@ const dangerPanel = punchButton.parentElement;
 maintenanceButtons.before(lockerMaintenance);
 lockerMaintenance.append(maintenanceButtons, dangerPanel);
 
+/* DCC A2.3 — The Locker, Simplified
+   Presentation and DOM organization only.
+   Preserve all IDs, listeners, records, and saved data.
+*/
+(function simplifyMemberLocker() {
+  const locker = document.getElementById('playersLocker');
+  const memberBag = document.getElementById('manualclub')
+    ?.closest('section');
+  const rangeSection = document.getElementById('uploadSection');
+
+  if (!locker || !memberBag || !rangeSection) return;
+
+  // One source of truth: Member's Bag and Shot Tendencies.
+  // Statistics still render in the background.
+  document.getElementById('lockerStats').style.display = 'none';
+
+  // Give the Member's Bag a clean main heading.
+  const bagHeading = memberBag.querySelector('h2');
+  if (bagHeading) bagHeading.textContent = "Member's Bag";
+
+  const bagIntro = memberBag.querySelector('p.muted');
+  if (bagIntro) {
+    bagIntro.textContent =
+      'Your clubs and reliable carry distances.';
+  }
+
+  // Keep the carry-distance table visible.
+  const distances = document.getElementById('manualtable')
+    ?.closest('details');
+
+  if (distances) {
+    distances.open = true;
+    distances.querySelector('summary').textContent =
+      'Your Clubs & Carry Distances';
+
+    // Put the actual equipment list before the editing controls.
+    const bagEditor = document.createElement('details');
+    bagEditor.className = 'dcc-bag-editor';
+    bagEditor.style.cssText =
+      'margin-top:12px;padding:12px;border:1px solid #b79c62;' +
+      'border-radius:12px;background:#f3ead7;';
+
+    const editLabel = document.createElement('summary');
+    editLabel.textContent = 'Edit Clubs & Carry Distances';
+    editLabel.style.cssText =
+      'cursor:pointer;font:700 15px Georgia,serif;color:#143126;';
+
+    bagEditor.append(editLabel);
+
+    // Move existing controls, never recreate or duplicate them.
+    let item = bagIntro?.nextElementSibling;
+    while (item && item !== distances) {
+      const next = item.nextElementSibling;
+      bagEditor.append(item);
+      item = next;
+    }
+
+    distances.before(bagEditor);
+    distances.after(bagEditor);
+  }
+
+  // Put range imports under Maintenance, closed by default.
+  const rangeDrawer = document.createElement('details');
+  rangeDrawer.className = 'dcc-range-drawer';
+  rangeDrawer.style.cssText =
+    'margin-top:12px;padding:12px;border:1px solid #b79c62;' +
+    'border-radius:12px;background:#f5f0e5;color:#143126;';
+
+  const rangeHeading = document.createElement('summary');
+  rangeHeading.textContent = 'Range Data & Imports';
+  rangeHeading.style.cssText =
+    'cursor:pointer;font:700 16px Georgia,serif;';
+
+  rangeDrawer.append(rangeHeading);
+  rangeDrawer.append(rangeSection);
+  lockerMaintenance.append(rangeDrawer);
+
+  // Keep background controls and data available, not duplicated
+  // throughout the everyday Locker interface.
+  const notebook = document.getElementById('shotLogInfo')
+    ?.parentElement;
+  if (notebook) notebook.style.display = 'none';
+
+  const profileTable = document.getElementById('clubs')
+    ?.closest('details');
+  if (profileTable) profileTable.style.display = 'none';
+})();
+
+
 $('lockerRebuild').onclick=renderLocker;
 $('lockerExport').onclick=()=>{const data={profile,shots:read('dagger_shot_log',[]),decisions:read('dagger_decision_history',[]),sessions:read('dagger_range_sessions',[]),notes:read('dagger_hole_notes',{})};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='dagger-players-locker.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);};
 $('wyndhamPunch').onclick=()=>{if(!confirm('WYNDHAM PUNCH? This destroys your active member’s shot records, range history, saved bag changes and notes. Money ledger and games remain.'))return;let phrase=prompt('Type WYNDHAM PUNCH to confirm the destruction of the locker data.');if(phrase!=='WYNDHAM PUNCH'){ $('punchStatus').textContent='Cancelled. Locker survives another day.';return;}for(const k of ['dagger_profile','dagger_shot_log','dagger_decision_history','dagger_range_sessions','dagger_hole_notes','dagger_import_signatures','dagger_wedges'])localStorage.removeItem(k);snapshotMember(localStorage.getItem(MEMBER_ACTIVE));location.reload();};
