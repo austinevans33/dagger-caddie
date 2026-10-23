@@ -35,7 +35,20 @@ section.className = 'notice-card';
 section.style.margin = '12px 0';
 section.style.padding = '14px';
 
+section.style.background = '#173528';
+section.style.color = '#f5ead4';
+section.style.border = '1px solid #b79c62';
+section.style.borderRadius = '14px';
+
+
 section.innerHTML = `
+
+  <details class="dcc-handicap-details">
+    <summary style="cursor:pointer;color:#f5ead4;font:700 18px Georgia,serif;padding:4px 0;">
+      Handicap Index · View / Edit
+    </summary>
+    <div style="padding-top:12px;">
+
   <div style="font:700 10px system-ui;
               letter-spacing:.12em;color:#796648;">
     DAGGER COUNTRY CLUB · MEMBER RECORDS
@@ -93,6 +106,10 @@ section.innerHTML = `
     class="tiny-print"
     style="margin-top:6px;"
   ></p>
+  
+    </div>
+  </details>
+
 `;
 
 if (locker) {
