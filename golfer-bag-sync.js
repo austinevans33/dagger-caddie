@@ -32,6 +32,14 @@ section.className = 'notice-card';
 section.style.margin = '12px 0';
 section.style.padding = '14px';
 
+section.style.background = '#173528';
+section.style.color = '#f3e9d3';
+section.style.border = '1px solid #b79c62';
+section.style.borderRadius = '14px';
+
+section.classList.add('dcc-cloud-utility');
+
+
 section.innerHTML = `
   <h3>Cloud Golf Bag</h3>
 
@@ -172,18 +180,19 @@ function describeBag(bag) {
   }).join('\n');
 }
 
+
 function showLocalBag() {
   try {
     const bag = getLocalBag();
     preview.textContent =
-      'LOCAL BAG — ' + bag.length + ' clubs\n\n' +
-      describeBag(bag);
+      'LOCAL BAG · ' + bag.length + ' clubs ready for backup';
     return bag;
   } catch (error) {
     preview.textContent = error.message;
     return [];
   }
 }
+
 
 function activeMember() {
   const user = auth.currentUser;
@@ -242,9 +251,11 @@ checkButton.addEventListener('click', async () => {
 
     const clubs = snapshot.data().clubs || [];
 
-    status.textContent =
-      'CLOUD BAG — ' + clubs.length + ' clubs:\n' +
-      describeBag(clubs);
+    
+status.textContent =
+      'CLOUD BACKUP FOUND · ' + clubs.length +
+      ' clubs saved to your golfer account.';
+
 
     status.style.whiteSpace = 'pre-line';
 
