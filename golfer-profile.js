@@ -35,8 +35,8 @@ section.className = 'notice-card';
 section.style.margin = '12px 0';
 section.style.padding = '14px';
 
-section.style.background = '#173528';
-section.style.color = '#f5ead4';
+section.style.background = '#f5f0e5';
+section.style.color = '#143126';
 section.style.border = '1px solid #b79c62';
 section.style.borderRadius = '14px';
 
@@ -44,17 +44,19 @@ section.style.borderRadius = '14px';
 section.innerHTML = `
 
   <details class="dcc-handicap-details">
-    <summary style="cursor:pointer;color:#f5ead4;font:700 18px Georgia,serif;padding:4px 0;">
-      Handicap Index · View / Edit
-    </summary>
+   
+<summary style="cursor:pointer;color:#143126;font:700 17px Georgia,serif;padding:4px 0;">
+  <span style="display:block;font:700 10px system-ui;letter-spacing:1px;color:#796648;margin-bottom:5px;">DAGGER COUNTRY CLUB · HANDICAP INDEX</span>
+  <span id="golferHandicapDisplay" style="display:inline-block;font:700 32px Georgia,serif;color:#143126;margin-right:12px;">—</span>
+  <span style="font:600 12px system-ui;color:#796648;">VIEW / EDIT</span>
+</summary>
+
     <div style="padding-top:12px;">
 
   <div style="font:700 10px system-ui;
               letter-spacing:.12em;color:#796648;">
     DAGGER COUNTRY CLUB · MEMBER RECORDS
   </div>
-
-  <h3 style="margin:6px 0;color:#f5ead4;font-family:Georgia,serif;">Handicap Index</h3>
 
   <p class="muted">
     Your shared golfer profile, available to all four
@@ -124,6 +126,7 @@ if (locker) {
 const $ = id => document.getElementById(id);
 
 const field = $('golferHandicap');
+const handicapDisplay = $('golferHandicapDisplay');
 const saveButton = $('saveGolferProfile');
 const statusField = $('golferProfileStatus');
 const updatedField = $('golferProfileUpdated');
@@ -193,7 +196,7 @@ async function loadProfile(user) {
         'Handicap Index to create one.'
       );
     }
-
+handicapDisplay.textContent = field.value || '—';
     setEnabled(true);
 
   } catch (error) {
@@ -219,6 +222,7 @@ onAuthStateChanged(auth, user => {
     setEnabled(false);
     field.value = '';
     updatedField.textContent = '';
+    handicapDisplay.textContent = '—';
 
     showStatus(
       'Sign in with your permanent Golfer Account ' +
