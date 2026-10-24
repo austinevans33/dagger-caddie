@@ -1250,6 +1250,71 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   }
 }
 
+/* THE ACTION — GROUP WAGERING V1 */
+
+#newWagers.action-group-wagers {
+  background: #f1e7d4;
+  border: 1px solid #b79c62;
+  border-radius: 15px;
+  padding: 0;
+  overflow: hidden;
+}
+
+#newWagers.action-group-wagers > summary {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #193d2d;
+  padding: 17px 15px;
+  color: #fff4dc;
+  list-style: none;
+}
+
+#newWagers.action-group-wagers > summary::-webkit-details-marker {
+  display: none;
+}
+
+#newWagers.action-group-wagers > summary span {
+  font: 800 13px system-ui,sans-serif;
+  letter-spacing: .1em;
+  color: #fff4dc;
+}
+
+#newWagers.action-group-wagers > summary small {
+  font: 11px system-ui,sans-serif;
+  color: #d9be86;
+}
+
+#newWagers.action-group-wagers[open] > summary {
+  border-bottom: 3px solid #b79c62;
+}
+
+#newWagers.action-group-wagers > div {
+  padding: 15px !important;
+}
+
+#newWagers.action-group-wagers label {
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .07em;
+  color: #53614e;
+}
+
+#newWagers.action-group-wagers input,
+#newWagers.action-group-wagers select {
+  background: #fffcf5;
+  border: 1px solid #c8b792;
+  border-radius: 10px;
+}
+
+#newWagers.action-group-wagers #wStart {
+  background: #193d2d;
+  color: #fff4dc;
+  border: 1px solid #b79c62;
+  min-height: 51px;
+  margin-top: 12px;
+  font: 800 13px system-ui,sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -1836,7 +1901,13 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
           </table>
         </details>
 
-        <details class="wager-panel" id="newWagers" style="margin-top:12px" open><summary>Four-player wagering · Skins / Nassau / hole match</summary>
+       
+<details class="wager-panel action-group-wagers" id="newWagers" style="margin-top:12px">
+  <summary>
+    <span>GROUP WAGERING</span>
+    <small>Skins · Nassau · Hole Match</small>
+  </summary>
+
           <div style="padding:10px 0"><p class="muted">A separate money game. Enter gross strokes for each hole; settle and archive when finished. Nassau and hole match compare you with one opponent; skins covers everyone.</p>
             <div class="grid"><div><label>Your name</label><input id="wMyName" value="Me" maxlength="24"></div><div><label>Opponent 1</label><input id="wP2" value="Player 2" maxlength="24"></div><div><label>Opponent 2 (optional)</label><input id="wP3" maxlength="24" placeholder="Player 3"></div><div><label>Opponent 3 (optional)</label><input id="wP4" maxlength="24" placeholder="Player 4"></div></div>
             <div class="grid" style="margin-top:8px"><div><label>Game type</label><select id="wFormat"><option value="skins">Skins · Gross</option><option value="hole">Hole match · 1 vs 1</option><option value="nassau">Nassau · 1 vs 1</option></select></div><div><label>Stake ($)</label><input type="number" min="0" max="10000" step="0.5" value="5" id="wStake"></div></div>
