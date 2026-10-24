@@ -785,6 +785,130 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   color: #59634e;
 }
 
+/* THE ACTION — LIVE MATCH SCOREBOARD V1 */
+
+#roomScoreSection {
+  margin-top: 17px;
+  padding: 15px 12px;
+  border: 1px solid #b79c62;
+  border-radius: 17px;
+  background: linear-gradient(180deg, #f3ead8, #faf6ec);
+  box-shadow: 0 6px 18px rgba(20,49,38,.08);
+}
+
+/* Match format, stakes and next hole */
+#roomScoreSection > .bet-summary {
+  grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+  gap: 7px;
+  margin: 0 0 13px;
+}
+
+#roomScoreSection > .bet-summary .betbox {
+  min-width: 0;
+  padding: 13px 5px;
+  border-radius: 11px;
+  border: 1px solid #b79c62;
+  background: #193d2d;
+}
+
+#roomScoreSection > .bet-summary .betbox strong {
+  display: block;
+  color: #d9bf89;
+  font: 800 9px system-ui,sans-serif;
+  letter-spacing: .09em;
+  margin-bottom: 6px;
+}
+
+#roomScoreSection > .bet-summary .betbox span {
+  display: block;
+  color: #fff4df;
+  font: 700 16px Georgia,serif !important;
+  overflow-wrap: anywhere;
+}
+
+/* Running balances */
+#roomTotalsCards {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 9px;
+  margin: 12px 0 16px !important;
+}
+
+#roomTotalsCards .betbox {
+  min-width: 0;
+  padding: 17px 9px;
+  border: 1px solid #c4ac78;
+  border-radius: 13px;
+  background: #fffaf0;
+  box-shadow: 0 3px 9px rgba(20,49,38,.05);
+}
+
+#roomTotalsCards .betbox strong {
+  display: block;
+  font: 800 11px system-ui,sans-serif;
+  letter-spacing: .05em;
+  color: #716346;
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+
+#roomTotalsCards .betbox span {
+  display: block;
+  color: #173c2b;
+  font: 700 25px Georgia,serif !important;
+  letter-spacing: -.025em;
+}
+
+/* Hole-entry panel */
+#roomEditor {
+  padding: 14px 11px;
+  background: #eae0cb;
+  border: 1px solid #c9b58b;
+  border-radius: 13px;
+  margin: 13px 0;
+}
+
+#roomEditor .room-table {
+  background: #fffaf0;
+  border-radius: 9px;
+}
+
+#roomEditor .room-controls button {
+  min-height: 48px;
+  font: 800 12px system-ui,sans-serif;
+}
+
+/* Running standings */
+#roomStandings {
+  background: #193d2d;
+  color: #f8ecd6;
+  border: 1px solid #b79c62;
+  border-left: 4px solid #b79c62;
+  border-radius: 11px;
+  padding: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Mobile readability */
+@media(max-width:420px) {
+  #roomScoreSection {
+    padding: 11px 9px;
+  }
+
+  #roomTotalsCards .betbox {
+    padding: 14px 7px;
+  }
+
+  #roomTotalsCards .betbox span {
+    font-size: 22px !important;
+  }
+
+  #roomScoreSection > .bet-summary .betbox span {
+    font-size: 14px !important;
+  }
+}
+
 </style>
 </head>
 <body>
