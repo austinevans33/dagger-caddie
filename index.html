@@ -1142,6 +1142,114 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   }
 }
 
+/* THE ACTION — OPPONENT DOSSIER V1 */
+
+#opponentRoastSection {
+  background: linear-gradient(180deg, #faf5ea, #eee3cf);
+  border: 1px solid #b79c62;
+  border-radius: 18px;
+  padding: 17px;
+  box-shadow: 0 7px 20px rgba(20,49,38,.09);
+  overflow: hidden;
+}
+
+/* Distinctive dossier heading */
+#opponentRoastSection > .over {
+  background: #193d2d;
+  color: #d8bf87 !important;
+  margin: -17px -17px 0;
+  padding: 17px 16px 7px;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .17em;
+}
+
+#opponentRoastSection > h2 {
+  background: #193d2d;
+  color: #fff4dc;
+  margin: 0 -17px 16px;
+  padding: 4px 16px 17px;
+  border: 0;
+  border-bottom: 3px solid #b79c62;
+  font: 700 25px Georgia,serif;
+}
+
+/* Description */
+#opponentRoastSection > .muted {
+  font: 13px/1.6 Georgia,serif;
+  color: #5b604f;
+  margin-bottom: 17px;
+}
+
+/* Opponent name and button */
+#opponentRoastSection .grid {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 9px;
+  align-items: stretch;
+}
+
+#roastOpponentName {
+  min-width: 0;
+  border: 1px solid #bda875;
+  background: #fffaf0;
+  font-size: 16px;
+  border-radius: 11px;
+}
+
+#roastOpponent {
+  width: auto;
+  min-width: 125px;
+  background: #193d2d;
+  color: #fff1d4;
+  border: 1px solid #b79c62;
+  border-radius: 11px;
+  font: 800 12px system-ui,sans-serif;
+  padding: 12px;
+}
+
+/* Your caddy's response */
+#opponentRoastLine {
+  margin-top: 16px !important;
+  background: #fff9ec;
+  color: #193d2d;
+  border: 1px solid #c9b68e;
+  border-left: 4px solid #b79c62;
+  border-radius: 10px;
+  padding: 17px 14px;
+  font: italic 15px/1.65 Georgia,serif;
+  overflow-wrap: anywhere;
+}
+
+#opponentRoastSection > .note {
+  color: #807158;
+  font: 11px/1.5 system-ui,sans-serif;
+  margin-top: 12px;
+}
+
+@media(max-width:420px) {
+  #opponentRoastSection {
+    padding: 13px;
+  }
+
+  #opponentRoastSection > .over {
+    margin: -13px -13px 0;
+  }
+
+  #opponentRoastSection > h2 {
+    margin: 0 -13px 15px;
+    font-size: 23px;
+  }
+
+  #opponentRoastSection .grid {
+    grid-template-columns: 1fr;
+  }
+
+  #roastOpponent {
+    width: 100%;
+    min-height: 48px;
+  }
+}
+
 </style>
 </head>
 <body>
