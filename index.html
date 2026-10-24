@@ -1806,6 +1806,54 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   }
 }
 
+/* DCC — GAMES TO THE ACTION */
+
+.games-action-link {
+  background: linear-gradient(145deg,#204635,#102a20);
+  color: #fff4dc;
+  border: 1px solid #b79c62;
+  border-radius: 17px;
+  padding: 19px 16px;
+  margin: 12px 0 17px;
+  box-shadow: 0 6px 18px rgba(20,49,38,.1);
+}
+
+.games-action-eyebrow {
+  color: #d9be86;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .12em;
+  line-height: 1.5;
+}
+
+.games-action-link h3 {
+  color: #fff4dc;
+  font: 700 24px Georgia,serif;
+  margin: 11px 0 8px;
+}
+
+.games-action-link p {
+  color: #e5dac3;
+  font: 13px/1.6 Georgia,serif;
+  margin-bottom: 15px;
+}
+
+#gamesOpenAction {
+  width: 100%;
+  min-height: 50px;
+  background: #b79c62;
+  color: #143126;
+  border: 1px solid #d8bf87;
+  border-radius: 12px;
+  font: 800 13px system-ui,sans-serif;
+}
+
+.games-action-link small {
+  display: block;
+  color: #d9ceb7;
+  font: 11px/1.5 system-ui,sans-serif;
+  margin-top: 12px;
+}
+
 </style>
 </head>
 <body>
@@ -2476,6 +2524,26 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   <h3>Staff directory</h3><div id="officeRoster"></div>
   <p class="note">Staff rumors are fictional. Their golf recommendations still use your actual bag data.</p>
 </section>
+      
+<!-- DCC — GAMES TO THE ACTION -->
+<section class="games-action-link" data-tab="games">
+  <div class="games-action-eyebrow">
+    DAGGER COUNTRY CLUB · THE WAGERING DESK
+  </div>
+  <h3>Playing for Something?</h3>
+  <p>
+    Keep the competition in Games and head to The Action
+    to manage your wagers, match invitations, and records.
+  </p>
+  <button type="button" id="gamesOpenAction" class="btn-primary">
+    Enter The Action →
+  </button>
+  <small>
+    Automatic game-to-wager syncing is being developed.
+    Existing scores and wagers remain separate for now.
+  </small>
+</section>
+
 <section class="card" data-tab="games" id="gamesMenu">
 <div class="over" style="color:#756344">DAGGER COUNTRY CLUB · GAMES DESK</div><h2>Choose your game</h2><p class="muted">Separate game pages, separate scorecards, fewer chances to butcher the action.</p>
 <div class="game-picks">
@@ -2543,6 +2611,19 @@ function switchTab(tab) {
 }
 
 ['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+
+// DCC — Open The Action from Games.
+const gamesActionButton = document.getElementById('gamesOpenAction');
+
+if (gamesActionButton) {
+  gamesActionButton.addEventListener('click', () => {
+    switchTab('bets');
+
+    document.getElementById('moneyRoomSection')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
 
 // THE ACTION — Open Games from the wagering desk.
 const actionGamesButton = document.getElementById('actionOpenGames');
