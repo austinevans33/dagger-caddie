@@ -1494,6 +1494,77 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   font-weight: 800;
 }
 
+/* THE ACTION — CLUB SECRETARY */
+
+.action-room-utilities {
+  margin-top: 17px;
+  padding: 15px;
+  background: #f1e7d4;
+  border: 1px solid #c5af7f;
+  border-radius: 15px;
+}
+
+.action-room-utilities-heading {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #d1c09c;
+}
+
+.action-room-utilities-heading span {
+  display: block;
+  color: #7b6742;
+  font: 800 10px system-ui, sans-serif;
+  letter-spacing: .14em;
+  margin-bottom: 6px;
+}
+
+.action-room-utilities-heading strong {
+  display: block;
+  color: #193d2d;
+  font: 700 21px Georgia, serif;
+  margin-bottom: 5px;
+}
+
+.action-room-utilities-heading small {
+  display: block;
+  color: #675f50;
+  font: 12px/1.5 system-ui, sans-serif;
+}
+
+.action-room-utility-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+#roomShareCurrent {
+  background: #193d2d;
+  color: #fff4dc;
+  border: 1px solid #b79c62;
+  border-radius: 11px;
+  min-height: 52px;
+  font: 800 12px/1.4 system-ui, sans-serif;
+}
+
+#roomLocalArchive {
+  background: #fffaf0;
+  color: #193d2d;
+  border: 1px solid #b79c62;
+  border-radius: 11px;
+  min-height: 52px;
+  font: 700 12px/1.4 system-ui, sans-serif;
+}
+
+@media(max-width:420px) {
+  .action-room-utilities {
+    padding: 12px;
+  }
+
+  .action-room-utility-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2046,7 +2117,22 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
 </div><div id="roomSpectator" class="spectator-banner" hidden><strong>WATCHING LIVE</strong><p>Only the designated scorekeeper can enter or change scores. Your view updates automatically.</p></div><div class="notice-card" id="roomStandings"></div><div class="notice-card" id="roomCaddieBanter" aria-live="polite">Your caddie is studying the scoreboard and preparing a totally unnecessary remark.</div>
 <div class="tiny-print" id="roomAudit"></div>
 <div class="game-live"><h3>Hole-by-hole live ledger</h3><p class="game-note">Official strokes, hole result, and running payouts. Unscored holes stay blank; skins carry forward on ties.</p><div id="roomLedgerCards" class="ledger-cards" role="list" aria-live="polite"><p>Waiting for the live scorecard…</p></div><details class="ledger-detail"><summary>Expanded payout table</summary><div style="overflow-x:auto"><table class="room-table" id="roomLedgerTable"><thead id="roomLedgerHead"></thead><tbody id="roomLedgerBody"></tbody></table></div></details></div>
-<div class="grid" style="margin-top:9px"><button id="roomShareCurrent" class="btn-secondary" type="button">Share invitation</button><button id="roomLocalArchive" class="btn-ghost" type="button">Save copy to this phone</button></div>
+<div class="action-room-utilities">
+  <div class="action-room-utilities-heading">
+    <span>THE CLUB SECRETARY</span>
+    <strong>Invitations & Records</strong>
+    <small>Bring another member into the match or preserve a local copy.</small>
+  </div>
+
+  <div class="action-room-utility-buttons">
+    <button id="roomShareCurrent" class="btn-primary" type="button">
+      Share Match Invitation ↗
+    </button>
+    <button id="roomLocalArchive" class="btn-secondary" type="button">
+      Save Local Match Copy
+    </button>
+  </div>
+</div>
 </div>
 <p class="tiny-print" style="margin-top:10px">Scorekeeper alone can change scores; members can view. One gross-score entry per golfer per hole powers the chosen format. Live mode needs internet and an authenticated Firebase connection. No money transfers.</p>
 </section>
