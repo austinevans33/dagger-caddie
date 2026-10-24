@@ -1247,7 +1247,11 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
 <p class="muted">One designated scorekeeper. Everyone else watches the same scorecard on their phone.</p>
 <div id="roomInvitationBanner" class="invite-banner" hidden><strong>YOU’RE INVITED TO A MONEY ROOM</strong><label for="roomQuickName">Your name</label><input id="roomQuickName" maxlength="24" placeholder="Enter your name to join"><button type="button" class="btn-primary" id="roomQuickJoin">Join live room →</button><p class="note">Invited players can watch the live scorecard. Only the scorekeeper edits scores.</p></div>
 <div class="room-status" id="roomStatus" aria-live="polite">Offline/local mode. Live sync needs Firebase configuration once.</div>
-<details id="roomSetup" open><summary>Room setup / invitation</summary><div class="room-grid" style="margin-top:10px">
+<details id="roomSetup" class="action-room-setup">
+  <summary>
+    <span>CREATE OR JOIN A MATCH</span>
+    <small>Room setup · Players · Stakes · Invitations</small>
+  </summary><div class="room-grid" style="margin-top:10px">
 <div><label>Your display name</label><input id="roomMe" maxlength="24" placeholder="Member"></div>
 <div><label>Game format</label><select id="roomFormat"><option value="skins">Skins</option><option value="nassau">Nassau · 2 players</option><option value="hole">Match by hole · 2 players</option><option value="vegas">Vegas · 4 players</option></select></div>
 <div><label>Other golfers (comma-separated)</label><input id="roomPlayers" placeholder="Keith, Vinny, Kyle"></div>
