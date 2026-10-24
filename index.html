@@ -1014,6 +1014,134 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   margin: 11px 0;
 }
 
+/* THE ACTION — OFFICIAL WAGERING LEDGER */
+
+#moneyRoomSection .game-live {
+  margin-top: 19px;
+  padding: 16px 13px;
+  border: 1px solid #b79c62;
+  border-radius: 16px;
+  background: #f0e6d2;
+}
+
+#moneyRoomSection .game-live h3 {
+  color: #143126;
+  font: 700 23px Georgia, serif;
+  letter-spacing: -.025em;
+  margin-bottom: 8px;
+}
+
+#moneyRoomSection .game-live > .game-note {
+  font: 12px/1.6 system-ui, sans-serif;
+  color: #71664f;
+  margin-bottom: 15px;
+}
+
+/* Individual hole records */
+#roomLedgerCards {
+  display: grid;
+  gap: 10px;
+}
+
+#roomLedgerCards .ledger-hole {
+  background: #fffaf0;
+  border: 1px solid #c9b78e;
+  border-left: 4px solid #b79c62;
+  border-radius: 12px;
+  padding: 13px;
+  box-shadow: 0 2px 7px rgba(20,49,38,.05);
+}
+
+#roomLedgerCards .ledger-hole-head {
+  padding-bottom: 9px;
+  margin-bottom: 9px;
+  border-bottom: 1px solid #d8c9a9;
+}
+
+#roomLedgerCards .ledger-hole-head strong {
+  color: #193d2d;
+  font: 700 18px Georgia, serif;
+}
+
+#roomLedgerCards .ledger-hole-head span {
+  color: #77674b;
+  font: 700 11px/1.5 system-ui, sans-serif;
+  max-width: 65%;
+  text-align: right;
+}
+
+#roomLedgerCards .ledger-line {
+  font: 13px/1.7 system-ui, sans-serif;
+  color: #263d30;
+  gap: 8px;
+}
+
+#roomLedgerCards .ledger-line span:last-child {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Running balances for each recorded hole */
+#roomLedgerCards .ledger-balances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-top: 1px dashed #c8b68f;
+  margin-top: 11px;
+  padding-top: 11px;
+}
+
+#roomLedgerCards .ledger-balances span {
+  background: #e9dfc9;
+  color: #193d2d;
+  border-radius: 7px;
+  padding: 6px 8px;
+  font: 700 11px system-ui, sans-serif;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Collapsed unplayed holes */
+#roomLedgerCards > details {
+  background: #e9ddc5;
+  border: 1px dashed #baa271;
+  border-radius: 11px;
+  padding: 13px;
+}
+
+#roomLedgerCards > details > summary {
+  color: #193d2d;
+  font: 700 13px system-ui, sans-serif;
+}
+
+#roomLedgerCards > details .ledger-cards {
+  margin-top: 12px;
+}
+
+/* Full payout table stays available */
+#moneyRoomSection .ledger-detail {
+  margin-top: 13px;
+}
+
+#moneyRoomSection .ledger-detail > summary {
+  color: #345440;
+  font: 700 12px system-ui, sans-serif;
+}
+
+@media(max-width:420px) {
+  #moneyRoomSection .game-live {
+    padding: 12px 9px;
+  }
+
+  #roomLedgerCards .ledger-hole {
+    padding: 11px 9px;
+  }
+
+  #roomLedgerCards .ledger-hole-head strong {
+    font-size: 16px;
+  }
+}
+
 </style>
 </head>
 <body>
