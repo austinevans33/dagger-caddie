@@ -565,6 +565,166 @@ section[data-tab="bag"]:has(#saveWedges) {
   font-style: italic;
 }
 
+/* DAGGER COUNTRY CLUB — THE MATCH DESK V1 */
+
+/* Premium Match Desk container */
+section[data-tab="bets"]:has(#betOpponent) {
+  background: linear-gradient(180deg, #fbf7ed, #efe5d1);
+  border: 1px solid #b79c62;
+  border-radius: 19px;
+  padding: 17px;
+  box-shadow: 0 8px 22px rgba(20, 49, 38, .10);
+}
+
+/* Dark clubhouse heading */
+section[data-tab="bets"]:has(#betOpponent) > .inline:first-child {
+  background: linear-gradient(135deg, #214635, #102a20);
+  margin: -17px -17px 19px;
+  padding: 20px 16px;
+  border-radius: 18px 18px 0 0;
+  border-bottom: 3px solid #b79c62;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .inline:first-child h2 {
+  color: #f5ead4;
+  font: 700 28px Georgia, serif;
+  border: 0;
+  margin: 5px 0 8px;
+  padding: 0;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .inline:first-child .over {
+  color: #d5b978 !important;
+  font: 700 10px system-ui, sans-serif;
+  letter-spacing: .15em;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .inline:first-child .muted {
+  color: #e2d8c4;
+  line-height: 1.5;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .inline:first-child .tag {
+  background: #b79c62;
+  border-color: #b79c62;
+  color: #143126;
+  font-weight: 800;
+}
+
+/* Scoreboard cards */
+section[data-tab="bets"]:has(#betOpponent) > .bet-summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin: 17px 0;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .bet-summary .betbox {
+  background: #fffaf0;
+  border: 1px solid #cbb78c;
+  border-radius: 13px;
+  padding: 15px 9px;
+  min-width: 0;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .bet-summary .betbox strong {
+  color: #746749;
+  font: 800 10px system-ui, sans-serif;
+  letter-spacing: .1em;
+  margin-bottom: 7px;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .bet-summary .betbox span {
+  display: block;
+  color: #143126;
+  font: 700 22px Georgia, serif;
+  overflow-wrap: anywhere;
+}
+
+/* Emphasize the running money balance */
+section[data-tab="bets"]:has(#betOpponent) > .bet-summary .betbox:nth-child(3) {
+  background: #193d2d;
+  border-color: #b79c62;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .bet-summary .betbox:nth-child(3) strong {
+  color: #d5b978;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .bet-summary .betbox:nth-child(3) span {
+  color: #fff4dc;
+  font-size: 29px;
+}
+
+/* Scoring buttons */
+section[data-tab="bets"]:has(#betOpponent) > .bet-actions {
+  gap: 8px;
+}
+
+section[data-tab="bets"]:has(#betOpponent) > .bet-actions button {
+  min-height: 58px;
+  border-radius: 12px;
+  font: 800 14px system-ui, sans-serif;
+  box-shadow: 0 3px 0 rgba(20, 49, 38, .12);
+}
+
+#betWin {
+  background: #214f38;
+  color: #fff7e7;
+}
+
+#betPush {
+  background: #e5d5b3;
+  color: #143126;
+  border: 1px solid #bda775;
+}
+
+#betLose {
+  background: #783d35;
+  color: #fff7e7;
+  border: 1px solid #783d35;
+}
+
+/* Cleaner expandable wagering sections */
+section[data-tab="bets"]:has(#betOpponent) details {
+  background: #f3ead7;
+  border: 1px solid #cbb994;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+section[data-tab="bets"]:has(#betOpponent) details > summary {
+  font: 700 14px Georgia, serif;
+  color: #193d2d;
+  padding: 3px 0;
+}
+
+section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
+  border-bottom: 1px solid #d4c39f;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 390px) {
+  section[data-tab="bets"]:has(#betOpponent) {
+    padding: 13px;
+  }
+
+  section[data-tab="bets"]:has(#betOpponent) > .inline:first-child {
+    margin: -13px -13px 16px;
+    padding: 17px 13px;
+  }
+
+  section[data-tab="bets"]:has(#betOpponent) > .inline:first-child h2 {
+    font-size: 24px;
+  }
+
+  section[data-tab="bets"]:has(#betOpponent) > .bet-actions button {
+    font-size: 12px;
+    padding: 12px 3px;
+  }
+}
+
 </style>
 </head>
 <body>
