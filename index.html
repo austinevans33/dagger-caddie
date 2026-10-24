@@ -1315,6 +1315,126 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   font: 800 13px system-ui,sans-serif;
 }
 
+/* THE ACTION — CLUB RECORDS V1 */
+
+#actionRecords {
+  background: #f1e7d4;
+  border: 1px solid #b79c62;
+  border-radius: 15px;
+  padding: 0;
+  overflow: hidden;
+  margin-top: 13px;
+}
+
+#actionRecords > summary {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 18px 15px;
+  background: #193d2d;
+  color: #fff4dc;
+  cursor: pointer;
+  list-style: none;
+}
+
+#actionRecords > summary::-webkit-details-marker {
+  display: none;
+}
+
+#actionRecords > summary span {
+  color: #fff4dc;
+  font: 800 13px system-ui, sans-serif;
+  letter-spacing: .11em;
+}
+
+#actionRecords > summary small {
+  color: #d9be86;
+  font: 11px system-ui, sans-serif;
+}
+
+#actionRecords[open] > summary {
+  border-bottom: 3px solid #b79c62;
+}
+
+#actionRecords #wLifetime {
+  margin: 15px 13px !important;
+  padding: 14px;
+  border: 1px solid #c7b48b;
+  border-radius: 11px;
+  background: #fffaf0;
+  color: #193d2d;
+  line-height: 1.6;
+}
+
+#actionRecords table {
+  width: calc(100% - 26px);
+  margin: 0 13px 15px;
+  border-collapse: collapse;
+}
+
+#actionRecords th {
+  background: #e5d8bc;
+  color: #5a604d;
+  font: 800 10px system-ui, sans-serif;
+  letter-spacing: .07em;
+  padding: 12px 7px;
+}
+
+#actionRecords td {
+  color: #243d30;
+  font: 12px/1.5 system-ui, sans-serif;
+  padding: 12px 7px;
+  border-bottom: 1px solid #d6c7a6;
+  overflow-wrap: anywhere;
+}
+
+#actionRecords td:last-child,
+#actionRecords th:last-child {
+  text-align: right;
+  font-weight: 800;
+}
+
+#actionRecords #wExport {
+  display: block;
+  width: calc(100% - 26px);
+  margin: 0 13px 17px;
+  min-height: 49px;
+  border: 1px solid #b79c62;
+  border-radius: 11px;
+  background: #193d2d;
+  color: #fff4dc;
+  font: 800 12px system-ui, sans-serif;
+}
+
+#actionRecords label {
+  margin: 12px 13px 8px;
+  color: #5c674e;
+  font: 800 10px system-ui, sans-serif;
+  letter-spacing: .08em;
+}
+
+#actionRecords #restoreGames {
+  display: block;
+  width: calc(100% - 26px);
+  margin: 0 13px 12px;
+  background: #fffaf0;
+  font-size: 12px;
+}
+
+#actionRecords #restoreGamesStatus {
+  margin: 10px 13px 15px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media(max-width:420px) {
+  #actionRecords th,
+  #actionRecords td {
+    padding: 10px 5px;
+    font-size: 11px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1922,7 +2042,13 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
             </div>
           </div>
         </details>
-        <details class="wager-panel"><summary>Lifetime wagering ledger</summary><div id="wLifetime" class="note" style="margin-top:10px"></div><table><thead><tr><th>Date</th><th>Game</th><th>Your net</th></tr></thead><tbody id="wHistory"></tbody></table><button class="btn-ghost" id="wExport" type="button">Export wager history CSV</button><div style="margin-top:9px"><label>Restore games & bets backup</label><input id="restoreGames" type="file" accept=".json,application/json"></div><p id="restoreGamesStatus" class="note"></p></details>
+       
+<details class="wager-panel action-records" id="actionRecords">
+  <summary>
+    <span>THE CLUB RECORDS</span>
+    <small>Lifetime wagers · Settlements · Archives</small>
+  </summary>
+<div id="wLifetime" class="note" style="margin-top:10px"></div><table><thead><tr><th>Date</th><th>Game</th><th>Your net</th></tr></thead><tbody id="wHistory"></tbody></table><button class="btn-ghost" id="wExport" type="button">Export wager history CSV</button><div style="margin-top:9px"><label>Restore games & bets backup</label><input id="restoreGames" type="file" accept=".json,application/json"></div><p id="restoreGamesStatus" class="note"></p></details>
       </section>
 
 <section class="staff-office" data-tab="settings" aria-label="Caddy Master's Office">
