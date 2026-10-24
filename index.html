@@ -1063,7 +1063,27 @@ section[data-tab="bag"]:has(#saveWedges) {
 
             <section class="card" data-tab="bets" id="opponentRoastSection"><div class="over" style="color:#776344">THE CADDIE'S OPPONENT DOSSIER</div><h2>Competitive encouragement</h2><p class="muted">Name the person you're playing against. Your current caddie will offer absolutely unrequested psychological support.</p><div class="grid"><input type="text" id="roastOpponentName" maxlength="35" placeholder="Opponent's first name"><button class="btn-secondary" id="roastOpponent" type="button">Roast opponent</button></div><div id="opponentRoastLine" class="notice-card" style="margin-top:10px" aria-live="polite">Enter an opponent's name and invite the caddie to behave unprofessionally.</div><p class="note">The insults are fictional jokes about golf—not facts about the other golfer.</p></section>
 <section class="card" data-tab="bets" id="moneyRoomSection">
-<div class="over" style="color:#806f4d">DAGGER COUNTRY CLUB · MONEY ROOM</div><h2>Live Money Room</h2>
+<div class="over" style="color:#806f4d">DAGGER COUNTRY CLUB · MONEY ROOM</div><div style="background:linear-gradient(145deg,#204635,#102a20);border:1px solid #b79c62;border-radius:16px;padding:22px 16px;margin-bottom:14px;text-align:center;color:#f5f0e5;">
+
+  <div style="font:700 10px system-ui,sans-serif;letter-spacing:.22em;color:#d5b978;margin-bottom:12px;">
+    DAGGER COUNTRY CLUB · WAGERING DIVISION
+  </div>
+
+  <h2 style="font:700 36px Georgia,serif;color:#f5f0e5;margin:0 0 8px;padding:0;border:0;letter-spacing:-.03em;">
+    THE ACTION
+  </h2>
+
+  <div style="width:60px;height:2px;background:#b79c62;margin:12px auto;"></div>
+
+  <p style="font:italic 14px Georgia,serif;color:#e0d5bd;margin:0;">
+    Every match has a story. The ledger remembers.
+  </p>
+
+  <div style="font:700 9px system-ui,sans-serif;letter-spacing:.15em;color:#b79c62;margin-top:16px;">
+    AS IT LIES · ALL BETS STAND
+  </div>
+
+</div>
 <p class="muted">One designated scorekeeper. Everyone else watches the same scorecard on their phone.</p>
 <div id="roomInvitationBanner" class="invite-banner" hidden><strong>YOU’RE INVITED TO A MONEY ROOM</strong><label for="roomQuickName">Your name</label><input id="roomQuickName" maxlength="24" placeholder="Enter your name to join"><button type="button" class="btn-primary" id="roomQuickJoin">Join live room →</button><p class="note">Invited players can watch the live scorecard. Only the scorekeeper edits scores.</p></div>
 <div class="room-status" id="roomStatus" aria-live="polite">Offline/local mode. Live sync needs Firebase configuration once.</div>
