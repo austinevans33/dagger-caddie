@@ -725,6 +725,66 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   }
 }
 
+/* THE ACTION — PREMIUM LIVE ROOM SETUP */
+
+#roomSetup.action-room-setup {
+  margin: 15px 0;
+  background: #f4ead6;
+  border: 1px solid #c5ad79;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+#roomSetup.action-room-setup > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 5px 14px;
+  padding: 17px 15px;
+  background: #193d2d;
+  color: #fff4dc;
+  cursor: pointer;
+  list-style: none;
+}
+
+#roomSetup.action-room-setup > summary::-webkit-details-marker {
+  display: none;
+}
+
+#roomSetup.action-room-setup > summary span {
+  color: #fff4dc;
+  font: 800 13px system-ui, sans-serif;
+  letter-spacing: .09em;
+}
+
+#roomSetup.action-room-setup > summary small {
+  color: #d7bf87;
+  font: 11px system-ui, sans-serif;
+  line-height: 1.4;
+}
+
+#roomSetup.action-room-setup[open] > summary {
+  border-bottom: 3px solid #b79c62;
+}
+
+#roomSetup.action-room-setup > .room-grid,
+#roomSetup.action-room-setup > .room-controls,
+#roomSetup.action-room-setup > .room-status {
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+#roomSetup.action-room-setup > .room-status {
+  margin-bottom: 12px;
+}
+
+#roomSetup.action-room-setup label {
+  font: 700 10px system-ui, sans-serif;
+  letter-spacing: .1em;
+  color: #59634e;
+}
+
 </style>
 </head>
 <body>
