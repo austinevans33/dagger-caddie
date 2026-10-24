@@ -1512,7 +1512,10 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
 </div>
 <div class="room-controls"><button type="button" class="btn-primary" id="roomCreate">Create room</button><button type="button" class="btn-secondary" id="roomJoin">Join room</button></div>
 <div class="room-grid" style="margin-top:8px"><div><label>Room code / link</label><input id="roomCode" placeholder="Paste the invitation code"></div><div><label>Invitation</label><button type="button" class="btn-secondary" id="roomCopy">Copy invite link</button></div></div>
-<div class="room-status" style="margin-top:10px" id="roomWho">No active shared room.</div></details>
+</details>
+<div class="room-status" id="roomWho">
+  No active shared room.
+</div>
 <div id="roomScoreSection" hidden>
 <div class="bet-summary" style="grid-template-columns:repeat(3,1fr)"><div class="betbox"><strong>Format</strong><span id="roomFormatDisplay" style="font-size:15px">—</span></div><div class="betbox"><strong>Stake</strong><span id="roomStakeDisplay" style="font-size:15px">—</span></div><div class="betbox"><strong>Next hole</strong><span id="roomNextDisplay" style="font-size:15px">1</span></div></div>
 <div id="roomTotalsCards" class="room-grid" style="margin:8px 0"></div>
