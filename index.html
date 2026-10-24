@@ -1610,6 +1610,202 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   margin-top: 12px;
 }
 
+/* DCC — THE ACTION: ROUNDED PANELS & HALL OF SHAME */
+
+/* Soft, rounded expandable wagering panels */
+#newWagers.action-group-wagers,
+#actionRecords.action-records {
+  border-radius: 17px !important;
+  overflow: hidden;
+  background: #f3ead8;
+  border: 1px solid #b79c62;
+  box-shadow: 0 5px 15px rgba(20,49,38,.08);
+}
+
+/* Rounded green headers */
+#newWagers.action-group-wagers > summary,
+#actionRecords.action-records > summary {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg,#224936,#143126);
+  padding: 18px 16px;
+  min-height: 66px;
+  position: relative;
+  transition: background .2s ease;
+}
+
+/* Keep smooth corners when expanded */
+#newWagers.action-group-wagers[open] > summary,
+#actionRecords.action-records[open] > summary {
+  border-radius: 16px 16px 0 0 !important;
+}
+
+/* Restore a clear dropdown affordance */
+#newWagers.action-group-wagers > summary::after,
+#actionRecords.action-records > summary::after {
+  content: "⌄";
+  position: absolute;
+  right: 15px;
+  top: 21px;
+  color: #d9be86;
+  font: 700 24px Georgia,serif;
+  line-height: 1;
+  transition: transform .2s ease;
+}
+
+#newWagers.action-group-wagers[open] > summary::after,
+#actionRecords.action-records[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+/* Give header text room beside the arrow */
+#newWagers.action-group-wagers > summary span,
+#newWagers.action-group-wagers > summary small,
+#actionRecords.action-records > summary span,
+#actionRecords.action-records > summary small {
+  padding-right: 28px;
+}
+
+/* HALL OF SHAME — Premium clubhouse archive */
+#clubRecordsSection {
+  background: linear-gradient(180deg,#faf6eb,#eee4d0);
+  border: 1px solid #b79c62;
+  border-radius: 19px;
+  padding: 17px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(20,49,38,.09);
+}
+
+/* Archive department heading */
+#clubRecordsSection > .over {
+  background: #193d2d;
+  color: #d9be86 !important;
+  margin: -17px -17px 0;
+  padding: 18px 16px 7px;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .14em;
+}
+
+#clubRecordsSection > h2 {
+  background: #193d2d;
+  color: #fff4dc;
+  margin: 0 -17px 16px;
+  padding: 5px 16px 19px;
+  border: 0;
+  border-bottom: 3px solid #b79c62;
+  font: 700 25px Georgia,serif;
+}
+
+#clubRecordsSection > .muted {
+  font: italic 13px/1.6 Georgia,serif;
+  color: #66705d;
+  margin-bottom: 17px;
+}
+
+/* Hall of Shame statistics */
+#hallStats {
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 9px;
+  margin: 13px 0;
+}
+
+#hallStats .betbox {
+  background: #fffaf0;
+  border: 1px solid #c5af7f;
+  border-radius: 13px;
+  padding: 15px 10px;
+}
+
+#hallStats .betbox strong {
+  color: #766647;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .07em;
+}
+
+#hallStats .betbox span {
+  color: #193d2d;
+  font: 700 22px Georgia,serif;
+  overflow-wrap: anywhere;
+}
+
+/* Rivalries display */
+#rivalryBoard {
+  background: #fffaf0;
+  color: #193d2d;
+  border: 1px solid #c5af7f;
+  border-left: 4px solid #b79c62;
+  border-radius: 12px;
+  padding: 17px 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Club archive action buttons */
+#refreshRecords,
+#makeReport {
+  border-radius: 12px;
+  min-height: 49px;
+  font: 800 12px system-ui,sans-serif;
+}
+
+#refreshRecords {
+  background: #193d2d;
+  color: #fff4dc;
+  border: 1px solid #b79c62;
+}
+
+#makeReport {
+  background: #e7dac0;
+  color: #193d2d;
+  border: 1px solid #c5af7f;
+}
+
+/* Disciplinary report */
+#reportCard {
+  background: #f5ebd8;
+  border: 1px solid #b79c62;
+  border-left: 4px solid #193d2d;
+  border-radius: 13px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+#reportCard .notice-head {
+  color: #78613c;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .12em;
+}
+
+#reportCard button {
+  border-radius: 10px;
+  min-height: 45px;
+}
+
+@media(max-width:420px) {
+  #clubRecordsSection {
+    padding: 13px;
+  }
+
+  #clubRecordsSection > .over {
+    margin: -13px -13px 0;
+  }
+
+  #clubRecordsSection > h2 {
+    margin: 0 -13px 15px;
+    font-size: 23px;
+  }
+
+  #hallStats .betbox span {
+    font-size: 19px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  #newWagers.action-group-wagers > summary,
+  #actionRecords.action-records > summary {
+    transition: none;
+  }
+}
+
 </style>
 </head>
 <body>
