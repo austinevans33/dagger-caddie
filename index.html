@@ -978,6 +978,42 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   line-height: 1.6;
 }
 
+/* THE ACTION — LIVE STATUS POLISH */
+
+/* Subtle status before a match begins */
+#roomWho:not([style]) {
+  background: #eee6d5;
+  border: 1px dashed #c7b48c;
+  border-radius: 11px;
+  padding: 11px 13px;
+  color: #766b55;
+  font: 12px/1.5 system-ui, sans-serif;
+  text-align: center;
+  margin: 10px 0;
+}
+
+/* Room identity after match creation */
+#roomWho[style] {
+  border-radius: 12px;
+  margin: 13px 0;
+  box-shadow: 0 4px 12px rgba(20,49,38,.09);
+  font-family: system-ui, sans-serif;
+  font-size: 12px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* Give the live system status less visual weight */
+#moneyRoomSection #roomStatus {
+  background: #eee7d8;
+  border: 1px solid #d2c4a5;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #516555;
+  font: 12px/1.5 system-ui, sans-serif;
+  margin: 11px 0;
+}
+
 </style>
 </head>
 <body>
