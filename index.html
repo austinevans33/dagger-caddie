@@ -1565,6 +1565,51 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   }
 }
 
+/* THE ACTION — GAMES CONNECTION */
+
+.action-games-link {
+  background: linear-gradient(145deg, #204635, #102a20);
+  color: #fff4dc;
+  border: 1px solid #b79c62;
+  border-radius: 16px;
+  padding: 19px 16px;
+  margin: 12px 0;
+}
+
+.action-games-link-label {
+  color: #d9be86;
+  font: 800 9px system-ui, sans-serif;
+  letter-spacing: .14em;
+  line-height: 1.5;
+}
+
+.action-games-link h3 {
+  color: #fff4dc;
+  font: 700 24px Georgia, serif;
+  margin: 11px 0 8px;
+}
+
+.action-games-link p {
+  color: #e5dac3;
+  font: 13px/1.6 Georgia, serif;
+  margin-bottom: 15px;
+}
+
+#actionOpenGames {
+  background: #b79c62;
+  color: #143126;
+  min-height: 49px;
+  border-radius: 10px;
+  font: 800 13px system-ui, sans-serif;
+}
+
+.action-games-link small {
+  display: block;
+  color: #d9ceb7;
+  font: 11px/1.5 system-ui, sans-serif;
+  margin-top: 12px;
+}
+
 </style>
 </head>
 <body>
@@ -2062,6 +2107,30 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
       </section>
 
             <section class="card" data-tab="bets" id="opponentRoastSection"><div class="over" style="color:#776344">THE CADDIE'S OPPONENT DOSSIER</div><h2>Competitive encouragement</h2><p class="muted">Name the person you're playing against. Your current caddie will offer absolutely unrequested psychological support.</p><div class="grid"><input type="text" id="roastOpponentName" maxlength="35" placeholder="Opponent's first name"><button class="btn-secondary" id="roastOpponent" type="button">Roast opponent</button></div><div id="opponentRoastLine" class="notice-card" style="margin-top:10px" aria-live="polite">Enter an opponent's name and invite the caddie to behave unprofessionally.</div><p class="note">The insults are fictional jokes about golf—not facts about the other golfer.</p></section>
+      
+<!-- THE ACTION — GAMES CONNECTION -->
+<section class="action-games-link" data-tab="bets">
+  <div class="action-games-link-label">
+    DAGGER COUNTRY CLUB · COMPETITION COMMITTEE
+  </div>
+
+  <h3>Got a Game Going?</h3>
+
+  <p>
+    Head to Games to choose a format, learn the rules,
+    and manage your competition.
+  </p>
+
+  <button type="button" id="actionOpenGames" class="btn-primary">
+    Explore Club Games →
+  </button>
+
+  <small>
+    Game scoring and wagering are currently separate.
+    Unified live wagers are coming in the next development phase.
+  </small>
+</section>
+
 <section class="card" data-tab="bets" id="moneyRoomSection">
 <div class="over" style="color:#806f4d">DAGGER COUNTRY CLUB · MONEY ROOM</div><div style="background:linear-gradient(145deg,#204635,#102a20);border:1px solid #b79c62;border-radius:16px;padding:22px 16px;margin-bottom:14px;text-align:center;color:#f5f0e5;">
 
@@ -2278,6 +2347,19 @@ function switchTab(tab) {
 }
 
 ['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+
+// THE ACTION — Open Games from the wagering desk.
+const actionGamesButton = document.getElementById('actionOpenGames');
+
+if (actionGamesButton) {
+  actionGamesButton.addEventListener('click', () => {
+    switchTab('games');
+
+    document.getElementById('gamesMenu')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
 const resetAdvice={
  angry:{steps:'<strong>1.</strong> Exhale for six seconds. Unclench your jaw.<br><strong>2.</strong> Name what happened without assigning blame.<br><strong>3.</strong> Choose the safest target. Swing only when ready.',quote:'“Yes, that was crap. Giving the next ball the same punishment would be even dumber.”'},
  hard:{steps:'<strong>1.</strong> Loosen your grip and take one slow breath.<br><strong>2.</strong> Make ONE smooth rehearsal at 75% effort.<br><strong>3.</strong> Pick a target and swing with balance.',quote:'“Distance is not an emergency, you overcaffeinated lumberjack.”'},
