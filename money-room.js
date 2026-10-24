@@ -66,7 +66,21 @@ function render(){
  $('roomLedgerHead').innerHTML='<tr><th>Hole</th>'+room.players.map(n=>'<th>'+esc(n)+'</th>').join('')+'<th>Result</th>'+room.players.map(n=>'<th>'+esc(n)+' $</th>').join('')+'</tr>';
  $('roomLedgerBody').innerHTML=x.ledger.map(row=>'<tr><td>'+row.hole+'</td>'+room.players.map((_,i)=>'<td>'+(row.scores?row.scores[i]:'—')+'</td>').join('')+'<td>'+esc(row.event)+'</td>'+room.players.map((_,i)=>'<td>'+(row.scores?money(row.totals[i]):'—')+'</td>').join('')+'</tr>').join('');
  // A DOM card for each of 18 holes. No narrow multi-column table on iPhone.
- const ledgerRoot=$('roomLedgerCards');ledgerRoot.replaceChildren();
+   const ledgerRoot=$('roomLedgerCards');
+  ledgerRoot.replaceChildren();
+
+  // Keep completed holes visible and unplayed holes collapsible.
+  const futureHoles = document.createElement('details');
+  futureHoles.className = 'ledger-detail';
+  futureHoles.style.marginTop = '12px';
+
+  const futureSummary = document.createElement('summary');
+  futureSummary.textContent = 'Show unplayed holes';
+  futureHoles.append(futureSummary);
+
+  const futureList = document.createElement('div');
+  futureList.className = 'ledger-cards';
+  futureHoles.append(futureList);
  for(const row of x.ledger){
   const card=document.createElement('article');card.className='ledger-hole'+(row.scores?'':' pending');card.setAttribute('role','listitem');
   const header=document.createElement('div');header.className='ledger-hole-head';
@@ -77,9 +91,25 @@ function render(){
    const balance=document.createElement('div');balance.className='ledger-balances';
    room.players.forEach((name,i)=>{const chip=document.createElement('span');chip.textContent=name+': '+money(row.totals[i]);balance.append(chip);});card.append(balance);
   }else{const msg=document.createElement('div');msg.className='game-note';msg.textContent='Awaiting scores';card.append(msg);}
-  ledgerRoot.append(card);
+     if (row.scores) {
+     ledgerRoot.append(card);
+   } else {
+     futureList.append(card);
+   }
  }
+  if (futureList.children.length) {
+    futureSummary.textContent =
+      'Show ' + futureList.children.length + ' unplayed holes';
+    ledgerRoot.append(futureHoles);
+  }
 
+  if (!ledgerRoot.querySelector('.ledger-hole:not(.pending)')) {
+    const emptyMessage = document.createElement('p');
+    emptyMessage.className = 'game-note';
+    emptyMessage.textContent =
+      'The official ledger is ready. Record the first hole to begin.';
+    ledgerRoot.prepend(emptyMessage);
+  }
  $('roomAudit').textContent=room.lastChange?`Last updated ${new Date(room.lastChange).toLocaleString()} by ${room.lastEditor||'scorekeeper'}. Score history includes the current official value for each hole.`:'';
  $('roomSaveHole').disabled=!host||room.archived;
  $('roomFinish').disabled=!host||room.archived;
