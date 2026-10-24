@@ -2584,7 +2584,25 @@ services.dataset.tab = 'settings';
   // Keep historical records available without cluttering Locker.
   const history = document.getElementById('lockerShots')
     ?.closest('details');
-  if (history) history.open = false;
+    if (history) history.open = false;
+
+  // THE ACTION — Keep Match Desk panels closed by default.
+  const matchDesk = document.getElementById('betOpponent')
+    ?.closest('section[data-tab="bets"]');
+
+  if (matchDesk) {
+    matchDesk.querySelectorAll('details').forEach(panel => {
+      panel.open = false;
+    });
+  }
+
+  // Move Competitive Encouragement beneath The Match Desk.
+  const encouragement = document.getElementById('opponentRoastSection');
+
+  if (matchDesk && encouragement) {
+    matchDesk.after(encouragement);
+  }
+
 })();
 
 // Purely fictional competitive banter, keyed to selected caddie and real entered opponent name.
