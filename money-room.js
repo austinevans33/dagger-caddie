@@ -46,7 +46,25 @@ function render(){
  $('roomEditor').hidden=!host; $('roomSpectator').hidden=host;
  $('roomInvitationBanner').hidden=true;
  $('roomSetup').open=false;
- $('roomWho').textContent=`${room.name||'Dagger Money Room'} · ${roomLabel()} · ${room.players.join(' / ')} · ${room.format.toUpperCase()} · $${room.stake} unit${room.archived?' · ARCHIVED':''}`;
+ 
+  // THE ACTION — Clear live match identity and role.
+  const roleName = host ? 'OFFICIAL SCOREKEEPER' : 'LIVE SPECTATOR';
+  const matchState = room.archived ? 'MATCH ARCHIVED' : 'MATCH IN PROGRESS';
+
+  $('roomWho').textContent =
+    `${matchState} · ${roleName}\n` +
+    `${room.players.join(' vs ')}\n` +
+    `${room.format.toUpperCase()} · $${room.stake} per unit`;
+
+  $('roomWho').style.whiteSpace = 'pre-line';
+  $('roomWho').style.background = host ? '#193d2d' : '#eee3cd';
+  $('roomWho').style.color = host ? '#fff4dc' : '#193d2d';
+  $('roomWho').style.border = '1px solid #b79c62';
+  $('roomWho').style.borderLeft = '4px solid #b79c62';
+  $('roomWho').style.fontWeight = '700';
+  $('roomWho').style.lineHeight = '1.9';
+  $('roomWho').style.padding = '14px';
+
  $('roomHostName').value=room.hostName||'Scorekeeper';
  $('roomHole').innerHTML=Array.from({length:18},(_,i)=>`<option value="${i+1}">Hole ${i+1}</option>`).join('');
  const pending=Array.from({length:18},(_,i)=>i+1).find(i=>!room.holes?.[i])||18;
