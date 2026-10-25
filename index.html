@@ -8158,10 +8158,22 @@ document.querySelectorAll('.game-pick[data-game]').forEach(button => {
     'dccMatchPlayPanel',
     'BASIC MATCH PLAY'
   );
+  
   const match = document.querySelector(
     '.dcc-match-desk[data-tab="games"]'
   );
-  if (match) matchPanel.appendChild(match);
+  if (match) {
+    matchPanel.appendChild(match);
+
+    // DCC R5-E — One tap opens the actual scoring desk.
+    const innerDesk = match.querySelector('#dccMatchDesk');
+
+    matchPanel.addEventListener('toggle', () => {
+      if (innerDesk) innerDesk.open = matchPanel.open;
+    });
+
+    if (innerDesk) innerDesk.open = matchPanel.open;
+  }
 
   // Keep the entire existing House Ghost experience.
   const ghostPanel = createFold(
