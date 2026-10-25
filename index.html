@@ -2031,6 +2031,74 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC STEP 24 — CLASSIC GAMES COLLECTION */
+
+#gamesMenu .games-classics {
+  margin-top: 22px;
+  border-top: 1px solid #cfbd97;
+  padding-top: 20px;
+}
+
+#gamesMenu .games-classics-heading {
+  margin-bottom: 15px;
+}
+
+#gamesMenu .games-classics-heading > span {
+  color: #887147;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .14em;
+}
+
+#gamesMenu .games-classics-heading h3 {
+  color: #193d2d;
+  font: 700 23px Georgia,serif;
+  margin: 7px 0;
+}
+
+#gamesMenu .games-classics-heading p {
+  color: #666050;
+  font: 12px/1.6 system-ui,sans-serif;
+}
+
+#gamesMenu .games-classics-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 9px;
+}
+
+#gamesMenu .games-classic {
+  background: #eae0cd;
+  border: 1px solid #c9b995;
+  border-radius: 13px;
+  padding: 13px 11px;
+  min-width: 0;
+}
+
+#gamesMenu .games-classic strong {
+  display: block;
+  color: #193d2d;
+  font: 700 15px/1.35 Georgia,serif;
+}
+
+#gamesMenu .games-classic small {
+  display: block;
+  color: #69614f;
+  font: 11px/1.5 system-ui,sans-serif;
+  margin-top: 6px;
+}
+
+#gamesMenu .games-classics-footnote {
+  margin: 14px 2px 0;
+  color: #746a57;
+  font: italic 11px/1.5 Georgia,serif;
+}
+
+@media(max-width:420px) {
+  #gamesMenu .games-classics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2741,7 +2809,40 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 <button class="game-pick" type="button" data-game="hammer"><strong>✦ Hammer</strong><small>2 vs 2 · escalating pressure</small></button>
 <button class="game-pick" type="button" data-game="robin"><strong>↺ 6-6-6 / Round Robin</strong><small>Rotate teams every six holes</small></button>
 <button class="game-pick" type="button" data-game="snake"><strong>≈ Snake</strong><small>Track the dreaded 3-putt tax</small></button>
-</div></section>
+
+</div>
+
+<!-- DCC STEP 24 — CLASSIC GAMES COLLECTION -->
+<div class="games-classics">
+  <div class="games-classics-heading">
+    <span>COMING TO THE CLUB</span>
+    <h3>The Classic Collection</h3>
+    <p>Fourteen more ways to compete. Official scoring and wagering support are in development.</p>
+  </div>
+
+  <div class="games-classics-grid">
+    <div class="games-classic"><strong>Match Play</strong><small>Win holes. Win the match.</small></div>
+    <div class="games-classic"><strong>Nassau</strong><small>Front nine, back nine, overall.</small></div>
+    <div class="games-classic"><strong>Skins</strong><small>Win holes, carry ties forward.</small></div>
+    <div class="games-classic"><strong>Stroke Play</strong><small>Lowest total score wins.</small></div>
+    <div class="games-classic"><strong>Stableford</strong><small>Points awarded by score.</small></div>
+    <div class="games-classic"><strong>Four-Ball / Best Ball</strong><small>Best score for each team.</small></div>
+    <div class="games-classic"><strong>Scramble</strong><small>One team ball, shared shots.</small></div>
+    <div class="games-classic"><strong>Shamble</strong><small>Best drive, individual play.</small></div>
+    <div class="games-classic"><strong>Alternate Shot</strong><small>Partners alternate strokes.</small></div>
+    <div class="games-classic"><strong>Chapman / Pinehurst</strong><small>Partners combine different shots.</small></div>
+    <div class="games-classic"><strong>Nines / 5-3-1</strong><small>Three-player points competition.</small></div>
+    <div class="games-classic"><strong>Quota / Chicago</strong><small>Chase a points target.</small></div>
+    <div class="games-classic"><strong>Dots / Junk</strong><small>Birdies, sandies, greenies and more.</small></div>
+    <div class="games-classic"><strong>Rabbit</strong><small>Win holes to capture the rabbit.</small></div>
+  </div>
+
+  <p class="games-classics-footnote">
+    These are previews, not playable buttons. Existing wager formats remain available in The Action while we build the unified games system.
+  </p>
+</div>
+</section>
+
 <section class="card" data-tab="games" id="bingoGameCard"><div class="over" style="color:#776344">DAGGER COUNTRY CLUB · COMPETITION COMMITTEE</div><h2>Bingo Bango Bongo</h2><p class="muted">Three independent points on every hole. Maximum chaos, minimal mathematics.</p>
   <details open><summary>How to play · Bingo Bango Bongo</summary><div style="padding:10px 0"><p>Each hole offers <strong>three independent points</strong>:</p><p><strong>Bingo:</strong> First player to get their ball on the green.<br><strong>Bango:</strong> Closest to the hole once every ball is on the green.<br><strong>Bongo:</strong> First player to hole out.</p><p class="note">Keep proper order of play, especially for Bingo and Bongo. No points are automatically awarded for a tie; choose the applicable player or leave unawarded. It's a points game, not normal stroke-play scoring.</p></div></details>
   <div class="grid"><div><label>Player 1</label><input id="gP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="gP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="gP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="gP4" maxlength="24" placeholder="Optional"></div></div>
