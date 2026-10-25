@@ -5261,6 +5261,65 @@ function dccGhostCalibrationTest(rounds = 5000) {
   return output;
 }
 
+// DCC STEP 30K-A — HOUSE GHOST MATCH ARCHIVE
+// Separate from multiplayer, wagers, and the active draft.
+const DCC_GHOST_ARCHIVE_KEY = 'dcc_house_ghost_archive_v1';
+
+function dccGhostReadArchive() {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem(DCC_GHOST_ARCHIVE_KEY) || '[]'
+    );
+
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    console.warn('House Ghost archive could not be read:', error);
+    return [];
+  }
+}
+
+function dccGhostArchiveMatch() {
+  if (!dccGhostHoles.length) return false;
+
+  const tier = document.getElementById('dccGhostTier').value;
+  const scores = dccGhostHoles.map(
+    hole => [hole.player, hole.ghost]
+  );
+  const result = dccMatchPlay(scores, dccGhostLength);
+
+  // Do not archive a match that hasn't been decided or
+  // reached its planned number of holes.
+  if (!result.decided && dccGhostHoles.length < dccGhostLength) {
+    return false;
+  }
+
+  const archive = dccGhostReadArchive();
+
+  const record = {
+    version: 1,
+    id: 'ghost-' + Date.now() + '-' +
+      Math.random().toString(36).slice(2, 10),
+    archivedAt: new Date().toISOString(),
+    tier,
+    condition: dccGhostCondition || 'normal',
+    holesPlanned: dccGhostLength,
+    holes: dccGhostHoles.map(h => ({ ...h })),
+    result: {
+      lead: result.lead,
+      status: result.status,
+      played: result.played
+    }
+  };
+
+  // Persist archive before allowing the active match to clear.
+  localStorage.setItem(
+    DCC_GHOST_ARCHIVE_KEY,
+    JSON.stringify([record, ...archive])
+  );
+
+  return true;
+}
+
 // DCC STEP 30C — HOUSE GHOST LOCAL MATCH
 // Completely separate from wagering and multiplayer records.
 const DCC_GHOST_DRAFT_KEY = 'dcc_house_ghost_draft_v1';
