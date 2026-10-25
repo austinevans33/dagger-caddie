@@ -4393,6 +4393,58 @@ if (dccMpSaved && typeof dccMpSaved.name2 === 'string') {
 }
 
 
+// DCC STEP 27C — MATCH PLAY TO SHARED RECORD ADAPTER
+// Read-only snapshot. Does not modify the saved draft or wagers.
+function dccMpSharedSnapshot() {
+  const first =
+    document.getElementById('dccMpName1').value.trim() || 'Player 1';
+
+  const second =
+    document.getElementById('dccMpName2').value.trim() || 'Player 2';
+
+  const record = dccCreateRoundRecord(
+    [first, second],
+    'match-play'
+  );
+
+  const result = dccMatchPlay(dccMpScores);
+
+  record.scores = dccMpScores.map((hole, index) => ({
+    hole: index + 1,
+    strokes: {
+      p1: hole[0],
+      p2: hole[1]
+    }
+  }));
+
+  record.status = result.decided
+    ? 'completed'
+    : result.played > 0
+      ? 'active'
+      : 'draft';
+
+  record.metadata = {
+    ...record.metadata,
+    source: 'match-play-test-desk',
+    official: false,
+    prototype: true
+  };
+
+  record.rules = {
+    format: 'singles',
+    scoring: 'gross',
+    holes: 18,
+    wagerType: 'none'
+  };
+
+  // Keep the financial sections empty until wagers
+  // and settlements have their own verified engines.
+  record.wagers = [];
+  record.settlements = [];
+
+  return record;
+}
+
 function dccMpRender() {
   
   // Keep this draft separate from official games and wager records.
