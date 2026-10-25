@@ -6120,9 +6120,13 @@ function dccMpSaveSharedRecord() {
       // DCC STEP 30H.1 — Authentication still initializing.
       // Do not incorrectly report an account mismatch.
       // The auth event will retry the save once identity is known.
-      if (!identity) {
+      
+      if (!identity?.ready) {
+        // Firebase has not finished restoring the member.
+        // Do not write or report an ownership mismatch yet.
         return false;
       }
+
 
       if (!identity.signedIn ||
           identity.uid !== record.ownerUid) {
