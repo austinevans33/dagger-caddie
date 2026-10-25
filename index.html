@@ -3400,6 +3400,48 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R6-C — THREE-SEGMENT 6-6-6 LEDGER */
+.dcc-rr-ledger-segment {
+  margin: 10px 0 14px;
+  padding: 12px;
+  background: #e8dec8;
+  border-radius: 12px;
+  border: 1px solid #cbb993;
+  color: #193b2d;
+}
+
+.dcc-rr-ledger-segment > strong {
+  display: block;
+  font: 800 12px system-ui, sans-serif;
+  letter-spacing: .06em;
+}
+
+.dcc-rr-ledger-segment > p {
+  font: 13px/1.45 Georgia, serif;
+  margin: 7px 0 12px;
+}
+
+.dcc-rr-hole-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0;
+  border-top: 1px solid #cbb993;
+}
+
+.dcc-rr-hole-row > strong {
+  font: 800 12px system-ui, sans-serif;
+}
+
+.dcc-rr-hole-row > span {
+  font: 700 14px Georgia, serif;
+}
+
+.dcc-rr-hole-row > small {
+  color: #6b5b38;
+  font: 12px/1.4 system-ui, sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -4840,7 +4882,18 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
      role="status"
      aria-live="polite">
 </div>
-<div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
+<div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div>
+<!-- DCC R6-C — ROUND ROBIN SEGMENT LEDGER -->
+<details id="rrLedgerPanel" class="dcc-vw-ledger-panel">
+  <summary>
+    <span>6-6-6 · HOLE-BY-HOLE LEDGER</span>
+    <small>Tap to expand</small>
+  </summary>
+  <div id="rrLiveLedger" class="dcc-vw-ledger">
+    Record a hole to begin the ledger.
+  </div>
+</details>
+<div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
 
 <section class="card game-hidden" data-tab="games" id="snakeGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MINOR CRIMES UNIT</div><h2>Snake</h2><p class="muted">The quickest way to punish a three-putt without turning the round into a tax audit.</p><details open><summary>How to play · Snake</summary><p class="note">Record a snake every time someone three-putts. Most groups simply charge a fixed amount per snake to the player who earned it. Use this tracker as a ledger of shame.</p></details><div class="grid"><div><label>$ per snake</label><input id="snStake" type="number" min="0" step="0.25" value="1"></div><div><label>Player 1</label><input id="snP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="snP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="snP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="snP4" maxlength="24" placeholder="Optional"></div></div><button class="btn-primary" id="snStart" style="margin-top:10px">Start Snake session</button><div id="snActive" hidden class="game-live"><h3>Snake event <span id="snEvent">1</span></h3><div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div><div id="snStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div><details style="margin-top:12px"><summary>Snake history</summary><div id="snLifetime" class="note"></div></details></section>
 
@@ -8408,12 +8461,100 @@ function dccRenderRRScoreboard() {
 }
 
 
+// DCC R6-C — THREE-SEGMENT ROUND ROBIN LEDGER
+// Display only. Uses existing rrTeams() and saved strokes.
+function dccRenderRRLedger() {
+  const root = document.getElementById('rrLiveLedger');
+  if (!root) return;
+
+  root.replaceChildren();
+
+  if (!rr || !rr.holes.length) {
+    root.textContent = 'Record a hole to begin the ledger.';
+    return;
+  }
+
+  const segments = [
+    { start: 0, end: 6 },
+    { start: 6, end: 12 },
+    { start: 12, end: 18 }
+  ];
+
+  segments.forEach((segment, segmentIndex) => {
+    if (rr.holes.length <= segment.start) return;
+
+    const [teamA, teamB] = rrTeams(segment.start);
+
+    const group = document.createElement('div');
+    group.className = 'dcc-rr-ledger-segment';
+
+    const title = document.createElement('strong');
+    title.textContent =
+      'SEGMENT ' + (segmentIndex + 1) +
+      ' · HOLES ' + (segment.start + 1) +
+      '–' + segment.end;
+
+    const teams = document.createElement('p');
+    teams.textContent =
+      rr.players[teamA[0]] + ' + ' +
+      rr.players[teamA[1]] + ' vs. ' +
+      rr.players[teamB[0]] + ' + ' +
+      rr.players[teamB[1]];
+
+    group.append(title, teams);
+
+    for (
+      let i = segment.start;
+      i < Math.min(segment.end, rr.holes.length);
+      i++
+    ) {
+      const hole = rr.holes[i];
+      if (!hole || !Array.isArray(hole.scores)) continue;
+
+      const [a, b] = rrTeams(i);
+
+      const scoreA = Math.min(
+        hole.scores[a[0]], hole.scores[a[1]]
+      );
+      const scoreB = Math.min(
+        hole.scores[b[0]], hole.scores[b[1]]
+      );
+
+      const row = document.createElement('div');
+      row.className = 'dcc-rr-hole-row';
+
+      const heading = document.createElement('strong');
+      heading.textContent = 'HOLE ' + (i + 1);
+
+      const result = document.createElement('span');
+      result.textContent =
+        scoreA === scoreB ? 'HALVED' :
+        scoreA < scoreB ? 'TEAM A WINS' : 'TEAM B WINS';
+
+      const scores = document.createElement('small');
+      scores.textContent =
+        'Best ball: ' + scoreA + ' vs. ' + scoreB +
+        ' · ' + (scoreA === scoreB
+          ? '0 points'
+          : 'Winners +1 · Losers −1');
+
+      row.append(heading, result, scores);
+      group.appendChild(row);
+    }
+
+    root.appendChild(group);
+  });
+}
+
+
 function rrStore() {
   store(RR_ACTIVE, rr);
   store(RR_HISTORY, rrh);
   rrRender();
   dccRenderRRScoreboard();
+  dccRenderRRLedger();
 }
+
 
 $('rrStart').onclick=()=>{const players=['rrP1','rrP2','rrP3','rrP4'].map(id=>$(id).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}rr={players,stake:Math.max(0,Number($('rrStake').value)||0),holes:[],started:Date.now()};rrStore();};
 $('rrSave').onclick=()=>{if(!rr)return;if(rr.holes.length>=18){alert('Archive the round after 18 holes.');return;}const scores=[0,1,2,3].map(j=>Number($('rrScore'+j).value));if(scores.some(x=>!Number.isInteger(x)||x<1||x>20)){alert('Enter valid scores for all four players.');return;}rr.holes.push({scores});rrStore();};
@@ -8461,6 +8602,7 @@ dccRenderHammerScoreboard();
 dccRenderHammerLedger();
 rrRender();
 dccRenderRRScoreboard();
+dccRenderRRLedger();
 snRender();
 renderRecap();
 
