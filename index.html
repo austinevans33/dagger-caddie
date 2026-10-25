@@ -4819,11 +4819,29 @@ function dccMpSharedSnapshot() {
   );
 
   
+ 
   record.id = dccMpId;
 
+  // DCC STEP 29D — KEEP ORIGINAL COMPETITION CREATION DATE
+  // The snapshot is rebuilt after scoring changes, but the
+  // underlying match must retain its original creation time.
+  const previousMatch = dccReadMatchLibrary().find(
+    saved => saved && saved.id === dccMpId &&
+      saved.schemaVersion === 1 &&
+      saved.primaryFormat === 'match-play'
+  );
+
+  if (previousMatch &&
+      Number.isSafeInteger(previousMatch.createdAt) &&
+      previousMatch.createdAt > 0 &&
+      previousMatch.createdAt <= Date.now()) {
+    record.createdAt = previousMatch.createdAt;
+  }
+
   // DCC STEP 29C — Preserve the creator's Firebase identity.
-  // An unsigned or pre-authentication draft may have no owner yet.
+  // Local metadata only; cloud permissions remain disabled.
   record.ownerUid = dccMpOwnerUid();
+
 
   const result = dccMatchPlay(dccMpScores);
 
