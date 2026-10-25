@@ -3129,6 +3129,28 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   display: none !important;
 }
 
+/* DCC R5-A — HAMMER PLAYING MODE */
+#hmPreRoundSetup[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  #hmActive {
+    padding: 12px;
+  }
+
+  #hmWinner,
+  #hmMult {
+    min-height: 50px;
+    font-size: 16px;
+  }
+
+  #hmSave {
+    min-height: 54px;
+    font-weight: 800;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4521,7 +4543,13 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 
 <div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary id="vwLifetimeLabel">Vegas lifetime records</summary><div id="vwLifetime" class="note"></div></details></section>
 
-<section class="card game-hidden" data-tab="games" id="hammerGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · SIDE ACTION</div><h2>Hammer</h2><p class="muted">This simplified house version records the <em>final multiplier</em> on each hole. If somebody hammers mid-hole, just bump the multiplier before you save.</p><details open><summary>How to play · Hammer</summary><p class="note">Two teams of two. Each hole starts at 1 unit. Any hammer during the hole increases the multiplier. At the end of the hole, record who won and what the hole was worth. Halves score zero.</p></details><div class="grid"><div><label>$ per unit</label><input id="hmStake" type="number" min="0" step="0.25" value="1"></div><div><label>Starting multiplier</label><input id="hmBase" type="number" min="1" step="1" value="1"></div><div><label>Team A · Player 1</label><input id="hmP1" maxlength="24" value="Me"></div><div><label>Team A · Player 2</label><input id="hmP2" maxlength="24" value="Partner"></div><div><label>Team B · Player 1</label><input id="hmP3" maxlength="24" value="Player 3"></div><div><label>Team B · Player 2</label><input id="hmP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="hmStart" style="margin-top:10px">Start Hammer game</button><div id="hmActive" hidden class="game-live"><h3>Hole <span id="hmHole">1</span></h3><div class="grid"><div><label>Winner</label><select id="hmWinner"><option value="A">Team A</option><option value="B">Team B</option><option value="H">Halved hole</option></select></div><div><label>Final multiplier</label><input id="hmMult" type="number" min="1" step="1" value="1"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="hmSave">Record hole</button><button class="btn-ghost" id="hmUndo">Undo hole</button></div><div id="hmStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Hammer ledger</summary><div id="hmLifetime" class="note"></div></details></section>
+<section class="card game-hidden" data-tab="games" id="hammerGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · SIDE ACTION</div><h2>Hammer</h2><p class="muted">This simplified house version records the <em>final multiplier</em> on each hole. If somebody hammers mid-hole, just bump the multiplier before you save.</p><details><summary>How to play · Hammer</summary><p class="note">Two teams of two. Each hole starts at 1 unit. Any hammer during the hole increases the multiplier. At the end of the hole, record who won and what the hole was worth. Halves score zero.</p></details>
+<!-- DCC R5-A — HAMMER PRE-ROUND SETUP -->
+<div id="hmPreRoundSetup">
+<div class="grid"><div><label>$ per unit</label><input id="hmStake" type="number" min="0" step="0.25" value="1"></div><div><label>Starting multiplier</label><input id="hmBase" type="number" min="1" step="1" value="1"></div><div><label>Team A · Player 1</label><input id="hmP1" maxlength="24" value="Me"></div><div><label>Team A · Player 2</label><input id="hmP2" maxlength="24" value="Partner"></div><div><label>Team B · Player 1</label><input id="hmP3" maxlength="24" value="Player 3"></div><div><label>Team B · Player 2</label><input id="hmP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="hmStart" style="margin-top:10px">Start Hammer game</button>
+</div>
+<!-- END DCC R5-A HAMMER SETUP -->
+<div id="hmActive" hidden class="game-live"><h3>Hole <span id="hmHole">1</span></h3><div class="grid"><div><label>Winner</label><select id="hmWinner"><option value="A">Team A</option><option value="B">Team B</option><option value="H">Halved hole</option></select></div><div><label>Final multiplier</label><input id="hmMult" type="number" min="1" step="1" value="1"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="hmSave">Record hole</button><button class="btn-ghost" id="hmUndo">Undo hole</button></div><div id="hmStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Hammer ledger</summary><div id="hmLifetime" class="note"></div></details></section>
 
 <section class="card game-hidden" data-tab="games" id="robinGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MEMBER FAVORITE</div><h2>6-6-6 / Round Robin</h2><p class="muted">Better-ball teams rotate every six holes: 1–6, 7–12, then 13–18. Great for a foursome where nobody wants the same partner all day.</p><details open><summary>How to play · 6-6-6</summary><p class="note">Use four players. Teams are 1+2 vs 3+4 on holes 1–6, 1+3 vs 2+4 on holes 7–12, and 1+4 vs 2+3 on holes 13–18. Record gross strokes; the lower best-ball score wins the hole. Winning teammates receive +1 point each, losers -1. Halves are zero.</p></details><div class="grid"><div><label>$ per point (optional)</label><input id="rrStake" type="number" min="0" step="0.25" value="0"></div><div><label>Player 1</label><input id="rrP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="rrP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="rrP3" maxlength="24" value="Player 3"></div><div><label>Player 4</label><input id="rrP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="rrStart" style="margin-top:10px">Start 6-6-6 round</button><div id="rrActive" hidden class="game-live"><h3>Hole <span id="rrHole">1</span></h3><div id="rrTeams" class="scoreline" style="font-weight:700"></div><div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
 
@@ -7850,7 +7878,14 @@ MEMBER: ${x.me}\nMATCHES ARCHIVED: ${x.group.length}\nWINNING MATCH RECORDS: ${x
 const HM_ACTIVE='dagger_hammer_active',HM_HISTORY='dagger_hammer_history';
 let hm=read(HM_ACTIVE,null),hmh=read(HM_HISTORY,[]);
 function hmCalc(g){let a=0,b=0;for(const h of g.holes){const units=Number(h.mult)||1;if(h.win==='A'){a+=units;b-=units}else if(h.win==='B'){a-=units;b+=units}}return [a,b];}
-function hmRender(){ $('hmActive').hidden=!hm; if(hm){const idx=hm.holes.length;$('hmHole').textContent=Math.min(idx+1,18);$('hmMult').value=String(hm.base||1);const pts=hmCalc(hm);const dollars=(hm.stake||0);$('hmStandings').textContent=`Team A (${hm.players[0]} & ${hm.players[1]}): ${pts[0]} units${dollars?` · ${money(pts[0]*dollars)}`:''} · Team B (${hm.players[2]} & ${hm.players[3]}): ${pts[1]} units${dollars?` · ${money(pts[1]*dollars)}`:''}`;}const tally={};hmh.forEach(g=>{const pts=hmCalc(g), stake=g.stake||0;g.players.forEach((n,i)=>{const v=i<2?pts[0]*stake:pts[1]*stake;tally[n]=(tally[n]||0)+v;});});$('hmLifetime').textContent=hmh.length?hmh.length+' archived Hammer games · '+Object.entries(tally).map(([n,v])=>`${n}: ${money(v)}`).join(' · '):'No Hammer sessions archived yet.';}
+
+function hmRender() {
+  $('hmActive').hidden = !hm;
+
+  // DCC R5-A — Hide setup during an active round.
+  const setup = document.getElementById('hmPreRoundSetup');
+  if (setup) setup.hidden = !!hm;
+ if(hm){const idx=hm.holes.length;$('hmHole').textContent=Math.min(idx+1,18);$('hmMult').value=String(hm.base||1);const pts=hmCalc(hm);const dollars=(hm.stake||0);$('hmStandings').textContent=`Team A (${hm.players[0]} & ${hm.players[1]}): ${pts[0]} units${dollars?` · ${money(pts[0]*dollars)}`:''} · Team B (${hm.players[2]} & ${hm.players[3]}): ${pts[1]} units${dollars?` · ${money(pts[1]*dollars)}`:''}`;}const tally={};hmh.forEach(g=>{const pts=hmCalc(g), stake=g.stake||0;g.players.forEach((n,i)=>{const v=i<2?pts[0]*stake:pts[1]*stake;tally[n]=(tally[n]||0)+v;});});$('hmLifetime').textContent=hmh.length?hmh.length+' archived Hammer games · '+Object.entries(tally).map(([n,v])=>`${n}: ${money(v)}`).join(' · '):'No Hammer sessions archived yet.';}
 function hmStore(){store(HM_ACTIVE,hm);store(HM_HISTORY,hmh);hmRender();}
 $('hmStart').onclick=()=>{const players=['hmP1','hmP2','hmP3','hmP4'].map(id=>$(id).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}hm={players,stake:Math.max(0,Number($('hmStake').value)||0),base:Math.max(1,Number($('hmBase').value)||1),holes:[],started:Date.now()};hmStore();};
 $('hmSave').onclick=()=>{if(!hm)return;if(hm.holes.length>=18){alert('Archive the match after 18 holes.');return;}const mult=Math.max(1,Number($('hmMult').value)||1);hm.holes.push({win:$('hmWinner').value,mult});hmStore();};
