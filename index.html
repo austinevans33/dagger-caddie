@@ -5691,8 +5691,11 @@ document.getElementById('dccGhostUndo')
           ? 'Completed Ghost match archived. New match ready.'
           : 'New Ghost match ready. Choose your opponent.';
 
+       
         dccGhostRender();
+        dccGhostRenderArchive();
       } catch (error) {
+
         console.warn('House Ghost new-match save failed:', error);
         message.textContent =
           'Unable to safely start a new match. ' +
@@ -5707,9 +5710,101 @@ function dccGhostUpdateActions() {
   if (undo) undo.disabled = dccGhostHoles.length === 0;
 }
 
+// DCC STEP 30K-E — SAVED HOUSE GHOST MATCH VIEW
+// Read-only archive. Never modifies scores or saved records.
+function dccGhostRenderArchive() {
+  const list = document.getElementById('dccGhostArchiveList');
+  const count = document.getElementById('dccGhostArchiveCount');
+  if (!list || !count) return;
+
+  const archive = dccGhostReadArchive();
+  count.textContent = '(' + archive.length + ')';
+  list.replaceChildren();
+
+  if (!archive.length) {
+    const empty = document.createElement('p');
+    empty.className = 'note';
+    empty.textContent = 'No completed Ghost matches saved yet.';
+    list.appendChild(empty);
+    return;
+  }
+
+  archive.forEach(record => {
+    if (!record || !Array.isArray(record.holes)) return;
+
+    const details = document.createElement('details');
+    details.style.cssText =
+      'margin-top:12px;padding:12px;border-radius:10px;' +
+      'border:1px solid rgba(170,145,85,.25);';
+
+    const summary = document.createElement('summary');
+    summary.style.cssText =
+      'cursor:pointer;line-height:1.5;';
+
+    const member = DCC_GHOST_MEMBERS[record.tier];
+    const name = member?.name || 'HOUSE GHOST';
+    const form = DCC_GHOST_CONDITIONS[record.condition];
+    const date = new Date(record.archivedAt);
+    const dateLabel = Number.isNaN(date.getTime())
+      ? 'Saved match'
+      : date.toLocaleDateString();
+
+    const title = document.createElement('strong');
+    title.textContent = name + ' · ' +
+      record.holes.length + ' HOLES';
+
+    const subtitle = document.createElement('small');
+    subtitle.style.cssText =
+      'display:block;margin-top:4px;opacity:.8;';
+    subtitle.textContent = dateLabel + ' · ' +
+      (form?.label || 'Business as Usual') + ' · ' +
+      (record.result?.status || 'Completed');
+
+    summary.append(title, subtitle);
+    details.appendChild(summary);
+
+    const ledger = document.createElement('div');
+    ledger.style.marginTop = '12px';
+
+    let lead = 0;
+
+    record.holes.forEach((hole, index) => {
+      if (!hole ||
+          !Number.isInteger(hole.player) ||
+          !Number.isInteger(hole.ghost)) return;
+
+      if (hole.player < hole.ghost) lead++;
+      if (hole.player > hole.ghost) lead--;
+
+      const line = document.createElement('div');
+      line.style.cssText =
+        'padding:9px 0;border-top:1px solid ' +
+        'rgba(170,145,85,.18);font-size:.88rem;';
+
+      const standing = lead === 0
+        ? 'AS'
+        : Math.abs(lead) + ' UP ' +
+          (lead > 0 ? 'YOU' : name);
+
+      line.textContent =
+        'H' + (index + 1) + ' · PAR ' + hole.par +
+        ' · YOU ' + hole.player +
+        ' / GHOST ' + hole.ghost +
+        ' · ' + standing;
+
+      ledger.appendChild(line);
+    });
+
+    details.appendChild(ledger);
+    list.appendChild(details);
+  });
+}
+
 // Preserve the existing Ghost startup render.
 dccGhostRender();
 dccGhostUpdateActions();
+dccGhostRenderArchive();
+
 
 // DCC STEP 26A — MATCH PLAY SCORING FOUNDATION
 
