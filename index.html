@@ -2425,6 +2425,87 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 11px/1.5 system-ui,sans-serif;
 }
 
+/* DCC STEP 28C — PREMIUM COMPETITION ARCHIVE */
+
+.dcc-saved-games {
+  background: #f3ead8;
+  border: 1px solid #b79c62;
+  border-radius: 17px;
+  padding: 9px;
+}
+
+#dccSavedGamesPanel > summary {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 17px;
+  background: linear-gradient(135deg,#224936,#143126);
+  border: 1px solid #b79c62;
+  border-radius: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+#dccSavedGamesPanel > summary::-webkit-details-marker {
+  display: none;
+}
+
+#dccSavedGamesPanel > summary span {
+  color: #fff4dc;
+  font: 800 12px system-ui,sans-serif;
+  letter-spacing: .1em;
+}
+
+#dccSavedGamesPanel > summary small {
+  color: #d9be86;
+  font: 11px system-ui,sans-serif;
+}
+
+.dcc-saved-games-inner {
+  padding: 14px 5px 5px;
+}
+
+#dccSavedGamesRefresh {
+  width: 100%;
+  min-height: 47px;
+  background: #193d2d;
+  color: #fff4dc;
+  border: 1px solid #b79c62;
+  border-radius: 11px;
+}
+
+#dccSavedGamesList {
+  display: grid;
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.dcc-saved-game-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: #fffaf0;
+  border: 1px solid #c9b68e;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.dcc-saved-game-card strong {
+  color: #193d2d;
+  font: 700 17px Georgia,serif;
+}
+
+.dcc-saved-game-card span {
+  color: #53614e;
+  font: 12px/1.5 system-ui,sans-serif;
+}
+
+.dcc-saved-game-card small {
+  color: #84704c;
+  font: 10px/1.5 system-ui,sans-serif;
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -3536,6 +3617,29 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   </div>
 </div>
 
+    </div>
+  </details>
+</section>
+
+<!-- DCC STEP 28C — SAVED COMPETITIONS -->
+<section class="card dcc-saved-games" data-tab="games">
+  <details id="dccSavedGamesPanel">
+    <summary>
+      <span>THE COMPETITION ARCHIVE</span>
+      <small>Saved matches · Local records</small>
+    </summary>
+    <div class="dcc-saved-games-inner">
+      <p class="note">
+        Locally stored competition records. These are not yet
+        official club results or Firebase-synced matches.
+      </p>
+      <button id="dccSavedGamesRefresh" type="button"
+              class="btn-secondary">
+        Refresh Saved Competitions
+      </button>
+      <div id="dccSavedGamesList" aria-live="polite">
+        Open the archive to view saved matches.
+      </div>
     </div>
   </details>
 </section>
@@ -4703,6 +4807,60 @@ function dccSaveToMatchLibrary(record) {
     return false;
   }
 }
+
+// DCC STEP 28C — SAVED COMPETITIONS VIEW
+function dccRenderSavedGames() {
+  const list = document.getElementById('dccSavedGamesList');
+  if (!list) return;
+
+  list.replaceChildren();
+
+  const records = dccReadMatchLibrary()
+    .filter(r => r && r.schemaVersion === 1 &&
+      r.primaryFormat === 'match-play' &&
+      Array.isArray(r.players) &&
+      Array.isArray(r.scores))
+    .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+  if (!records.length) {
+    list.textContent = 'No saved competitions yet.';
+    return;
+  }
+
+  records.forEach(record => {
+    const card = document.createElement('div');
+    card.className = 'dcc-saved-game-card';
+
+    const title = document.createElement('strong');
+    title.textContent = record.players.map(p => p.name).join(' vs ');
+
+    const scores = record.scores.map(h => [
+      h.strokes?.p1, h.strokes?.p2
+    ]);
+
+    const result = dccMatchPlay(scores);
+
+    const detail = document.createElement('span');
+    detail.textContent =
+      String(record.status || 'draft').toUpperCase() +
+      ' · ' + result.played + '/18 holes' +
+      ' · ' + result.status;
+
+    const id = document.createElement('small');
+    id.textContent = 'MATCH ID: ' + record.id;
+
+    card.append(title, detail, id);
+    list.appendChild(card);
+  });
+}
+
+document.getElementById('dccSavedGamesRefresh')
+  ?.addEventListener('click', dccRenderSavedGames);
+
+document.getElementById('dccSavedGamesPanel')
+  ?.addEventListener('toggle', event => {
+    if (event.target.open) dccRenderSavedGames();
+  });
 
 // DCC STEP 27F — LOCAL SHARED RECORD MIRROR
 // Keeps a structured copy separate from the existing draft.
