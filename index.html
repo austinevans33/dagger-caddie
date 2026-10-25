@@ -5249,6 +5249,7 @@ let dccGhostHoles = [];
 
 // DCC STEP 30E — Existing drafts are 18-hole matches.
 let dccGhostLength = 18;
+let dccGhostCondition = null;
 
 
 try {
@@ -5272,6 +5273,14 @@ try {
     
     dccGhostLength = saved.holesPlanned === 9 ? 9 : 18;
     dccGhostHoles = saved.holes;
+
+    // Legacy drafts use normal scoring without rewriting
+    // any previously recorded Ghost holes.
+    dccGhostCondition =
+      saved.condition &&
+      DCC_GHOST_CONDITIONS[saved.condition]
+        ? saved.condition
+        : (saved.holes.length ? 'normal' : null);
 
     document.getElementById('dccGhostLength').value =
       String(dccGhostLength);
@@ -5387,7 +5396,17 @@ document.getElementById('dccGhostRecord')
 
     try {
       // Generate the Ghost score exactly once for this hole.
-      const ghostScore = dccGhostScore(par, tier);
+      // Select once, when the first hole is recorded.
+      // Never reroll a condition on refresh or Undo.
+      const condition =
+        dccGhostCondition || dccGhostPickCondition();
+
+      const ghostScore = dccGhostConditionScore(
+        par,
+        tier,
+        condition
+      );
+
 
       const next = [
         ...dccGhostHoles,
@@ -5402,11 +5421,15 @@ document.getElementById('dccGhostRecord')
           version: 1,
           tier,
           holesPlanned: dccGhostLength,
+          condition,
           holes: next
+
         })
       );
 
       dccGhostHoles = next;
+
+      dccGhostCondition = condition;
 
       scoreInput.value = '';
 
@@ -5452,8 +5475,11 @@ document.getElementById('dccGhostUndo')
         JSON.stringify({
           version: 1,
           tier,
+         
           holesPlanned: dccGhostLength,
+          condition: dccGhostCondition,
           holes: next
+
         })
       );
 
@@ -5492,11 +5518,15 @@ document.getElementById('dccGhostReset')
   version: 1,
   tier,
   holesPlanned: dccGhostLength,
+  condition: null,
   holes: []
 })
       );
 
       dccGhostHoles = [];
+      
+      dccGhostCondition = null;
+
       document.getElementById('dccGhostPlayerScore').value = '';
 
       message.textContent =
