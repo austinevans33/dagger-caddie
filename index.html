@@ -4781,6 +4781,31 @@ if (dccMpSaved && typeof dccMpSaved.name2 === 'string') {
 
 // DCC STEP 27C — MATCH PLAY TO SHARED RECORD ADAPTER
 // Read-only snapshot. Does not modify the saved draft or wagers.
+
+// DCC STEP 29C — LOCAL MATCH OWNERSHIP
+// Provisional local metadata only. Firebase rules must independently
+// enforce ownership before any cloud writes are enabled.
+function dccMpOwnerUid() {
+  const key = 'dcc_match_owner_v1_' + dccMpId;
+
+  try {
+    const existing = localStorage.getItem(key);
+    if (existing) return existing;
+
+    const identity = window.dccCompetitionIdentity;
+    const uid = identity?.signedIn ? identity.uid : null;
+
+    if (typeof uid === 'string' && uid.length > 0) {
+      localStorage.setItem(key, uid);
+      return uid;
+    }
+  } catch (error) {
+    console.warn('DCC match ownership unavailable:', error);
+  }
+
+  return null;
+}
+
 function dccMpSharedSnapshot() {
   const first =
     document.getElementById('dccMpName1').value.trim() || 'Player 1';
@@ -4793,9 +4818,15 @@ function dccMpSharedSnapshot() {
     'match-play'
   );
 
+  
   record.id = dccMpId;
 
+  // DCC STEP 29C — Preserve the creator's Firebase identity.
+  // An unsigned or pre-authentication draft may have no owner yet.
+  record.ownerUid = dccMpOwnerUid();
+
   const result = dccMatchPlay(dccMpScores);
+
 
   record.scores = dccMpScores.map((hole, index) => ({
     hole: index + 1,
