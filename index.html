@@ -3590,10 +3590,17 @@ function switchTab(tab) {
     $('tab-' + t).classList.toggle('active', t === tab)
   );
 
+  
   // Always display the latest saved shots when opening Locker.
   if (tab === 'bag') {
     renderLocker();
   }
+
+  // DCC STEP 27H — Refresh linked Games records in The Action.
+  if (tab === 'bets') {
+    dccRefreshLinkedGame();
+  }
+
 }
 
 // DCC STEP 27G — READ GAME RECORD IN THE ACTION
