@@ -226,10 +226,12 @@ dccMemberButton.addEventListener('click', () => {
 // DCC STEP 29B — SHARED COMPETITION MEMBER IDENTITY
 // Read-only authentication state for future competitions.
 // A display name is never proof of competition ownership.
+
 window.dccCompetitionIdentity = Object.freeze({
   uid: null,
   signedIn: false,
-  permanent: false
+  permanent: false,
+  ready: false
 });
 
 
@@ -241,11 +243,14 @@ onAuthStateChanged(auth, user => {
   dccUpdateMemberIndicator(user);
 
 
-  window.dccCompetitionIdentity = Object.freeze({
-    uid: user?.uid || null,
-    signedIn: !!user,
-    permanent: !!user && !user.isAnonymous
-  });
+  
+window.dccCompetitionIdentity = Object.freeze({
+  uid: user?.uid || null,
+  signedIn: !!user,
+  permanent: !!user && !user.isAnonymous,
+  ready: true
+});
+
 
   // Inform competition interfaces when the account changes.
   window.dispatchEvent(
