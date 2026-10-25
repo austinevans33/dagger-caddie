@@ -3442,6 +3442,29 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 12px/1.4 system-ui, sans-serif;
 }
 
+/* DCC R6-D / R7-A — 6-6-6 AND SNAKE */
+#rrStandings[hidden],
+#snPreRoundSetup[hidden] {
+  display: none !important;
+}
+
+@media (max-width:600px) {
+  #snWho,
+  #snHole {
+    min-height: 50px;
+    font-size: 16px;
+  }
+
+  #snSave {
+    min-height: 54px;
+    font-weight: 800;
+  }
+
+  #snActive .grid {
+    gap: 8px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4882,7 +4905,13 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
      role="status"
      aria-live="polite">
 </div>
-<div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div>
+<div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div>
+<!-- DCC R6-D — Retain legacy standings for scoring compatibility -->
+<div id="rrStandings"
+     class="scoreline"
+     hidden
+     aria-hidden="true"></div>
+
 <!-- DCC R6-C — ROUND ROBIN SEGMENT LEDGER -->
 <details id="rrLedgerPanel" class="dcc-vw-ledger-panel">
   <summary>
@@ -4895,7 +4924,13 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </details>
 <div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
 
-<section class="card game-hidden" data-tab="games" id="snakeGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MINOR CRIMES UNIT</div><h2>Snake</h2><p class="muted">The quickest way to punish a three-putt without turning the round into a tax audit.</p><details open><summary>How to play · Snake</summary><p class="note">Record a snake every time someone three-putts. Most groups simply charge a fixed amount per snake to the player who earned it. Use this tracker as a ledger of shame.</p></details><div class="grid"><div><label>$ per snake</label><input id="snStake" type="number" min="0" step="0.25" value="1"></div><div><label>Player 1</label><input id="snP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="snP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="snP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="snP4" maxlength="24" placeholder="Optional"></div></div><button class="btn-primary" id="snStart" style="margin-top:10px">Start Snake session</button><div id="snActive" hidden class="game-live"><h3>Snake event <span id="snEvent">1</span></h3><div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div><div id="snStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div><details style="margin-top:12px"><summary>Snake history</summary><div id="snLifetime" class="note"></div></details></section>
+<section class="card game-hidden" data-tab="games" id="snakeGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MINOR CRIMES UNIT</div><h2>Snake</h2><p class="muted">The quickest way to punish a three-putt without turning the round into a tax audit.</p> <details><summary>How to play · Snake</summary><p class="note">Record a snake every time someone three-putts. Most groups simply charge a fixed amount per snake to the player who earned it. Use this tracker as a ledger of shame.</p></details>
+<!-- DCC R7-A — SNAKE PRE-ROUND SETUP -->
+<div id="snPreRoundSetup">
+<div class="grid"><div><label>$ per snake</label><input id="snStake" type="number" min="0" step="0.25" value="1"></div><div><label>Player 1</label><input id="snP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="snP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="snP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="snP4" maxlength="24" placeholder="Optional"></div></div><button class="btn-primary" id="snStart" style="margin-top:10px">Start Snake session</button>
+</div>
+<!-- END DCC R7-A SNAKE SETUP -->
+<div id="snActive" hidden class="game-live"><h3>Snake event <span id="snEvent">1</span></h3><div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div><div id="snStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div><details style="margin-top:12px"><summary>Snake history</summary><div id="snLifetime" class="note"></div></details></section>
 
 <section class="card" data-tab="bets" id="clubRecordsSection">
 
@@ -8565,7 +8600,14 @@ $('rrDiscard').onclick=()=>{if(rr&&confirm('Discard this 6-6-6 round?')){rr=null
 const SN_ACTIVE='dagger_sn_active',SN_HISTORY='dagger_sn_history';
 let sn=read(SN_ACTIVE,null),snh=read(SN_HISTORY,[]);
 function snCounts(g){const counts={};g.players.forEach(n=>counts[n]=0);g.events.forEach(e=>{if(counts[e.player]!=null)counts[e.player]++;});return counts;}
-function snRender(){ $('snActive').hidden=!sn; if(sn){$('snEvent').textContent=String(sn.events.length+1);$('snWho').innerHTML='';sn.players.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;$('snWho').append(o)});const counts=snCounts(sn);$('snStandings').textContent=Object.entries(counts).map(([n,c])=>`${n}: ${c} snake${c===1?'':'s'}${sn.stake?` (${money(c*sn.stake)})`:''}`).join(' · ');}const totals={};snh.forEach(g=>{const c=snCounts(g);for(const [n,v] of Object.entries(c))totals[n]=(totals[n]||0)+v;});$('snLifetime').textContent=snh.length?`${snh.length} archived Snake sessions · `+Object.entries(totals).map(([n,v])=>`${n}: ${v}`).join(' · '):'No Snake sessions archived yet.';}
+
+function snRender() {
+  $('snActive').hidden = !sn;
+
+  // DCC R7-A — Hide setup during an active Snake session.
+  const setup = document.getElementById('snPreRoundSetup');
+  if (setup) setup.hidden = !!sn;
+ if(sn){$('snEvent').textContent=String(sn.events.length+1);$('snWho').innerHTML='';sn.players.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;$('snWho').append(o)});const counts=snCounts(sn);$('snStandings').textContent=Object.entries(counts).map(([n,c])=>`${n}: ${c} snake${c===1?'':'s'}${sn.stake?` (${money(c*sn.stake)})`:''}`).join(' · ');}const totals={};snh.forEach(g=>{const c=snCounts(g);for(const [n,v] of Object.entries(c))totals[n]=(totals[n]||0)+v;});$('snLifetime').textContent=snh.length?`${snh.length} archived Snake sessions · `+Object.entries(totals).map(([n,v])=>`${n}: ${v}`).join(' · '):'No Snake sessions archived yet.';}
 function snStore(){store(SN_ACTIVE,sn);store(SN_HISTORY,snh);snRender();}
 $('snStart').onclick=()=>{const players=['snP1','snP2','snP3','snP4'].map(id=>$(id).value.trim()).filter(Boolean);if(players.length<2||new Set(players.map(x=>x.toLowerCase())).size!==players.length){alert('Enter at least two different names.');return;}sn={players,stake:Math.max(0,Number($('snStake').value)||0),events:[],started:Date.now()};snStore();};
 $('snSave').onclick=()=>{if(!sn)return;sn.events.push({player:$('snWho').value,hole:Number($('snHole').value)||null,ts:Date.now()});$('snHole').value='';snStore();};
