@@ -4785,12 +4785,34 @@ if (dccMpSaved && typeof dccMpSaved.name2 === 'string') {
 // DCC STEP 29C — LOCAL MATCH OWNERSHIP
 // Provisional local metadata only. Firebase rules must independently
 // enforce ownership before any cloud writes are enabled.
+
 function dccMpOwnerUid() {
   const key = 'dcc_match_owner_v1_' + dccMpId;
 
   try {
+    // An owner already assigned to this match must not change.
     const existing = localStorage.getItem(key);
     if (existing) return existing;
+
+    // Recover ownership from the saved competition library.
+    const saved = dccReadMatchLibrary().find(
+      record => record &&
+        record.id === dccMpId &&
+        record.schemaVersion === 1 &&
+        record.primaryFormat === 'match-play'
+    );
+
+    if (typeof saved?.ownerUid === 'string' &&
+        saved.ownerUid.length > 0) {
+      localStorage.setItem(key, saved.ownerUid);
+      return saved.ownerUid;
+    }
+
+    // Never automatically claim an older, already-recorded
+    // match whose ownership was previously unknown.
+    if (saved && saved.scores.length > 0) {
+      return null;
+    }
 
     const identity = window.dccCompetitionIdentity;
     const uid = identity?.signedIn ? identity.uid : null;
@@ -4805,6 +4827,7 @@ function dccMpOwnerUid() {
 
   return null;
 }
+
 
 function dccMpSharedSnapshot() {
   const first =
