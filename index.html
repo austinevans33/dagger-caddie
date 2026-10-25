@@ -3317,6 +3317,37 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   overflow-wrap: anywhere;
 }
 
+/* DCC R5-H — HAMMER HOLE LEDGER */
+.dcc-hammer-hole {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 9px 0;
+  padding: 12px;
+  background: #e9dfc8;
+  border: 1px solid #d2c29f;
+  border-radius: 10px;
+  color: #193b2d;
+}
+
+.dcc-hammer-hole > strong:first-child {
+  font: 800 12px system-ui, sans-serif;
+  letter-spacing: .04em;
+}
+
+.dcc-hammer-hole > span {
+  font: 700 14px Georgia, serif;
+}
+
+.dcc-hammer-hole > strong {
+  font-size: 15px;
+}
+
+.dcc-hammer-hole > small {
+  color: #655633;
+  font: 12px/1.4 system-ui, sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -4710,7 +4741,18 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
      role="status"
      aria-live="polite">
 </div>
-<div class="grid"><div><label>Winner</label><select id="hmWinner"><option value="A">Team A</option><option value="B">Team B</option><option value="H">Halved hole</option></select></div><div><label>Final multiplier</label><input id="hmMult" type="number" min="1" step="1" value="1"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="hmSave">Record hole</button><button class="btn-ghost" id="hmUndo">Undo hole</button></div><div id="hmStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Hammer ledger</summary><div id="hmLifetime" class="note"></div></details></section>
+<div class="grid"><div><label>Winner</label><select id="hmWinner"><option value="A">Team A</option><option value="B">Team B</option><option value="H">Halved hole</option></select></div><div><label>Final multiplier</label><input id="hmMult" type="number" min="1" step="1" value="1"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="hmSave">Record hole</button><button class="btn-ghost" id="hmUndo">Undo hole</button></div><div id="hmStandings" class="scoreline" style="margin-top:8px"></div>
+<!-- DCC R5-H — HAMMER HOLE-BY-HOLE LEDGER -->
+<details id="hmLiveLedgerPanel" class="dcc-vw-ledger-panel">
+  <summary>
+    <span>HAMMER · HOLE-BY-HOLE LEDGER</span>
+    <small>Tap to expand</small>
+  </summary>
+  <div id="hmLiveLedger" class="dcc-vw-ledger">
+    Record a hole to begin the ledger.
+  </div>
+</details>
+<div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Hammer ledger</summary><div id="hmLifetime" class="note"></div></details></section>
 
 <section class="card game-hidden" data-tab="games" id="robinGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MEMBER FAVORITE</div><h2>6-6-6 / Round Robin</h2><p class="muted">Better-ball teams rotate every six holes: 1–6, 7–12, then 13–18. Great for a foursome where nobody wants the same partner all day.</p><details open><summary>How to play · 6-6-6</summary><p class="note">Use four players. Teams are 1+2 vs 3+4 on holes 1–6, 1+3 vs 2+4 on holes 7–12, and 1+4 vs 2+3 on holes 13–18. Record gross strokes; the lower best-ball score wins the hole. Winning teammates receive +1 point each, losers -1. Halves are zero.</p></details><div class="grid"><div><label>$ per point (optional)</label><input id="rrStake" type="number" min="0" step="0.25" value="0"></div><div><label>Player 1</label><input id="rrP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="rrP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="rrP3" maxlength="24" value="Player 3"></div><div><label>Player 4</label><input id="rrP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="rrStart" style="margin-top:10px">Start 6-6-6 round</button><div id="rrActive" hidden class="game-live"><h3>Hole <span id="rrHole">1</span></h3><div id="rrTeams" class="scoreline" style="font-weight:700"></div><div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
 
@@ -8095,12 +8137,87 @@ function dccRenderHammerScoreboard() {
 }
 
 
+// DCC R5-H — HAMMER LIVE LEDGER
+// Read-only display derived from the saved Hammer game.
+function dccRenderHammerLedger() {
+  const root = document.getElementById('hmLiveLedger');
+  if (!root) return;
+
+  root.replaceChildren();
+
+  if (!hm || !hm.holes.length) {
+    root.textContent = 'Record a hole to begin the ledger.';
+    return;
+  }
+
+  const stake = Number(hm.stake) || 0;
+  let runningA = 0;
+  const rows = [];
+
+  hm.holes.forEach((hole, index) => {
+    const mult = Number(hole.mult) || 1;
+    const delta = hole.win === 'A'
+      ? mult
+      : hole.win === 'B' ? -mult : 0;
+
+    runningA += delta;
+
+    const card = document.createElement('div');
+    card.className = 'dcc-hammer-hole';
+
+    const heading = document.createElement('strong');
+    heading.textContent =
+      'HOLE ' + (index + 1) + ' · ' + mult + '×';
+
+    const winner = document.createElement('span');
+    winner.textContent =
+      hole.win === 'A' ? 'TEAM A WINS'
+      : hole.win === 'B' ? 'TEAM B WINS'
+      : 'HALVED HOLE';
+
+    const result = document.createElement('strong');
+    result.textContent =
+      'Team A ' + (delta > 0 ? '+' : '') +
+      delta + ' units';
+
+    const running = document.createElement('small');
+    running.textContent =
+      'Running Team A: ' +
+      (runningA > 0 ? '+' : '') + runningA +
+      ' units · Team B: ' +
+      (runningA < 0 ? '+' : '') + (-runningA) +
+      ' units';
+
+    card.append(heading, winner, result, running);
+
+    if (stake > 0) {
+      const moneyLine = document.createElement('small');
+      moneyLine.textContent =
+        'Hole: ' + money(delta * stake) +
+        ' · Team A running net: ' +
+        money(runningA * stake);
+      card.appendChild(moneyLine);
+    }
+
+    rows.push(card);
+  });
+
+  // Show the most recent hole first.
+  rows.reverse().forEach(card => root.appendChild(card));
+}
+
+
 function hmStore() {
   store(HM_ACTIVE, hm);
   store(HM_HISTORY, hmh);
-  hmRender();
-  dccRenderHammerScoreboard();
+  
+hmRender();
+dccRenderHammerScoreboard();
+dccRenderHammerLedger();
+rrRender();
+
 }
+
 
 $('hmStart').onclick=()=>{const players=['hmP1','hmP2','hmP3','hmP4'].map(id=>$(id).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}hm={players,stake:Math.max(0,Number($('hmStake').value)||0),base:Math.max(1,Number($('hmBase').value)||1),holes:[],started:Date.now()};hmStore();};
 $('hmSave').onclick=()=>{if(!hm)return;if(hm.holes.length>=18){alert('Archive the match after 18 holes.');return;}const mult=Math.max(1,Number($('hmMult').value)||1);hm.holes.push({win:$('hmWinner').value,mult});hmStore();};
