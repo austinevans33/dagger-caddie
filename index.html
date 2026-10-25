@@ -4607,6 +4607,69 @@ function dccRoundRecordSelfTest() {
   };
 }
 
+// DCC STEP 30A — HOUSE GHOST SCORING FOUNDATION
+// Prototype gross-stroke model, not an official handicap engine.
+// No Firebase, wager, or historical-score access.
+
+const DCC_GHOST_TIERS = Object.freeze({
+  scratch: {
+    label: 'Scratch',
+    // Outcomes: -2, -1, even, +1, +2 relative to par
+    outcomes: [-2, -1, 0, 1, 2],
+    weights: [2, 19, 59, 16, 4]
+  },
+  fiveTen: {
+    label: '5–10 HCP',
+    outcomes: [-1, 0, 1, 2, 3],
+    weights: [8, 44, 35, 11, 2]
+  },
+  tenFifteen: {
+    label: '10–15 HCP',
+    outcomes: [-1, 0, 1, 2, 3],
+    weights: [5, 32, 40, 19, 4]
+  },
+  fifteenTwenty: {
+    label: '15–20 HCP',
+    outcomes: [-1, 0, 1, 2, 3],
+    weights: [3, 24, 40, 25, 8]
+  }
+});
+
+function dccGhostScore(par, tier = 'tenFifteen', rng = Math.random) {
+  if (![3, 4, 5].includes(par)) {
+    throw new Error('House Ghost requires a par 3, 4, or 5.');
+  }
+
+  const model = DCC_GHOST_TIERS[tier];
+
+  if (!model) {
+    throw new Error('Unknown House Ghost difficulty tier.');
+  }
+
+  if (typeof rng !== 'function') {
+    throw new Error('Invalid House Ghost random source.');
+  }
+
+  const roll = rng();
+
+  if (!Number.isFinite(roll) || roll < 0 || roll >= 1) {
+    throw new Error('House Ghost random value must be from 0 to 1.');
+  }
+
+  const totalWeight = model.weights.reduce((a, b) => a + b, 0);
+  let position = roll * totalWeight;
+
+  for (let i = 0; i < model.weights.length; i++) {
+    position -= model.weights[i];
+
+    if (position < 0) {
+      return Math.max(1, par + model.outcomes[i]);
+    }
+  }
+
+  throw new Error('House Ghost scoring distribution is invalid.');
+}
+
 // DCC STEP 26A — MATCH PLAY SCORING FOUNDATION
 // Scores: [[player1, player2], ...] in hole order.
 // Lower score wins the hole. Ties halve the hole.
