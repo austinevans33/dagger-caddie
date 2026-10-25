@@ -2259,6 +2259,40 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 12px system-ui,sans-serif;
 }
 
+/* DCC STEP 26C — MATCH PLAY HOLE LEDGER */
+
+.dcc-match-history {
+  display: grid;
+  gap: 8px;
+}
+
+.dcc-match-history > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #fffaf0;
+  border: 1px solid #c9b68e;
+  border-radius: 12px;
+  padding: 13px;
+}
+
+.dcc-match-history strong {
+  color: #193d2d;
+  font: 800 11px system-ui,sans-serif;
+  letter-spacing: .06em;
+}
+
+.dcc-match-history span {
+  color: #4e584a;
+  font: 13px Georgia,serif;
+}
+
+.dcc-match-history small {
+  color: #8a7044;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .04em;
+}
+
 </style>
 </head>
 <body>
@@ -4121,13 +4155,33 @@ function dccMpRender() {
 
   history.replaceChildren();
 
-  dccMpScores.forEach((scores, index) => {
-    const item = document.createElement('div');
-    item.textContent = 'Hole ' + (index + 1) + ' · '
-      + first + ': ' + scores[0] + ' · '
-      + second + ': ' + scores[1];
-    history.appendChild(item);
-  });
+  
+dccMpScores.forEach((scores, index) => {
+  const running = dccMatchPlay(dccMpScores.slice(0, index + 1));
+
+  const item = document.createElement('div');
+  const holeWinner = scores[0] === scores[1]
+    ? 'HALVED'
+    : scores[0] < scores[1] ? first + ' WINS' : second + ' WINS';
+
+  const matchLeader = running.lead === 0
+    ? 'ALL SQUARE'
+    : (running.lead > 0 ? first : second)
+      + ' · ' + running.status;
+
+  const heading = document.createElement('strong');
+  heading.textContent = 'HOLE ' + (index + 1) + ' · ' + holeWinner;
+
+  const detail = document.createElement('span');
+  detail.textContent = first + ' ' + scores[0]
+    + ' — ' + second + ' ' + scores[1];
+
+  const position = document.createElement('small');
+  position.textContent = 'MATCH: ' + matchLeader;
+
+  item.append(heading, detail, position);
+  history.appendChild(item);
+});
 }
 
 document.getElementById('dccMpSave').addEventListener('click', () => {
