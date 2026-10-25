@@ -6113,11 +6113,20 @@ function dccMpSaveSharedRecord() {
     // Do not overwrite a shared record unless its owner
     // matches the currently authenticated Firebase member.
     // The original Match Play draft remains untouched.
+   
     if (record.ownerUid) {
       const identity = window.dccCompetitionIdentity;
 
-      if (!identity?.signedIn ||
+      // DCC STEP 30H.1 — Authentication still initializing.
+      // Do not incorrectly report an account mismatch.
+      // The auth event will retry the save once identity is known.
+      if (!identity) {
+        return false;
+      }
+
+      if (!identity.signedIn ||
           identity.uid !== record.ownerUid) {
+
         
         console.warn(
           'DCC: Shared competition save blocked. ' +
@@ -6393,9 +6402,28 @@ function dccMpUpdateEditorPermissions() {
 });
 
 // React when a different member signs in on this device.
+
 window.addEventListener('dcc:competition-identity', () => {
+  // DCC STEP 30H.1 — Firebase identity has been resolved.
+  // Refresh permissions and retry the saved-match mirror.
   dccMpUpdateEditorPermissions();
+
+  const ownerUid = dccMpOwnerUid();
+  const identity = window.dccCompetitionIdentity;
+
+  if (ownerUid && identity?.signedIn &&
+      ownerUid === identity.uid) {
+    dccMpSaveSharedRecord();
+
+    // Clear only the obsolete startup mismatch warning.
+    const message = document.getElementById('dccMpMessage');
+    if (message?.textContent.startsWith('ACCOUNT MISMATCH:')) {
+      message.textContent = 'Membership verified. Match ready.';
+      message.removeAttribute('role');
+    }
+  }
 });
+
 
 // Preserve the existing scorekeeper startup.
 dccMpRender();
