@@ -2293,6 +2293,40 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   letter-spacing: .04em;
 }
 
+/* DCC STEP 26E — MATCH LIFECYCLE */
+
+#dccMpLifecycle {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 9px 13px;
+  border-radius: 999px;
+  border: 1px solid #b79c62;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .08em;
+  line-height: 1.5;
+}
+
+#dccMpLifecycle[data-state="draft"] {
+  background: #e6dcc6;
+  color: #193d2d;
+}
+
+#dccMpLifecycle[data-state="active"] {
+  background: #d9be86;
+  color: #143126;
+}
+
+#dccMpLifecycle[data-state="complete"] {
+  background: #fff4dc;
+  color: #193d2d;
+  border-color: #fff4dc;
+}
+
+#dccMpSave:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
 </style>
 </head>
 <body>
@@ -3337,6 +3371,11 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
         <small>OFFICIAL MATCH POSITION</small>
         <strong id="dccMpPosition">ALL SQUARE</strong>
         <span id="dccMpProgress">Hole 1 of 18</span>
+        
+<div id="dccMpLifecycle" class="dcc-match-lifecycle" role="status">
+  NOT STARTED
+</div>
+
       </div>
 
       <div class="grid">
@@ -4189,6 +4228,24 @@ function dccMpRender() {
     : 'Next hole: ' + (result.played + 1) + ' of 18';
 
   save.disabled = result.decided;
+  
+// DCC STEP 26E — MATCH LIFECYCLE DISPLAY
+const lifecycle = document.getElementById('dccMpLifecycle');
+
+const matchState = result.decided
+  ? 'complete'
+  : result.played > 0
+    ? 'active'
+    : 'draft';
+
+lifecycle.dataset.state = matchState;
+
+lifecycle.textContent = matchState === 'complete'
+  ? 'MATCH COMPLETE · FINAL RESULT'
+  : matchState === 'active'
+    ? 'MATCH IN PROGRESS'
+    : 'NOT STARTED · READY FOR FIRST HOLE';
+
 
   history.replaceChildren();
 
