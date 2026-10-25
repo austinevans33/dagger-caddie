@@ -3287,6 +3287,27 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R5-F — SINGLE-LAYER MATCH PLAY EXPERIENCE */
+#dccMatchPlayPanel #dccMatchDesk > summary {
+  display: none;
+}
+
+#dccMatchPlayPanel .dcc-match-desk {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+#dccMatchPlayPanel .dcc-match-inner {
+  padding: 12px 4px;
+}
+
+#dccSelectedGamePanel,
+#dccMatchPlayPanel,
+#dccHouseGhostPanel {
+  scroll-margin-top: 12px;
+}
+
 </style>
 </head>
 <body>
@@ -8141,6 +8162,32 @@ document.querySelectorAll('.game-pick[data-game]').forEach(button => {
     'dccSelectedGamePanel',
     'SELECTED GAME · SCORECARD'
   );
+  
+  // DCC R5-F — Identify the currently selected game.
+  const selectedGameSummary = gamePanel.querySelector('summary');
+
+  function updateSelectedGameLabel() {
+    const selected = document.querySelector(
+      '.game-pick.selected strong'
+    );
+
+    if (selectedGameSummary) {
+      selectedGameSummary.textContent = selected
+        ? selected.textContent.trim() + ' · SCORECARD'
+        : 'SELECTED GAME · SCORECARD';
+    }
+  }
+
+  document.querySelectorAll(
+    '.game-pick[data-game]'
+  ).forEach(button => {
+    button.addEventListener(
+      'click',
+      updateSelectedGameLabel
+    );
+  });
+
+  updateSelectedGameLabel();
 
   [
     'bingoGameCard',
