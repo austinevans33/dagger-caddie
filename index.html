@@ -2768,6 +2768,35 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   letter-spacing: .04em;
 }
 
+/* DCC STEP 30D — GHOST MATCH CONTROLS */
+
+.dcc-ghost-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.dcc-ghost-actions button {
+  min-width: 0;
+  min-height: 46px;
+  padding: 10px 8px;
+  border: 1px solid #b79c62;
+  border-radius: 11px;
+  background: #fffaf0;
+  color: #193d2d;
+  font: 800 11px/1.4 system-ui,sans-serif;
+}
+
+#dccGhostReset {
+  background: #e8ddca;
+}
+
+.dcc-ghost-actions button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
 </style>
 </head>
 <body>
@@ -4001,6 +4030,16 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   Record Hole Against Ghost
 </button>
 
+<!-- DCC STEP 30D — HOUSE GHOST ROUND CONTROLS -->
+<div class="dcc-ghost-actions">
+  <button id="dccGhostUndo" type="button">
+    Undo Last Hole
+  </button>
+  <button id="dccGhostReset" type="button">
+    Start New Match
+  </button>
+</div>
+
     <p id="dccGhostMessage" class="dcc-ghost-message"
        role="status" aria-live="polite">
       House Ghost scoring controls are being connected.
@@ -5069,8 +5108,13 @@ function dccGhostRender() {
       ? 'MATCH COMPLETE · ' + result.played + ' HOLES'
       : 'NEXT HOLE · ' + (result.played + 1) + ' OF 18';
 
+  
   document.getElementById('dccGhostRecord').disabled =
     result.decided || dccGhostHoles.length >= 18;
+
+  // DCC STEP 30D — Update the Undo button after each hole.
+  dccGhostUpdateActions();
+
 
   const history = document.getElementById('dccGhostHistory');
   history.replaceChildren();
@@ -5160,9 +5204,80 @@ document.getElementById('dccGhostRecord')
     }
   });
 
+
+// DCC STEP 30D — UNDO THE MOST RECENT GHOST HOLE
+document.getElementById('dccGhostUndo')
+  .addEventListener('click', () => {
+    if (!dccGhostHoles.length) return;
+
+    const tier = document.getElementById('dccGhostTier').value;
+    const next = dccGhostHoles.slice(0, -1);
+    const message = document.getElementById('dccGhostMessage');
+
+    try {
+      // Persist the change before updating the interface.
+      localStorage.setItem(
+        DCC_GHOST_DRAFT_KEY,
+        JSON.stringify({ version: 1, tier, holes: next })
+      );
+
+      dccGhostHoles = next;
+      message.textContent =
+        'Last hole removed. Earlier Ghost scores are unchanged.';
+      dccGhostRender();
+    } catch (error) {
+      console.warn('House Ghost undo failed:', error);
+      message.textContent =
+        'Unable to save Undo. Your scores were not changed.';
+    }
+  });
+
+// DCC STEP 30D — START A NEW GHOST MATCH
+document.getElementById('dccGhostReset')
+  .addEventListener('click', () => {
+    const message = document.getElementById('dccGhostMessage');
+
+    if (dccGhostHoles.length &&
+        !confirm(
+          'Start a new House Ghost match?\n\n' +
+          'This will permanently clear the current local Ghost ' +
+          'scorecard. This prototype does not archive Ghost rounds yet.'
+        )) {
+      return;
+    }
+
+    try {
+      const tier = document.getElementById('dccGhostTier').value;
+
+      localStorage.setItem(
+        DCC_GHOST_DRAFT_KEY,
+        JSON.stringify({ version: 1, tier, holes: [] })
+      );
+
+      dccGhostHoles = [];
+      document.getElementById('dccGhostPlayerScore').value = '';
+
+      message.textContent =
+        'New match ready. Choose your House Ghost opponent.';
+      dccGhostRender();
+    } catch (error) {
+      console.warn('House Ghost reset failed:', error);
+      message.textContent =
+        'Unable to start a new match. Previous scores were retained.';
+    }
+  });
+
+function dccGhostUpdateActions() {
+  const undo = document.getElementById('dccGhostUndo');
+  if (undo) undo.disabled = dccGhostHoles.length === 0;
+}
+
+// Preserve the existing Ghost startup render.
 dccGhostRender();
+dccGhostUpdateActions();
 
 // DCC STEP 26A — MATCH PLAY SCORING FOUNDATION
+
 // Scores: [[player1, player2], ...] in hole order.
 // Lower score wins the hole. Ties halve the hole.
 // This is gross match play; handicap allocation comes later.
