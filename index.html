@@ -3911,6 +3911,72 @@ const freshWager=()=>({players:[],format:'skins',stake:5,holes:[],started:Date.n
 let activeW=read('dagger_foursome_active',null),wHistory=read('dagger_foursome_history',[]);
 const wStore=()=>{store('dagger_foursome_active',activeW);store('dagger_foursome_history',wHistory);};
 const wVal=(n)=>Number.isFinite(+n)&&+n>0?+n:null;
+
+// DCC STEP 26A — MATCH PLAY SCORING FOUNDATION
+// Scores: [[player1, player2], ...] in hole order.
+// Lower score wins the hole. Ties halve the hole.
+// This is gross match play; handicap allocation comes later.
+function dccMatchPlay(scores, totalHoles = 18) {
+  let lead = 0;
+  let played = 0;
+  let decided = false;
+  let winner = null;
+
+  const limit = totalHoles === 9 ? 9 : 18;
+
+  for (const hole of scores.slice(0, limit)) {
+    if (!Array.isArray(hole) || hole.length < 2) break;
+
+    const [a, b] = hole;
+
+    if (!Number.isInteger(a) || !Number.isInteger(b) ||
+        a < 1 || b < 1) break;
+
+    played++;
+
+    if (a < b) lead++;
+    if (b < a) lead--;
+
+    const remaining = limit - played;
+
+    if (Math.abs(lead) > remaining) {
+      decided = true;
+      winner = lead > 0 ? 0 : 1;
+      break;
+    }
+  }
+
+  const remaining = limit - played;
+
+  if (played === limit) {
+    decided = true;
+    if (lead !== 0) winner = lead > 0 ? 0 : 1;
+  }
+
+  let status;
+
+  if (decided && winner === null) {
+    status = "All Square · Match Halved";
+  } else if (decided && remaining > 0) {
+    status = Math.abs(lead) + "&" + remaining;
+  } else if (decided) {
+    status = Math.abs(lead) + " UP";
+  } else if (lead === 0) {
+    status = "All Square";
+  } else {
+    status = Math.abs(lead) + " UP";
+  }
+
+  return {
+    lead,
+    played,
+    remaining,
+    decided,
+    winner,
+    status
+  };
+}
+
 function wagerMath(game){
  const names=game.players,score=names.map(()=>0),stake=Number(game.stake)||0;
  let carry=1;
