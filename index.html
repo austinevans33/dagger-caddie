@@ -5052,11 +5052,35 @@ function dccGhostScore(par, tier = 'tenFifteen', rng = Math.random) {
     throw new Error('House Ghost random value must be from 0 to 1.');
   }
 
-  const totalWeight = model.weights.reduce((a, b) => a + b, 0);
+  
+  // DCC STEP 30F — PAR-AWARE SCRATCH SCORING
+  // The same double-under-par probability should not apply
+  // to par 3s, par 4s, and par 5s.
+  // These are initial gameplay estimates, not measured
+  // professional scoring statistics.
+  let weights = model.weights;
+
+  if (tier === 'scratch') {
+    if (par === 3) {
+      // Aces should be extremely rare.
+      weights = [0.025, 20.975, 59, 16, 4];
+    } else if (par === 4) {
+      // Eagles remain rare.
+      weights = [0.15, 20.85, 59, 16, 4];
+    } else {
+      // Par-5 eagles are comparatively more plausible.
+      weights = [3, 18, 59, 16, 4];
+    }
+  }
+
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+
   let position = roll * totalWeight;
 
-  for (let i = 0; i < model.weights.length; i++) {
-    position -= model.weights[i];
+  
+  for (let i = 0; i < weights.length; i++) {
+    position -= weights[i];
+
 
     if (position < 0) {
       return Math.max(1, par + model.outcomes[i]);
