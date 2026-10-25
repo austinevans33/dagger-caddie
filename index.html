@@ -5221,16 +5221,19 @@ document.getElementById('dccGhostRecord')
       ];
 
       // Save before updating the displayed match.
+      
       localStorage.setItem(
         DCC_GHOST_DRAFT_KEY,
         JSON.stringify({
-  version: 1,
-  tier,
-  holesPlanned: dccGhostLength,
-  holes: next
-})
+          version: 1,
+          tier,
+          holesPlanned: dccGhostLength,
+          holes: next
+        })
+      );
 
       dccGhostHoles = next;
+
       scoreInput.value = '';
 
       message.textContent =
@@ -5269,16 +5272,19 @@ document.getElementById('dccGhostUndo')
 
     try {
       // Persist the change before updating the interface.
+
       localStorage.setItem(
         DCC_GHOST_DRAFT_KEY,
         JSON.stringify({
-  version: 1,
-  tier,
-  holesPlanned: dccGhostLength,
-  holes: next
-})
+          version: 1,
+          tier,
+          holesPlanned: dccGhostLength,
+          holes: next
+        })
+      );
 
       dccGhostHoles = next;
+
       message.textContent =
         'Last hole removed. Earlier Ghost scores are unchanged.';
       dccGhostRender();
