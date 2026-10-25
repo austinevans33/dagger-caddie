@@ -4104,6 +4104,71 @@ let activeW=read('dagger_foursome_active',null),wHistory=read('dagger_foursome_h
 const wStore=()=>{store('dagger_foursome_active',activeW);store('dagger_foursome_history',wHistory);};
 const wVal=(n)=>Number.isFinite(+n)&&+n>0?+n:null;
 
+// DCC STEP 27A — SHARED COMPETITION RECORD FOUNDATION
+// Schema only: no Firebase writes or wager settlement yet.
+function dccCreateRoundRecord(players, format = 'match-play') {
+  if (!Array.isArray(players) || players.length < 1 ||
+      players.length > 4) {
+    throw new Error('A competition requires 1–4 players.');
+  }
+
+  const names = players.map(name =>
+    typeof name === 'string' ? name.trim() : ''
+  );
+
+  if (names.some(name => !name || name.length > 24) ||
+      new Set(names.map(n => n.toLowerCase())).size !== names.length) {
+    throw new Error('Enter distinct player names (1–24 characters).');
+  }
+
+  const allowedFormats = [
+    'match-play',
+    'head-to-head',
+    'nassau',
+    'skins',
+    'stroke-play',
+    'stableford',
+    'bingo',
+    'vegas',
+    'wolf',
+    'hammer',
+    'round-robin',
+    'snake'
+  ];
+
+  if (!allowedFormats.includes(format)) {
+    throw new Error('Unsupported competition format.');
+  }
+
+  const now = Date.now();
+
+  return {
+    schemaVersion: 1,
+    id: 'dcc-' + now + '-' +
+      Math.random().toString(36).slice(2, 10),
+    createdAt: now,
+    updatedAt: now,
+    status: 'draft',
+    primaryFormat: format,
+    holesPlanned: 18,
+    scoringBasis: 'gross',
+    players: names.map((name, index) => ({
+      id: 'p' + (index + 1),
+      name
+    })),
+    scores: [],
+    events: [],
+    sideGames: [],
+    wagers: [],
+    settlements: [],
+    rules: {},
+    metadata: {
+      source: 'dagger-caddy',
+      official: false
+    }
+  };
+}
+
 // DCC STEP 26A — MATCH PLAY SCORING FOUNDATION
 // Scores: [[player1, player2], ...] in hole order.
 // Lower score wins the hole. Ties halve the hole.
