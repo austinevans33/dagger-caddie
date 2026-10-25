@@ -2193,6 +2193,72 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   margin: 8px 0 0;
 }
 
+/* DCC STEP 26B — MATCH PLAY SCORING DESK */
+
+.dcc-match-desk {
+  background: #f3ead8;
+  border: 1px solid #b79c62;
+  border-radius: 17px;
+  padding: 9px;
+}
+
+#dccMatchDesk > summary {
+  background: linear-gradient(135deg,#224936,#143126);
+  color: #fff4dc;
+  border: 1px solid #b79c62;
+  border-radius: 12px;
+  padding: 17px;
+  font: 800 12px system-ui,sans-serif;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+
+.dcc-match-inner {
+  padding: 14px 5px 6px;
+}
+
+.dcc-match-scoreboard {
+  background: #193d2d;
+  border: 1px solid #b79c62;
+  border-radius: 14px;
+  padding: 20px 12px;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.dcc-match-scoreboard small,
+.dcc-match-scoreboard span {
+  display: block;
+  color: #d9be86;
+  font: 11px system-ui,sans-serif;
+}
+
+.dcc-match-scoreboard strong {
+  display: block;
+  color: #fff4dc;
+  font: 700 24px Georgia,serif;
+  margin: 10px 0;
+}
+
+.dcc-match-desk button {
+  border-radius: 11px;
+  min-height: 47px;
+}
+
+.dcc-match-history {
+  margin-top: 14px;
+}
+
+.dcc-match-history > div {
+  background: #fffaf0;
+  border: 1px solid #d0bf9c;
+  border-radius: 9px;
+  padding: 10px;
+  margin-top: 5px;
+  color: #193d2d;
+  font: 12px system-ui,sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -3212,6 +3278,59 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </div>
 </section>
 
+<!-- DCC STEP 26B — MATCH PLAY TEST DESK -->
+<section class="card dcc-match-desk" data-tab="games">
+  <details id="dccMatchDesk">
+    <summary>NEW · MATCH PLAY SCORING DESK</summary>
+    <div class="dcc-match-inner">
+      <p class="note">
+        Gross-score Match Play prototype.
+        Local to this screen; not yet saved or wagered.
+      </p>
+
+      <div class="grid">
+        <div>
+          <label>Player 1</label>
+          <input id="dccMpName1" value="Me" maxlength="24">
+        </div>
+        <div>
+          <label>Player 2</label>
+          <input id="dccMpName2" value="Opponent" maxlength="24">
+        </div>
+      </div>
+
+      <div class="dcc-match-scoreboard">
+        <small>OFFICIAL MATCH POSITION</small>
+        <strong id="dccMpPosition">ALL SQUARE</strong>
+        <span id="dccMpProgress">Hole 1 of 18</span>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Player 1 strokes</label>
+          <input id="dccMpScore1" type="number" min="1" max="20" inputmode="numeric">
+        </div>
+        <div>
+          <label>Player 2 strokes</label>
+          <input id="dccMpScore2" type="number" min="1" max="20" inputmode="numeric">
+        </div>
+      </div>
+
+      <button id="dccMpSave" class="btn-primary" type="button">
+        Record Hole
+      </button>
+
+      <div class="grid" style="margin-top:9px">
+        <button id="dccMpUndo" class="btn-secondary" type="button">Undo Hole</button>
+        <button id="dccMpReset" class="btn-ghost" type="button">Reset Match</button>
+      </div>
+
+      <p id="dccMpMessage" class="note" aria-live="polite"></p>
+      <div id="dccMpHistory" class="dcc-match-history"></div>
+    </div>
+  </details>
+</section>
+
 <section class="card" data-tab="games" id="bingoGameCard"><div class="over" style="color:#776344">DAGGER COUNTRY CLUB · COMPETITION COMMITTEE</div><h2>Bingo Bango Bongo</h2><p class="muted">Three independent points on every hole. Maximum chaos, minimal mathematics.</p>
   <details open><summary>How to play · Bingo Bango Bongo</summary><div style="padding:10px 0"><p>Each hole offers <strong>three independent points</strong>:</p><p><strong>Bingo:</strong> First player to get their ball on the green.<br><strong>Bango:</strong> Closest to the hole once every ball is on the green.<br><strong>Bongo:</strong> First player to hole out.</p><p class="note">Keep proper order of play, especially for Bingo and Bongo. No points are automatically awarded for a tie; choose the applicable player or leave unawarded. It's a points game, not normal stroke-play scoring.</p></div></details>
   <div class="grid"><div><label>Player 1</label><input id="gP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="gP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="gP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="gP4" maxlength="24" placeholder="Optional"></div></div>
@@ -3976,6 +4095,88 @@ function dccMatchPlay(scores, totalHoles = 18) {
     status
   };
 }
+
+// DCC STEP 26B — MATCH PLAY TEST DESK
+const dccMpScores = [];
+
+function dccMpRender() {
+  const result = dccMatchPlay(dccMpScores);
+  const first = document.getElementById('dccMpName1').value.trim() || 'Player 1';
+  const second = document.getElementById('dccMpName2').value.trim() || 'Player 2';
+
+  const position = document.getElementById('dccMpPosition');
+  const progress = document.getElementById('dccMpProgress');
+  const save = document.getElementById('dccMpSave');
+  const history = document.getElementById('dccMpHistory');
+
+  position.textContent = result.lead === 0
+    ? result.status.toUpperCase()
+    : (result.lead > 0 ? first : second) + ' · ' + result.status;
+
+  progress.textContent = result.decided
+    ? 'MATCH COMPLETE · ' + result.played + ' HOLES'
+    : 'Next hole: ' + (result.played + 1) + ' of 18';
+
+  save.disabled = result.decided;
+
+  history.replaceChildren();
+
+  dccMpScores.forEach((scores, index) => {
+    const item = document.createElement('div');
+    item.textContent = 'Hole ' + (index + 1) + ' · '
+      + first + ': ' + scores[0] + ' · '
+      + second + ': ' + scores[1];
+    history.appendChild(item);
+  });
+}
+
+document.getElementById('dccMpSave').addEventListener('click', () => {
+  if (dccMatchPlay(dccMpScores).decided) return;
+
+  const a = document.getElementById('dccMpScore1');
+  const b = document.getElementById('dccMpScore2');
+  const first = a.value.trim();
+  const second = b.value.trim();
+
+  const valid = value =>
+    /^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 20;
+
+  if (!valid(first) || !valid(second)) {
+    document.getElementById('dccMpMessage').textContent =
+      'Enter 1–20 strokes for both players.';
+    return;
+  }
+
+  dccMpScores.push([Number(first), Number(second)]);
+  a.value = '';
+  b.value = '';
+
+  document.getElementById('dccMpMessage').textContent =
+    'Hole recorded.';
+  dccMpRender();
+});
+
+document.getElementById('dccMpUndo').addEventListener('click', () => {
+  dccMpScores.pop();
+  document.getElementById('dccMpMessage').textContent =
+    'Last hole removed.';
+  dccMpRender();
+});
+
+document.getElementById('dccMpReset').addEventListener('click', () => {
+  if (!dccMpScores.length || confirm('Discard this test match?')) {
+    dccMpScores.length = 0;
+    document.getElementById('dccMpMessage').textContent =
+      'Match reset.';
+    dccMpRender();
+  }
+});
+
+['dccMpName1', 'dccMpName2'].forEach(id => {
+  document.getElementById(id).addEventListener('input', dccMpRender);
+});
+
+dccMpRender();
 
 function wagerMath(game){
  const names=game.players,score=names.map(()=>0),stake=Number(game.stake)||0;
