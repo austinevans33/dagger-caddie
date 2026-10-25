@@ -2704,6 +2704,42 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   margin-top: 14px;
 }
 
+/* DCC STEP 30B.1 — GHOST MEMBER CARDS */
+
+.dcc-ghost-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 17px;
+  background: #193d2d;
+  border: 1px solid #b79c62;
+  border-radius: 13px;
+  color: #fff4dc;
+}
+
+.dcc-ghost-identity small {
+  color: #d9be86;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .1em;
+}
+
+.dcc-ghost-identity strong {
+  color: #fff4dc;
+  font: 700 21px Georgia,serif;
+}
+
+.dcc-ghost-identity em {
+  color: #e7c98e;
+  font: italic 13px/1.5 Georgia,serif;
+}
+
+.dcc-ghost-identity p {
+  color: #e4ddcd;
+  font: 12px/1.7 system-ui,sans-serif;
+  margin: 3px 0 0;
+}
+
 </style>
 </head>
 <body>
@@ -3884,14 +3920,32 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
     <div class="dcc-ghost-fields">
       <div>
         <label for="dccGhostTier">House opponent</label>
-        <select id="dccGhostTier">
-          <option value="scratch">Scratch</option>
-          <option value="fiveTen">5–10 Handicap</option>
-          <option value="tenFifteen" selected>
-            10–15 Handicap
-          </option>
-          <option value="fifteenTwenty">15–20 Handicap</option>
-        </select>
+       
+<select id="dccGhostTier">
+  <option value="scratch">The Undertaker · Scratch</option>
+  <option value="fiveTen">The Sandbagger · 5–10 HCP</option>
+  <option value="tenFifteen" selected>
+    The Weekend Menace · 10–15 HCP
+  </option>
+  <option value="fifteenTwenty">
+    The Liability · 15–20 HCP
+  </option>
+</select>
+
+<!-- DCC STEP 30B.1 — GHOST OPPONENT IDENTITY -->
+<div id="dccGhostIdentity" class="dcc-ghost-identity">
+  <small id="dccGhostIdentityRank">HOUSE MEMBER · 10–15 HCP</small>
+  <strong id="dccGhostIdentityName">THE WEEKEND MENACE</strong>
+  <em id="dccGhostIdentityQuote">
+    "One incredible hole. Three questionable decisions."
+  </em>
+  <p id="dccGhostIdentityDescription">
+    Dangerous in unpredictable bursts. Can make a brilliant
+    par save, follow it with a triple bogey, and still insist
+    he's close to figuring something out.
+  </p>
+</div>
+
       </div>
       <div>
         <label for="dccGhostPar">Hole par</label>
@@ -4813,6 +4867,66 @@ function dccRoundRecordSelfTest() {
     allPassed: checks.every(c => c.passed)
   };
 }
+
+// DCC STEP 30B.1 — THE HOUSE GHOST MEMBERS
+const DCC_GHOST_MEMBERS = Object.freeze({
+  scratch: {
+    name: 'THE UNDERTAKER',
+    rank: 'SCRATCH',
+    quote: '"He doesn’t make mistakes. He waits for yours."',
+    description:
+      'The club’s most feared member. Fairways, greens, ' +
+      'and the occasional birdie that feels personally ' +
+      'directed at you. Doesn’t talk much. Doesn’t need to.'
+  },
+  fiveTen: {
+    name: 'THE SANDBAGGER',
+    rank: '5–10 HCP',
+    quote: '"Claims he’s playing terribly. Somehow always has a chance."',
+    description:
+      'A suspiciously competent regular. Makes enough bogeys ' +
+      'to seem harmless, then casually finds a birdie when ' +
+      'you start feeling confident.'
+  },
+  tenFifteen: {
+    name: 'THE WEEKEND MENACE',
+    rank: '10–15 HCP',
+    quote: '"One incredible hole. Three questionable decisions."',
+    description:
+      'Dangerous in unpredictable bursts. Can make a brilliant ' +
+      'par save, follow it with a triple bogey, and still insist ' +
+      'he’s close to figuring something out.'
+  },
+  fifteenTwenty: {
+    name: 'THE LIABILITY',
+    rank: '15–20 HCP',
+    quote: '"A legitimate threat. Mostly to himself."',
+    description:
+      'Plays with limitless confidence and occasionally ' +
+      'remembers how golf works. His scorecard is a crime ' +
+      'scene, but underestimate him and he’ll steal a hole.'
+  }
+});
+
+function dccShowGhostIdentity() {
+  const tier = document.getElementById('dccGhostTier')?.value;
+  const member = DCC_GHOST_MEMBERS[tier];
+  if (!member) return;
+
+  document.getElementById('dccGhostIdentityRank').textContent =
+    'HOUSE MEMBER · ' + member.rank;
+  document.getElementById('dccGhostIdentityName').textContent =
+    member.name;
+  document.getElementById('dccGhostIdentityQuote').textContent =
+    member.quote;
+  document.getElementById('dccGhostIdentityDescription').textContent =
+    member.description;
+}
+
+document.getElementById('dccGhostTier')
+  ?.addEventListener('change', dccShowGhostIdentity);
+
+dccShowGhostIdentity();
 
 // DCC STEP 30A — HOUSE GHOST SCORING FOUNDATION
 // Prototype gross-stroke model, not an official handicap engine.
