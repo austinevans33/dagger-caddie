@@ -3031,6 +3031,43 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R4-B — BINGO'S THREE-POINT LEDGER */
+.dcc-bbb-awards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.dcc-bbb-awards > div {
+  min-width: 0;
+  padding: 10px 7px;
+  background: #e9dfc8;
+  border-radius: 9px;
+  text-align: center;
+}
+
+.dcc-bbb-awards small {
+  display: block;
+  color: #806735;
+  font: 800 10px system-ui, sans-serif;
+  letter-spacing: .06em;
+}
+
+.dcc-bbb-awards strong {
+  display: block;
+  margin-top: 6px;
+  color: #193b2d;
+  font: 700 12px/1.35 Georgia, serif;
+  overflow-wrap: anywhere;
+}
+
+@media(max-width:360px) {
+  .dcc-bbb-awards {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4354,7 +4391,18 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 
   <div id="gPlaying" hidden><div class="bet-summary" style="grid-template-columns:repeat(2,1fr)"><div class="betbox"><strong>Hole</strong><span id="gHole">1</span></div><div class="betbox"><strong>Points awarded</strong><span id="gTotal">0</span></div></div>
   <div class="grid"><div><label>Bingo · First on green</label><select id="gBingo"></select></div><div><label>Bango · Closest when all on</label><select id="gBango"></select></div><div><label>Bongo · First holed</label><select id="gBongo"></select></div></div>
-  <button class="btn-primary" id="gSave" style="margin-top:10px">Save hole & next</button><div class="grid" style="margin-top:8px"><button class="btn-ghost" id="gUndo">Undo last hole</button><button class="btn-secondary" id="gFinish">Archive game</button></div><div id="gStandings" class="note" style="margin-top:10px"></div><p id="gStatus" class="status"></p></div>
+  <button class="btn-primary" id="gSave" style="margin-top:10px">Save hole & next</button><div class="grid" style="margin-top:8px"><button class="btn-ghost" id="gUndo">Undo last hole</button><button class="btn-secondary" id="gFinish">Archive game</button></div><div id="gStandings" class="note" style="margin-top:10px"></div>
+<!-- DCC R4-B — BINGO LIVE LEDGER -->
+<details id="bbbLedgerPanel" class="dcc-vw-ledger-panel">
+  <summary>
+    <span>BINGO · HOLE-BY-HOLE LEDGER</span>
+    <small>Tap to expand</small>
+  </summary>
+  <div id="bbbLiveLedger" class="dcc-vw-ledger">
+    Record a hole to begin the ledger.
+  </div>
+</details>
+<p id="gStatus" class="status"></p></div>
   <details style="margin-top:12px"><summary>Past games & lifetime points</summary><div id="gLifetime" class="note" style="margin-top:10px"></div><div id="gHistory" class="note"></div></details>
 </section>
 
@@ -7045,7 +7093,67 @@ function renderBBB() {
   if (setup) setup.hidden = !!activeG;
 
  if(activeG){const g=activeG; $('gHole').textContent=Math.min(18,g.holes.length+1);$('gTotal').textContent=g.holes.flat().filter(x=>x!==null).length;['gBingo','gBango','gBongo'].forEach(id=>{const sel=$(id);sel.innerHTML='';[['','No point / tie'],...g.players.map((p,i)=>[String(i),p])].forEach(([value,name])=>{const o=document.createElement('option');o.value=value;o.textContent=name;sel.append(o);});}); $('gStandings').textContent=g.players.map((p,i)=>p+': '+bbbScore(g)[i]+' pts').join(' · ');}
- const totals={};gHistory.forEach(g=>g.players.forEach((p,i)=>{totals[p]=(totals[p]||0)+bbbScore(g)[i]})); $('gLifetime').textContent=gHistory.length+' archived games · Lifetime: '+(Object.entries(totals).map(([p,n])=>p+' '+n).join(' · ')||'No games yet');$('gHistory').innerHTML='';gHistory.slice(-8).reverse().forEach(g=>{const p=document.createElement('p');p.textContent=new Date(g.ended).toLocaleDateString()+' · '+g.players.map((name,i)=>name+' '+bbbScore(g)[i]).join(' | ');$('gHistory').append(p);});}
+ const totals={};gHistory.forEach(g=>g.players.forEach((p,i)=>{totals[p]=(totals[p]||0)+bbbScore(g)[i]})); $('gLifetime').textContent=gHistory.length+' archived games · Lifetime: '+(Object.entries(totals).map(([p,n])=>p+' '+n).join(' · ')||'No games yet');$('gHistory').innerHTML='';gHistory.slice(-8).reverse().forEach(g=>{const p=document.createElement('p');p.textContent=new Date(g.ended).toLocaleDateString()+' · '+g.players.map((name,i)=>name+' '+bbbScore(g)[i]).join(' | ');
+$('gHistory').append(p);});
+  dccRenderBBBLedger();
+}
+
+
+// DCC R4-B — BINGO, BANGO, BONGO LEDGER
+// Read-only display, derived from the existing saved round.
+function dccRenderBBBLedger() {
+  const root = document.getElementById('bbbLiveLedger');
+  if (!root) return;
+
+  root.replaceChildren();
+
+  if (!activeG || !activeG.holes.length) {
+    root.textContent = 'Record a hole to begin the ledger.';
+    return;
+  }
+
+  const labels = ['BINGO', 'BANGO', 'BONGO'];
+
+  // Newest hole first for quick on-course review.
+  for (let i = activeG.holes.length - 1; i >= 0; i--) {
+    const hole = activeG.holes[i];
+    if (!Array.isArray(hole)) continue;
+
+    const card = document.createElement('div');
+    card.className = 'dcc-vw-ledger-hole';
+
+    const heading = document.createElement('strong');
+    heading.textContent = 'HOLE ' + (i + 1);
+    card.appendChild(heading);
+
+    const awards = document.createElement('div');
+    awards.className = 'dcc-bbb-awards';
+
+    labels.forEach((label, category) => {
+      const winnerIndex = hole[category];
+      const winner = Number.isInteger(winnerIndex) &&
+        winnerIndex >= 0 &&
+        winnerIndex < activeG.players.length
+          ? activeG.players[winnerIndex]
+          : 'No point awarded';
+
+      const item = document.createElement('div');
+
+      const name = document.createElement('small');
+      name.textContent = label;
+
+      const result = document.createElement('strong');
+      result.textContent = winner;
+
+      item.append(name, result);
+      awards.appendChild(item);
+    });
+
+    card.appendChild(awards);
+    root.appendChild(card);
+  }
+}
+
 $('gStart').onclick=()=>{if(activeG&&!confirm('Replace the active Bingo Bango Bongo game?'))return;const names=[$('gP1').value,$('gP2').value,$('gP3').value,$('gP4').value].map(x=>x.trim()).filter(Boolean);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length){alert('Enter two to four distinct players.');return;}activeG={...freshGame(),players:names};gStore();renderBBB();};
 $('gSave').onclick=()=>{if(!activeG)return;if(activeG.holes.length>=18){$('gStatus').textContent='All 18 holes scored. Archive the game.';return;}activeG.holes.push(['gBingo','gBango','gBongo'].map(id=>$(id).value===''?null:Number($(id).value)));gStore();renderBBB();$('gStatus').textContent='Hole recorded. Three opportunities for glory; zero for dignity.';};
 $('gUndo').onclick=()=>{if(activeG&&activeG.holes.length){activeG.holes.pop();gStore();renderBBB();}};
