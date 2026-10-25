@@ -2740,6 +2740,34 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   margin: 3px 0 0;
 }
 
+/* DCC STEP 30C — GHOST HOLE LEDGER */
+
+.dcc-ghost-hole {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px;
+  border: 1px solid #c9b68e;
+  border-radius: 12px;
+  background: #fffaf0;
+}
+
+.dcc-ghost-hole strong {
+  color: #193d2d;
+  font: 700 16px Georgia,serif;
+}
+
+.dcc-ghost-hole span {
+  color: #3f5645;
+  font: 12px/1.5 system-ui,sans-serif;
+}
+
+.dcc-ghost-hole small {
+  color: #88703e;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .04em;
+}
+
 </style>
 </head>
 <body>
@@ -3969,9 +3997,9 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
       <small id="dccGhostProgress">Hole 1 of 18</small>
     </div>
 
-    <button id="dccGhostRecord" type="button" disabled>
-      Record Hole · Available Next Step
-    </button>
+   <button id="dccGhostRecord" type="button">
+  Record Hole Against Ghost
+</button>
 
     <p id="dccGhostMessage" class="dcc-ghost-message"
        role="status" aria-live="polite">
@@ -4990,6 +5018,149 @@ function dccGhostScore(par, tier = 'tenFifteen', rng = Math.random) {
 
   throw new Error('House Ghost scoring distribution is invalid.');
 }
+
+// DCC STEP 30C — HOUSE GHOST LOCAL MATCH
+// Completely separate from wagering and multiplayer records.
+const DCC_GHOST_DRAFT_KEY = 'dcc_house_ghost_draft_v1';
+
+let dccGhostHoles = [];
+
+try {
+  const saved = JSON.parse(
+    localStorage.getItem(DCC_GHOST_DRAFT_KEY) || 'null'
+  );
+
+  if (saved && DCC_GHOST_TIERS[saved.tier] &&
+      Array.isArray(saved.holes) &&
+      saved.holes.length <= 18 &&
+      saved.holes.every(h =>
+        h && [3, 4, 5].includes(h.par) &&
+        Number.isInteger(h.player) &&
+        Number.isInteger(h.ghost) &&
+        h.player >= 1 && h.player <= 20 &&
+        h.ghost >= 1 && h.ghost <= 20
+      )) {
+    dccGhostHoles = saved.holes;
+    document.getElementById('dccGhostTier').value = saved.tier;
+    dccShowGhostIdentity();
+  }
+} catch (error) {
+  console.warn('House Ghost draft could not be loaded:', error);
+}
+
+function dccGhostRender() {
+  const scores = dccGhostHoles.map(h => [h.player, h.ghost]);
+  const result = dccMatchPlay(scores);
+
+  const tierSelect = document.getElementById('dccGhostTier');
+  const ghost = DCC_GHOST_MEMBERS[tierSelect.value];
+
+  // Keep one opponent for the whole match.
+  tierSelect.disabled = dccGhostHoles.length > 0;
+
+  const position = document.getElementById('dccGhostPosition');
+  position.textContent = result.lead === 0
+    ? result.status.toUpperCase()
+    : (result.lead > 0 ? 'YOU' : ghost.name) +
+      ' · ' + result.status;
+
+  document.getElementById('dccGhostProgress').textContent =
+    result.decided
+      ? 'MATCH COMPLETE · ' + result.played + ' HOLES'
+      : 'NEXT HOLE · ' + (result.played + 1) + ' OF 18';
+
+  document.getElementById('dccGhostRecord').disabled =
+    result.decided || dccGhostHoles.length >= 18;
+
+  const history = document.getElementById('dccGhostHistory');
+  history.replaceChildren();
+
+  if (!dccGhostHoles.length) {
+    history.textContent =
+      'No holes recorded yet. Enter your score to challenge the house.';
+  }
+
+  let lead = 0;
+
+  dccGhostHoles.forEach((hole, index) => {
+    if (hole.player < hole.ghost) lead++;
+    if (hole.ghost < hole.player) lead--;
+
+    const card = document.createElement('div');
+    card.className = 'dcc-ghost-hole';
+
+    const heading = document.createElement('strong');
+    heading.textContent =
+      'HOLE ' + (index + 1) + ' · PAR ' + hole.par;
+
+    const score = document.createElement('span');
+    score.textContent =
+      'YOU ' + hole.player + '  |  ' +
+      ghost.name + ' ' + hole.ghost;
+
+    const standing = document.createElement('small');
+    standing.textContent =
+      lead === 0 ? 'ALL SQUARE' :
+      Math.abs(lead) + ' UP · ' +
+      (lead > 0 ? 'YOU' : ghost.name);
+
+    card.append(heading, score, standing);
+    history.appendChild(card);
+  });
+}
+
+document.getElementById('dccGhostRecord')
+  .addEventListener('click', () => {
+    const scoreInput =
+      document.getElementById('dccGhostPlayerScore');
+    const par = Number(document.getElementById('dccGhostPar').value);
+    const tier = document.getElementById('dccGhostTier').value;
+    const message = document.getElementById('dccGhostMessage');
+    const value = scoreInput.value.trim();
+
+    if (dccMatchPlay(
+      dccGhostHoles.map(h => [h.player, h.ghost])
+    ).decided || dccGhostHoles.length >= 18) {
+      return;
+    }
+
+    if (!/^\d+$/.test(value) ||
+        Number(value) < 1 || Number(value) > 20) {
+      message.textContent = 'Enter a score from 1 to 20 strokes.';
+      return;
+    }
+
+    try {
+      // Generate the Ghost score exactly once for this hole.
+      const ghostScore = dccGhostScore(par, tier);
+
+      const next = [
+        ...dccGhostHoles,
+        { par, player: Number(value), ghost: ghostScore }
+      ];
+
+      // Save before updating the displayed match.
+      localStorage.setItem(
+        DCC_GHOST_DRAFT_KEY,
+        JSON.stringify({ version: 1, tier, holes: next })
+      );
+
+      dccGhostHoles = next;
+      scoreInput.value = '';
+
+      message.textContent =
+        DCC_GHOST_MEMBERS[tier].name +
+        ' posted ' + ghostScore + '. Hole recorded.';
+
+      dccGhostRender();
+    } catch (error) {
+      console.warn('House Ghost save failed:', error);
+      message.textContent =
+        'Could not save this hole. No score was added.';
+    }
+  });
+
+dccGhostRender();
 
 // DCC STEP 26A — MATCH PLAY SCORING FOUNDATION
 // Scores: [[player1, player2], ...] in hole order.
