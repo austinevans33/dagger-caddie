@@ -3353,6 +3353,20 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   display: none !important;
 }
 
+/* DCC R5-H.2 — HAMMER HISTORY */
+#hmArchivePanel {
+  margin-top: 8px;
+  background: #eee6d7;
+  border-color: #d7c9aa;
+}
+
+#hmArchivePanel > summary {
+  color: #526655;
+  font-size: 11px;
+  min-height: 44px;
+  padding: 12px;
+}
+
 </style>
 </head>
 <body>
@@ -4762,7 +4776,18 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
     Record a hole to begin the ledger.
   </div>
 </details>
-<div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Hammer ledger</summary><div id="hmLifetime" class="note"></div></details></section>
+<div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div>
+<!-- DCC R5-H.2 — HISTORICAL HAMMER RESULTS -->
+<details id="hmArchivePanel" class="dcc-vw-ledger-panel">
+  <summary>
+    <span>PAST HAMMER GAMES</span>
+    <small>Lifetime results</small>
+  </summary>
+  <div id="hmLifetime" class="note" style="padding:12px">
+    No Hammer sessions archived yet.
+  </div>
+</details>
+</section>
 
 <section class="card game-hidden" data-tab="games" id="robinGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MEMBER FAVORITE</div><h2>6-6-6 / Round Robin</h2><p class="muted">Better-ball teams rotate every six holes: 1–6, 7–12, then 13–18. Great for a foursome where nobody wants the same partner all day.</p><details open><summary>How to play · 6-6-6</summary><p class="note">Use four players. Teams are 1+2 vs 3+4 on holes 1–6, 1+3 vs 2+4 on holes 7–12, and 1+4 vs 2+3 on holes 13–18. Record gross strokes; the lower best-ball score wins the hole. Winning teammates receive +1 point each, losers -1. Halves are zero.</p></details><div class="grid"><div><label>$ per point (optional)</label><input id="rrStake" type="number" min="0" step="0.25" value="0"></div><div><label>Player 1</label><input id="rrP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="rrP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="rrP3" maxlength="24" value="Player 3"></div><div><label>Player 4</label><input id="rrP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="rrStart" style="margin-top:10px">Start 6-6-6 round</button><div id="rrActive" hidden class="game-live"><h3>Hole <span id="rrHole">1</span></h3><div id="rrTeams" class="scoreline" style="font-weight:700"></div><div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
 
@@ -8212,8 +8237,10 @@ function dccRenderHammerLedger() {
     rows.push(card);
   });
 
-  // Show the most recent hole first.
-  rows.reverse().forEach(card => root.appendChild(card));
+ 
+  // Standard golf scorecard order: Hole 1 through Hole 18.
+  rows.forEach(card => root.appendChild(card));
+
 }
 
 
