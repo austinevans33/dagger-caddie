@@ -4131,9 +4131,46 @@ function dccMatchPlay(scores, totalHoles = 18) {
 }
 
 // DCC STEP 26B — MATCH PLAY TEST DESK
+
+// DCC STEP 26D — LOCAL MATCH PLAY RECOVERY
+const dccMpSaved = read('dcc_matchplay_draft_v1', null);
+
 const dccMpScores = [];
 
+if (dccMpSaved && Array.isArray(dccMpSaved.scores)) {
+  const validScores = dccMpSaved.scores.length <= 18 &&
+    dccMpSaved.scores.every(h =>
+      Array.isArray(h) &&
+      h.length === 2 &&
+      h.every(n => Number.isInteger(n) && n >= 1 && n <= 20)
+    );
+
+  if (validScores) {
+    dccMpScores.push(...dccMpSaved.scores);
+  }
+}
+
+if (dccMpSaved && typeof dccMpSaved.name1 === 'string') {
+  document.getElementById('dccMpName1').value =
+    dccMpSaved.name1.slice(0, 24);
+}
+
+if (dccMpSaved && typeof dccMpSaved.name2 === 'string') {
+  document.getElementById('dccMpName2').value =
+    dccMpSaved.name2.slice(0, 24);
+}
+
+
 function dccMpRender() {
+  
+  // Keep this draft separate from official games and wager records.
+  store('dcc_matchplay_draft_v1', {
+    version: 1,
+    name1: document.getElementById('dccMpName1').value,
+    name2: document.getElementById('dccMpName2').value,
+    scores: dccMpScores
+  });
+
   const result = dccMatchPlay(dccMpScores);
   const first = document.getElementById('dccMpName1').value.trim() || 'Player 1';
   const second = document.getElementById('dccMpName2').value.trim() || 'Player 2';
