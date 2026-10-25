@@ -4773,14 +4773,56 @@ function dccReadMatchLibrary() {
   }
 }
 
+// DCC STEP 28D — MATCH PLAY RECORD VALIDATION
+// Validation only; never edits or deletes existing records.
+function dccValidMatchPlayRecord(record) {
+  if (!record || record.schemaVersion !== 1 ||
+      record.primaryFormat !== 'match-play' ||
+      !Array.isArray(record.players) ||
+      record.players.length !== 2 ||
+      !Array.isArray(record.scores) ||
+      record.scores.length > 18) {
+    return false;
+  }
+
+  const validPlayers = record.players.every((player, index) =>
+    player &&
+    player.id === 'p' + (index + 1) &&
+    typeof player.name === 'string' &&
+    player.name.trim().length >= 1 &&
+    player.name.length <= 24
+  );
+
+  const validScores = record.scores.every((entry, index) =>
+    entry &&
+    entry.hole === index + 1 &&
+    entry.strokes &&
+    Number.isInteger(entry.strokes.p1) &&
+    Number.isInteger(entry.strokes.p2) &&
+    entry.strokes.p1 >= 1 &&
+    entry.strokes.p1 <= 20 &&
+    entry.strokes.p2 >= 1 &&
+    entry.strokes.p2 <= 20
+  );
+
+  const validStatus = ['draft', 'active', 'completed']
+    .includes(record.status);
+
+  return validPlayers && validScores && validStatus;
+}
+
 function dccSaveToMatchLibrary(record) {
   if (!record || record.schemaVersion !== 1 ||
       typeof record.id !== 'string' ||
       !record.id.startsWith('dcc-match-') ||
+    
       !Array.isArray(record.players) ||
-      !Array.isArray(record.scores)) {
+      !Array.isArray(record.scores) ||
+      (record.primaryFormat === 'match-play' &&
+       !dccValidMatchPlayRecord(record))) {
     return false;
   }
+
 
   try {
     const records = dccReadMatchLibrary();
