@@ -4005,6 +4005,14 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 
       </div>
       <div>
+        
+<!-- DCC STEP 30E — MATCH LENGTH -->
+<label for="dccGhostLength">Match length</label>
+<select id="dccGhostLength">
+  <option value="9">9 Holes</option>
+  <option value="18" selected>18 Holes</option>
+</select>
+
         <label for="dccGhostPar">Hole par</label>
         <select id="dccGhostPar">
           <option value="3">Par 3</option>
@@ -5062,7 +5070,12 @@ function dccGhostScore(par, tier = 'tenFifteen', rng = Math.random) {
 // Completely separate from wagering and multiplayer records.
 const DCC_GHOST_DRAFT_KEY = 'dcc_house_ghost_draft_v1';
 
+
 let dccGhostHoles = [];
+
+// DCC STEP 30E — Existing drafts are 18-hole matches.
+let dccGhostLength = 18;
+
 
 try {
   const saved = JSON.parse(
@@ -5071,7 +5084,10 @@ try {
 
   if (saved && DCC_GHOST_TIERS[saved.tier] &&
       Array.isArray(saved.holes) &&
-      saved.holes.length <= 18 &&
+  
+      saved.holes.length <=
+        (saved.holesPlanned === 9 ? 9 : 18) &&
+
       saved.holes.every(h =>
         h && [3, 4, 5].includes(h.par) &&
         Number.isInteger(h.player) &&
@@ -5079,7 +5095,13 @@ try {
         h.player >= 1 && h.player <= 20 &&
         h.ghost >= 1 && h.ghost <= 20
       )) {
+    
+    dccGhostLength = saved.holesPlanned === 9 ? 9 : 18;
     dccGhostHoles = saved.holes;
+
+    document.getElementById('dccGhostLength').value =
+      String(dccGhostLength);
+
     document.getElementById('dccGhostTier').value = saved.tier;
     dccShowGhostIdentity();
   }
@@ -5089,13 +5111,19 @@ try {
 
 function dccGhostRender() {
   const scores = dccGhostHoles.map(h => [h.player, h.ghost]);
-  const result = dccMatchPlay(scores);
+  
+  const result = dccMatchPlay(scores, dccGhostLength);
+
 
   const tierSelect = document.getElementById('dccGhostTier');
   const ghost = DCC_GHOST_MEMBERS[tierSelect.value];
 
   // Keep one opponent for the whole match.
   tierSelect.disabled = dccGhostHoles.length > 0;
+  
+  document.getElementById('dccGhostLength').disabled =
+    dccGhostHoles.length > 0;
+
 
   const position = document.getElementById('dccGhostPosition');
   position.textContent = result.lead === 0
@@ -5103,14 +5131,20 @@ function dccGhostRender() {
     : (result.lead > 0 ? 'YOU' : ghost.name) +
       ' · ' + result.status;
 
+ 
   document.getElementById('dccGhostProgress').textContent =
     result.decided
-      ? 'MATCH COMPLETE · ' + result.played + ' HOLES'
-      : 'NEXT HOLE · ' + (result.played + 1) + ' OF 18';
+      ? 'MATCH COMPLETE · ' + result.played +
+        ' OF ' + dccGhostLength + ' HOLES'
+      : 'NEXT HOLE · ' + (result.played + 1) +
+        ' OF ' + dccGhostLength;
+
 
   
+  
   document.getElementById('dccGhostRecord').disabled =
-    result.decided || dccGhostHoles.length >= 18;
+    result.decided || dccGhostHoles.length >= dccGhostLength;
+
 
   // DCC STEP 30D — Update the Undo button after each hole.
   dccGhostUpdateActions();
@@ -5163,8 +5197,11 @@ document.getElementById('dccGhostRecord')
     const value = scoreInput.value.trim();
 
     if (dccMatchPlay(
-      dccGhostHoles.map(h => [h.player, h.ghost])
-    ).decided || dccGhostHoles.length >= 18) {
+      
+      dccGhostHoles.map(h => [h.player, h.ghost]),
+      dccGhostLength
+    ).decided || dccGhostHoles.length >= dccGhostLength) {
+
       return;
     }
 
@@ -5186,8 +5223,12 @@ document.getElementById('dccGhostRecord')
       // Save before updating the displayed match.
       localStorage.setItem(
         DCC_GHOST_DRAFT_KEY,
-        JSON.stringify({ version: 1, tier, holes: next })
-      );
+        JSON.stringify({
+  version: 1,
+  tier,
+  holesPlanned: dccGhostLength,
+  holes: next
+})
 
       dccGhostHoles = next;
       scoreInput.value = '';
@@ -5205,6 +5246,18 @@ document.getElementById('dccGhostRecord')
   });
 
 
+// DCC STEP 30E — LOCK MATCH LENGTH AFTER FIRST HOLE
+document.getElementById('dccGhostLength')
+  .addEventListener('change', event => {
+    if (dccGhostHoles.length > 0) {
+      event.target.value = String(dccGhostLength);
+      return;
+    }
+
+    dccGhostLength = Number(event.target.value) === 9 ? 9 : 18;
+    dccGhostRender();
+  });
+
 // DCC STEP 30D — UNDO THE MOST RECENT GHOST HOLE
 document.getElementById('dccGhostUndo')
   .addEventListener('click', () => {
@@ -5218,8 +5271,12 @@ document.getElementById('dccGhostUndo')
       // Persist the change before updating the interface.
       localStorage.setItem(
         DCC_GHOST_DRAFT_KEY,
-        JSON.stringify({ version: 1, tier, holes: next })
-      );
+        JSON.stringify({
+  version: 1,
+  tier,
+  holesPlanned: dccGhostLength,
+  holes: next
+})
 
       dccGhostHoles = next;
       message.textContent =
@@ -5251,7 +5308,12 @@ document.getElementById('dccGhostReset')
 
       localStorage.setItem(
         DCC_GHOST_DRAFT_KEY,
-        JSON.stringify({ version: 1, tier, holes: [] })
+        JSON.stringify({
+  version: 1,
+  tier,
+  holesPlanned: dccGhostLength,
+  holes: []
+})
       );
 
       dccGhostHoles = [];
