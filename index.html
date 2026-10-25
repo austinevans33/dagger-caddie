@@ -3187,6 +3187,56 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R5-C — SLIM THE ACTION SHORTCUT */
+.games-action-link.dcc-action-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 7px 0 10px;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.dcc-action-compact-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.dcc-action-compact-copy strong {
+  display: block;
+  color: #fff4dc;
+  font: 700 13px/1.3 Georgia, serif;
+}
+
+.dcc-action-compact-copy small {
+  display: block;
+  color: #d9c498;
+  font: 11px/1.3 system-ui, sans-serif;
+  margin-top: 2px;
+}
+
+#gamesOpenAction {
+  width: auto;
+  min-height: 40px;
+  flex: 0 0 auto;
+  padding: 0 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+@media(max-width:360px) {
+  .dcc-action-compact-copy strong {
+    font-size: 12px;
+  }
+
+  #gamesOpenAction {
+    padding: 0 9px;
+    font-size: 11px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3883,22 +3933,16 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </section>
       
 <!-- DCC — GAMES TO THE ACTION -->
-<section class="games-action-link" data-tab="games">
-  <div class="games-action-eyebrow">
-    DAGGER COUNTRY CLUB · THE WAGERING DESK
+
+<!-- DCC R5-C — COMPACT ACTION SHORTCUT -->
+<section class="games-action-link dcc-action-compact" data-tab="games">
+  <div class="dcc-action-compact-copy">
+    <strong>Playing for something?</strong>
+    <small>Wagers &amp; settlements</small>
   </div>
-  <h3>Playing for Something?</h3>
-  <p>
-    Keep the competition in Games and head to The Action
-    to manage your wagers, match invitations, and records.
-  </p>
   <button type="button" id="gamesOpenAction" class="btn-primary">
-    Enter The Action →
+    The Action →
   </button>
-  <small>
-    Automatic game-to-wager syncing is being developed.
-    Existing scores and wagers remain separate for now.
-  </small>
 </section>
 
 <section class="card" data-tab="games" id="gamesMenu">
