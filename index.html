@@ -4508,6 +4508,24 @@ function dccMpSharedSnapshot() {
   return record;
 }
 
+// DCC STEP 27F — LOCAL SHARED RECORD MIRROR
+// Keeps a structured copy separate from the existing draft.
+// Not an official Firebase match and not a wager settlement.
+function dccMpSaveSharedRecord() {
+  try {
+    const record = dccMpSharedSnapshot();
+    record.updatedAt = Date.now();
+
+    const key = 'dcc_shared_match_v1';
+
+    localStorage.setItem(key, JSON.stringify(record));
+    return true;
+  } catch (error) {
+    console.warn('DCC shared record not saved:', error.message);
+    return false;
+  }
+}
+
 // DCC STEP 27D — VIEW SHARED MATCH RECORD
 document.getElementById('dccMpPreview').addEventListener('click', () => {
   const output = document.getElementById('dccMpPreviewResult');
@@ -4605,10 +4623,16 @@ dccMpScores.forEach((scores, index) => {
   const position = document.createElement('small');
   position.textContent = 'MATCH: ' + matchLeader;
 
+  
   item.append(heading, detail, position);
   history.appendChild(item);
 });
+
+  // Mirror the current match into the shared competition format.
+  // Failure here must never interrupt the working scorekeeper.
+  dccMpSaveSharedRecord();
 }
+
 
 document.getElementById('dccMpSave').addEventListener('click', () => {
   if (dccMatchPlay(dccMpScores).decided) return;
