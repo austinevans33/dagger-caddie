@@ -3498,6 +3498,36 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   overflow-wrap: anywhere;
 }
 
+/* DCC R7-E — SNAKE CHRONOLOGICAL LEDGER */
+#snStandings[hidden] {
+  display: none !important;
+}
+
+.dcc-snake-event {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 9px 0;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d2c29f;
+  background: #e9dfc8;
+  color: #193b2d;
+}
+
+.dcc-snake-event > strong {
+  font: 800 13px system-ui, sans-serif;
+}
+
+.dcc-snake-event > span {
+  font: 700 13px Georgia, serif;
+}
+
+.dcc-snake-event > small {
+  color: #655633;
+  font: 12px/1.4 system-ui, sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -5004,7 +5034,24 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
      role="status"
      aria-live="polite">
 </div>
-<div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div><div id="snStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div>
+<div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div>
+<!-- DCC R7-E — Legacy standings retained but hidden -->
+<div id="snStandings"
+     class="scoreline"
+     hidden
+     aria-hidden="true"></div>
+
+<!-- DCC R7-E — SNAKE CHRONOLOGICAL EVENT LEDGER -->
+<details id="snLedgerPanel" class="dcc-vw-ledger-panel">
+  <summary>
+    <span>SNAKE · THREE-PUTT LEDGER</span>
+    <small>Tap to expand</small>
+  </summary>
+  <div id="snLiveLedger" class="dcc-vw-ledger">
+    Record a three-putt to begin the ledger.
+  </div>
+</details>
+<div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div>
 <!-- DCC R7-C — SNAKE ARCHIVE -->
 <details id="snArchivePanel" class="dcc-vw-ledger-panel dcc-game-archive">
   <summary>
@@ -8752,12 +8799,66 @@ function dccRenderSnakeScoreboard() {
 }
 
 
+// DCC R7-E — SNAKE EVENT LEDGER
+// Display-only; uses the existing saved event records.
+function dccRenderSnakeLedger() {
+  const root = document.getElementById('snLiveLedger');
+  if (!root) return;
+
+  root.replaceChildren();
+
+  if (!sn || !sn.events.length) {
+    root.textContent = 'Record a three-putt to begin the ledger.';
+    return;
+  }
+
+  const stake = Number(sn.stake) || 0;
+  const totals = {};
+  sn.players.forEach(name => totals[name] = 0);
+
+  // Event order is preserved; multiple events on one hole are valid.
+  sn.events.forEach((event, index) => {
+    if (Object.prototype.hasOwnProperty.call(totals, event.player)) {
+      totals[event.player]++;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'dcc-snake-event';
+
+    const title = document.createElement('strong');
+    title.textContent =
+      'EVENT ' + (index + 1) + ' · ' + event.player;
+
+    const hole = document.createElement('span');
+    hole.textContent = Number.isInteger(event.hole) &&
+      event.hole >= 1 && event.hole <= 18
+      ? 'Hole ' + event.hole
+      : 'Hole not specified';
+
+    const count = totals[event.player] || 0;
+
+    const details = document.createElement('small');
+    details.textContent =
+      'Player total: ' + count +
+      (count === 1 ? ' three-putt' : ' three-putts') +
+      (stake > 0
+        ? ' · Recorded penalties: ' + money(count * stake)
+        : '');
+
+    card.append(title, hole, details);
+    root.appendChild(card);
+  });
+}
+
+
 function snStore() {
   store(SN_ACTIVE, sn);
   store(SN_HISTORY, snh);
   snRender();
   dccRenderSnakeScoreboard();
+  dccRenderSnakeLedger();
 }
+
 
 $('snStart').onclick=()=>{const players=['snP1','snP2','snP3','snP4'].map(id=>$(id).value.trim()).filter(Boolean);if(players.length<2||new Set(players.map(x=>x.toLowerCase())).size!==players.length){alert('Enter at least two different names.');return;}sn={players,stake:Math.max(0,Number($('snStake').value)||0),events:[],started:Date.now()};snStore();};
 $('snSave').onclick=()=>{if(!sn)return;sn.events.push({player:$('snWho').value,hole:Number($('snHole').value)||null,ts:Date.now()});$('snHole').value='';snStore();};
@@ -8797,7 +8898,9 @@ dccRenderRRScoreboard();
 dccRenderRRLedger();
 snRender();
 dccRenderSnakeScoreboard();
+dccRenderSnakeLedger();
 renderRecap();
+
 
 
 
