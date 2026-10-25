@@ -5360,8 +5360,35 @@ dccMpScores.forEach((scores, index) => {
 }
 
 
+// DCC STEP 29I — MATCH SCORE EDIT PERMISSION
+// Local UI safeguard only. Firebase rules will enforce access
+// independently when cloud competitions are introduced.
+function dccMpCanEditScores() {
+  const ownerUid = dccMpOwnerUid();
+  const identity = window.dccCompetitionIdentity;
+
+  if (!ownerUid) return true;
+
+  if (identity?.signedIn && identity.uid === ownerUid) {
+    return true;
+  }
+
+  const message = document.getElementById('dccMpMessage');
+  if (message) {
+    message.textContent =
+      'READ ONLY: This match belongs to another membership. ' +
+      'Sign in with the owning account to edit scores.';
+    message.setAttribute('role', 'alert');
+  }
+
+  return false;
+}
+
+
 document.getElementById('dccMpSave').addEventListener('click', () => {
+  if (!dccMpCanEditScores()) return;
   if (dccMatchPlay(dccMpScores).decided) return;
+
 
   const a = document.getElementById('dccMpScore1');
   const b = document.getElementById('dccMpScore2');
@@ -5386,8 +5413,11 @@ document.getElementById('dccMpSave').addEventListener('click', () => {
   dccMpRender();
 });
 
+
 document.getElementById('dccMpUndo').addEventListener('click', () => {
+  if (!dccMpCanEditScores()) return;
   dccMpScores.pop();
+
   document.getElementById('dccMpMessage').textContent =
     'Last hole removed.';
   dccMpRender();
