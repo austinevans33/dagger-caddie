@@ -2360,6 +2360,71 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   overflow-wrap: anywhere;
 }
 
+/* DCC STEP 27G — THE ACTION LINKED GAME */
+
+.dcc-linked-game {
+  background: #f3ead8;
+  border: 1px solid #b79c62;
+  border-radius: 17px;
+  padding: 15px;
+}
+
+.dcc-linked-heading {
+  background: linear-gradient(135deg,#224936,#143126);
+  border: 1px solid #b79c62;
+  border-radius: 13px;
+  padding: 18px 15px;
+}
+
+.dcc-linked-heading span {
+  display: block;
+  color: #d9be86;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .12em;
+}
+
+.dcc-linked-heading h3 {
+  color: #fff4dc;
+  font: 700 23px Georgia,serif;
+  margin: 10px 0 7px;
+}
+
+.dcc-linked-heading p {
+  color: #e5dac3;
+  font: 12px/1.6 system-ui,sans-serif;
+  margin: 0;
+}
+
+.dcc-linked-status {
+  margin: 13px 0;
+  padding: 15px;
+  background: #fffaf0;
+  border: 1px solid #c9b68e;
+  border-radius: 11px;
+  color: #193d2d;
+  font: 12px/1.8 system-ui,sans-serif;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+#dccRefreshLinkedGame {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 11px;
+  background: #193d2d;
+  color: #fff4dc;
+  border: 1px solid #b79c62;
+  font: 800 12px system-ui,sans-serif;
+}
+
+.dcc-linked-footnote {
+  display: block;
+  margin-top: 11px;
+  color: #716a58;
+  font: 11px/1.5 system-ui,sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -2878,6 +2943,30 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   <small>
     Game scoring and wagering are currently separate.
     Unified live wagers are coming in the next development phase.
+  </small>
+</section>
+
+<!-- DCC STEP 27G — GAMES CONNECTION READER -->
+<section class="card dcc-linked-game" data-tab="bets">
+  <div class="dcc-linked-heading">
+    <span>DAGGER COUNTRY CLUB · SHARED COMPETITIONS</span>
+    <h3>From the Games Desk</h3>
+    <p>Review your locally saved Match Play competition.</p>
+  </div>
+
+  <div id="dccLinkedGameStatus" class="dcc-linked-status"
+       aria-live="polite">
+    Checking for a saved competition...
+  </div>
+
+  <button id="dccRefreshLinkedGame" type="button"
+          class="btn-secondary">
+    Refresh Games Record
+  </button>
+
+  <small class="dcc-linked-footnote">
+    Local preview only. No wagers or settlements are
+    created from this record yet.
   </small>
 </section>
 
@@ -3506,6 +3595,52 @@ function switchTab(tab) {
     renderLocker();
   }
 }
+
+// DCC STEP 27G — READ GAME RECORD IN THE ACTION
+function dccRefreshLinkedGame() {
+  const output = document.getElementById('dccLinkedGameStatus');
+  if (!output) return;
+
+  try {
+    const raw = localStorage.getItem('dcc_shared_match_v1');
+
+    if (!raw) {
+      output.textContent =
+        'No linked Match Play record yet. Record a hole in Games first.';
+      return;
+    }
+
+    const record = JSON.parse(raw);
+
+    if (!record || record.schemaVersion !== 1 ||
+        record.primaryFormat !== 'match-play' ||
+        !Array.isArray(record.players) ||
+        !Array.isArray(record.scores)) {
+      output.textContent = 'Saved competition record is not recognized.';
+      return;
+    }
+
+    const names = record.players.map(p => p.name).join(' vs ');
+    const position = record.scores.map(h => [
+      h.strokes?.p1, h.strokes?.p2
+    ]);
+
+    const result = dccMatchPlay(position);
+
+    output.textContent =
+      'MATCH PLAY · ' + names + '\n' +
+      'STATUS: ' + String(record.status).toUpperCase() + '\n' +
+      'HOLES RECORDED: ' + result.played + '/18\n' +
+      'POSITION: ' + result.status + '\n' +
+      'MATCH ID: ' + record.id;
+  } catch (error) {
+    output.textContent = 'Unable to read saved competition.';
+    console.warn('DCC linked game:', error);
+  }
+}
+
+document.getElementById('dccRefreshLinkedGame')
+  ?.addEventListener('click', dccRefreshLinkedGame);
 
 ['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
 
