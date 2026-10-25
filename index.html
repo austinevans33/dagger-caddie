@@ -4415,6 +4415,20 @@ function dccMatchPlaySelfTest() {
 const dccMpSaved = read('dcc_matchplay_draft_v1', null);
 
 const dccMpScores = [];
+  
+// DCC STEP 27E — PERSISTENT MATCH IDENTITY
+function dccMpNewId() {
+  return 'dcc-match-' + Date.now() + '-' +
+    Math.random().toString(36).slice(2, 10);
+}
+
+let dccMpId =
+  dccMpSaved &&
+  typeof dccMpSaved.id === 'string' &&
+  /^dcc-match-\d+-[a-z0-9]+$/.test(dccMpSaved.id)
+    ? dccMpSaved.id
+    : dccMpNewId();
+
 
 if (dccMpSaved && Array.isArray(dccMpSaved.scores)) {
   const validScores = dccMpSaved.scores.length <= 18 &&
@@ -4502,6 +4516,7 @@ document.getElementById('dccMpPreview').addEventListener('click', () => {
     const names = record.players.map(p => p.name).join(' vs ');
 
     output.textContent =
+      'MATCH ID: ' + record.id + '\n' +
       'FORMAT: Match Play\n' +
       'PLAYERS: ' + names + '\n' +
       'STATUS: ' + record.status.toUpperCase() + '\n' +
@@ -4520,11 +4535,12 @@ function dccMpRender() {
   // Keep this draft separate from official games and wager records.
   store('dcc_matchplay_draft_v1', {
     version: 1,
+    id: dccMpId,
     name1: document.getElementById('dccMpName1').value,
     name2: document.getElementById('dccMpName2').value,
     scores: dccMpScores
   });
-
+  record.id = dccMpId;
   const result = dccMatchPlay(dccMpScores);
   const first = document.getElementById('dccMpName1').value.trim() || 'Player 1';
   const second = document.getElementById('dccMpName2').value.trim() || 'Player 2';
@@ -4629,6 +4645,7 @@ document.getElementById('dccMpUndo').addEventListener('click', () => {
 document.getElementById('dccMpReset').addEventListener('click', () => {
   if (!dccMpScores.length || confirm('Discard this test match?')) {
     dccMpScores.length = 0;
+    dccMpId = dccMpNewId();
     document.getElementById('dccMpMessage').textContent =
       'Match reset.';
     dccMpRender();
