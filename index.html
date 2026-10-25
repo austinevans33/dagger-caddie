@@ -3348,6 +3348,11 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 12px/1.4 system-ui, sans-serif;
 }
 
+/* DCC R5-H.1 — PREMIUM SCOREBOARD ONLY */
+#hmStandings[hidden] {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -4741,8 +4746,13 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
      role="status"
      aria-live="polite">
 </div>
-<div class="grid"><div><label>Winner</label><select id="hmWinner"><option value="A">Team A</option><option value="B">Team B</option><option value="H">Halved hole</option></select></div><div><label>Final multiplier</label><input id="hmMult" type="number" min="1" step="1" value="1"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="hmSave">Record hole</button><button class="btn-ghost" id="hmUndo">Undo hole</button></div><div id="hmStandings" class="scoreline" style="margin-top:8px"></div>
-<!-- DCC R5-H — HAMMER HOLE-BY-HOLE LEDGER -->
+<div class="grid"><div><label>Winner</label><select id="hmWinner"><option value="A">Team A</option><option value="B">Team B</option><option value="H">Halved hole</option></select></div><div><label>Final multiplier</label><input id="hmMult" type="number" min="1" step="1" value="1"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="hmSave">Record hole</button><button class="btn-ghost" id="hmUndo">Undo hole</button></div>
+<!-- DCC R5-H.1 — Legacy standings kept for compatibility -->
+<div id="hmStandings"
+     class="scoreline"
+     hidden
+     aria-hidden="true"></div>
+
 <details id="hmLiveLedgerPanel" class="dcc-vw-ledger-panel">
   <summary>
     <span>HAMMER · HOLE-BY-HOLE LEDGER</span>
@@ -8270,11 +8280,14 @@ function renderRecap(){
 }
 $('buildRecap').onclick=renderRecap;
 
+
 hmRender();
 dccRenderHammerScoreboard();
+dccRenderHammerLedger();
 rrRender();
 snRender();
 renderRecap();
+
 
 let shownClubGame='bingo';
 function showClubGame(type){
