@@ -5090,6 +5090,80 @@ function dccGhostScore(par, tier = 'tenFifteen', rng = Math.random) {
   throw new Error('House Ghost scoring distribution is invalid.');
 }
 
+// DCC STEP 30H — HOUSE GHOST ROUND PERSONALITY
+// Pure scoring helpers only. No saved data or live game changes.
+//
+// The round condition modifies the distribution of a future
+// hole's gross score, not previously recorded strokes.
+
+const DCC_GHOST_CONDITIONS = Object.freeze({
+  lockedIn: Object.freeze({
+    label: 'Locked In',
+    description: 'The house showed up ready to play.',
+    shift: -0.12
+  }),
+  normal: Object.freeze({
+    label: 'Business as Usual',
+    description: 'A perfectly ordinary day at the club.',
+    shift: 0
+  }),
+  roughDay: Object.freeze({
+    label: 'Having a Day',
+    description: 'The wheels are looking a little loose.',
+    shift: 0.12
+  })
+});
+
+// Intended occurrence rates:
+// Locked In 20%, Normal 60%, Having a Day 20%.
+function dccGhostPickCondition(rng = Math.random) {
+  const roll = rng();
+
+  if (!Number.isFinite(roll) ||
+      roll < 0 || roll >= 1) {
+    throw new Error('Invalid round condition random value.');
+  }
+
+  if (roll < 0.20) return 'lockedIn';
+  if (roll < 0.80) return 'normal';
+  return 'roughDay';
+}
+
+// Generate a score using the existing Ghost distribution.
+// On a good day, the Ghost has a slightly better chance of
+// receiving one of the lower-scoring outcomes.
+//
+// Using the same RNG keeps tests reproducible.
+// Scores remain within the existing model's valid range.
+function dccGhostConditionScore(
+  par,
+  tier,
+  condition = 'normal',
+  rng = Math.random
+) {
+  const profile = DCC_GHOST_CONDITIONS[condition];
+
+  if (!profile) {
+    throw new Error('Unknown House Ghost round condition.');
+  }
+
+  // Validate the original RNG inside dccGhostScore.
+  // The condition simply shifts its probability position.
+  return dccGhostScore(par, tier, () => {
+    const roll = rng();
+
+    if (!Number.isFinite(roll) ||
+        roll < 0 || roll >= 1) {
+      throw new Error('Invalid House Ghost random value.');
+    }
+
+    return Math.max(
+      0,
+      Math.min(0.999999999999, roll + profile.shift)
+    );
+  });
+}
+
 // DCC STEP 30G — REPEATABLE GHOST CALIBRATION
 // Diagnostic only. No game data or Firebase changes.
 function dccGhostCalibrationTest(rounds = 5000) {
