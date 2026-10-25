@@ -2577,6 +2577,133 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 11px/1.5 system-ui,sans-serif;
 }
 
+/* DCC STEP 30B — HOUSE GHOST */
+
+.dcc-ghost-card {
+  padding: 9px;
+  border: 1px solid #b79c62;
+  border-radius: 18px;
+  background: #f3ead8;
+}
+
+.dcc-ghost-hero {
+  padding: 22px 18px;
+  border-radius: 14px;
+  border: 1px solid #b79c62;
+  background: linear-gradient(140deg, #224936, #10271e);
+}
+
+.dcc-ghost-hero span,
+.dcc-ghost-hero small {
+  display: block;
+  color: #d9be86;
+  font: 800 10px/1.6 system-ui,sans-serif;
+  letter-spacing: .11em;
+}
+
+.dcc-ghost-hero h2 {
+  margin: 10px 0;
+  color: #fff4dc;
+  font: 700 28px Georgia,serif;
+  letter-spacing: .02em;
+}
+
+.dcc-ghost-hero p {
+  margin: 0 0 12px;
+  color: #e3dbc9;
+  font: 13px/1.6 system-ui,sans-serif;
+}
+
+.dcc-ghost-content {
+  padding: 15px 5px 5px;
+}
+
+#dccGhostRules {
+  padding: 13px;
+  border-radius: 11px;
+  background: #fffaf0;
+  border: 1px solid #c9b68e;
+  color: #193d2d;
+}
+
+#dccGhostRules summary {
+  cursor: pointer;
+  font: 800 12px system-ui,sans-serif;
+}
+
+#dccGhostRules p {
+  font: 12px/1.7 system-ui,sans-serif;
+}
+
+.dcc-ghost-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.dcc-ghost-fields > div:first-child {
+  grid-column: 1 / -1;
+}
+
+.dcc-ghost-fields select,
+.dcc-ghost-fields input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.dcc-ghost-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 24px 12px;
+  border-radius: 13px;
+  background: #193d2d;
+  border: 1px solid #b79c62;
+  text-align: center;
+}
+
+.dcc-ghost-board span,
+.dcc-ghost-board small {
+  color: #d9be86;
+  font: 800 11px system-ui,sans-serif;
+  letter-spacing: .08em;
+}
+
+.dcc-ghost-board strong {
+  color: #fff4dc;
+  font: 700 27px Georgia,serif;
+}
+
+#dccGhostRecord {
+  width: 100%;
+  margin-top: 13px;
+  min-height: 49px;
+  border: 1px solid #b79c62;
+  border-radius: 11px;
+  background: #193d2d;
+  color: #fff4dc;
+  font: 800 12px system-ui,sans-serif;
+}
+
+#dccGhostRecord:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.dcc-ghost-message {
+  color: #615f50;
+  font: 12px/1.6 system-ui,sans-serif;
+}
+
+.dcc-ghost-history {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
 </style>
 </head>
 <body>
@@ -3721,6 +3848,86 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
       </div>
     </div>
   </details>
+</section>
+
+<!-- DCC STEP 30B — HOUSE GHOST SOLO DESK -->
+<section class="card dcc-ghost-card" data-tab="games"
+         id="dccGhostCard">
+
+  <div class="dcc-ghost-hero">
+    <span>DAGGER COUNTRY CLUB · SOLO COMPETITIONS</span>
+    <h2>THE HOUSE GHOST</h2>
+    <p>Play the house. No partner required. No money involved.</p>
+    <small>THE HOUSE DOESN'T GIVE PUTTS.</small>
+  </div>
+
+  <div class="dcc-ghost-content">
+    <details id="dccGhostRules">
+      <summary>How House Ghost works</summary>
+      <p>
+        Choose an opponent difficulty. Each hole, you enter
+        the hole's par and your strokes. The House Ghost
+        generates its own gross score for that hole.
+      </p>
+      <p>
+        Your match follows normal Match Play rules:
+        win a hole, go one up; lose a hole, go one down.
+        The match can finish early when the lead exceeds
+        the number of holes remaining.
+      </p>
+      <p class="note">
+        Simulated opponents are not official handicaps.
+        Past Self mode will use real recorded history only.
+      </p>
+    </details>
+
+    <div class="dcc-ghost-fields">
+      <div>
+        <label for="dccGhostTier">House opponent</label>
+        <select id="dccGhostTier">
+          <option value="scratch">Scratch</option>
+          <option value="fiveTen">5–10 Handicap</option>
+          <option value="tenFifteen" selected>
+            10–15 Handicap
+          </option>
+          <option value="fifteenTwenty">15–20 Handicap</option>
+        </select>
+      </div>
+      <div>
+        <label for="dccGhostPar">Hole par</label>
+        <select id="dccGhostPar">
+          <option value="3">Par 3</option>
+          <option value="4" selected>Par 4</option>
+          <option value="5">Par 5</option>
+        </select>
+      </div>
+      <div>
+        <label for="dccGhostPlayerScore">Your strokes</label>
+        <input id="dccGhostPlayerScore" type="number"
+               min="1" max="20" inputmode="numeric"
+               placeholder="Enter your score">
+      </div>
+    </div>
+
+    <div class="dcc-ghost-board">
+      <span>MATCH STATUS</span>
+      <strong id="dccGhostPosition">ALL SQUARE</strong>
+      <small id="dccGhostProgress">Hole 1 of 18</small>
+    </div>
+
+    <button id="dccGhostRecord" type="button" disabled>
+      Record Hole · Available Next Step
+    </button>
+
+    <p id="dccGhostMessage" class="dcc-ghost-message"
+       role="status" aria-live="polite">
+      House Ghost scoring controls are being connected.
+    </p>
+
+    <div id="dccGhostHistory" class="dcc-ghost-history">
+      <p class="note">Your hole-by-hole duel will appear here.</p>
+    </div>
+  </div>
 </section>
 
 <section class="card" data-tab="games" id="bingoGameCard"><div class="over" style="color:#776344">DAGGER COUNTRY CLUB · COMPETITION COMMITTEE</div><h2>Bingo Bango Bongo</h2><p class="muted">Three independent points on every hole. Maximum chaos, minimal mathematics.</p>
