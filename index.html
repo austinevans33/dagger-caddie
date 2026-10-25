@@ -3124,6 +3124,11 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 800 14px system-ui, sans-serif;
 }
 
+/* DCC R4-D — HIDE DUPLICATE BINGO STANDINGS */
+#gStandings[hidden] {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -4454,7 +4459,14 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
      role="status"
      aria-live="polite">
 </div>
-<div id="gStandings" class="note" style="margin-top:10px"></div>
+
+<!-- DCC R4-D — Preserve legacy standings for compatibility,
+     but remove duplicate visual clutter. -->
+<div id="gStandings"
+     class="note"
+     hidden
+     aria-hidden="true"></div>
+
 <!-- DCC R4-B — BINGO LIVE LEDGER -->
 <details id="bbbLedgerPanel" class="dcc-vw-ledger-panel">
   <summary>
