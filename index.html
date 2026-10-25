@@ -3004,6 +3004,33 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 12px/1.4 system-ui, sans-serif;
 }
 
+/* DCC R4-A — BINGO PLAYING MODE */
+#bbbPreRoundSetup[hidden] {
+  display: none !important;
+}
+
+@media(max-width:600px) {
+  #gPlaying .bet-summary {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  #gPlaying .betbox {
+    padding: 12px 8px;
+  }
+
+  #gPlaying select {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  #gSave {
+    width: 100%;
+    min-height: 54px;
+    font-weight: 800;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4314,9 +4341,17 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </section>
 
 <section class="card" data-tab="games" id="bingoGameCard"><div class="over" style="color:#776344">DAGGER COUNTRY CLUB · COMPETITION COMMITTEE</div><h2>Bingo Bango Bongo</h2><p class="muted">Three independent points on every hole. Maximum chaos, minimal mathematics.</p>
-  <details open><summary>How to play · Bingo Bango Bongo</summary><div style="padding:10px 0"><p>Each hole offers <strong>three independent points</strong>:</p><p><strong>Bingo:</strong> First player to get their ball on the green.<br><strong>Bango:</strong> Closest to the hole once every ball is on the green.<br><strong>Bongo:</strong> First player to hole out.</p><p class="note">Keep proper order of play, especially for Bingo and Bongo. No points are automatically awarded for a tie; choose the applicable player or leave unawarded. It's a points game, not normal stroke-play scoring.</p></div></details>
+  <details><summary>How to play · Bingo Bango Bongo</summary><div style="padding:10px 0"><p>Each hole offers <strong>three independent points</strong>:</p><p><strong>Bingo:</strong> First player to get their ball on the green.<br><strong>Bango:</strong> Closest to the hole once every ball is on the green.<br><strong>Bongo:</strong> First player to hole out.</p><p class="note">Keep proper order of play, especially for Bingo and Bongo. No points are automatically awarded for a tie; choose the applicable player or leave unawarded. It's a points game, not normal stroke-play scoring.</p></div></details>
+  
+<!-- DCC R4-A — BINGO PRE-ROUND SETUP -->
+<div id="bbbPreRoundSetup">
+
   <div class="grid"><div><label>Player 1</label><input id="gP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="gP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="gP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="gP4" maxlength="24" placeholder="Optional"></div></div>
   <button class="btn-secondary" id="gStart" type="button" style="margin-top:10px">Start new Bingo Bango Bongo round</button>
+  
+</div>
+<!-- END DCC R4-A BINGO SETUP -->
+
   <div id="gPlaying" hidden><div class="bet-summary" style="grid-template-columns:repeat(2,1fr)"><div class="betbox"><strong>Hole</strong><span id="gHole">1</span></div><div class="betbox"><strong>Points awarded</strong><span id="gTotal">0</span></div></div>
   <div class="grid"><div><label>Bingo · First on green</label><select id="gBingo"></select></div><div><label>Bango · Closest when all on</label><select id="gBango"></select></div><div><label>Bongo · First holed</label><select id="gBongo"></select></div></div>
   <button class="btn-primary" id="gSave" style="margin-top:10px">Save hole & next</button><div class="grid" style="margin-top:8px"><button class="btn-ghost" id="gUndo">Undo last hole</button><button class="btn-secondary" id="gFinish">Archive game</button></div><div id="gStandings" class="note" style="margin-top:10px"></div><p id="gStatus" class="status"></p></div>
@@ -7001,7 +7036,14 @@ const freshGame=()=>({players:[],holes:[],started:Date.now()});
 let activeG=read('dagger_bbb_active',null),gHistory=read('dagger_bbb_history',[]);
 const gStore=()=>{store('dagger_bbb_active',activeG);store('dagger_bbb_history',gHistory);};
 function bbbScore(game){const pts=game.players.map(()=>0);game.holes.forEach(h=>h.forEach(i=>{if(i!==null&&i>=0&&i<pts.length)pts[i]++;}));return pts;}
-function renderBBB(){ $('gPlaying').hidden=!activeG;
+
+function renderBBB() {
+  $('gPlaying').hidden = !activeG;
+
+  // DCC R4-A — Setup disappears during active play.
+  const setup = document.getElementById('bbbPreRoundSetup');
+  if (setup) setup.hidden = !!activeG;
+
  if(activeG){const g=activeG; $('gHole').textContent=Math.min(18,g.holes.length+1);$('gTotal').textContent=g.holes.flat().filter(x=>x!==null).length;['gBingo','gBango','gBongo'].forEach(id=>{const sel=$(id);sel.innerHTML='';[['','No point / tie'],...g.players.map((p,i)=>[String(i),p])].forEach(([value,name])=>{const o=document.createElement('option');o.value=value;o.textContent=name;sel.append(o);});}); $('gStandings').textContent=g.players.map((p,i)=>p+': '+bbbScore(g)[i]+' pts').join(' · ');}
  const totals={};gHistory.forEach(g=>g.players.forEach((p,i)=>{totals[p]=(totals[p]||0)+bbbScore(g)[i]})); $('gLifetime').textContent=gHistory.length+' archived games · Lifetime: '+(Object.entries(totals).map(([p,n])=>p+' '+n).join(' · ')||'No games yet');$('gHistory').innerHTML='';gHistory.slice(-8).reverse().forEach(g=>{const p=document.createElement('p');p.textContent=new Date(g.ended).toLocaleDateString()+' · '+g.players.map((name,i)=>name+' '+bbbScore(g)[i]).join(' | ');$('gHistory').append(p);});}
 $('gStart').onclick=()=>{if(activeG&&!confirm('Replace the active Bingo Bango Bongo game?'))return;const names=[$('gP1').value,$('gP2').value,$('gP3').value,$('gP4').value].map(x=>x.trim()).filter(Boolean);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length){alert('Enter two to four distinct players.');return;}activeG={...freshGame(),players:names};gStore();renderBBB();};
