@@ -5295,6 +5295,26 @@ function dccGhostArchiveMatch() {
 
   const archive = dccGhostReadArchive();
 
+  // DCC STEP 30K-C — PREVENT DUPLICATE RESET ARCHIVES
+  // If the same completed scorecard was just archived,
+  // don't save it again after a failed draft reset.
+  const previous = archive[0];
+  const sameRecentMatch =
+    previous &&
+    previous.version === 1 &&
+    previous.tier === tier &&
+    previous.holesPlanned === dccGhostLength &&
+    previous.condition === (dccGhostCondition || 'normal') &&
+    JSON.stringify(previous.holes) ===
+      JSON.stringify(dccGhostHoles) &&
+    typeof previous.archivedAt === 'string' &&
+    Math.abs(Date.now() - Date.parse(previous.archivedAt)) <
+      10 * 60 * 1000;
+
+  if (sameRecentMatch) {
+    return true;
+  }
+
   const record = {
     version: 1,
     id: 'ghost-' + Date.now() + '-' +
