@@ -1854,6 +1854,56 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
   margin-top: 12px;
 }
 
+/* DCC STEP 23A — WAGER PANELS FINAL SHAPE */
+
+section[data-tab="bets"] #newWagers.action-group-wagers,
+section[data-tab="bets"] #actionRecords.action-records {
+  background: #f3ead8;
+  border: 1px solid #c9b68e;
+  border-radius: 18px !important;
+  padding: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 5px 16px rgba(20,49,38,.08);
+}
+
+section[data-tab="bets"] #newWagers.action-group-wagers > summary,
+section[data-tab="bets"] #actionRecords.action-records > summary {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin: 0 !important;
+  padding: 17px 48px 17px 17px !important;
+  min-height: 76px;
+  border: 1px solid #b79c62 !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg,#224936,#143126);
+  color: #fff4dc !important;
+  cursor: pointer;
+  list-style: none;
+}
+
+section[data-tab="bets"] #newWagers.action-group-wagers > summary span,
+section[data-tab="bets"] #actionRecords.action-records > summary span {
+  font: 800 13px system-ui,sans-serif;
+  letter-spacing: .1em;
+  color: #fff4dc;
+}
+
+section[data-tab="bets"] #newWagers.action-group-wagers > summary small,
+section[data-tab="bets"] #actionRecords.action-records > summary small {
+  font: 12px system-ui,sans-serif;
+  color: #d9be86;
+}
+
+section[data-tab="bets"] #newWagers.action-group-wagers[open] > summary,
+section[data-tab="bets"] #actionRecords.action-records[open] > summary {
+  border-radius: 14px !important;
+  margin-bottom: 10px !important;
+}
+
 </style>
 </head>
 <body>
@@ -2488,12 +2538,12 @@ section[data-tab="bets"]:has(#betOpponent) details[open] > summary {
 <details class="wager-panel action-group-wagers" id="newWagers" style="margin-top:12px">
   <summary>
     <span>GROUP WAGERING</span>
-    <small>Skins · Nassau · Hole Match</small>
+    <small>Skins · Nassau · Head-to-Head</small>
   </summary>
 
           <div style="padding:10px 0"><p class="muted">A separate money game. Enter gross strokes for each hole; settle and archive when finished. Nassau and hole match compare you with one opponent; skins covers everyone.</p>
             <div class="grid"><div><label>Your name</label><input id="wMyName" value="Me" maxlength="24"></div><div><label>Opponent 1</label><input id="wP2" value="Player 2" maxlength="24"></div><div><label>Opponent 2 (optional)</label><input id="wP3" maxlength="24" placeholder="Player 3"></div><div><label>Opponent 3 (optional)</label><input id="wP4" maxlength="24" placeholder="Player 4"></div></div>
-            <div class="grid" style="margin-top:8px"><div><label>Game type</label><select id="wFormat"><option value="skins">Skins · Gross</option><option value="hole">Hole match · 1 vs 1</option><option value="nassau">Nassau · 1 vs 1</option></select></div><div><label>Stake ($)</label><input type="number" min="0" max="10000" step="0.5" value="5" id="wStake"></div></div>
+            <div class="grid" style="margin-top:8px"><div><label>Game type</label><select id="wFormat"><option value="skins">Skins · Gross</option><option value="hole">Head-to-Head · $ Per Hole</option><option value="nassau">Nassau · 1 vs 1</option></select></div><div><label>Stake ($)</label><input type="number" min="0" max="10000" step="0.5" value="5" id="wStake"></div></div>
             <p class="muted">For skins, stake is the cost per skin paid by each other player. For Nassau, stake applies separately to front, back and overall. No automatic presses or handicaps.</p>
             <button class="btn-secondary" id="wStart" type="button">Start foursome game</button>
             <div id="wPlaying" hidden><div class="bet-summary" style="grid-template-columns:repeat(2,1fr)"><div class="betbox"><strong>Hole</strong><span id="wHole">1</span></div><div class="betbox"><strong>Result</strong><span id="wLead">All square</span></div></div>
