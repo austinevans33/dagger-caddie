@@ -4001,6 +4001,27 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
     par save, follow it with a triple bogey, and still insist
     he's close to figuring something out.
   </p>
+  
+<!-- DCC STEP 30I-B — VISIBLE ROUND PERSONALITY -->
+<div id="dccGhostConditionCard"
+     style="margin-top:14px;padding:12px;
+            border:1px solid rgba(205,177,108,.45);
+            border-radius:10px;">
+  <small style="display:block;opacity:.75;
+                letter-spacing:.09em;">
+    TODAY'S FORM
+  </small>
+  <strong id="dccGhostConditionLabel"
+          style="display:block;margin-top:5px;">
+    AWAITING FIRST HOLE
+  </strong>
+  <span id="dccGhostConditionDescription"
+        style="display:block;margin-top:5px;
+               font-size:.85rem;line-height:1.45;">
+    Your opponent's form will be revealed when play begins.
+  </span>
+</div>
+
 </div>
 
       </div>
@@ -5300,6 +5321,23 @@ function dccGhostRender() {
 
   const tierSelect = document.getElementById('dccGhostTier');
   const ghost = DCC_GHOST_MEMBERS[tierSelect.value];
+  
+  // DCC STEP 30I-B — DISPLAY PERSISTED ROUND CONDITION
+  const conditionProfile =
+    dccGhostCondition
+      ? DCC_GHOST_CONDITIONS[dccGhostCondition]
+      : null;
+
+  document.getElementById('dccGhostConditionLabel')
+    .textContent = conditionProfile
+      ? conditionProfile.label.toUpperCase()
+      : 'AWAITING FIRST HOLE';
+
+  document.getElementById('dccGhostConditionDescription')
+    .textContent = conditionProfile
+      ? conditionProfile.description
+      : "Your opponent's form will be revealed when play begins.";
+
 
   // Keep one opponent for the whole match.
   tierSelect.disabled = dccGhostHoles.length > 0;
