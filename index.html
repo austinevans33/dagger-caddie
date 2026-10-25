@@ -5206,11 +5206,26 @@ function dccMpSaveSharedRecord() {
 
       if (!identity?.signedIn ||
           identity.uid !== record.ownerUid) {
+        
         console.warn(
           'DCC: Shared competition save blocked. ' +
           'The current member does not own this match.'
         );
+
+        // DCC STEP 29H — VISIBLE OWNERSHIP WARNING
+        const warning = document.getElementById('dccMpMessage');
+
+        if (warning) {
+          warning.textContent =
+            'ACCOUNT MISMATCH: This match belongs to another ' +
+            'membership. Changes to the shared competition ' +
+            'record are blocked. Your local draft may still ' +
+            'change on this device.';
+          warning.setAttribute('role', 'alert');
+        }
+
         return false;
+
       }
     }
 
