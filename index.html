@@ -4169,6 +4169,68 @@ function dccMatchPlay(scores, totalHoles = 18) {
   };
 }
 
+// DCC STEP 26F — MATCH PLAY SCORING CHECKS
+// Run manually with dccMatchPlaySelfTest() in the browser console.
+// Does not change saved matches, wagers, or Firebase.
+function dccMatchPlaySelfTest() {
+  const tests = [
+    {
+      name: 'Fresh match',
+      scores: [],
+      expected: {lead: 0, played: 0, decided: false}
+    },
+    {
+      name: 'One hole won',
+      scores: [[4, 5]],
+      expected: {lead: 1, played: 1, decided: false}
+    },
+    {
+      name: 'Halved hole',
+      scores: [[4, 4]],
+      expected: {lead: 0, played: 1, decided: false}
+    },
+    {
+      name: 'Comeback to all square',
+      scores: [[4, 5], [5, 4]],
+      expected: {lead: 0, played: 2, decided: false}
+    },
+    {
+      name: 'Early victory 10&8',
+      scores: Array.from({length: 10}, () => [4, 5]),
+      expected: {lead: 10, played: 10, decided: true, winner: 0, status: '10&8'}
+    },
+    {
+      name: 'Final match halved',
+      scores: [
+        ...Array.from({length: 9}, () => [4, 5]),
+        ...Array.from({length: 9}, () => [5, 4])
+      ],
+      expected: {lead: 0, played: 18, decided: true, winner: null}
+    },
+    {
+      name: 'Invalid score stops processing',
+      scores: [[4, 5], [0, 4]],
+      expected: {lead: 1, played: 1, decided: false}
+    }
+  ];
+
+  const results = tests.map(test => {
+    const actual = dccMatchPlay(test.scores);
+    const passed = Object.entries(test.expected)
+      .every(([key, value]) => actual[key] === value);
+
+    return {test: test.name, passed};
+  });
+
+  console.table(results);
+
+  return {
+    passed: results.filter(r => r.passed).length,
+    total: results.length,
+    allPassed: results.every(r => r.passed)
+  };
+}
+
 // DCC STEP 26B — MATCH PLAY TEST DESK
 
 // DCC STEP 26D — LOCAL MATCH PLAY RECOVERY
