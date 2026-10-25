@@ -2848,6 +2848,67 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC REDESIGN R3 — PREMIUM LIVE GAME LEDGER */
+.dcc-vw-ledger {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.dcc-vw-ledger-heading {
+  padding: 12px;
+  border-radius: 10px;
+  background: #193b2d;
+  color: #e5c787;
+  font: 800 11px system-ui, sans-serif;
+  letter-spacing: .1em;
+}
+
+.dcc-vw-ledger-hole {
+  padding: 14px;
+  border: 1px solid #c9b68e;
+  border-radius: 13px;
+  background: #fff9ed;
+  color: #193b2d;
+}
+
+.dcc-vw-ledger-hole strong {
+  font: 700 18px Georgia, serif;
+}
+
+.dcc-vw-ledger-hole p {
+  margin: 9px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dcc-vw-ledger-hole small {
+  font-weight: 800;
+  color: #806735;
+}
+
+.dcc-vw-ledger-scores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.dcc-vw-ledger-scores span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  border-radius: 8px;
+  padding: 9px;
+  background: #e9dfc8;
+  font: 12px/1.45 system-ui, sans-serif;
+}
+
+@media(max-width: 380px) {
+  .dcc-vw-ledger-scores {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4168,7 +4229,14 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </section>
 
 <section class="card" data-tab="games" id="vwGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · FEATURED MATCH</div><h2 id="vwGameHeading">Vegas</h2><div id="vegasRules"><details open><summary>Vegas · How to play</summary><p class="note">Four golfers, two fixed teams. Each team's hole score is a two-digit number built from teammates' gross strokes, <strong>lower score first</strong> (4 and 5 = 45). The lower number wins the difference in points (45 vs 56 = 11). Optional $/point turns points into money. We do not apply the optional “birdie flips the opponent's number” rule in this edition.</p></details></div><div id="wolfRules" hidden><details open><summary>Wolf · How to play</summary><p class="note">Four golfers. Wolf rotates every hole (1–4 repeated). Wolf either selects one partner to play 2 vs 2 or plays Lone Wolf 1 vs 3. Score by lower <strong>best-ball gross score</strong> for each side. A team win gives each winning teammate +1 point; a losing teammate -1. Lone Wolf wins +3 and each opponent loses -1; if Lone Wolf loses, Wolf -3 and each opponent +1. Ties are zero. These are selectable house rules; confirm with your group first.</p></details></div>
-<input id="vwType" type="hidden" value="vegas"><div class="grid" style="margin-top:10px"><div><label>$ per point (optional)</label><input id="vwStake" type="number" min="0" step="0.25" value="0"></div><div><label>Selected game</label><div class="game-live"><span class="robin-badge" id="vwSelectedBadge">Vegas</span><div class="game-note" id="vwSelectedNote">Fixed teams. Calm bookkeeping. Violent arguments optional.</div></div></div></div><div class="grid"><div><label>Player 1</label><input id="vwP1" value="Me" maxlength="25"></div><div><label>Player 2</label><input id="vwP2" value="Player 2" maxlength="25"></div><div><label>Player 3</label><input id="vwP3" value="Player 3" maxlength="25"></div><div><label>Player 4</label><input id="vwP4" value="Player 4" maxlength="25"></div></div><button class="btn-primary" id="vwStart" style="margin-top:9px">Start selected game</button><div id="vwActive" hidden><h3 style="margin-top:10px">Hole <span id="vwHole">1</span></h3><div id="vwRuleLine" class="note"></div><div class="grid" id="vwScores"></div><div id="vwWolfControls" hidden><label>Wolf choice</label><select id="vwPartner"></select></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="vwSave">Record hole</button><button class="btn-ghost" id="vwUndo">Undo hole</button></div><div id="vwStandings" class="note" style="margin-top:10px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary id="vwLifetimeLabel">Vegas lifetime records</summary><div id="vwLifetime" class="note"></div></details></section>
+<input id="vwType" type="hidden" value="vegas"><div class="grid" style="margin-top:10px"><div><label>$ per point (optional)</label><input id="vwStake" type="number" min="0" step="0.25" value="0"></div><div><label>Selected game</label><div class="game-live"><span class="robin-badge" id="vwSelectedBadge">Vegas</span><div class="game-note" id="vwSelectedNote">Fixed teams. Calm bookkeeping. Violent arguments optional.</div></div></div></div><div class="grid"><div><label>Player 1</label><input id="vwP1" value="Me" maxlength="25"></div><div><label>Player 2</label><input id="vwP2" value="Player 2" maxlength="25"></div><div><label>Player 3</label><input id="vwP3" value="Player 3" maxlength="25"></div><div><label>Player 4</label><input id="vwP4" value="Player 4" maxlength="25"></div></div><button class="btn-primary" id="vwStart" style="margin-top:9px">Start selected game</button><div id="vwActive" hidden><h3 style="margin-top:10px">Hole <span id="vwHole">1</span></h3><div id="vwRuleLine" class="note"></div><div class="grid" id="vwScores"></div><div id="vwWolfControls" hidden><label>Wolf choice</label><select id="vwPartner"></select></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="vwSave">Record hole</button><button class="btn-ghost" id="vwUndo">Undo hole</button></div><div id="vwStandings" class="note" style="margin-top:10px"></div>
+<!-- DCC REDESIGN R3 — LIVE GAME LEDGER -->
+<div id="vwLiveLedger"
+     class="dcc-vw-ledger"
+     aria-live="polite">
+  <p class="note">Record a hole to begin the live ledger.</p>
+</div>
+<div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary id="vwLifetimeLabel">Vegas lifetime records</summary><div id="vwLifetime" class="note"></div></details></section>
 
 <section class="card game-hidden" data-tab="games" id="hammerGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · SIDE ACTION</div><h2>Hammer</h2><p class="muted">This simplified house version records the <em>final multiplier</em> on each hole. If somebody hammers mid-hole, just bump the multiplier before you save.</p><details open><summary>How to play · Hammer</summary><p class="note">Two teams of two. Each hole starts at 1 unit. Any hammer during the hole increases the multiplier. At the end of the hole, record who won and what the hole was worth. Halves score zero.</p></details><div class="grid"><div><label>$ per unit</label><input id="hmStake" type="number" min="0" step="0.25" value="1"></div><div><label>Starting multiplier</label><input id="hmBase" type="number" min="1" step="1" value="1"></div><div><label>Team A · Player 1</label><input id="hmP1" maxlength="24" value="Me"></div><div><label>Team A · Player 2</label><input id="hmP2" maxlength="24" value="Partner"></div><div><label>Team B · Player 1</label><input id="hmP3" maxlength="24" value="Player 3"></div><div><label>Team B · Player 2</label><input id="hmP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="hmStart" style="margin-top:10px">Start Hammer game</button><div id="hmActive" hidden class="game-live"><h3>Hole <span id="hmHole">1</span></h3><div class="grid"><div><label>Winner</label><select id="hmWinner"><option value="A">Team A</option><option value="B">Team B</option><option value="H">Halved hole</option></select></div><div><label>Final multiplier</label><input id="hmMult" type="number" min="1" step="1" value="1"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="hmSave">Record hole</button><button class="btn-ghost" id="hmUndo">Undo hole</button></div><div id="hmStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary>Hammer ledger</summary><div id="hmLifetime" class="note"></div></details></section>
 
@@ -7120,13 +7188,130 @@ $('wyndhamPunch').onclick=()=>{if(!confirm('WYNDHAM PUNCH? This destroys your ac
 const VW_ACTIVE='dagger_vegas_wolf_active',VW_HISTORY='dagger_vegas_wolf_history';let vw=read(VW_ACTIVE,null),vwh=read(VW_HISTORY,[]);
 function vwCalc(g){const points=[0,0,0,0];for(let i=0;i<g.holes.length;i++){const h=g.holes[i],sc=h.scores;if(g.type==='vegas'){const t=(a,b)=>10*Math.min(a,b)+Math.max(a,b);const d=t(sc[2],sc[3])-t(sc[0],sc[1]);points[0]+=d;points[1]+=d;points[2]-=d;points[3]-=d;}else{const wolf=i%4;const partner=h.partner;const left=partner===-1?[wolf]:[wolf,partner];const right=[0,1,2,3].filter(n=>!left.includes(n));const l=Math.min(...left.map(j=>sc[j])),r=Math.min(...right.map(j=>sc[j]));if(l!==r){const win=l<r,mult=partner===-1?3:1;points[wolf]+=(win?1:-1)*mult;for(let j=0;j<4;j++){if(j===wolf)continue;points[j]+=(left.includes(j)?(win?1:-1):(win?-1:1));}}}}return points;}
 function vwRender(){ $('vwActive').hidden=!vw; if(vw){const i=vw.holes.length;$('vwHole').textContent=Math.min(i+1,18);$('vwRuleLine').textContent=vw.type==='wolf'?`Wolf: ${vw.players[i%4]}. Choose a partner or Lone Wolf before recording.`:'Fixed teams: '+vw.players[0]+' + '+vw.players[1]+' versus '+vw.players[2]+' + '+vw.players[3];$('vwScores').innerHTML='';vw.players.forEach((n,j)=>{let d=document.createElement('div'),label=document.createElement('label'),inp=document.createElement('input');label.textContent=n+' strokes';inp.type='number';inp.min='1';inp.max='20';inp.id='vwScore'+j;d.append(label,inp);$('vwScores').append(d)});$('vwWolfControls').hidden=vw.type!=='wolf';$('vwPartner').innerHTML='';if(vw.type==='wolf'){for(const [v,label] of [[-1,'Lone Wolf'],...[0,1,2,3].filter(j=>j!==i%4).map(j=>[j,vw.players[j]])]){const o=document.createElement('option');o.value=v;o.textContent=label;$('vwPartner').append(o)}}$('vwStandings').textContent=vw.players.map((n,j)=>n+': '+vwCalc(vw)[j]+' pts').join(' · ');}const sums={};vwh.forEach(g=>g.players.forEach((n,j)=>sums[n]=(sums[n]||0)+vwCalc(g)[j]));$('vwLifetime').textContent=vwh.length+' archived rounds · '+(Object.entries(sums).map(([n,p])=>n+': '+p+' pts').join(' · ')||'No Vegas/Wolf results yet');}
-function vwStore(){store(VW_ACTIVE,vw);store(VW_HISTORY,vwh);vwRender();}
+
+// DCC REDESIGN R3 — VEGAS / WOLF GAME-SPECIFIC LEDGER
+// Derives every result from the existing saved game.
+function dccRenderVWLedger() {
+  const root = document.getElementById('vwLiveLedger');
+  if (!root) return;
+  root.replaceChildren();
+
+  if (!vw || !vw.holes.length) {
+    root.textContent = 'Record a hole to begin the live ledger.';
+    return;
+  }
+
+  const heading = document.createElement('div');
+  heading.className = 'dcc-vw-ledger-heading';
+  heading.textContent =
+    (vw.type === 'vegas' ? 'VEGAS' : 'WOLF') +
+    ' · HOLE-BY-HOLE LEDGER';
+  root.appendChild(heading);
+
+  // Show newest hole first, using the actual existing scores.
+  for (let i = vw.holes.length - 1; i >= 0; i--) {
+    const hole = vw.holes[i];
+    if (!Array.isArray(hole?.scores) ||
+        hole.scores.length !== 4) continue;
+
+    const current = vwCalc({
+      ...vw,
+      holes: vw.holes.slice(0, i + 1)
+    });
+
+    const previous = vwCalc({
+      ...vw,
+      holes: vw.holes.slice(0, i)
+    });
+
+    const changes = current.map(
+      (points, j) => points - previous[j]
+    );
+
+    const card = document.createElement('div');
+    card.className = 'dcc-vw-ledger-hole';
+
+    const title = document.createElement('strong');
+    title.textContent = 'HOLE ' + (i + 1);
+    card.appendChild(title);
+
+    if (vw.type === 'vegas') {
+      const vegasNumber = (a, b) =>
+        10 * Math.min(a, b) + Math.max(a, b);
+
+      const first = vegasNumber(
+        hole.scores[0], hole.scores[1]
+      );
+      const second = vegasNumber(
+        hole.scores[2], hole.scores[3]
+      );
+
+      const summary = document.createElement('p');
+      summary.textContent =
+        vw.players[0] + ' + ' + vw.players[1] +
+        ': ' + first + '  ·  ' +
+        vw.players[2] + ' + ' + vw.players[3] +
+        ': ' + second;
+
+      const result = document.createElement('small');
+      result.textContent =
+        'TEAM 1: ' +
+        (changes[0] > 0 ? '+' : '') +
+        changes[0] + ' POINTS';
+
+      card.append(summary, result);
+    } else {
+      const wolf = i % 4;
+      const partner = hole.partner;
+      const summary = document.createElement('p');
+
+      summary.textContent =
+        'WOLF: ' + vw.players[wolf] + ' · ' +
+        (partner === -1
+          ? 'LONE WOLF'
+          : 'PARTNER: ' +
+            (vw.players[partner] || 'Unknown'));
+
+      card.appendChild(summary);
+    }
+
+    const details = document.createElement('div');
+    details.className = 'dcc-vw-ledger-scores';
+
+    vw.players.forEach((name, j) => {
+      const item = document.createElement('span');
+      item.textContent =
+        name + ': ' + hole.scores[j] +
+        ' strokes · ' +
+        (changes[j] > 0 ? '+' : '') +
+        changes[j] + ' pts';
+      details.appendChild(item);
+    });
+
+    card.appendChild(details);
+    root.appendChild(card);
+  }
+}
+
+
+function vwStore() {
+  store(VW_ACTIVE, vw);
+  store(VW_HISTORY, vwh);
+  vwRender();
+  dccRenderVWLedger();
+}
+
 $('vwStart').onclick=()=>{if(vw&&!confirm('Replace current Vegas/Wolf round?'))return;const players=['vwP1','vwP2','vwP3','vwP4'].map(k=>$(k).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}vw={players,type:$('vwType').value,stake:Math.max(0,Number($('vwStake').value)||0),holes:[],start:Date.now()};vwStore();};
 $('vwSave').onclick=()=>{if(!vw)return;if(vw.holes.length>=18){alert('Archive the 18-hole round.');return;}const scores=[0,1,2,3].map(j=>Number($('vwScore'+j).value));if(scores.some(x=>!Number.isInteger(x)||x<1||x>20)){alert('Enter a valid score for all four players.');return;}vw.holes.push({scores,partner:vw.type==='wolf'?Number($('vwPartner').value):null});vwStore();};
 $('vwUndo').onclick=()=>{if(vw&&vw.holes.length){vw.holes.pop();vwStore();}};
 $('vwArchive').onclick=()=>{if(vw&&vw.holes.length&&confirm('Archive this round to lifetime history?')){vw.end=Date.now();vwh.push(vw);vw=null;vwStore();}};
 $('vwDiscard').onclick=()=>{if(vw&&confirm('Discard this unarchived round?')){vw=null;vwStore();}};
-renderMemberSelect();renderLocker();vwRender();
+
+renderMemberSelect();
+renderLocker();
+vwRender();
+dccRenderVWLedger();
+
 
 
 // 4.9 local Dagger records and voice-first follow-up; independent of paid cloud services.
