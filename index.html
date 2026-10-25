@@ -4169,6 +4169,72 @@ function dccCreateRoundRecord(players, format = 'match-play') {
   };
 }
 
+// DCC STEP 27B — SHARED RECORD FOUNDATION CHECKS
+function dccRoundRecordSelfTest() {
+  const checks = [];
+
+  function check(name, passes) {
+    checks.push({ test: name, passed: Boolean(passes) });
+  }
+
+  const match = dccCreateRoundRecord(
+    ['Me', 'Opponent'], 'match-play'
+  );
+
+  check('Match Play format', match.primaryFormat === 'match-play');
+  check('Two distinct player IDs',
+    match.players.length === 2 &&
+    match.players[0].id !== match.players[1].id
+  );
+  check('Initial draft status', match.status === 'draft');
+  check('18-hole round', match.holesPlanned === 18);
+  check('Gross scoring default', match.scoringBasis === 'gross');
+  check('Empty initial scorecard',
+    Array.isArray(match.scores) && match.scores.length === 0
+  );
+  check('Empty wagers and settlements',
+    Array.isArray(match.wagers) &&
+    Array.isArray(match.settlements) &&
+    match.wagers.length === 0 &&
+    match.settlements.length === 0
+  );
+  check('Unique round identifiers',
+    match.id !== dccCreateRoundRecord(
+      ['Me', 'Opponent'], 'match-play'
+    ).id
+  );
+
+  const rejects = (players, format) => {
+    try {
+      dccCreateRoundRecord(players, format);
+      return false;
+    } catch {
+      return true;
+    }
+  };
+
+  check('Reject duplicate names',
+    rejects(['Me', 'me'], 'match-play')
+  );
+  check('Reject empty player names',
+    rejects(['', 'Opponent'], 'match-play')
+  );
+  check('Reject unsupported format',
+    rejects(['Me', 'Opponent'], 'unknown-game')
+  );
+  check('Reject more than four players',
+    rejects(['A','B','C','D','E'], 'skins')
+  );
+
+  console.table(checks);
+
+  return {
+    passed: checks.filter(c => c.passed).length,
+    total: checks.length,
+    allPassed: checks.every(c => c.passed)
+  };
+}
+
 // DCC STEP 26A — MATCH PLAY SCORING FOUNDATION
 // Scores: [[player1, player2], ...] in hole order.
 // Lower score wins the hole. Ties halve the hole.
