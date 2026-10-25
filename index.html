@@ -2974,6 +2974,36 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R3-D — LIVE STANDINGS STRIP */
+.dcc-vw-scoreboard {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 12px 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: #193b2d;
+  color: #fff7e8;
+  border: 1px solid #b79c62;
+}
+
+.dcc-vw-scoreboard small {
+  color: #d9bd82;
+  font: 800 10px system-ui, sans-serif;
+  letter-spacing: .12em;
+}
+
+.dcc-vw-scoreboard strong {
+  color: #fff7e8;
+  font: 700 clamp(20px, 5vw, 26px)/1.15 Georgia, serif;
+  overflow-wrap: anywhere;
+}
+
+.dcc-vw-scoreboard span {
+  color: #e0d5bc;
+  font: 12px/1.4 system-ui, sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -4305,7 +4335,15 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 <input id="vwType" type="hidden" value="vegas"><div class="grid" style="margin-top:10px"><div><label>$ per point (optional)</label><input id="vwStake" type="number" min="0" step="0.25" value="0"></div><div><label>Selected game</label><div class="game-live"><span class="robin-badge" id="vwSelectedBadge">Vegas</span><div class="game-note" id="vwSelectedNote">Fixed teams. Calm bookkeeping. Violent arguments optional.</div></div></div></div><div class="grid"><div><label>Player 1</label><input id="vwP1" value="Me" maxlength="25"></div><div><label>Player 2</label><input id="vwP2" value="Player 2" maxlength="25"></div><div><label>Player 3</label><input id="vwP3" value="Player 3" maxlength="25"></div><div><label>Player 4</label><input id="vwP4" value="Player 4" maxlength="25"></div></div><button class="btn-primary" id="vwStart" style="margin-top:9px">Start selected game</button>
 </div>
 <!-- END DCC R3-B PRE-ROUND SETUP -->
-<div id="vwActive" hidden><h3 style="margin-top:10px">Hole <span id="vwHole">1</span></h3><div id="vwRuleLine" class="note"></div><div class="grid" id="vwScores"></div><div id="vwWolfControls" hidden><label>Wolf choice</label><select id="vwPartner"></select></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="vwSave">Record hole</button><button class="btn-ghost" id="vwUndo">Undo hole</button></div><div id="vwStandings" class="note" style="margin-top:10px"></div>
+<div id="vwActive" hidden><h3 style="margin-top:10px">Hole <span id="vwHole">1</span></h3>
+<!-- DCC R3-D — LIVE STANDINGS STRIP -->
+<div id="vwLiveScoreboard"
+     class="dcc-vw-scoreboard"
+     role="status"
+     aria-live="polite">
+  Live standings will appear when the round begins.
+</div>
+<div id="vwRuleLine" class="note"></div><div class="grid" id="vwScores"></div><div id="vwWolfControls" hidden><label>Wolf choice</label><select id="vwPartner"></select></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="vwSave">Record hole</button><button class="btn-ghost" id="vwUndo">Undo hole</button></div><div id="vwStandings" class="note" style="margin-top:10px"></div>
 
 <details id="vwLedgerPanel" class="dcc-vw-ledger-panel">
   <summary>
@@ -7388,12 +7426,70 @@ function dccRenderVWLedger() {
 }
 
 
+// DCC R3-D — COMPACT LIVE STANDINGS
+// Display-only. Uses existing game scoring.
+function dccRenderVWScoreboard() {
+  const board = document.getElementById('vwLiveScoreboard');
+  if (!board) return;
+
+  board.replaceChildren();
+  if (!vw) return;
+
+  const points = vwCalc(vw);
+  const played = vw.holes.length;
+
+  const eyebrow = document.createElement('small');
+  eyebrow.textContent =
+    (vw.type === 'vegas' ? 'VEGAS' : 'WOLF') +
+    ' · HOLE ' + Math.min(played + 1, 18);
+
+  const heading = document.createElement('strong');
+  const detail = document.createElement('span');
+
+  if (vw.type === 'vegas') {
+    const margin = points[0] - points[2];
+
+    heading.textContent = !margin
+      ? 'ALL SQUARE'
+      : margin > 0 ? 'TEAM 1 LEADS' : 'TEAM 2 LEADS';
+
+    detail.textContent =
+      'Lead: ' + Math.abs(margin) +
+      ' points · ' + played + ' holes recorded';
+  } else {
+    const high = Math.max(...points);
+    const leaders = vw.players.filter(
+      (_, i) => points[i] === high
+    );
+    const second = Math.max(
+      ...points.filter(p => p < high),
+      high === Math.min(...points) ? high : -Infinity
+    );
+
+    heading.textContent = leaders.length === 4
+      ? 'ALL SQUARE'
+      : leaders.join(' + ') + ' LEADS';
+
+    detail.textContent =
+      'Leader: ' + high + ' pts' +
+      (leaders.length < 4
+        ? ' · Margin: ' + (high - second) + ' pts'
+        : '') +
+      ' · ' + played + ' holes recorded';
+  }
+
+  board.append(eyebrow, heading, detail);
+}
+
+
 function vwStore() {
   store(VW_ACTIVE, vw);
   store(VW_HISTORY, vwh);
   vwRender();
   dccRenderVWLedger();
+  dccRenderVWScoreboard();
 }
+
 
 $('vwStart').onclick=()=>{if(vw&&!confirm('Replace current Vegas/Wolf round?'))return;const players=['vwP1','vwP2','vwP3','vwP4'].map(k=>$(k).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}vw={players,type:$('vwType').value,stake:Math.max(0,Number($('vwStake').value)||0),holes:[],start:Date.now()};vwStore();};
 $('vwSave').onclick=()=>{if(!vw)return;if(vw.holes.length>=18){alert('Archive the 18-hole round.');return;}const scores=[0,1,2,3].map(j=>Number($('vwScore'+j).value));if(scores.some(x=>!Number.isInteger(x)||x<1||x>20)){alert('Enter a valid score for all four players.');return;}vw.holes.push({scores,partner:vw.type==='wolf'?Number($('vwPartner').value):null});vwStore();};
@@ -7405,7 +7501,7 @@ renderMemberSelect();
 renderLocker();
 vwRender();
 dccRenderVWLedger();
-
+dccRenderVWScoreboard();
 
 
 // 4.9 local Dagger records and voice-first follow-up; independent of paid cloud services.
