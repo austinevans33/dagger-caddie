@@ -5090,6 +5090,82 @@ function dccGhostScore(par, tier = 'tenFifteen', rng = Math.random) {
   throw new Error('House Ghost scoring distribution is invalid.');
 }
 
+// DCC STEP 30G — REPEATABLE GHOST CALIBRATION
+// Diagnostic only. No game data or Firebase changes.
+function dccGhostCalibrationTest(rounds = 5000) {
+  if (!Number.isInteger(rounds) ||
+      rounds < 1 || rounds > 20000) {
+    throw new Error('Choose 1–20,000 test rounds.');
+  }
+
+  // Hypothetical par-72 layout, not a real golf course.
+  const pars = [
+    4, 5, 3, 4, 4, 3, 5, 4, 4,
+    4, 3, 5, 4, 4, 3, 4, 5, 4
+  ];
+
+  // Reproducible random source.
+  let seed = 30817;
+  function rng() {
+    seed = (Math.imul(seed, 1664525) +
+      1013904223) >>> 0;
+    return seed / 4294967296;
+  }
+
+  const output = [];
+
+  for (const [tier, model] of
+       Object.entries(DCC_GHOST_TIERS)) {
+    const scores = [];
+    let birdies = 0;
+    let eaglesOrBetter = 0;
+    let doublesOrWorse = 0;
+
+    for (let round = 0; round < rounds; round++) {
+      let total = 0;
+
+      for (const par of pars) {
+        const strokes = dccGhostScore(par, tier, rng);
+        total += strokes;
+
+        if (strokes === par - 1) birdies++;
+        if (strokes <= par - 2) eaglesOrBetter++;
+        if (strokes >= par + 2) doublesOrWorse++;
+      }
+
+      scores.push(total);
+    }
+
+    scores.sort((a, b) => a - b);
+
+    const index = fraction =>
+      scores[Math.floor((scores.length - 1) * fraction)];
+
+    output.push({
+      ghost: model.label,
+      average: Number(
+        (scores.reduce((a, b) => a + b, 0) / rounds)
+          .toFixed(1)
+      ),
+      low10Percent: index(0.10),
+      median: index(0.50),
+      high90Percent: index(0.90),
+      birdiesPerRound: Number(
+        (birdies / rounds).toFixed(2)
+      ),
+      doublesPlusPerRound: Number(
+        (doublesOrWorse / rounds).toFixed(2)
+      ),
+      eaglesPlusPer100Rounds: Number(
+        (eaglesOrBetter / rounds * 100).toFixed(2)
+      )
+    });
+  }
+
+  console.table(output);
+  return output;
+}
+
 // DCC STEP 30C — HOUSE GHOST LOCAL MATCH
 // Completely separate from wagering and multiplayer records.
 const DCC_GHOST_DRAFT_KEY = 'dcc_house_ghost_draft_v1';
