@@ -2538,6 +2538,25 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   border-color: #a58a53;
 }
 
+/* DCC STEP 28F — TEST ARCHIVE CLEANUP */
+
+.dcc-discard-test {
+  align-self: flex-start;
+  margin-top: 7px;
+  padding: 10px 13px;
+  min-height: 43px;
+  background: #f3e4df;
+  color: #793d35;
+  border: 1px solid #be9388;
+  border-radius: 11px;
+  font: 800 11px system-ui,sans-serif;
+}
+
+.dcc-discard-test:focus-visible {
+  outline: 3px solid #b79c62;
+  outline-offset: 3px;
+}
+
 </style>
 </head>
 <body>
@@ -4883,6 +4902,44 @@ function dccSaveToMatchLibrary(record) {
 }
 
 // DCC STEP 28C — SAVED COMPETITIONS VIEW
+
+// DCC STEP 28F — SAFE LOCAL TEST RECORD REMOVAL
+function dccDiscardLocalTestMatch(id) {
+  if (typeof id !== 'string' || id === dccMpId) {
+    return false;
+  }
+
+  const records = dccReadMatchLibrary();
+  const record = records.find(r => r && r.id === id);
+
+  if (!record ||
+      record.primaryFormat !== 'match-play' ||
+      !dccValidMatchPlayRecord(record) ||
+      dccMatchPlay(record.scores.map(h => [
+        h.strokes.p1, h.strokes.p2
+      ])).decided) {
+    return false;
+  }
+
+  if (!confirm(
+    'Discard this unfinished local test record?\n\n' +
+    'This cannot be undone from the Competition Archive.'
+  )) {
+    return false;
+  }
+
+  try {
+    localStorage.setItem(
+      DCC_MATCH_LIBRARY_KEY,
+      JSON.stringify(records.filter(r => !r || r.id !== id))
+    );
+    return true;
+  } catch (error) {
+    console.warn('DCC test record removal failed:', error);
+    return false;
+  }
+}
+
 function dccRenderSavedGames() {
   const list = document.getElementById('dccSavedGamesList');
   if (!list) return;
@@ -4941,8 +4998,30 @@ function dccRenderSavedGames() {
     const id = document.createElement('small');
     id.textContent = 'MATCH ID: ' + record.id;
 
+    
     card.append(title, badge, detail, id);
+
+    // Only offer removal for old unfinished local test records.
+    if (state !== 'completed' &&
+        record.id !== dccMpId &&
+        dccValidMatchPlayRecord(record)) {
+
+      const discard = document.createElement('button');
+      discard.type = 'button';
+      discard.className = 'dcc-discard-test';
+      discard.textContent = 'Discard Old Test Record';
+
+      discard.addEventListener('click', () => {
+        if (dccDiscardLocalTestMatch(record.id)) {
+          dccRenderSavedGames();
+        }
+      });
+
+      card.appendChild(discard);
+    }
+
     list.appendChild(card);
+
   });
 }
 
