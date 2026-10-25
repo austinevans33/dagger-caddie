@@ -3151,6 +3151,42 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R5-B — COMPACT GAMES DESK */
+.dcc-games-fold {
+  margin-top: 10px;
+  border: 1px solid #c5b083;
+  border-radius: 13px;
+  background: #f3ead8;
+  overflow: hidden;
+}
+
+.dcc-games-fold > summary {
+  padding: 15px 14px;
+  min-height: 52px;
+  cursor: pointer;
+  color: #193b2d;
+  font: 800 12px/1.4 system-ui, sans-serif;
+  letter-spacing: .055em;
+}
+
+.dcc-games-fold[open] > summary {
+  border-bottom: 1px solid #c5b083;
+}
+
+.dcc-games-fold > .card {
+  margin: 10px;
+}
+
+@media (max-width:600px) {
+  #gamesMenu .game-picks {
+    margin-bottom: 10px;
+  }
+
+  #gamesMenu .dcc-games-fold {
+    margin-top: 8px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -7967,6 +8003,12 @@ document.querySelectorAll('.game-pick[data-game]').forEach(button => {
 
     // Preserve the existing selection and game state.
     showClubGame(game);
+    
+    // Open the shared scorecard before scrolling to it.
+    const gamePanel = document.getElementById(
+      'dccSelectedGamePanel'
+    );
+    if (gamePanel) gamePanel.open = true;
 
     const cardId = {
       bingo: 'bingoGameCard',
@@ -7987,6 +8029,73 @@ document.querySelectorAll('.game-pick[data-game]').forEach(button => {
     }
   });
 });
+
+/* DCC R5-B — COMPACT GAMES DESK */
+(function organizeGamesDesk() {
+  const menu = document.getElementById('gamesMenu');
+  const picks = menu?.querySelector('.game-picks');
+  if (!menu || !picks ||
+      document.getElementById('dccSelectedGamePanel')) return;
+
+  function createFold(id, title) {
+    const details = document.createElement('details');
+    details.id = id;
+    details.className = 'dcc-games-fold';
+
+    const summary = document.createElement('summary');
+    summary.textContent = title;
+    details.appendChild(summary);
+    return details;
+  }
+
+  // One shared expandable area for the six real scorecards.
+  const gamePanel = createFold(
+    'dccSelectedGamePanel',
+    'SELECTED GAME · SCORECARD'
+  );
+
+  [
+    'bingoGameCard',
+    'vwGameCard',
+    'hammerGameCard',
+    'robinGameCard',
+    'snakeGameCard'
+  ].forEach(id => {
+    const card = document.getElementById(id);
+    if (card) gamePanel.appendChild(card);
+  });
+
+  // Keep existing Match Play functionality.
+  const matchPanel = createFold(
+    'dccMatchPlayPanel',
+    'BASIC MATCH PLAY'
+  );
+  const match = document.querySelector(
+    '.dcc-match-desk[data-tab="games"]'
+  );
+  if (match) matchPanel.appendChild(match);
+
+  // Keep the entire existing House Ghost experience.
+  const ghostPanel = createFold(
+    'dccHouseGhostPanel',
+    'THE HOUSE GHOST'
+  );
+  const ghost = document.getElementById('dccGhostCard');
+  if (ghost) ghostPanel.appendChild(ghost);
+
+  // Place playable options before reference material.
+  picks.after(gamePanel, matchPanel, ghostPanel);
+
+  // Remove the redundant Classic Collection from the UI.
+  const classics = menu.querySelector('.games-classics');
+  if (classics) classics.remove();
+
+  // Put the saved competition archive at the bottom.
+  const archive = document.querySelector(
+    '.dcc-saved-games[data-tab="games"]'
+  );
+  if (archive) menu.appendChild(archive);
+})();
 
 showClubGame('bingo');
   
