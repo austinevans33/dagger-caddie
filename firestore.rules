@@ -49,7 +49,15 @@ service cloud.firestore {
           && request.resource.data.name.size() <= 24
           && request.resource.data.invite == get(/databases/$(database)/documents/rooms/$(roomId)).data.invite;
         allow delete: if false;
-      }
+      
     }
+
+    // DCC STEP 29A — SHARED COMPETITIONS
+    // Locked until ownership and membership validation is ready.
+    // Existing room rules above remain unchanged.
+    match /competitions/{competitionId} {
+      allow read, write: if false;
+    }
+
   }
 }
