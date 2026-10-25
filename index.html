@@ -4650,6 +4650,60 @@ function dccMpSharedSnapshot() {
   return record;
 }
 
+// DCC STEP 28A — MULTI-MATCH LOCAL RECORD LIBRARY
+// Separate from legacy wagers and Firebase.
+// Upserts by match ID rather than replacing other matches.
+
+const DCC_MATCH_LIBRARY_KEY = 'dcc_match_library_v1';
+
+function dccReadMatchLibrary() {
+  try {
+    const records = JSON.parse(
+      localStorage.getItem(DCC_MATCH_LIBRARY_KEY) || '[]'
+    );
+
+    return Array.isArray(records) ? records : [];
+  } catch (error) {
+    console.warn('DCC match library could not be read:', error);
+    return [];
+  }
+}
+
+function dccSaveToMatchLibrary(record) {
+  if (!record || record.schemaVersion !== 1 ||
+      typeof record.id !== 'string' ||
+      !record.id.startsWith('dcc-match-') ||
+      !Array.isArray(record.players) ||
+      !Array.isArray(record.scores)) {
+    return false;
+  }
+
+  try {
+    const records = dccReadMatchLibrary();
+
+    const index = records.findIndex(
+      existing => existing && existing.id === record.id
+    );
+
+    // Never overwrite a different competition.
+    if (index >= 0) {
+      records[index] = record;
+    } else {
+      records.push(record);
+    }
+
+    localStorage.setItem(
+      DCC_MATCH_LIBRARY_KEY,
+      JSON.stringify(records)
+    );
+
+    return true;
+  } catch (error) {
+    console.warn('DCC match library save failed:', error);
+    return false;
+  }
+}
+
 // DCC STEP 27F — LOCAL SHARED RECORD MIRROR
 // Keeps a structured copy separate from the existing draft.
 // Not an official Firebase match and not a wager settlement.
