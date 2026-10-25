@@ -8207,16 +8207,15 @@ function dccRenderHammerLedger() {
 }
 
 
+
 function hmStore() {
   store(HM_ACTIVE, hm);
   store(HM_HISTORY, hmh);
-  
-hmRender();
-dccRenderHammerScoreboard();
-dccRenderHammerLedger();
-rrRender();
-
+  hmRender();
+  dccRenderHammerScoreboard();
+  dccRenderHammerLedger();
 }
+
 
 
 $('hmStart').onclick=()=>{const players=['hmP1','hmP2','hmP3','hmP4'].map(id=>$(id).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}hm={players,stake:Math.max(0,Number($('hmStake').value)||0),base:Math.max(1,Number($('hmBase').value)||1),holes:[],started:Date.now()};hmStore();};
