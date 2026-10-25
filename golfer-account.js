@@ -151,6 +151,78 @@ function showAccount(user) {
 }
 
 
+// DCC STEP 29E — PERSISTENT MEMBER INDICATOR
+// Display only. Does not write data or change authentication.
+const dccMemberButton = document.createElement('button');
+dccMemberButton.type = 'button';
+dccMemberButton.id = 'dccMemberIndicator';
+dccMemberButton.setAttribute(
+  'aria-label',
+  'View Dagger Country Club membership account'
+);
+
+dccMemberButton.style.cssText = [
+  'display:flex',
+  'align-items:center',
+  'justify-content:space-between',
+  'gap:12px',
+  'width:100%',
+  'margin:0 0 14px',
+  'padding:12px 15px',
+  'border-radius:13px',
+  'border:1px solid #b79c62',
+  'background:#173528',
+  'color:#f3e9d3',
+  'text-align:left',
+  'cursor:pointer',
+  'box-sizing:border-box'
+].join(';');
+
+const dccMemberText = document.createElement('span');
+dccMemberText.style.cssText =
+  'font:700 12px/1.5 system-ui,sans-serif;overflow-wrap:anywhere';
+
+const dccMemberArrow = document.createElement('span');
+dccMemberArrow.textContent = 'ACCOUNT ›';
+dccMemberArrow.style.cssText =
+  'color:#d8ba77;font:800 10px system-ui,sans-serif;white-space:nowrap';
+
+dccMemberButton.append(dccMemberText, dccMemberArrow);
+
+const dccMast = document.querySelector('.app-shell .mast');
+
+if (dccMast) {
+  dccMast.insertAdjacentElement('afterend', dccMemberButton);
+}
+
+function dccUpdateMemberIndicator(user) {
+  if (!user) {
+    dccMemberText.textContent = '○ Membership not connected';
+    return;
+  }
+
+  if (user.isAnonymous) {
+    dccMemberText.textContent = '◐ Guest membership · Secure your account';
+    return;
+  }
+
+  dccMemberText.textContent =
+    '✓ Signed in · ' + (user.email || 'DCC Member');
+}
+
+dccMemberButton.addEventListener('click', () => {
+  // Use the existing Club navigation and Membership Office.
+  document.getElementById('tab-settings')?.click();
+
+  const drawer = document.querySelector('.dcc-account-drawer');
+  if (drawer) drawer.open = true;
+
+  drawer?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+});
+
 // DCC STEP 29B — SHARED COMPETITION MEMBER IDENTITY
 // Read-only authentication state for future competitions.
 // A display name is never proof of competition ownership.
@@ -160,9 +232,14 @@ window.dccCompetitionIdentity = Object.freeze({
   permanent: false
 });
 
+
 onAuthStateChanged(auth, user => {
   // Preserve the existing account display and controls.
   showAccount(user);
+
+  // DCC STEP 29E — Update the persistent account indicator.
+  dccUpdateMemberIndicator(user);
+
 
   window.dccCompetitionIdentity = Object.freeze({
     uid: user?.uid || null,
