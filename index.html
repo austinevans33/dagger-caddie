@@ -2506,6 +2506,38 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   overflow-wrap: anywhere;
 }
 
+/* DCC STEP 28E — ARCHIVE STATUS BADGES */
+
+.dcc-saved-game-card .dcc-archive-state {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid #c5af7f;
+  font: 800 10px/1.4 system-ui,sans-serif;
+  letter-spacing: .07em;
+}
+
+.dcc-archive-state[data-state="draft"] {
+  background: #e7ddc7;
+  color: #615a49;
+}
+
+.dcc-archive-state[data-state="active"] {
+  background: #193d2d;
+  color: #fff4dc;
+  border-color: #b79c62;
+}
+
+.dcc-archive-state[data-state="completed"] {
+  background: #d9be86;
+  color: #193d2d;
+  border-color: #a58a53;
+}
+
 </style>
 </head>
 <body>
@@ -4882,16 +4914,34 @@ function dccRenderSavedGames() {
 
     const result = dccMatchPlay(scores);
 
+    
+    // DCC STEP 28E — VISIBLE COMPETITION STATUS
+    // Recalculate from scores rather than trusting stale labels.
+    const state = result.decided
+      ? 'completed'
+      : result.played > 0
+        ? 'active'
+        : 'draft';
+
+    const badge = document.createElement('span');
+    badge.className = 'dcc-archive-state';
+    badge.dataset.state = state;
+
+    badge.textContent = state === 'completed'
+      ? 'MATCH COMPLETE'
+      : state === 'active'
+        ? 'IN PROGRESS'
+        : 'NOT STARTED';
+
     const detail = document.createElement('span');
     detail.textContent =
-      String(record.status || 'draft').toUpperCase() +
-      ' · ' + result.played + '/18 holes' +
-      ' · ' + result.status;
+      result.played + '/18 holes · ' + result.status;
+
 
     const id = document.createElement('small');
     id.textContent = 'MATCH ID: ' + record.id;
 
-    card.append(title, detail, id);
+    card.append(title, badge, detail, id);
     list.appendChild(card);
   });
 }
