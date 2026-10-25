@@ -3488,6 +3488,16 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   line-height: 1.5;
 }
 
+/* DCC R7-D — SNAKE MOBILE SCOREBOARD */
+#snLiveScoreboard {
+  margin: 10px 0 14px;
+}
+
+#snLiveScoreboard strong,
+#snLiveScoreboard span {
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -4987,7 +4997,14 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 <div class="grid"><div><label>$ per snake</label><input id="snStake" type="number" min="0" step="0.25" value="1"></div><div><label>Player 1</label><input id="snP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="snP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="snP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="snP4" maxlength="24" placeholder="Optional"></div></div><button class="btn-primary" id="snStart" style="margin-top:10px">Start Snake session</button>
 </div>
 <!-- END DCC R7-A SNAKE SETUP -->
-<div id="snActive" hidden class="game-live"><h3>Snake event <span id="snEvent">1</span></h3><div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div><div id="snStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div>
+<div id="snActive" hidden class="game-live"><h3>Snake event <span id="snEvent">1</span></h3>
+<!-- DCC R7-D — SNAKE LIVE PENALTY BOARD -->
+<div id="snLiveScoreboard"
+     class="dcc-bbb-standings"
+     role="status"
+     aria-live="polite">
+</div>
+<div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div><div id="snStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div>
 <!-- DCC R7-C — SNAKE ARCHIVE -->
 <details id="snArchivePanel" class="dcc-vw-ledger-panel dcc-game-archive">
   <summary>
@@ -8676,7 +8693,72 @@ function snRender() {
   const setup = document.getElementById('snPreRoundSetup');
   if (setup) setup.hidden = !!sn;
  if(sn){$('snEvent').textContent=String(sn.events.length+1);$('snWho').innerHTML='';sn.players.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;$('snWho').append(o)});const counts=snCounts(sn);$('snStandings').textContent=Object.entries(counts).map(([n,c])=>`${n}: ${c} snake${c===1?'':'s'}${sn.stake?` (${money(c*sn.stake)})`:''}`).join(' · ');}const totals={};snh.forEach(g=>{const c=snCounts(g);for(const [n,v] of Object.entries(c))totals[n]=(totals[n]||0)+v;});$('snLifetime').textContent=snh.length?`${snh.length} archived Snake sessions · `+Object.entries(totals).map(([n,v])=>`${n}: ${v}`).join(' · '):'No Snake sessions archived yet.';}
-function snStore(){store(SN_ACTIVE,sn);store(SN_HISTORY,snh);snRender();}
+
+// DCC R7-D — SNAKE LIVE PENALTY BOARD
+// Display only. Uses the existing saved events and snCounts().
+function dccRenderSnakeScoreboard() {
+  const root = document.getElementById('snLiveScoreboard');
+  if (!root) return;
+
+  root.replaceChildren();
+  if (!sn) return;
+
+  const counts = snCounts(sn);
+  const total = sn.events.length;
+  const latest = total
+    ? sn.events[total - 1].player
+    : 'NO THREE-PUTTS YET';
+
+  const stake = Number(sn.stake) || 0;
+
+  const label = document.createElement('small');
+  label.textContent = 'SNAKE · LIVE PENALTY BOARD';
+
+  const heading = document.createElement('strong');
+  heading.textContent = 'LATEST · ' + latest;
+
+  const detail = document.createElement('span');
+  detail.textContent =
+    total + ' recorded three-putt' + (total === 1 ? '' : 's') +
+    (stake > 0 ? ' · ' + money(stake) + ' per event' : '');
+
+  const grid = document.createElement('div');
+  grid.className = 'dcc-bbb-ranking';
+
+  sn.players.forEach(name => {
+    const cell = document.createElement('div');
+    cell.className = 'dcc-bbb-rank';
+
+    const player = document.createElement('span');
+    player.textContent = name;
+
+    const score = document.createElement('strong');
+    const count = counts[name] || 0;
+    score.textContent = count + (count === 1 ? ' SNAKE' : ' SNAKES');
+
+    cell.append(player, score);
+
+    if (stake > 0) {
+      const amount = document.createElement('span');
+      amount.textContent =
+        'Penalties: ' + money(count * stake);
+      cell.appendChild(amount);
+    }
+
+    grid.appendChild(cell);
+  });
+
+  root.append(label, heading, detail, grid);
+}
+
+
+function snStore() {
+  store(SN_ACTIVE, sn);
+  store(SN_HISTORY, snh);
+  snRender();
+  dccRenderSnakeScoreboard();
+}
+
 $('snStart').onclick=()=>{const players=['snP1','snP2','snP3','snP4'].map(id=>$(id).value.trim()).filter(Boolean);if(players.length<2||new Set(players.map(x=>x.toLowerCase())).size!==players.length){alert('Enter at least two different names.');return;}sn={players,stake:Math.max(0,Number($('snStake').value)||0),events:[],started:Date.now()};snStore();};
 $('snSave').onclick=()=>{if(!sn)return;sn.events.push({player:$('snWho').value,hole:Number($('snHole').value)||null,ts:Date.now()});$('snHole').value='';snStore();};
 $('snUndo').onclick=()=>{if(sn&&sn.events.length){sn.events.pop();snStore();}};
@@ -8714,7 +8796,9 @@ rrRender();
 dccRenderRRScoreboard();
 dccRenderRRLedger();
 snRender();
+dccRenderSnakeScoreboard();
 renderRecap();
+
 
 
 let shownClubGame='bingo';
