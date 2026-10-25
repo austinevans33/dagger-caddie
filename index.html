@@ -1904,6 +1904,133 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   margin-bottom: 10px !important;
 }
 
+/* DCC STEP 23B — PREMIUM GAMES DESK */
+
+#gamesMenu {
+  background: #f5edde;
+  border: 1px solid #b79c62;
+  border-radius: 19px;
+  padding: 13px;
+  overflow: hidden;
+}
+
+.games-desk-heading {
+  background: linear-gradient(145deg,#204635,#102a20);
+  border: 1px solid #b79c62;
+  border-radius: 15px;
+  text-align: center;
+  padding: 25px 15px 23px;
+  margin-bottom: 19px;
+}
+
+.games-desk-heading > span {
+  display: block;
+  color: #d9be86;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .15em;
+  line-height: 1.6;
+}
+
+.games-desk-heading h2 {
+  color: #fff4dc;
+  font: 700 32px Georgia,serif;
+  margin: 12px 0;
+  border: 0;
+  padding: 0;
+}
+
+.games-desk-heading p {
+  color: #e4d7bc;
+  font: italic 14px/1.6 Georgia,serif;
+  margin: 0 0 16px;
+}
+
+.games-desk-heading small {
+  color: #b79c62;
+  font: 800 9px system-ui,sans-serif;
+  letter-spacing: .14em;
+}
+
+.games-desk-label {
+  margin: 0 3px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.games-desk-label strong {
+  color: #193d2d;
+  font: 800 11px system-ui,sans-serif;
+  letter-spacing: .12em;
+}
+
+.games-desk-label span {
+  color: #6c6658;
+  font: 12px/1.5 system-ui,sans-serif;
+}
+
+/* Existing playable game selection */
+#gamesMenu .game-picks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+#gamesMenu .game-pick {
+  min-width: 0;
+  min-height: 100px;
+  padding: 15px 13px;
+  text-align: left;
+  background: #fffaf0;
+  color: #193d2d;
+  border: 1px solid #c6b287;
+  border-radius: 14px;
+  box-shadow: 0 3px 8px rgba(20,49,38,.04);
+}
+
+#gamesMenu .game-pick strong {
+  display: block;
+  font: 700 16px/1.3 Georgia,serif;
+  color: inherit;
+}
+
+#gamesMenu .game-pick small {
+  display: block;
+  color: #71674e;
+  font: 11px/1.5 system-ui,sans-serif;
+  margin-top: 9px;
+}
+
+#gamesMenu .game-pick.selected {
+  background: linear-gradient(145deg,#214936,#143126);
+  color: #fff4dc;
+  border: 2px solid #b79c62;
+}
+
+#gamesMenu .game-pick.selected small {
+  color: #e0d0ab;
+}
+
+#gamesMenu .game-pick:focus-visible {
+  outline: 3px solid #b79c62;
+  outline-offset: 3px;
+}
+
+@media(max-width:420px) {
+  #gamesMenu .game-picks {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  #gamesMenu .game-pick {
+    min-height: 72px;
+  }
+
+  .games-desk-heading h2 {
+    font-size: 29px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2595,7 +2722,18 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </section>
 
 <section class="card" data-tab="games" id="gamesMenu">
-<div class="over" style="color:#756344">DAGGER COUNTRY CLUB · GAMES DESK</div><h2>Choose your game</h2><p class="muted">Separate game pages, separate scorecards, fewer chances to butcher the action.</p>
+
+<div class="games-desk-heading">
+  <span>DAGGER COUNTRY CLUB · COMPETITION COMMITTEE</span>
+  <h2>The Games Desk</h2>
+  <p>Choose your competition. Know the rules. Settle the score.</p>
+  <small>AS IT LIES · PLAY IT PROPERLY</small>
+</div>
+<div class="games-desk-label">
+  <strong>THE CLUB'S CURRENT GAMES</strong>
+  <span>Choose a game below to open its scorecard.</span>
+</div>
+
 <div class="game-picks">
 <button class="game-pick selected" type="button" data-game="bingo"><strong>◎ Bingo Bango Bongo</strong><small>Three points every hole</small></button>
 <button class="game-pick" type="button" data-game="vegas"><strong>♠ Vegas</strong><small>Two teams · two-digit scores</small></button>
