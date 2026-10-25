@@ -48,8 +48,9 @@ service cloud.firestore {
           && request.resource.data.name.size() > 0
           && request.resource.data.name.size() <= 24
           && request.resource.data.invite == get(/databases/$(database)/documents/rooms/$(roomId)).data.invite;
+        
         allow delete: if false;
-      
+      }
     }
 
     // DCC STEP 29A — SHARED COMPETITIONS
