@@ -5354,10 +5354,15 @@ dccMpScores.forEach((scores, index) => {
   history.appendChild(item);
 });
 
+  
   // Mirror the current match into the shared competition format.
   // Failure here must never interrupt the working scorekeeper.
   dccMpSaveSharedRecord();
+
+  // DCC STEP 29J — Keep editable controls in sync with ownership.
+  dccMpUpdateEditorPermissions();
 }
+
 
 
 // DCC STEP 29I — MATCH SCORE EDIT PERMISSION
@@ -5423,8 +5428,15 @@ document.getElementById('dccMpUndo').addEventListener('click', () => {
   dccMpRender();
 });
 
+
 document.getElementById('dccMpReset').addEventListener('click', () => {
-  if (!dccMpScores.length || confirm('Discard this test match?')) {
+  if (!dccMpScores.length ||
+      confirm(
+        'Start a new Match Play test?\n\n' +
+        'This clears the current scoring desk but does not ' +
+        'delete the previous saved competition.'
+      )) {
+
     dccMpScores.length = 0;
     dccMpId = dccMpNewId();
     document.getElementById('dccMpMessage').textContent =
@@ -5433,11 +5445,49 @@ document.getElementById('dccMpReset').addEventListener('click', () => {
   }
 });
 
+
+// DCC STEP 29J — READ-ONLY MATCH EDITOR
+function dccMpUpdateEditorPermissions() {
+  const ownerUid = dccMpOwnerUid();
+  const identity = window.dccCompetitionIdentity;
+  const blocked = !!ownerUid &&
+    (!identity?.signedIn || identity.uid !== ownerUid);
+
+  [
+    'dccMpName1',
+    'dccMpName2',
+    'dccMpScore1',
+    'dccMpScore2',
+    'dccMpUndo'
+  ].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) input.disabled = blocked;
+  });
+
+  const recordHole = document.getElementById('dccMpSave');
+  if (recordHole) {
+    recordHole.disabled =
+      blocked || dccMatchPlay(dccMpScores).decided;
+  }
+
+  return blocked;
+}
+
 ['dccMpName1', 'dccMpName2'].forEach(id => {
-  document.getElementById(id).addEventListener('input', dccMpRender);
+  document.getElementById(id).addEventListener('input', () => {
+    if (!dccMpCanEditScores()) return;
+    dccMpRender();
+  });
 });
 
+// React when a different member signs in on this device.
+window.addEventListener('dcc:competition-identity', () => {
+  dccMpUpdateEditorPermissions();
+});
+
+// Preserve the existing scorekeeper startup.
 dccMpRender();
+dccMpUpdateEditorPermissions();
 
 function wagerMath(game){
  const names=game.players,score=names.map(()=>0),stake=Number(game.stake)||0;
