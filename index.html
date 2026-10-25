@@ -4468,6 +4468,8 @@ function dccMpSharedSnapshot() {
     'match-play'
   );
 
+  record.id = dccMpId;
+
   const result = dccMatchPlay(dccMpScores);
 
   record.scores = dccMpScores.map((hole, index) => ({
@@ -4540,7 +4542,6 @@ function dccMpRender() {
     name2: document.getElementById('dccMpName2').value,
     scores: dccMpScores
   });
-  record.id = dccMpId;
   const result = dccMatchPlay(dccMpScores);
   const first = document.getElementById('dccMpName1').value.trim() || 'Player 1';
   const second = document.getElementById('dccMpName2').value.trim() || 'Player 2';
