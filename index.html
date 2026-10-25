@@ -5193,8 +5193,27 @@ document.getElementById('dccExportMatchLibrary')
 
 function dccMpSaveSharedRecord() {
   try {
+    
     const record = dccMpSharedSnapshot();
     record.updatedAt = Date.now();
+
+    // DCC STEP 29G — PROTECT LOCALLY OWNED COMPETITIONS
+    // Do not overwrite a shared record unless its owner
+    // matches the currently authenticated Firebase member.
+    // The original Match Play draft remains untouched.
+    if (record.ownerUid) {
+      const identity = window.dccCompetitionIdentity;
+
+      if (!identity?.signedIn ||
+          identity.uid !== record.ownerUid) {
+        console.warn(
+          'DCC: Shared competition save blocked. ' +
+          'The current member does not own this match.'
+        );
+        return false;
+      }
+    }
+
 
     // Preserve the existing single-record mirror.
     localStorage.setItem(
