@@ -7447,7 +7447,8 @@ function dccRenderVWScoreboard() {
   const detail = document.createElement('span');
 
   if (vw.type === 'vegas') {
-    const margin = points[0] - points[2];
+    const margin = points[0];
+
 
     heading.textContent = !margin
       ? 'ALL SQUARE'
