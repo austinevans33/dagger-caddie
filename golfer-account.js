@@ -150,7 +150,34 @@ function showAccount(user) {
   $('golferRegister').disabled = !user.isAnonymous;
 }
 
-onAuthStateChanged(auth, showAccount);
+
+// DCC STEP 29B — SHARED COMPETITION MEMBER IDENTITY
+// Read-only authentication state for future competitions.
+// A display name is never proof of competition ownership.
+window.dccCompetitionIdentity = Object.freeze({
+  uid: null,
+  signedIn: false,
+  permanent: false
+});
+
+onAuthStateChanged(auth, user => {
+  // Preserve the existing account display and controls.
+  showAccount(user);
+
+  window.dccCompetitionIdentity = Object.freeze({
+    uid: user?.uid || null,
+    signedIn: !!user,
+    permanent: !!user && !user.isAnonymous
+  });
+
+  // Inform competition interfaces when the account changes.
+  window.dispatchEvent(
+    new CustomEvent('dcc:competition-identity', {
+      detail: window.dccCompetitionIdentity
+    })
+  );
+});
+
 
 function credentials() {
   const email = $('golferEmail').value.trim();
