@@ -5592,49 +5592,69 @@ document.getElementById('dccGhostUndo')
     }
   });
 
-// DCC STEP 30D — START A NEW GHOST MATCH
-document.getElementById('dccGhostReset')
-  .addEventListener('click', () => {
-    const message = document.getElementById('dccGhostMessage');
 
-    if (dccGhostHoles.length &&
-        !confirm(
-          'Start a new House Ghost match?\n\n' +
-          'This will permanently clear the current local Ghost ' +
-          'scorecard. This prototype does not archive Ghost rounds yet.'
-        )) {
-      return;
-    }
-
-    try {
-      const tier = document.getElementById('dccGhostTier').value;
-
-      localStorage.setItem(
-        DCC_GHOST_DRAFT_KEY,
-        JSON.stringify({
-  version: 1,
-  tier,
-  holesPlanned: dccGhostLength,
-  condition: null,
-  holes: []
-})
+  // DCC STEP 30K-B — ARCHIVE BEFORE STARTING A NEW MATCH
+  document.getElementById('dccGhostReset')
+    .addEventListener('click', () => {
+      const message = document.getElementById('dccGhostMessage');
+      const scores = dccGhostHoles.map(
+        h => [h.player, h.ghost]
       );
+      const result = dccMatchPlay(scores, dccGhostLength);
+      const finished = dccGhostHoles.length > 0 &&
+        (result.decided ||
+         dccGhostHoles.length >= dccGhostLength);
 
-      dccGhostHoles = [];
-      
-      dccGhostCondition = null;
+      if (dccGhostHoles.length && !finished) {
+        if (!confirm(
+          'This House Ghost match is unfinished.\n\n' +
+          'Starting a new match will discard its scores. ' +
+          'Unfinished matches are not archived yet.\n\n' +
+          'Discard this unfinished match?'
+        )) {
+          return;
+        }
+      }
 
-      document.getElementById('dccGhostPlayerScore').value = '';
+      try {
+        if (finished) {
+          // Archive must succeed before clearing the draft.
+          if (!dccGhostArchiveMatch()) {
+            throw new Error('Completed match was not archived.');
+          }
+        }
 
-      message.textContent =
-        'New match ready. Choose your House Ghost opponent.';
-      dccGhostRender();
-    } catch (error) {
-      console.warn('House Ghost reset failed:', error);
-      message.textContent =
-        'Unable to start a new match. Previous scores were retained.';
-    }
-  });
+        const tier = document.getElementById('dccGhostTier').value;
+
+        localStorage.setItem(
+          DCC_GHOST_DRAFT_KEY,
+          JSON.stringify({
+            version: 1,
+            tier,
+            holesPlanned: dccGhostLength,
+            condition: null,
+            holes: []
+          })
+        );
+
+        dccGhostHoles = [];
+        dccGhostCondition = null;
+        document.getElementById('dccGhostPlayerScore').value = '';
+
+        message.textContent = finished
+          ? 'Completed Ghost match archived. New match ready.'
+          : 'New Ghost match ready. Choose your opponent.';
+
+        dccGhostRender();
+      } catch (error) {
+        console.warn('House Ghost new-match save failed:', error);
+        message.textContent =
+          'Unable to safely start a new match. ' +
+          'Your current scores were retained.';
+      }
+    });
+
+
 
 function dccGhostUpdateActions() {
   const undo = document.getElementById('dccGhostUndo');
