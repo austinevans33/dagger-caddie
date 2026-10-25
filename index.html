@@ -3367,6 +3367,39 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   padding: 12px;
 }
 
+/* DCC R6-A — 6-6-6 PLAYING MODE */
+#rrPreRoundSetup[hidden] {
+  display: none !important;
+}
+
+.dcc-rr-segment {
+  margin: 6px 0 10px;
+  color: #806735;
+  font: 800 11px/1.4 system-ui, sans-serif;
+  letter-spacing: .08em;
+}
+
+@media(max-width:600px) {
+  #rrScores {
+    gap: 8px;
+  }
+
+  #rrScores input {
+    min-height: 48px;
+    font-size: 18px;
+  }
+
+  #rrSave {
+    min-height: 54px;
+    font-weight: 800;
+  }
+
+  #rrTeams {
+    margin-bottom: 12px;
+    line-height: 1.8;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4789,7 +4822,18 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </details>
 </section>
 
-<section class="card game-hidden" data-tab="games" id="robinGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MEMBER FAVORITE</div><h2>6-6-6 / Round Robin</h2><p class="muted">Better-ball teams rotate every six holes: 1–6, 7–12, then 13–18. Great for a foursome where nobody wants the same partner all day.</p><details open><summary>How to play · 6-6-6</summary><p class="note">Use four players. Teams are 1+2 vs 3+4 on holes 1–6, 1+3 vs 2+4 on holes 7–12, and 1+4 vs 2+3 on holes 13–18. Record gross strokes; the lower best-ball score wins the hole. Winning teammates receive +1 point each, losers -1. Halves are zero.</p></details><div class="grid"><div><label>$ per point (optional)</label><input id="rrStake" type="number" min="0" step="0.25" value="0"></div><div><label>Player 1</label><input id="rrP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="rrP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="rrP3" maxlength="24" value="Player 3"></div><div><label>Player 4</label><input id="rrP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="rrStart" style="margin-top:10px">Start 6-6-6 round</button><div id="rrActive" hidden class="game-live"><h3>Hole <span id="rrHole">1</span></h3><div id="rrTeams" class="scoreline" style="font-weight:700"></div><div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
+<section class="card game-hidden" data-tab="games" id="robinGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MEMBER FAVORITE</div><h2>6-6-6 / Round Robin</h2><p class="muted">Better-ball teams rotate every six holes: 1–6, 7–12, then 13–18. Great for a foursome where nobody wants the same partner all day.</p> <details><summary>How to play · 6-6-6</summary><p class="note">Use four players. Teams are 1+2 vs 3+4 on holes 1–6, 1+3 vs 2+4 on holes 7–12, and 1+4 vs 2+3 on holes 13–18. Record gross strokes; the lower best-ball score wins the hole. Winning teammates receive +1 point each, losers -1. Halves are zero.</p></details>
+<!-- DCC R6-A — 6-6-6 PRE-ROUND SETUP -->
+<div id="rrPreRoundSetup">
+<div class="grid"><div><label>$ per point (optional)</label><input id="rrStake" type="number" min="0" step="0.25" value="0"></div><div><label>Player 1</label><input id="rrP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="rrP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="rrP3" maxlength="24" value="Player 3"></div><div><label>Player 4</label><input id="rrP4" maxlength="24" value="Player 4"></div></div><button class="btn-primary" id="rrStart" style="margin-top:10px">Start 6-6-6 round</button>
+</div>
+<!-- END DCC R6-A SETUP -->
+<div id="rrActive" hidden class="game-live"><h3>Hole <span id="rrHole">1</span></h3>
+<div id="rrSegment"
+     class="dcc-rr-segment"
+     aria-live="polite">
+</div>
+<div id="rrTeams" class="scoreline" style="font-weight:700"></div><div class="grid" id="rrScores"></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="rrSave">Record hole</button><button class="btn-ghost" id="rrUndo">Undo hole</button></div><div id="rrStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div><details style="margin-top:12px"><summary>6-6-6 lifetime points</summary><div id="rrLifetime" class="note"></div></details></section>
 
 <section class="card game-hidden" data-tab="games" id="snakeGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MINOR CRIMES UNIT</div><h2>Snake</h2><p class="muted">The quickest way to punish a three-putt without turning the round into a tax audit.</p><details open><summary>How to play · Snake</summary><p class="note">Record a snake every time someone three-putts. Most groups simply charge a fixed amount per snake to the player who earned it. Use this tracker as a ledger of shame.</p></details><div class="grid"><div><label>$ per snake</label><input id="snStake" type="number" min="0" step="0.25" value="1"></div><div><label>Player 1</label><input id="snP1" maxlength="24" value="Me"></div><div><label>Player 2</label><input id="snP2" maxlength="24" value="Player 2"></div><div><label>Player 3</label><input id="snP3" maxlength="24" placeholder="Optional"></div><div><label>Player 4</label><input id="snP4" maxlength="24" placeholder="Optional"></div></div><button class="btn-primary" id="snStart" style="margin-top:10px">Start Snake session</button><div id="snActive" hidden class="game-live"><h3>Snake event <span id="snEvent">1</span></h3><div class="grid"><div><label>Who three-putted?</label><select id="snWho"></select></div><div><label>Hole (optional)</label><input id="snHole" type="number" min="1" max="18" placeholder="e.g. 7"></div></div><div class="grid" style="margin-top:10px"><button class="btn-primary" id="snSave">Record snake</button><button class="btn-ghost" id="snUndo">Undo last snake</button></div><div id="snStandings" class="scoreline" style="margin-top:8px"></div><div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div><details style="margin-top:12px"><summary>Snake history</summary><div id="snLifetime" class="note"></div></details></section>
 
@@ -8265,7 +8309,24 @@ const RR_ACTIVE='dagger_rr_active',RR_HISTORY='dagger_rr_history';
 let rr=read(RR_ACTIVE,null),rrh=read(RR_HISTORY,[]);
 function rrTeams(i){if(i<6)return [[0,1],[2,3]];if(i<12)return [[0,2],[1,3]];return [[0,3],[1,2]];}
 function rrCalc(g){const pts=[0,0,0,0];for(let i=0;i<g.holes.length;i++){const [a,b]=rrTeams(i),sc=g.holes[i].scores,aa=Math.min(sc[a[0]],sc[a[1]]),bb=Math.min(sc[b[0]],sc[b[1]]);if(aa===bb)continue;const aw=aa<bb;[...a].forEach(j=>pts[j]+=aw?1:-1);[...b].forEach(j=>pts[j]+=aw?-1:1);}return pts;}
-function rrRender(){ $('rrActive').hidden=!rr; if(rr){const idx=rr.holes.length;$('rrHole').textContent=Math.min(idx+1,18);const [a,b]=rrTeams(idx);$('rrTeams').innerHTML=`<span class="robin-badge">${rr.players[a[0]]} + ${rr.players[a[1]]}</span> vs <span class="robin-badge">${rr.players[b[0]]} + ${rr.players[b[1]]}</span>`;$('rrScores').innerHTML='';rr.players.forEach((n,j)=>{let d=document.createElement('div'),label=document.createElement('label'),inp=document.createElement('input');label.textContent=n+' strokes';inp.type='number';inp.min='1';inp.max='20';inp.id='rrScore'+j;d.append(label,inp);$('rrScores').append(d)});const pts=rrCalc(rr);$('rrStandings').textContent=rr.players.map((n,j)=>`${n}: ${pts[j]} pts${rr.stake?` (${money(pts[j]*(rr.stake||0))})`:''}`).join(' · ');}const sums={};rrh.forEach(g=>g.players.forEach((n,j)=>sums[n]=(sums[n]||0)+rrCalc(g)[j]));$('rrLifetime').textContent=rrh.length?rrh.length+' archived 6-6-6 rounds · '+Object.entries(sums).map(([n,p])=>`${n}: ${p} pts`).join(' · '):'No 6-6-6 rounds archived yet.';}
+
+function rrRender() {
+  $('rrActive').hidden = !rr;
+
+  // DCC R6-A — Setup Mode / Playing Mode.
+  const setup = document.getElementById('rrPreRoundSetup');
+  if (setup) setup.hidden = !!rr;
+
+  if(rr){
+    const idx = rr.holes.length;
+
+    // Rotations: holes 1–6, 7–12, 13–18.
+    const segment = Math.min(3, Math.floor(idx / 6) + 1);
+    $('rrSegment').textContent =
+      'SEGMENT ' + segment + ' OF 3 · ' +
+      (segment === 1 ? 'HOLES 1–6' :
+       segment === 2 ? 'HOLES 7–12' : 'HOLES 13–18');
+$('rrHole').textContent=Math.min(idx+1,18);const [a,b]=rrTeams(idx);$('rrTeams').innerHTML=`<span class="robin-badge">${rr.players[a[0]]} + ${rr.players[a[1]]}</span> vs <span class="robin-badge">${rr.players[b[0]]} + ${rr.players[b[1]]}</span>`;$('rrScores').innerHTML='';rr.players.forEach((n,j)=>{let d=document.createElement('div'),label=document.createElement('label'),inp=document.createElement('input');label.textContent=n+' strokes';inp.type='number';inp.min='1';inp.max='20';inp.id='rrScore'+j;d.append(label,inp);$('rrScores').append(d)});const pts=rrCalc(rr);$('rrStandings').textContent=rr.players.map((n,j)=>`${n}: ${pts[j]} pts${rr.stake?` (${money(pts[j]*(rr.stake||0))})`:''}`).join(' · ');}const sums={};rrh.forEach(g=>g.players.forEach((n,j)=>sums[n]=(sums[n]||0)+rrCalc(g)[j]));$('rrLifetime').textContent=rrh.length?rrh.length+' archived 6-6-6 rounds · '+Object.entries(sums).map(([n,p])=>`${n}: ${p} pts`).join(' · '):'No 6-6-6 rounds archived yet.';}
 function rrStore(){store(RR_ACTIVE,rr);store(RR_HISTORY,rrh);rrRender();}
 $('rrStart').onclick=()=>{const players=['rrP1','rrP2','rrP3','rrP4'].map(id=>$(id).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}rr={players,stake:Math.max(0,Number($('rrStake').value)||0),holes:[],started:Date.now()};rrStore();};
 $('rrSave').onclick=()=>{if(!rr)return;if(rr.holes.length>=18){alert('Archive the round after 18 holes.');return;}const scores=[0,1,2,3].map(j=>Number($('rrScore'+j).value));if(scores.some(x=>!Number.isInteger(x)||x<1||x>20)){alert('Enter valid scores for all four players.');return;}rr.holes.push({scores});rrStore();};
