@@ -3068,6 +3068,62 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R4-C — BINGO LIVE STANDINGS */
+.dcc-bbb-standings {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 15px;
+  border-radius: 14px;
+  background: #193b2d;
+  color: #fff7e8;
+  border: 1px solid #b79c62;
+}
+
+.dcc-bbb-standings > small {
+  color: #e0c589;
+  font: 800 10px system-ui, sans-serif;
+  letter-spacing: .12em;
+}
+
+.dcc-bbb-standings > strong {
+  font: 700 21px/1.2 Georgia, serif;
+  overflow-wrap: anywhere;
+}
+
+.dcc-bbb-standings > span {
+  font: 12px system-ui, sans-serif;
+  color: #e2d8c4;
+}
+
+.dcc-bbb-ranking {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.dcc-bbb-rank {
+  min-width: 0;
+  background: #2b4a39;
+  padding: 10px;
+  border-radius: 9px;
+}
+
+.dcc-bbb-rank span {
+  display: block;
+  overflow-wrap: anywhere;
+  font: 12px/1.4 system-ui, sans-serif;
+}
+
+.dcc-bbb-rank strong {
+  display: block;
+  color: #e6cb91;
+  margin-top: 4px;
+  font: 800 14px system-ui, sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -4391,7 +4447,14 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 
   <div id="gPlaying" hidden><div class="bet-summary" style="grid-template-columns:repeat(2,1fr)"><div class="betbox"><strong>Hole</strong><span id="gHole">1</span></div><div class="betbox"><strong>Points awarded</strong><span id="gTotal">0</span></div></div>
   <div class="grid"><div><label>Bingo · First on green</label><select id="gBingo"></select></div><div><label>Bango · Closest when all on</label><select id="gBango"></select></div><div><label>Bongo · First holed</label><select id="gBongo"></select></div></div>
-  <button class="btn-primary" id="gSave" style="margin-top:10px">Save hole & next</button><div class="grid" style="margin-top:8px"><button class="btn-ghost" id="gUndo">Undo last hole</button><button class="btn-secondary" id="gFinish">Archive game</button></div><div id="gStandings" class="note" style="margin-top:10px"></div>
+  <button class="btn-primary" id="gSave" style="margin-top:10px">Save hole & next</button><div class="grid" style="margin-top:8px"><button class="btn-ghost" id="gUndo">Undo last hole</button><button class="btn-secondary" id="gFinish">Archive game</button></div>
+<!-- DCC R4-C — LIVE BINGO STANDINGS -->
+<div id="bbbLiveStandings"
+     class="dcc-bbb-standings"
+     role="status"
+     aria-live="polite">
+</div>
+<div id="gStandings" class="note" style="margin-top:10px"></div>
 <!-- DCC R4-B — BINGO LIVE LEDGER -->
 <details id="bbbLedgerPanel" class="dcc-vw-ledger-panel">
   <summary>
@@ -7096,8 +7159,70 @@ function renderBBB() {
  const totals={};gHistory.forEach(g=>g.players.forEach((p,i)=>{totals[p]=(totals[p]||0)+bbbScore(g)[i]})); $('gLifetime').textContent=gHistory.length+' archived games · Lifetime: '+(Object.entries(totals).map(([p,n])=>p+' '+n).join(' · ')||'No games yet');$('gHistory').innerHTML='';gHistory.slice(-8).reverse().forEach(g=>{const p=document.createElement('p');p.textContent=new Date(g.ended).toLocaleDateString()+' · '+g.players.map((name,i)=>name+' '+bbbScore(g)[i]).join(' | ');
 $('gHistory').append(p);});
   dccRenderBBBLedger();
+dccRenderBBBStandings();
+
 }
 
+
+// DCC R4-C — COMPACT BINGO LIVE STANDINGS
+// Uses the existing Bingo scoring engine.
+function dccRenderBBBStandings() {
+  const root = document.getElementById('bbbLiveStandings');
+  if (!root) return;
+
+  root.replaceChildren();
+  if (!activeG) return;
+
+  const points = bbbScore(activeG);
+  const ranking = activeG.players.map((name, index) => ({
+    name,
+    points: points[index],
+    index
+  })).sort((a, b) =>
+    b.points - a.points || a.index - b.index
+  );
+
+  if (!ranking.length) return;
+
+  const best = ranking[0].points;
+  const leaders = ranking.filter(p => p.points === best);
+
+  const label = document.createElement('small');
+  label.textContent = 'LIVE CLUB STANDINGS';
+
+  const heading = document.createElement('strong');
+  heading.textContent =
+    leaders.length === ranking.length
+      ? 'ALL SQUARE'
+      : leaders.length > 1
+        ? 'TIED LEAD · ' +
+          leaders.map(p => p.name).join(' + ')
+        : ranking[0].name + ' LEADS';
+
+  const sub = document.createElement('span');
+  sub.textContent = best + ' points · ' +
+    activeG.holes.length + ' holes played';
+
+  const grid = document.createElement('div');
+  grid.className = 'dcc-bbb-ranking';
+
+  ranking.forEach((player, index) => {
+    const item = document.createElement('div');
+    item.className = 'dcc-bbb-rank';
+
+    const name = document.createElement('span');
+    name.textContent =
+      (index + 1) + ' · ' + player.name;
+
+    const score = document.createElement('strong');
+    score.textContent = player.points + ' PTS';
+
+    item.append(name, score);
+    grid.appendChild(item);
+  });
+
+  root.append(label, heading, sub, grid);
+}
 
 // DCC R4-B — BINGO, BANGO, BONGO LEDGER
 // Read-only display, derived from the existing saved round.
