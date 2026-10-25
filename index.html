@@ -2557,6 +2557,26 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   outline-offset: 3px;
 }
 
+/* DCC STEP 28G — COMPETITION BACKUP */
+
+#dccExportMatchLibrary {
+  display: block;
+  width: 100%;
+  min-height: 47px;
+  margin-top: 9px;
+  border: 1px solid #b79c62;
+  border-radius: 11px;
+  background: #fffaf0;
+  color: #193d2d;
+  font: 800 12px system-ui,sans-serif;
+}
+
+#dccMatchExportStatus {
+  margin: 9px 2px 0;
+  color: #635d4e;
+  font: 11px/1.5 system-ui,sans-serif;
+}
+
 </style>
 </head>
 <body>
@@ -3688,6 +3708,14 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
               class="btn-secondary">
         Refresh Saved Competitions
       </button>
+      
+<!-- DCC STEP 28G — LOCAL COMPETITION BACKUP -->
+<button id="dccExportMatchLibrary" type="button"
+        class="btn-secondary">
+  Export Competition Backup
+</button>
+<p id="dccMatchExportStatus" class="note" aria-live="polite"></p>
+
       <div id="dccSavedGamesList" aria-live="polite">
         Open the archive to view saved matches.
       </div>
@@ -5031,6 +5059,60 @@ document.getElementById('dccSavedGamesRefresh')
 document.getElementById('dccSavedGamesPanel')
   ?.addEventListener('toggle', event => {
     if (event.target.open) dccRenderSavedGames();
+  });
+
+// DCC STEP 28G — EXPORT LOCAL MATCH LIBRARY
+document.getElementById('dccExportMatchLibrary')
+  ?.addEventListener('click', () => {
+    const status = document.getElementById('dccMatchExportStatus');
+
+    try {
+      const raw = localStorage.getItem(DCC_MATCH_LIBRARY_KEY);
+
+      if (raw === null) {
+        status.textContent = 'No competition library to export yet.';
+        return;
+      }
+
+      const records = JSON.parse(raw);
+
+      if (!Array.isArray(records)) {
+        throw new Error('Competition library has an invalid format.');
+      }
+
+      const backup = {
+        app: 'dagger-caddy',
+        type: 'local-competition-backup',
+        schemaVersion: 1,
+        exportedAt: new Date().toISOString(),
+        records
+      };
+
+      const blob = new Blob(
+        [JSON.stringify(backup, null, 2)],
+        { type: 'application/json' }
+      );
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = 'dagger-competitions-' +
+        new Date().toISOString().slice(0, 10) + '.json';
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      status.textContent =
+        'Backup prepared: ' + records.length +
+        ' competition record(s). Save the downloaded file somewhere safe.';
+    } catch (error) {
+      status.textContent = 'Export failed. Existing data was not changed.';
+      console.warn('DCC competition export:', error);
+    }
   });
 
 // DCC STEP 27F — LOCAL SHARED RECORD MIRROR
