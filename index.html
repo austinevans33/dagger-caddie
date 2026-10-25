@@ -2099,6 +2099,100 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC STEP 25A — CLUB RULEBOOK */
+
+#gamesMenu .dcc-rulebook {
+  margin-top: 18px;
+  border: 1px solid #b79c62;
+  border-radius: 16px;
+  padding: 8px;
+  background: #eee3cf;
+}
+
+#gamesMenu .dcc-rulebook > summary {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 17px 43px 17px 15px;
+  color: #fff4dc;
+  background: linear-gradient(135deg,#224936,#143126);
+  border-radius: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+
+#gamesMenu .dcc-rulebook > summary::-webkit-details-marker {
+  display: none;
+}
+
+#gamesMenu .dcc-rulebook > summary::after {
+  content: "⌄";
+  position: absolute;
+  right: 15px;
+  top: 18px;
+  color: #d9be86;
+  font-size: 24px;
+}
+
+#gamesMenu .dcc-rulebook[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+#gamesMenu .dcc-rulebook > summary span {
+  color: #fff4dc;
+  font: 800 12px system-ui,sans-serif;
+  letter-spacing: .09em;
+}
+
+#gamesMenu .dcc-rulebook > summary small {
+  color: #d9be86;
+  font: 11px/1.4 system-ui,sans-serif;
+}
+
+#gamesMenu .dcc-rulebook-body {
+  padding: 17px 9px 7px;
+}
+
+#gamesMenu .dcc-rulebook-intro {
+  color: #5c654f;
+  font: italic 14px/1.6 Georgia,serif;
+}
+
+#gamesMenu .dcc-rulebook h4 {
+  color: #193d2d;
+  font: 800 12px system-ui,sans-serif;
+  letter-spacing: .08em;
+  margin: 22px 0 9px;
+}
+
+#gamesMenu .dcc-rulebook-body > p:not(.dcc-rulebook-intro) {
+  color: #414b3c;
+  font: 13px/1.7 system-ui,sans-serif;
+  margin: 0 0 10px;
+}
+
+#gamesMenu .dcc-rulebook-note {
+  padding: 14px;
+  border: 1px solid #c5af7f;
+  border-left: 4px solid #193d2d;
+  border-radius: 10px;
+  background: #fffaf0;
+  margin-top: 20px;
+}
+
+#gamesMenu .dcc-rulebook-note strong {
+  color: #193d2d;
+  font: 800 10px system-ui,sans-serif;
+  letter-spacing: .12em;
+}
+
+#gamesMenu .dcc-rulebook-note p {
+  color: #625d4e;
+  font: 12px/1.6 system-ui,sans-serif;
+  margin: 8px 0 0;
+}
+
 </style>
 </head>
 <body>
@@ -2811,6 +2905,75 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 <button class="game-pick" type="button" data-game="snake"><strong>≈ Snake</strong><small>Track the dreaded 3-putt tax</small></button>
 
 </div>
+
+<!-- DCC STEP 25A — CLUB RULEBOOK -->
+<details class="dcc-rulebook">
+  <summary>
+    <span>THE COMPETITION RULEBOOK</span>
+    <small>Match Play · Per-Hole Bets · Nassau · Presses</small>
+  </summary>
+
+  <div class="dcc-rulebook-body">
+    <p class="dcc-rulebook-intro">
+      The committee believes every wager should be understood
+      before the first tee shot.
+    </p>
+
+    <h4>01 · MATCH PLAY</h4>
+    <p>
+      Win more holes than your opponent. The lowest score on each
+      hole wins that hole; a tie halves it. The running score is
+      expressed as 1 UP, 2 UP, or ALL SQUARE.
+    </p>
+    <p>
+      The match ends when a player leads by more holes than remain.
+      Example: 3 UP with 2 to play wins 3&2.
+    </p>
+
+    <h4>02 · HEAD-TO-HEAD · $ PER HOLE</h4>
+    <p>
+      Each hole is a separate wager. At $5 per hole, winning a hole
+      earns $5, losing costs $5, and a tied hole is worth $0.
+      The final balance is the sum of all hole results.
+    </p>
+
+    <h4>03 · NASSAU</h4>
+    <p>
+      Three separate matches: Front 9, Back 9, and Overall 18.
+      A $5 Nassau typically means $5 on each match, for
+      $15 in total initial stakes between two players.
+    </p>
+    <p>
+      Win the front but lose the back and overall? Your net
+      result is minus $5.
+    </p>
+
+    <h4>04 · THE PRESS</h4>
+    <p>
+      A press starts an additional wager from an agreed point
+      in the round. The original wager continues.
+    </p>
+    <p>
+      Example: You're 2 DOWN after five holes and press a
+      $5 Nassau match. The new $5 match begins on hole six,
+      while the original match keeps running.
+    </p>
+    <p>
+      Automatic presses, acceptance requirements, starting
+      holes, and settlement rules vary by group. Agree on
+      these before play.
+    </p>
+
+    <div class="dcc-rulebook-note">
+      <strong>COMMITTEE NOTE</strong>
+      <p>
+        Unless a format explicitly supports handicap adjustments,
+        assume gross scores. House rules and money arrangements
+        must be agreed upon before starting.
+      </p>
+    </div>
+  </div>
+</details>
 
 <!-- DCC STEP 24 — CLASSIC GAMES COLLECTION -->
 <div class="games-classics">
