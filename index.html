@@ -4707,20 +4707,33 @@ function dccSaveToMatchLibrary(record) {
 // DCC STEP 27F — LOCAL SHARED RECORD MIRROR
 // Keeps a structured copy separate from the existing draft.
 // Not an official Firebase match and not a wager settlement.
+
 function dccMpSaveSharedRecord() {
   try {
     const record = dccMpSharedSnapshot();
     record.updatedAt = Date.now();
 
-    const key = 'dcc_shared_match_v1';
+    // Preserve the existing single-record mirror.
+    localStorage.setItem(
+      'dcc_shared_match_v1',
+      JSON.stringify(record)
+    );
 
-    localStorage.setItem(key, JSON.stringify(record));
-    return true;
+    // DCC STEP 28B — Add/update the same match in our library.
+    // Other match IDs remain untouched.
+    const savedToLibrary = dccSaveToMatchLibrary(record);
+
+    if (!savedToLibrary) {
+      console.warn('DCC match library update was unsuccessful.');
+    }
+
+    return savedToLibrary;
   } catch (error) {
-    console.warn('DCC shared record not saved:', error.message);
+    console.warn('DCC shared record not saved:', error);
     return false;
   }
 }
+
 
 // DCC STEP 27D — VIEW SHARED MATCH RECORD
 document.getElementById('dccMpPreview').addEventListener('click', () => {
