@@ -3465,6 +3465,29 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R7-B — STANDARD CLUB ARCHIVE PANELS */
+.dcc-game-archive {
+  margin-top: 8px;
+  background: #eee6d7;
+  border-color: #d7c9aa;
+}
+
+.dcc-game-archive > summary {
+  color: #526655;
+  font-size: 11px;
+  min-height: 44px;
+  padding: 12px;
+}
+
+.dcc-game-archive-body {
+  padding: 12px;
+}
+
+.dcc-game-archive-body .note {
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
 </style>
 </head>
 <body>
@@ -4802,7 +4825,19 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   </div>
 </details>
 <p id="gStatus" class="status"></p></div>
-  <details style="margin-top:12px"><summary>Past games & lifetime points</summary><div id="gLifetime" class="note" style="margin-top:10px"></div><div id="gHistory" class="note"></div></details>
+ 
+<!-- DCC R7-B — BINGO ARCHIVE -->
+<details id="bbbArchivePanel" class="dcc-vw-ledger-panel dcc-game-archive">
+  <summary>
+    <span>PAST BINGO GAMES</span>
+    <small>Lifetime results</small>
+  </summary>
+  <div class="dcc-game-archive-body">
+    <div id="gLifetime" class="note"></div>
+    <div id="gHistory" class="note"></div>
+  </div>
+</details>
+
 </section>
 
 <section class="card" data-tab="games" id="vwGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · FEATURED MATCH</div><h2 id="vwGameHeading">Vegas</h2>
@@ -4843,7 +4878,18 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </details>
 <!-- END DCC R3-B LEDGER PANEL -->
 
-<div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div><details style="margin-top:12px"><summary id="vwLifetimeLabel">Vegas lifetime records</summary><div id="vwLifetime" class="note"></div></details></section>
+<div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div>
+<!-- DCC R7-B — VEGAS / WOLF ARCHIVE -->
+<details id="vwArchivePanel" class="dcc-vw-ledger-panel dcc-game-archive">
+  <summary>
+    <span id="vwLifetimeLabel">VEGAS LIFETIME RECORDS</span>
+    <small>Lifetime results</small>
+  </summary>
+  <div class="dcc-game-archive-body">
+    <div id="vwLifetime" class="note"></div>
+  </div>
+</details>
+</section>
 
 <section class="card game-hidden" data-tab="games" id="hammerGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · SIDE ACTION</div><h2>Hammer</h2><p class="muted">This simplified house version records the <em>final multiplier</em> on each hole. If somebody hammers mid-hole, just bump the multiplier before you save.</p><details><summary>How to play · Hammer</summary><p class="note">Two teams of two. Each hole starts at 1 unit. Any hammer during the hole increases the multiplier. At the end of the hole, record who won and what the hole was worth. Halves score zero.</p></details>
 <!-- DCC R5-A — HAMMER PRE-ROUND SETUP -->
