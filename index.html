@@ -7261,7 +7261,35 @@ function showClubGame(type){
  }
  document.querySelectorAll('[data-game]').forEach(b=>b.classList.toggle('selected',b.dataset.game===type));
 }
-document.querySelectorAll('[data-game]').forEach(b=>b.addEventListener('click',()=>showClubGame(b.dataset.game)));
+
+/* DCC REDESIGN R2 — ONE-TAP GAME NAVIGATION */
+document.querySelectorAll('.game-pick[data-game]').forEach(button => {
+  button.addEventListener('click', () => {
+    const game = button.dataset.game;
+
+    // Preserve the existing selection and game state.
+    showClubGame(game);
+
+    const cardId = {
+      bingo: 'bingoGameCard',
+      vegas: 'vwGameCard',
+      wolf: 'vwGameCard',
+      hammer: 'hammerGameCard',
+      robin: 'robinGameCard',
+      snake: 'snakeGameCard'
+    }[game];
+
+    const card = document.getElementById(cardId);
+
+    if (card && window.matchMedia('(max-width: 600px)').matches) {
+      card.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  });
+});
+
 showClubGame('bingo');
   
 /* A3.4 — Retain legacy course tools without cluttering Club */
