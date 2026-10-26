@@ -3528,6 +3528,27 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 12px/1.4 system-ui, sans-serif;
 }
 
+/* DCC R8-UI — MATCH PLAY & GHOST PREMIUM PANELS */
+#dccMpPreviewPanel,
+#dccGhostArchivePanel {
+  margin-top: 10px;
+}
+
+#dccMpPreviewPanel > summary,
+#dccGhostArchivePanel > summary {
+  font-size: 11px;
+  letter-spacing: .04em;
+}
+
+#dccMpPreviewPanel .dcc-record-preview-result {
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
+
+#dccGhostArchivePanel .dcc-ghost-history {
+  overflow-wrap: anywhere;
+}
+
 </style>
 </head>
 <body>
@@ -4615,17 +4636,31 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
       <div id="dccMpHistory" class="dcc-match-history"></div>
       
 <!-- DCC STEP 27D — SHARED RECORD PREVIEW -->
-<div class="dcc-record-preview">
-  <button id="dccMpPreview" class="btn-secondary" type="button">
-    Inspect Competition Record
-  </button>
-  <div id="dccMpPreviewResult"
-       class="dcc-record-preview-result"
-       aria-live="polite">
-    Verify that this match can be read by the shared
-    Games and The Action record system.
+
+<!-- DCC R8-UI — PREMIUM COMPETITION RECORD PANEL -->
+<details id="dccMpPreviewPanel"
+         class="dcc-vw-ledger-panel dcc-game-archive dcc-record-preview">
+  <summary>
+    <span>INSPECT COMPETITION RECORD</span>
+    <small>Shared record preview</small>
+  </summary>
+
+  <div class="dcc-game-archive-body">
+    <button id="dccMpPreview"
+            class="btn-secondary"
+            type="button">
+      Refresh Competition Record
+    </button>
+
+    <div id="dccMpPreviewResult"
+         class="dcc-record-preview-result"
+         aria-live="polite">
+      Verify that this match can be read by the shared
+      Games and The Action record system.
+    </div>
   </div>
-</div>
+</details>
+
 
     </div>
   </details>
@@ -4798,27 +4833,32 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
     </div>
     
 <!-- DCC STEP 30K-D — SAVED GHOST MATCHES -->
+
+<!-- DCC R8-UI — PREMIUM HOUSE GHOST ARCHIVE -->
 <details id="dccGhostArchivePanel"
-         style="margin-top:20px;
-                border:1px solid rgba(170,145,85,.35);
-                border-radius:12px;
-                padding:16px;">
-  <summary style="cursor:pointer;
-                  font-weight:700;
-                  letter-spacing:.04em;">
-    SAVED GHOST MATCHES
-    <span id="dccGhostArchiveCount">(0)</span>
+         class="dcc-vw-ledger-panel dcc-game-archive">
+
+  <summary>
+    <span>
+      SAVED GHOST MATCHES
+      <span id="dccGhostArchiveCount">(0)</span>
+    </span>
+    <small>Lifetime results</small>
   </summary>
 
-  <p class="note" style="margin-top:12px;">
-    Completed House Ghost matches saved on this device.
-    Your current match is kept separately.
-  </p>
+  <div class="dcc-game-archive-body">
 
-  <div id="dccGhostArchiveList"
-       class="dcc-ghost-history"
-       aria-live="polite">
-    Your saved Ghost matches will appear here.
+    <p class="note">
+      Completed House Ghost matches saved on this device.
+      Your current match is kept separately.
+    </p>
+
+    <div id="dccGhostArchiveList"
+         class="dcc-ghost-history"
+         aria-live="polite">
+      Your saved Ghost matches will appear here.
+    </div>
+
   </div>
 </details>
 
