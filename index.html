@@ -3549,6 +3549,57 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   overflow-wrap: anywhere;
 }
 
+/* DCC R9-C — MATCH PLAY MODE SETUP */
+.dcc-mp-mode {
+  background: #eee6d7;
+  border: 1px solid #c5b083;
+  border-radius: 13px;
+  padding: 14px;
+  margin: 14px 0;
+  color: #193b2d;
+}
+
+.dcc-mp-mode > strong {
+  display: block;
+  font: 800 11px system-ui, sans-serif;
+  letter-spacing: .08em;
+  margin-bottom: 12px;
+}
+
+.dcc-mp-mode > label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dcc-mp-mode input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  accent-color: #193b2d;
+}
+
+#dccMpWagerNotice {
+  margin-top: 12px;
+  padding: 12px;
+  background: #193b2d;
+  color: #fff4dc;
+  border-radius: 10px;
+}
+
+#dccMpWagerNotice[hidden] {
+  display: none !important;
+}
+
+#dccMpWagerNotice p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
 </style>
 </head>
 <body>
@@ -4619,6 +4670,30 @@ Wagering and settlement integration are coming next.
           <input id="dccMpName2" value="Opponent" maxlength="24">
         </div>
       </div>
+
+<!-- DCC R9-C — MATCH PLAY MODE SELECTOR -->
+<div class="dcc-mp-mode" id="dccMpModeSetup">
+  <strong>WHAT'S ON THE LINE?</strong>
+
+  <label>
+    <input type="radio" name="dccMpMode" value="fun" checked>
+    Just Playing · Competition only
+  </label>
+
+  <label>
+    <input type="radio" name="dccMpMode" value="money">
+    Playing for Money · Wagering setup
+  </label>
+
+  <div id="dccMpWagerNotice" hidden>
+    <strong>THE ACTION · WAGERING DIVISION</strong>
+    <p>
+      Match wager, per-hole action, Nassau and presses
+      are planned for the next integration stage.
+      No wager has been created.
+    </p>
+  </div>
+</div>
 
       <div class="dcc-match-scoreboard">
         <small>OFFICIAL MATCH POSITION</small>
@@ -9300,6 +9375,24 @@ document.getElementById('dccPickMatch')
       block: 'start'
     });
   });
+
+// DCC R9-C — Match Play mode preview.
+// No saved scores, wagers or settlements are changed.
+document.querySelectorAll(
+  'input[name="dccMpMode"]'
+).forEach(input => {
+  input.addEventListener('change', () => {
+    const moneySelected = document.querySelector(
+      'input[name="dccMpMode"]:checked'
+    )?.value === 'money';
+
+    const notice = document.getElementById(
+      'dccMpWagerNotice'
+    );
+
+    if (notice) notice.hidden = !moneySelected;
+  });
+});
 
 showClubGame('bingo');
   
