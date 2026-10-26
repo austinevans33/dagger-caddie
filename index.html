@@ -5191,8 +5191,10 @@ function dccRefreshLinkedGame() {
     const result = dccMatchPlay(position);
 
     output.textContent =
-      'MATCH PLAY · ' + names + '\n' +
-      'STATUS: ' + String(record.status).toUpperCase() + '\n' +
+     
+'SAVED MATCH PLAY · ' + names + '\n' +  
+'RECORD STATUS: ' + String(record.status).toUpperCase() +
+' (saved snapshot; live status not verified)\n' +
       'HOLES RECORDED: ' + result.played + '/18\n' +
       'POSITION: ' + result.status + '\n' +
       'MATCH ID: ' + record.id;
@@ -5202,8 +5204,12 @@ function dccRefreshLinkedGame() {
   }
 }
 
+
 document.getElementById('dccRefreshLinkedGame')
-  ?.addEventListener('click', dccRefreshLinkedGame);
+  ?.addEventListener('click', () => {
+    dccRefreshLinkedGame();
+    dccRenderActionRRPreview();
+  });
 
 ['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
 
@@ -8821,21 +8827,46 @@ function dccCompetitionSnapshot(format, game) {
 
  
 // DCC R8-C — THE ACTION READS A NORMALIZED GAMES SNAPSHOT
+
+// DCC R8-D — ACTIVE OR MOST RECENT ARCHIVED 6-6-6
+// Read-only. Does not change, restore, or overwrite saved games.
 function dccRenderActionRRPreview() {
   const target = document.getElementById('dccLinkedRRPreview');
   if (!target) return;
 
   target.replaceChildren();
 
-  const snapshot = dccCompetitionSnapshot('6-6-6', rr);
+  const history = Array.isArray(rrh) ? rrh : [];
+
+  // An active round takes priority. Otherwise show the latest
+  // valid archived round, without pretending it is still live.
+  let snapshot = dccCompetitionSnapshot('6-6-6', rr);
+  let archived = false;
 
   if (!snapshot) {
-    target.textContent = '6-6-6 · No valid active round to display.';
+    const completed = history
+      .filter(game => game && Number.isFinite(game.ended))
+      .sort((a, b) => b.ended - a.ended);
+
+    for (const game of completed) {
+      snapshot = dccCompetitionSnapshot('6-6-6', game);
+      if (snapshot) {
+        archived = true;
+        break;
+      }
+    }
+  }
+
+  if (!snapshot) {
+    target.textContent =
+      '6-6-6 · No active or archived round found on this device.';
     return;
   }
 
   const title = document.createElement('strong');
-  title.textContent = '6-6-6 · LIVE LOCAL ROUND';
+  title.textContent = archived
+    ? '6-6-6 · LATEST ARCHIVED ROUND'
+    : '6-6-6 · ACTIVE LOCAL ROUND';
 
   const info = document.createElement('p');
   info.textContent =
@@ -8851,13 +8882,13 @@ function dccRenderActionRRPreview() {
   ).join(' · ');
 
   const note = document.createElement('small');
-  note.textContent =
-    'Competition adapter v' + snapshot.adapterVersion +
-    ' · ' + snapshot.status +
-    ' · Read only · No settlement attached';
+  note.textContent = archived
+    ? 'Archived game · Historical results · No settlement attached'
+    : 'Active local game · Read only · No settlement attached';
 
   target.append(title, info, scores, note);
 }
+
 
 
 function rrStore() {
