@@ -3627,6 +3627,70 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   line-height: 1.6;
 }
 
+/* DCC R10-A — COMPACT MOBILE MASTHEAD */
+@media (max-width: 600px) {
+
+  .mast {
+    padding: 11px 13px 10px !important;
+    border-bottom-width: 2px;
+  }
+
+  .mast > .over {
+    display: none;
+  }
+
+  .mast .brandrow {
+    gap: 10px;
+    align-items: center;
+  }
+
+  .mast .club-mark {
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    border-radius: 12px;
+  }
+
+  .mast .scriptword {
+    font-size: clamp(17px, 4.8vw, 22px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .mast .club-kicker {
+    font-size: 9px;
+    letter-spacing: .1em;
+    margin-top: 3px;
+  }
+
+  .mast .sub {
+    font-size: 10px;
+    line-height: 1.3;
+    margin-top: 3px;
+  }
+
+  /* Preserve the caddy quote in the HTML,
+     but remove it from the mobile masthead. */
+  .mast .quip {
+    display: none;
+  }
+
+  .content {
+    padding-top: 8px;
+  }
+
+  .tabbar {
+    margin: 5px 0 9px;
+    gap: 4px;
+  }
+
+  .tabbar button {
+    min-height: 44px;
+    padding: 8px 3px;
+    font-size: 11px;
+  }
+}
+
 </style>
 </head>
 <body>
