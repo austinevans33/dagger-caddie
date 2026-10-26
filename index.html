@@ -3691,6 +3691,59 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   }
 }
 
+/* DCC R10-B — ACTION MOBILE DENSITY */
+@media (max-width:600px) {
+
+  /* Bottom navigation already provides access to Games. */
+  .action-games-link.dcc-games-compact {
+    display: none !important;
+  }
+
+  /* Make the record inspector a small, accessible dropdown. */
+  .dcc-linked-game {
+    padding: 0 !important;
+    margin: 6px 0 10px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  #dccActionCompetitionInspector {
+    margin: 0;
+  }
+
+  #dccActionCompetitionInspector > summary {
+    min-height: 44px;
+    padding: 11px 12px;
+    font-size: 11px;
+  }
+
+  /* Compact the existing contents when expanded. */
+  .dcc-linked-heading {
+    padding: 11px 12px;
+  }
+
+  .dcc-linked-heading h3 {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+
+  .dcc-linked-heading p {
+    font-size: 11px;
+  }
+
+  .dcc-linked-status {
+    padding: 10px;
+    margin: 8px 0;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  #dccRefreshLinkedGame {
+    min-height: 42px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4207,7 +4260,20 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 
 
 <!-- DCC STEP 27G — GAMES CONNECTION READER -->
+
+<!-- DCC R10-B — COMPACT SHARED COMPETITION INSPECTOR -->
 <section class="card dcc-linked-game" data-tab="bets">
+
+  <details id="dccActionCompetitionInspector"
+           class="dcc-vw-ledger-panel dcc-game-archive">
+
+    <summary>
+      <span>CONNECTED GAME RECORDS</span>
+      <small>Inspect records</small>
+    </summary>
+
+    <div class="dcc-game-archive-body">
+
   <div class="dcc-linked-heading">
     <span>DAGGER COUNTRY CLUB · SHARED COMPETITIONS</span>
     <h3>From the Games Desk</h3>
@@ -4236,7 +4302,11 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
     Local preview only. No wagers or settlements are
     created from this record yet.
   </small>
+
+    </div>
+  </details>
 </section>
+
 
 <section class="card" data-tab="bets" id="moneyRoomSection">
 <div class="over" style="color:#806f4d">DAGGER COUNTRY CLUB · LIVE WAGERING</div><div style="background:linear-gradient(145deg,#204635,#102a20);border:1px solid #b79c62;border-radius:16px;padding:22px 16px;margin-bottom:14px;text-align:center;color:#f5f0e5;">
