@@ -4273,6 +4273,15 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
 </div>
 
 <div class="game-picks">
+  
+<!-- DCC R9-A — MAIN MENU MATCH PLAY -->
+<button class="game-pick"
+        type="button"
+        id="dccPickMatch">
+  <strong>⚔ Match Play</strong>
+  <small>The Duel · Holes up or all square</small>
+</button>
+
 <button class="game-pick selected" type="button" data-game="bingo"><strong>◎ Bingo Bango Bongo</strong><small>Three points every hole</small></button>
 <button class="game-pick" type="button" data-game="vegas"><strong>♠ Vegas</strong><small>Two teams · two-digit scores</small></button>
 <button class="game-pick" type="button" data-game="wolf"><strong>◈ Wolf</strong><small>Rotating Wolf · partner or solo</small></button>
@@ -9243,6 +9252,39 @@ document.querySelectorAll('.game-pick[data-game]').forEach(button => {
   );
   if (archive) menu.appendChild(archive);
 })();
+
+// DCC R9-A — OPEN EXISTING MATCH PLAY FROM GAMES GRID
+document.getElementById('dccPickMatch')
+  ?.addEventListener('click', () => {
+    // Mark Match Play as the selected game.
+    document.querySelectorAll('.game-pick')
+      .forEach(button => button.classList.remove('selected'));
+
+    document.getElementById('dccPickMatch')
+      .classList.add('selected');
+
+    // Close the other game scorecards.
+    const regularGames = document.getElementById(
+      'dccSelectedGamePanel'
+    );
+    if (regularGames) regularGames.open = false;
+
+    // Reuse the original Match Play desk and its saved data.
+    const matchPanel = document.getElementById(
+      'dccMatchPlayPanel'
+    );
+    if (!matchPanel) return;
+
+    matchPanel.open = true;
+
+    const desk = document.getElementById('dccMatchDesk');
+    if (desk) desk.open = true;
+
+    matchPanel.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  });
 
 showClubGame('bingo');
   
