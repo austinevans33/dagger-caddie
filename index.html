@@ -9394,6 +9394,54 @@ document.querySelectorAll(
   });
 });
 
+// DCC R9-D — PER-MATCH WAGER MODE PREFERENCE
+// Local preference only; creates no wager or settlement.
+function dccMpModeKey() {
+  return 'dcc_mp_mode_' + dccMpId;
+}
+
+function dccMpRestoreMode() {
+  let savedMode = 'fun';
+
+  try {
+    savedMode = localStorage.getItem(dccMpModeKey()) === 'money'
+      ? 'money'
+      : 'fun';
+  } catch (error) {
+    console.warn('Match Play mode preference unavailable:', error);
+  }
+
+  const selected = document.querySelector(
+    'input[name="dccMpMode"][value="' + savedMode + '"]'
+  );
+
+  if (selected) selected.checked = true;
+
+  const notice = document.getElementById('dccMpWagerNotice');
+  if (notice) notice.hidden = savedMode !== 'money';
+}
+
+document.querySelectorAll('input[name="dccMpMode"]').forEach(input => {
+  input.addEventListener('change', () => {
+    if (!input.checked) return;
+
+    try {
+      localStorage.setItem(dccMpModeKey(), input.value);
+    } catch (error) {
+      console.warn('Unable to save Match Play mode:', error);
+    }
+  });
+});
+
+// The existing reset handler creates a new match ID.
+// Restore the default mode for that new match.
+document.getElementById('dccMpReset')
+  ?.addEventListener('click', () => {
+    dccMpRestoreMode();
+  });
+
+dccMpRestoreMode();
+
 showClubGame('bingo');
   
 /* A3.4 — Retain legacy course tools without cluttering Club */
