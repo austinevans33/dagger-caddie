@@ -4076,6 +4076,14 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
        aria-live="polite">
     Checking for a saved competition...
   </div>
+  
+<!-- DCC R8-A — READ-ONLY ROUND ROBIN BRIDGE -->
+<div id="dccLinkedRRPreview"
+     class="dcc-linked-status"
+     aria-live="polite">
+  Checking for a 6-6-6 round...
+</div>
+
 
   <button id="dccRefreshLinkedGame" type="button"
           class="btn-secondary">
@@ -5142,9 +5150,12 @@ function switchTab(tab) {
   }
 
   // DCC STEP 27H — Refresh linked Games records in The Action.
-  if (tab === 'bets') {
-    dccRefreshLinkedGame();
-  }
+ 
+if (tab === 'bets') {
+  dccRefreshLinkedGame();
+  dccRenderActionRRPreview();
+}
+
 
 }
 
@@ -8754,13 +8765,54 @@ function dccRenderRRLedger() {
 }
 
 
+// DCC R8-A — 6-6-6 -> THE ACTION READ-ONLY BRIDGE
+function dccRenderActionRRPreview() {
+  const target = document.getElementById('dccLinkedRRPreview');
+  if (!target) return;
+
+  target.replaceChildren();
+
+  // The existing 6-6-6 record remains the source of truth.
+  if (!rr || !Array.isArray(rr.holes) ||
+      !Array.isArray(rr.players) || rr.players.length !== 4) {
+    target.textContent = '6-6-6 · No active round to display.';
+    return;
+  }
+
+  const title = document.createElement('strong');
+  title.textContent = '6-6-6 · LIVE LOCAL ROUND';
+
+  const info = document.createElement('p');
+  info.textContent =
+    rr.holes.length + ' of 18 holes recorded · ' +
+    rr.players.join(' · ');
+
+  const scores = document.createElement('p');
+  const points = rrCalc(rr);
+
+  scores.textContent = rr.players.map((name, index) =>
+    name + ': ' +
+    (points[index] > 0 ? '+' : '') +
+    points[index] + ' pts'
+  ).join(' · ');
+
+  const note = document.createElement('small');
+  note.textContent =
+    'Read-only preview · No wager or settlement attached';
+
+  target.append(title, info, scores, note);
+}
+
+
 function rrStore() {
   store(RR_ACTIVE, rr);
   store(RR_HISTORY, rrh);
   rrRender();
   dccRenderRRScoreboard();
   dccRenderRRLedger();
+  dccRenderActionRRPreview();
 }
+
 
 
 $('rrStart').onclick=()=>{const players=['rrP1','rrP2','rrP3','rrP4'].map(id=>$(id).value.trim());if(players.some(x=>!x)||new Set(players.map(x=>x.toLowerCase())).size<4){alert('Enter four different names.');return;}rr={players,stake:Math.max(0,Number($('rrStake').value)||0),holes:[],started:Date.now()};rrStore();};
@@ -8936,6 +8988,7 @@ dccRenderHammerLedger();
 rrRender();
 dccRenderRRScoreboard();
 dccRenderRRLedger();
+dccRenderActionRRPreview();
 snRender();
 dccRenderSnakeScoreboard();
 dccRenderSnakeLedger();
