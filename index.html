@@ -4603,8 +4603,10 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
     <summary>NEW · MATCH PLAY SCORING DESK</summary>
     <div class="dcc-match-inner">
       <p class="note">
-        Gross-score Match Play prototype.
-        Local to this screen; not yet saved or wagered.
+       
+Gross-score Match Play with local competition records.
+Wagering and settlement integration are coming next.
+
       </p>
 
       <div class="grid">
@@ -9096,6 +9098,19 @@ renderRecap();
 let shownClubGame='bingo';
 function showClubGame(type){
  shownClubGame=type;
+  
+  // DCC R9-B — Keep only the selected scoring desk open.
+  const matchPanel = document.getElementById('dccMatchPlayPanel');
+
+  if (matchPanel) {
+    matchPanel.open = false;
+  }
+
+  const matchButton = document.getElementById('dccPickMatch');
+  if (matchButton) {
+    matchButton.classList.remove('selected');
+  }
+
  $('bingoGameCard').classList.toggle('game-hidden',type!=='bingo');
  $('vwGameCard').classList.toggle('game-hidden',!['vegas','wolf'].includes(type));
  $('hammerGameCard').classList.toggle('game-hidden',type!=='hammer');
