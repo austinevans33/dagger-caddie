@@ -8766,16 +8766,71 @@ function dccRenderRRLedger() {
 
 
 // DCC R8-A — 6-6-6 -> THE ACTION READ-ONLY BRIDGE
+
+// DCC R8-C — SHARED COMPETITION ADAPTER
+// Read-only normalized view. Never changes the saved game.
+function dccCompetitionSnapshot(format, game) {
+  if (format !== '6-6-6' || !game) return null;
+
+  if (!Array.isArray(game.players) ||
+      game.players.length !== 4 ||
+      !game.players.every(name => typeof name === 'string') ||
+      !Array.isArray(game.holes) ||
+      game.holes.length > 18) {
+    return null;
+  }
+
+  const validHoles = game.holes.every(hole =>
+    hole &&
+    Array.isArray(hole.scores) &&
+    hole.scores.length === 4 &&
+    hole.scores.every(score =>
+      Number.isInteger(score) && score >= 1 && score <= 20
+    )
+  );
+
+  if (!validHoles) return null;
+
+  // Existing rrCalc is the authoritative 6-6-6 points engine.
+  const points = rrCalc(game);
+
+  return {
+    adapterVersion: 1,
+    format: '6-6-6',
+    source: 'games-local',
+    status: game.holes.length === 18 ? 'complete' : 'in-progress',
+    recordRef: Number.isFinite(game.started)
+      ? 'rr-' + game.started
+      : null,
+    players: game.players.map((name, index) => ({
+      name,
+      position: index,
+      points: points[index]
+    })),
+    holesPlayed: game.holes.length,
+    holesTotal: 18,
+    scoring: 'rotating-better-ball-points',
+    stake: Number(game.stake) || 0,
+    // Copy scores so Action cannot mutate the original game object.
+    holes: game.holes.map((hole, index) => ({
+      number: index + 1,
+      scores: [...hole.scores]
+    }))
+  };
+}
+
+ 
+// DCC R8-C — THE ACTION READS A NORMALIZED GAMES SNAPSHOT
 function dccRenderActionRRPreview() {
   const target = document.getElementById('dccLinkedRRPreview');
   if (!target) return;
 
   target.replaceChildren();
 
-  // The existing 6-6-6 record remains the source of truth.
-  if (!rr || !Array.isArray(rr.holes) ||
-      !Array.isArray(rr.players) || rr.players.length !== 4) {
-    target.textContent = '6-6-6 · No active round to display.';
+  const snapshot = dccCompetitionSnapshot('6-6-6', rr);
+
+  if (!snapshot) {
+    target.textContent = '6-6-6 · No valid active round to display.';
     return;
   }
 
@@ -8784,21 +8839,22 @@ function dccRenderActionRRPreview() {
 
   const info = document.createElement('p');
   info.textContent =
-    rr.holes.length + ' of 18 holes recorded · ' +
-    rr.players.join(' · ');
+    snapshot.holesPlayed + ' of ' +
+    snapshot.holesTotal + ' holes recorded · ' +
+    snapshot.players.map(player => player.name).join(' · ');
 
   const scores = document.createElement('p');
-  const points = rrCalc(rr);
-
-  scores.textContent = rr.players.map((name, index) =>
-    name + ': ' +
-    (points[index] > 0 ? '+' : '') +
-    points[index] + ' pts'
+  scores.textContent = snapshot.players.map(player =>
+    player.name + ': ' +
+    (player.points > 0 ? '+' : '') +
+    player.points + ' pts'
   ).join(' · ');
 
   const note = document.createElement('small');
   note.textContent =
-    'Read-only preview · No wager or settlement attached';
+    'Competition adapter v' + snapshot.adapterVersion +
+    ' · ' + snapshot.status +
+    ' · Read only · No settlement attached';
 
   target.append(title, info, scores, note);
 }
