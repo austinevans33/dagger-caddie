@@ -3600,6 +3600,33 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   margin-bottom: 0;
 }
 
+/* DCC R9-E — MATCH WAGER SETUP */
+#dccMpWagerNotice label {
+  display: block;
+  margin: 12px 0 6px;
+  color: #e8d5a9;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+#dccMpWagerNotice select,
+#dccMpWagerNotice input {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 9px;
+  font-size: 16px;
+}
+
+#dccMpWagerTerms {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #ad925a;
+  border-radius: 10px;
+  background: #f1e6ce;
+  color: #193b2d;
+  line-height: 1.6;
+}
+
 </style>
 </head>
 <body>
@@ -4685,14 +4712,33 @@ Wagering and settlement integration are coming next.
     Playing for Money · Wagering setup
   </label>
 
-  <div id="dccMpWagerNotice" hidden>
-    <strong>THE ACTION · WAGERING DIVISION</strong>
-    <p>
-      Match wager, per-hole action, Nassau and presses
-      are planned for the next integration stage.
-      No wager has been created.
-    </p>
-  </div>
+ 
+<div id="dccMpWagerNotice" hidden>
+  <strong>THE ACTION · MATCH WAGER</strong>
+
+  <label for="dccMpWagerType">Wager type</label>
+  <select id="dccMpWagerType">
+    <option value="fixed">Fixed Match Wager</option>
+  </select>
+
+  <label for="dccMpWagerAmount">Amount · USD</label>
+  <input id="dccMpWagerAmount"
+         type="number"
+         min="0"
+         max="10000"
+         step="0.5"
+         value="10"
+         inputmode="decimal">
+
+  <div id="dccMpWagerTerms"
+       class="note"
+       aria-live="polite"></div>
+
+  <p>
+    Proposed terms only. No wager is active,
+    accepted, or included in settlements.
+  </p>
+</div>
 </div>
 
       <div class="dcc-match-scoreboard">
@@ -9441,6 +9487,46 @@ document.getElementById('dccMpReset')
   });
 
 dccMpRestoreMode();
+
+// DCC R9-E — MATCH WAGER TERMS PREVIEW
+// Display only. Does not create a financial obligation.
+function dccMpRenderWagerTerms() {
+  const output = document.getElementById('dccMpWagerTerms');
+  const amountInput = document.getElementById('dccMpWagerAmount');
+  if (!output || !amountInput) return;
+
+  const amount = Number(amountInput.value);
+  if (!amountInput.value.trim() ||
+      !Number.isFinite(amount) ||
+      amount <= 0 || amount > 10000) {
+    output.textContent = 'Enter a valid amount from $0.50 to $10,000.';
+    return;
+  }
+
+  const player1 = document.getElementById('dccMpName1')
+    ?.value.trim() || 'Player 1';
+  const player2 = document.getElementById('dccMpName2')
+    ?.value.trim() || 'Player 2';
+
+  output.textContent =
+    player1 + ' vs. ' + player2 + '\n' +
+    'Proposed stake: $' + amount.toFixed(2) + '\n' +
+    'Winner receives $' + amount.toFixed(2) +
+    ' from loser.\n' +
+    'Tied match: no payment.\n' +
+    'Not yet submitted to The Action.';
+  output.style.whiteSpace = 'pre-line';
+}
+
+document.getElementById('dccMpWagerAmount')
+  ?.addEventListener('input', dccMpRenderWagerTerms);
+
+['dccMpName1', 'dccMpName2'].forEach(id => {
+  document.getElementById(id)
+    ?.addEventListener('input', dccMpRenderWagerTerms);
+});
+
+dccMpRenderWagerTerms();
 
 showClubGame('bingo');
   
