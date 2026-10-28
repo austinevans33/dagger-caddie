@@ -11,3 +11,39 @@ Rollback: restore staging-app from preserved baseline commit. Production is unch
 Acceptance: all five mobile tabs preserve approved regions and injected account controls; global membership banner absent; host creates a two-player room; buddy opens invitation, enters a name, joins without profile setup; host-only score editing; live sync, reload/rejoin, account change revocation, invalid invitation denial; real staging auth and deployed rules verified; physical two-phone trial; explicit final production approval.
 
 Access blockers observed: GitHub integration branch creation returns403; Firebase plugin is not connected. No hosted authentication/rules/deployment verification is claimed.
+
+## Rebuilt milestone (October 28)
+
+New checkpoint, not a recovery of missing commits. Money Room now refreshes current authentication per operation, coalesces guest signup/join/create attempts, registers invitation membership without a pre-read, verifies identity after awaited operations, and clears cached host controls on identity change. Invitation routing waits for the existing profile initialization using its club-selector mutation; no HTML changes.
+
+Verified: 5 unit tests and 39 actual Chromium checks against a LOCAL FAKE backend, including two independent browser profiles and frozen-region comparisons at320/390/430px. No page errors. Original R177 HTML/CSS/images/configuration remain byte-identical. These comparisons verify no new visual differences in checked regions; they do not certify every populated/authenticated state or replace approved screenshots.
+
+Direct real staging authentication probe: anonymous signup returned HTTP400 ADMIN_ONLY_OPERATION; no test account was created. This confirms the staging guest-signup release blocker, not a Firestore rules result. Firebase connection/configuration access is needed to resolve it. GitHub branch creation still returns403 and shell push dry-run cannot authenticate. No production deployment, production data access, or hosted functional certification.
+
+Sunday readiness remains CONDITIONAL on guest signup configuration, deployed staging rules tests, a real two-phone trial, final visual review, and explicit production promotion approval.
+
+## Real staging authentication retest
+
+After the owner enabled Anonymous sign-in, three fresh staging identities signed up successfully (HTTP200). This supersedes the earlier ADMIN_ONLY_OPERATION blocker for anonymous signup.
+
+The first authenticated room-create request was denied HTTP403: Missing or insufficient permissions. No Firestore QA room was created. All three disposable authentication identities were deleted successfully (HTTP200). The deployed rules must be inspected before making a compatible change. Joining, score updates and archive checks did not execute and remain unverified on real staging.
+
+Exact sanitized evidence is qa/evidence/staging-money-room-real.json. Probe source is qa/probe-staging-money-room.py; no credentials or tokens are retained. No application or visual changes were made for this retest.
+
+## Tested staging rules replacement
+
+The owner supplied deny-all staging rules; preserved in qa/prior-staging-deny-all.rules for rollback. Proposed replacement is qa/staging-money-room.rules. It enables authenticated room creation, invite-bearing own-UID membership, host/member document reads, host-only scoring and archive locking. Room enumeration, guest edits, immutable identity/stake changes, document deletion and unrelated collections remain blocked. It has not been published.
+
+All37 Firestore emulator checks passed using firebase-tools14.22.0, Firestore emulator1.19.8, Firebase SDK13.1.0 and rules-unit-testing6.0.0. These test the actual rules engine locally with simulated identities, not deployed staging or physical phones. Exact evidence is qa/evidence/staging-rules-emulator.json. Production code, configuration and frozen visual files are unchanged.
+
+Reproduce with npm ci --prefix qa, then npm --prefix qa run test:rules. Node22 and Java21 are suitable for the CI environment. In the current workspace Java17 runs this pinned emulator. The tests use demo-dagger-qa, which has no live cloud resources.
+
+Next action: owner replaces the existing rules in dagger-country-club-staging with the tested file and clicks Publish. Then run qa/probe-staging-money-room.py against real staging before declaring the permission blocker resolved. Rollback uses the preserved deny-all rules; this closes all Firestore client access again.
+
+## Published staging rules: real verification passed
+
+After the owner published the tested rules, all15 real staging REST checks passed: three distinct guest identities, room creation, nonmember and invalid-invite denial, invitation membership registration, member reads, guest edit denial, host scoring, score retrieval by another identity, returning membership update, archive, post-archive edit denial and unauthenticated read denial. All three test auth accounts were deleted. The QA room was successfully archived in the verified test; a redundant cleanup archive returned403 because archived matches are correctly immutable. Raw evidence preserves that response. The probe now skips redundant cleanup writes on already-archived test rooms.
+
+All10 actual-app browser checks then passed against the real deployed staging backend, with the unmodified Firebase11.10 SDK and two independent Chromium profiles: anonymous auth, room creation through existing controls, invitation routing without bag setup, name-and-tap joining, read-only guest controls, distinct identities, real listener score delivery, reload/rejoin persistence, archive listener delivery and zero uncaught application errors. Cleanup confirmed archived QA room and successful deletion of both test accounts. No network requests were blocked. This used local app origins and a controlled runner proxy with the sandbox-provided proxy CA public keys pinned for this test process. No application transport/security settings were changed.
+
+These are real backend and browser milestones, not a physical two-phone or hosted-origin certification. Next gates: hosted staging preview, authorized-domain/caching checks on that origin, and Safari/Chrome phone trial. GitHub write access remains unavailable; no production deployment or production data change occurred. Frozen source verification still passes.
