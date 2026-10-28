@@ -58,12 +58,19 @@ jobs:
             exit 1
           fi
       - name: Authenticate existing Google Cloud connection for staging
+        id: google-auth
         uses: google-github-actions/auth@v2
         with:
           project_id: dagger-country-club-staging
+          token_format: access_token
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+      - name: Verify staging Firebase project access
+        env:
+          STAGING_DEPLOY_TOKEN: ${{ steps.google-auth.outputs.access_token }}
+        run: node qa/check-staging-deploy-access.cjs
       - name: Deploy expiring staging Hosting preview only
+        shell: bash
         working-directory: staging-app
         run: npx --yes firebase-tools@14.22.0 hosting:channel:deploy sunday-test --project dagger-country-club-staging --expires 7d --no-authorized-domains --non-interactive --json | tee "$RUNNER_TEMP/staging-preview.json"
       - name: Record preview link
