@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: npm ci --prefix qa
       - run: npm --prefix qa test
       - run: git diff --exit-code
   firestore-rules:
