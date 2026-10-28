@@ -1,0 +1,11 @@
+/* R141 — Ledger cohesive ticket-window hierarchy, screenshot-guided. */
+#dccPropBets .dcc-r66-intro{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:12px!important;margin-bottom:12px!important;}
+#dccPropBets .dcc-r66-intro>div{min-width:0!important;}
+#dccPropBets .dcc-r66-intro strong{display:block!important;font:700 clamp(22px,5vw,29px)/1.13 Georgia,serif!important;letter-spacing:-.025em!important;}
+#dccPropBets .dcc-r66-intro p{margin:5px 0 0!important;font:500 11px/1.45 system-ui,sans-serif!important;max-width:31ch!important;}
+#dccPropBets .dcc-r66-intro #dccPropNew{min-width:78px!important;min-height:40px!important;padding:9px 12px!important;border-radius:10px!important;white-space:nowrap!important;font-size:10px!important;}
+#dccPropBets .dcc-r66-stats{gap:8px!important;}
+#dccPropBets .dcc-r66-stats>div{min-width:0!important;padding:12px 5px!important;}
+#dccPropBets .dcc-r66-stats small{display:block!important;line-height:1.25!important;min-height:28px!important;}
+#dccPropBets .dcc-r66-stats strong{display:block!important;margin-top:3px!important;}
+@media(max-width:360px){#dccPropBets .dcc-r66-intro{grid-template-columns:minmax(0,1fr) auto!important;gap:7px!important}#dccPropBets .dcc-r66-intro strong{font-size:20px!important}#dccPropBets .dcc-r66-intro #dccPropNew{min-width:72px!important;padding:8px!important}}

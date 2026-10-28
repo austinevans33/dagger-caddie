@@ -1,0 +1,12 @@
+/* R126: The Ledger / Outstanding Debts. Style only; preserve real ledger data and rendering. */
+#dccPropBets .dcc-r70-accounts{margin:16px 0 12px!important;padding:18px!important;background:#153629!important;border:1px solid rgba(212,175,110,.62)!important;border-radius:20px!important;box-shadow:none!important;color:#f5ecdc!important}
+#dccPropBets .dcc-r70-account-head{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:8px 18px!important;flex-wrap:wrap!important;margin-bottom:12px!important}
+#dccPropBets .dcc-r70-account-head strong{font:700 clamp(21px,4vw,27px)/1.16 Georgia,serif!important;letter-spacing:-.02em!important;color:#f5ecdc!important}
+#dccPropBets .dcc-r70-account-head small{color:#d4af6e!important;max-width:260px!important;font-size:11px!important;line-height:1.4!important}
+#dccPropBets #dccPropBalances{min-width:0!important}
+#dccPropBets .dcc-r70-account-row{display:flex!important;justify-content:space-between!important;align-items:center!important;gap:12px!important;min-height:56px!important;margin-top:8px!important;padding:11px 14px!important;border:1px solid rgba(212,175,110,.26)!important;border-radius:12px!important;background:#f5ecdc!important;color:#153629!important;box-sizing:border-box!important}
+#dccPropBets .dcc-r70-account-row>span{min-width:0!important;overflow-wrap:anywhere!important;font-size:14px!important;line-height:1.35!important;color:#153629!important}
+#dccPropBets .dcc-r70-account-row>span small{color:#52685b!important;font-size:11px!important}
+#dccPropBets .dcc-r70-account-row>strong{flex:0 0 auto!important;color:#153629!important;font:800 17px/1.2 system-ui,sans-serif!important;font-variant-numeric:tabular-nums!important;white-space:nowrap!important}
+#dccPropBets .dcc-r70-clear{margin:0!important;padding:14px!important;background:#f5ecdc!important;color:#52685b!important;border-radius:12px!important;font-size:13px!important;line-height:1.45!important}
+@media(max-width:420px){#dccPropBets .dcc-r70-accounts{padding:12px!important}#dccPropBets .dcc-r70-account-row{padding:11px!important;gap:8px!important}#dccPropBets .dcc-r70-account-row>strong{font-size:15px!important}}

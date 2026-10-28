@@ -1,0 +1,24 @@
+
+{
+  "name": "Dagger Country Club",
+  "short_name": "Dagger CC",
+  "description": "Dagger Caddy — private-club service, municipal-course language.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f0e5",
+  "theme_color": "#143126",
+  "icons": [
+    {
+      "src": "dcc-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "dcc-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

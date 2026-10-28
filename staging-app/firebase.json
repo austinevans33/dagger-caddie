@@ -1,0 +1,43 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      "README_STAGING_ONLY.md",
+      "HOSTING_README.md",
+      "firestore.rules.STAGING_REVIEW_ONLY",
+      "**/.*",
+      "**/node_modules/**",
+      "R*_README.md",
+      "R??_README.md",
+      "R???_README.md",
+      "QA_*",
+      "*STAGING_REVIEW_ONLY*"
+    ],
+    "headers": [
+      {
+        "source": "/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          }
+        ]
+      }
+    ]
+  }
+}

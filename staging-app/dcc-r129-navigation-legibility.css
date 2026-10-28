@@ -1,0 +1,12 @@
+/* R129 — single five-tab navigation legibility contract. Visual-only. */
+/* Earlier foundation dropped tab names to eight pixels on narrow phones. */
+.tabbar.dcc-bespoke-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:clamp(2px,.7vw,7px)!important;min-width:0!important}
+.tabbar.dcc-bespoke-nav>button{min-width:0!important;min-height:64px!important;padding:8px 2px!important;gap:4px!important;overflow-wrap:anywhere!important}
+.tabbar.dcc-bespoke-nav .dcc-tab-title{font-size:clamp(10px,1.7vw,12px)!important;line-height:1.22!important;letter-spacing:-.01em!important;text-wrap:balance!important;hyphens:none!important;max-width:100%!important}
+.tabbar.dcc-bespoke-nav .nav-ico{font-size:19px!important;flex-shrink:0!important}
+/* Preserve strong, unambiguous navigation feedback and keyboard affordances. */
+.tabbar.dcc-bespoke-nav>button.active,.tabbar.dcc-bespoke-nav>button[aria-current=page]{background:#f5ecdc!important;color:#153629!important;border-color:#d4af6e!important}
+.tabbar.dcc-bespoke-nav>button:focus-visible{outline:3px solid #e2c58b!important;outline-offset:2px!important}
+@media(max-width:600px){.tabbar.dcc-bespoke-nav{padding:5px!important;gap:2px!important}.tabbar.dcc-bespoke-nav>button{min-height:66px!important;padding:7px 2px!important}.tabbar.dcc-bespoke-nav .dcc-tab-title{font-size:10px!important}.tabbar.dcc-bespoke-nav .nav-ico{font-size:18px!important}}
+@media(max-width:350px){.tabbar.dcc-bespoke-nav>button{min-height:68px!important}.tabbar.dcc-bespoke-nav .dcc-tab-title{font-size:10px!important;letter-spacing:-.02em!important}}
+@media(prefers-reduced-motion:reduce){.tabbar.dcc-bespoke-nav>button{transition:none!important}}
