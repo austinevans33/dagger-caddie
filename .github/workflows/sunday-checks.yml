@@ -1,4 +1,4 @@
-name: Sunday release source checks (no deployment)
+name: Sunday staging checks and isolated preview
 on:
   push:
     branches: ['development/**']
@@ -31,3 +31,50 @@ jobs:
           java-version: '21'
       - run: npm ci --prefix qa
       - run: npm --prefix qa run test:rules
+  staging-preview:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/development/sunday-money-room-2026-11-01'
+    needs: [source-checks, firestore-rules]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: dagger-staging-sunday-preview
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify staging-only deployment target
+        run: node qa/assert-staging-target.cjs
+      - name: Check existing Google Cloud connection
+        env:
+          WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          DEPLOY_ACCOUNT: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$WIF_PROVIDER" ] || [ -z "$DEPLOY_ACCOUNT" ]; then
+            echo "::error::Google Cloud deployment variables are not configured. Staging preview needs authentication."
+            exit 1
+          fi
+      - name: Authenticate existing Google Cloud connection for staging
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: dagger-country-club-staging
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+      - name: Deploy expiring staging Hosting preview only
+        working-directory: staging-app
+        run: npx --yes firebase-tools@14.22.0 hosting:channel:deploy sunday-test --project dagger-country-club-staging --expires 7d --no-authorized-domains --non-interactive --json | tee "$RUNNER_TEMP/staging-preview.json"
+      - name: Record preview link
+        env:
+          PREVIEW_RESULT: ${{ runner.temp }}/staging-preview.json
+        run: |
+          node <<'JS'
+          const fs=require('fs');
+          const result=JSON.parse(fs.readFileSync(process.env.PREVIEW_RESULT,'utf8'));
+          if(result.status!=='success')throw Error('Preview deployment did not succeed');
+          const urls=Object.values(result.result||{}).map(x=>x.url).filter(Boolean);
+          if(!urls.length)throw Error('Preview deployment returned no URLs');
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Staging project: dagger-country-club-staging\n\n'+urls.map(u=>'Preview: '+u).join('\n')+'\n');
+          JS
