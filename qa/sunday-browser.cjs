@@ -23,6 +23,7 @@ const firestoreSDK=`
 export const getFirestore=()=>({});export const doc=(_, ...parts)=>parts.join('/');export const serverTimestamp=()=>Date.now();
 async function op(kind,ref,data){const uid=JSON.parse(localStorage.getItem('qaIdentity')||'null')?.uid;const response=await fetch('/__qa/db',{method:'POST',body:JSON.stringify({kind,ref,data,uid})});const result=await response.json();if(result.error)throw Object.assign(Error(result.error),{code:'permission-denied'});return result;}
 export const getDoc=async ref=>{const x=await op('get',ref);return{exists:()=>x.exists,data:()=>x.data};};
+export const getDocFromServer=async ref=>{window.__qaRestoreStarted=(window.__qaRestoreStarted||0)+1;if(localStorage.getItem('qaFailRestore'))throw Object.assign(Error('Temporary network failure'),{code:'unavailable'});const delay=Number(localStorage.getItem('qaDelayRestore'))||0;if(delay)await new Promise(r=>setTimeout(r,delay));const result=await getDoc(ref);window.__qaRestoreFinished=(window.__qaRestoreFinished||0)+1;return result;};
 export const setDoc=async(ref,data)=>op('set',ref,data);export const updateDoc=async(ref,data)=>op('update',ref,data);
 export const runTransaction=async(_,fn)=>fn({get:getDoc,set:setDoc,update:updateDoc});
 export const onSnapshot=(ref,next,error)=>{let alive=true,busy=false,last='';async function poll(){if(!alive||busy)return;busy=true;try{const x=await getDoc(ref);const value=JSON.stringify({exists:x.exists(),data:x.data()});if(alive&&value!==last){last=value;next(x);}}catch(e){if(alive)error(e);}finally{busy=false;}}poll();const timer=setInterval(poll,90);return()=>{alive=false;clearInterval(timer);};};
@@ -136,13 +137,34 @@ const server=http.createServer(async(req,res)=>{
   await host.locator('#roomScoreRows input').nth(0).fill('4');await host.locator('#roomScoreRows input').nth(1).fill('5');await host.locator('#roomSaveHole').click();
   await guest.waitForFunction(()=>document.querySelector('#roomStandings').textContent.includes('1 holes scored'));
   check('host score reaches the other browser',await guest.locator('#roomStandings').textContent().then(t=>t.includes('Austin: +$10.00')));
+  const registrations=operations.filter(x=>x.kind==='set'&&x.ref.includes('/members/')).length;
+  const hostUid=await host.evaluate(()=>JSON.parse(localStorage.qaIdentity).uid);
+  const savedBookmark=await host.evaluate(()=>JSON.parse(localStorage.dagger_active_money_room));
+  check('active room bookmark contains no local score or host privilege fields',Object.keys(savedBookmark).sort().join(',')==='id,invite,name,uid,version');
+  await host.reload({waitUntil:'domcontentloaded'});await host.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
+  check('host reload restores same room without invitation or name re-entry',await host.locator('#roomCode').inputValue()===compact&&await host.locator('#roomEditor').isVisible()&&await host.locator('#roomSaveHole').isEnabled());
+  check('host Firebase identity and official score survive reload',await host.evaluate(()=>JSON.parse(localStorage.qaIdentity).uid)===hostUid&&await host.locator('#roomStandings').textContent().then(t=>t.includes('1 holes scored')));
+  await host.locator('#roomScoreRows input').nth(0).fill('5');await host.locator('#roomScoreRows input').nth(1).fill('4');await host.locator('#roomSaveHole').click();
+  await guest.waitForFunction(()=>document.querySelector('#roomStandings').textContent.includes('2 holes scored'));
+  check('restored host can record next hole for connected guest',true);
+  await host.evaluate(()=>localStorage.setItem('qaFailRestore','1'));await host.reload({waitUntil:'domcontentloaded'});
+  await host.waitForFunction(()=>document.querySelector('#roomStatus').textContent.includes('Could not restore'));
+  check('failed server recovery does not expose cached scorekeeper controls',await host.locator('#roomScoreSection').isHidden()&&await host.evaluate(()=>!!localStorage.dagger_active_money_room));
+  await host.evaluate(()=>{localStorage.removeItem('qaFailRestore');window.dispatchEvent(new Event('online'));});await host.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
+  check('online event retries recovery without losing saved room',await host.locator('#roomSaveHole').isEnabled());
   const guestUid=await guest.evaluate(()=>JSON.parse(localStorage.qaIdentity).uid);
-  await guest.reload({waitUntil:'networkidle'});await guest.locator('#roomQuickName').fill('Buddy');await guest.locator('#roomQuickJoin').click();await guest.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
-  check('reload/rejoin retains guest identity and saved score',guestUid===await guest.evaluate(()=>JSON.parse(localStorage.qaIdentity).uid)&&await guest.locator('#roomStandings').textContent().then(t=>t.includes('1 holes scored')));
+  await guest.reload({waitUntil:'domcontentloaded'});await guest.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
+  check('guest reload restores identity and score without joining again',guestUid===await guest.evaluate(()=>JSON.parse(localStorage.qaIdentity).uid)&&await guest.locator('#roomStandings').textContent().then(t=>t.includes('2 holes scored')));
+  check('automatic recovery performs no new membership registration',operations.filter(x=>x.kind==='set'&&x.ref.includes('/members/')).length===registrations);
   const bad=await makePage();await ready(bad,origin+'/?room='+id+'&invite='+'f'.repeat(16));await bad.locator('#roomQuickName').fill('Wrong invite');await bad.locator('#roomQuickJoin').click();await bad.waitForFunction(()=>document.querySelector('#roomStatus').textContent.includes('Unable to join'));
   check('incorrect invitation does not expose scorecard',await bad.locator('#roomScoreSection').isHidden());
+  await host.evaluate(()=>localStorage.setItem('qaDelayRestore','3500'));await host.reload({waitUntil:'domcontentloaded'});await host.waitForFunction(()=>window.__qaRestoreStarted===1);
+  await reveal(host,'roomCreate');await host.locator('#roomMe').fill('Austin');await host.locator('#roomPlayers').fill('New Buddy');await host.locator('#roomFormat').selectOption('hole');await host.locator('#roomCreate').evaluate(e=>e.scrollIntoView({block:'center'}));await host.locator('#roomCreate').click();
+  await host.waitForFunction(old=>!document.querySelector('#roomScoreSection').hidden&&document.querySelector('#roomCode').value!==old&&document.querySelector('#roomWho').textContent.includes('New Buddy'),compact);const newerRoom=await host.locator('#roomCode').inputValue();await host.waitForFunction(()=>window.__qaRestoreFinished===1);
+  check('late recovery cannot replace a newer explicitly created room',newerRoom!==compact&&await host.locator('#roomCode').inputValue()===newerRoom);
   await host.evaluate(()=>window.__qaSetUser(null));
   check('signout immediately revokes cached host scorecard',await host.locator('#roomScoreSection').isHidden()&&await host.locator('#roomSaveHole').isDisabled());
+  check('signout clears the old account active room bookmark',await host.evaluate(()=>!localStorage.dagger_active_money_room));
   check('no uncaught page errors',errors.length===0);
  }finally{
   await browser.close();await new Promise(r=>server.close(r));

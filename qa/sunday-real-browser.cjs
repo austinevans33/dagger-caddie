@@ -14,7 +14,7 @@ const server=http.createServer((req,res)=>{
 });
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin=process.env.DCC_STAGING_ORIGIN||('http://127.0.0.1:'+server.address().port);
- if(process.env.DCC_STAGING_ORIGIN){const target=new URL(origin);assert.equal(target.protocol,'https:');assert.match(target.hostname,/^dagger-country-club-staging--(?:sunday-test|qr-candidate)-[a-z0-9-]+\.web\.app$/);}
+ if(process.env.DCC_STAGING_ORIGIN){const target=new URL(origin);assert.equal(target.protocol,'https:');assert.match(target.hostname,/^dagger-country-club-staging--(?:sunday-test|qr-candidate|recovery-candidate)-[a-z0-9-]+\.web\.app$/);}
 
  const args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu','--no-zygote'];let proxy;
  // Pin only the known sandbox proxy CA keys in this isolated test process.
@@ -79,11 +79,29 @@ const server=http.createServer((req,res)=>{
   await host.locator('#roomScoreRows input').nth(0).fill('4');await host.locator('#roomScoreRows input').nth(1).fill('5');await host.locator('#roomSaveHole').click();
   await guest.waitForFunction(()=>document.querySelector('#roomStandings').textContent.includes('1 holes scored'));
   check('Firebase live listener delivers host score to other browser',await guest.locator('#roomStandings').textContent().then(t=>t.includes('QA Host: +$10.00')));
+  let expectedHoles=1;
+  if(process.env.DCC_EXPECT_RECOVERY==='1'){
+   const hostUid=await identity(host);await host.reload({waitUntil:'domcontentloaded'});await host.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
+   check('Host reload restores same identity and official room without invitation',hostUid===await identity(host)&&await host.locator('#roomCode').inputValue()===compact&&await host.locator('#roomSaveHole').isEnabled()&&await host.locator('#roomStandings').textContent().then(t=>t.includes('1 holes scored')));
+   await host.locator('#roomScoreRows input').nth(0).fill('5');await host.locator('#roomScoreRows input').nth(1).fill('4');await host.locator('#roomSaveHole').click();
+   await guest.waitForFunction(()=>document.querySelector('#roomStandings').textContent.includes('2 holes scored'));expectedHoles=2;
+   check('Recovered host can record next official hole and deliver it live',true);
+  }
   const uid=await identity(guest);await guest.reload({waitUntil:'domcontentloaded'});await guest.waitForFunction(()=>document.querySelector('#manualclub')?.children.length>0);
-  await guest.locator('#roomQuickName').fill('QA Buddy');await guest.locator('#roomQuickJoin').click();await guest.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
-  check('Reload and rejoin preserve identity and official score',uid===await identity(guest)&&await guest.locator('#roomStandings').textContent().then(t=>t.includes('1 holes scored')));
+  if(process.env.DCC_EXPECT_RECOVERY!=='1'){await guest.locator('#roomQuickName').fill('QA Buddy');await guest.locator('#roomQuickJoin').click();}
+  await guest.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
+  check('Reload and rejoin preserve identity and official score',uid===await identity(guest)&&await guest.locator('#roomStandings').textContent().then(t=>t.includes(expectedHoles+' holes scored')));
+  if(process.env.DCC_EXPECT_RECOVERY==='1'){
+   await ready(guest,origin);await guest.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
+   check('Guest reopening app home resumes same room as read-only',uid===await identity(guest)&&await guest.locator('#roomSaveHole').isDisabled()&&await guest.locator('#roomCode').inputValue()===compact);
+  }
   await host.locator('#roomFinish').click();await guest.waitForFunction(()=>document.querySelector('#roomWho').textContent.includes('MATCH ARCHIVED'));
   check('Host archive reaches guest through live listener',await host.locator('#roomSaveHole').isDisabled());
+  if(process.env.DCC_EXPECT_RECOVERY==='1'){
+   check('Confirmed archive clears recovery bookmarks on both phones',await host.evaluate(()=>!localStorage.dagger_active_money_room)&&await guest.evaluate(()=>!localStorage.dagger_active_money_room));
+   await ready(host,origin);await host.waitForFunction(()=>document.querySelector('#roomStatus').textContent.includes('Live sync ready'));
+   check('Archived match does not reopen automatically on next launch',await host.locator('#roomScoreSection').isHidden());
+  }
   check('No uncaught application errors',errors.length===0);
  }catch(error){errors.push(error.message);console.error(error.message);process.exitCode=1;}
  finally{

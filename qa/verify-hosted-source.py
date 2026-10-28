@@ -6,7 +6,7 @@ from urllib.parse import urlparse, quote
 origin = sys.argv[1].rstrip('/')
 parsed = urlparse(origin)
 assert parsed.scheme == 'https'
-assert re.fullmatch(r'dagger-country-club-staging--(?:sunday-test|qr-candidate)-[a-z0-9-]+\.web\.app', parsed.hostname)
+assert re.fullmatch(r'dagger-country-club-staging--(?:sunday-test|qr-candidate|recovery-candidate)-[a-z0-9-]+\.web\.app', parsed.hostname)
 root = Path(__file__).resolve().parent.parent
 files = [p for p in (root / 'staging-app').rglob('*')
          if p.is_file() and (p.suffix in ['.html', '.css', '.js', '.json', '.png', '.svg', '.webp'] or p.name.endswith('.LICENSE.txt'))
