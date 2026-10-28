@@ -106,7 +106,7 @@ const server=http.createServer(async(req,res)=>{
   check('restored partial Nassau archive shows no unearned payout',await saved.locator('#wHistory').textContent().then(t=>t.includes('+$0.00')));
   check('restored active Nassau shows no unearned payout',await saved.locator('#wLead').textContent().then(t=>t.startsWith('+$0.00')));
   await saved.evaluate(()=>{
-   document.querySelector('#gP1').value='Host';document.querySelector('#gP2').value='Guest';
+   document.querySelector('#gStake').value='1.25';document.querySelector('#gP1').value='Host';document.querySelector('#gP2').value='Guest';
    document.querySelector('#gStart').click();
    document.querySelector('#gBingo').value='0';document.querySelector('#gBango').value='1';document.querySelector('#gBongo').value='';document.querySelector('#gSave').click();
   });
@@ -115,9 +115,16 @@ const server=http.createServer(async(req,res)=>{
   check('BBB active scores persist across reload',await saved.locator('#gStandings').textContent().then(t=>t.includes('Host: 1 pts')&&t.includes('Guest: 1 pts')));
   await saved.evaluate(()=>document.querySelector('#gUndo').click());
   check('BBB undo removes saved points',await saved.locator('#gStandings').textContent().then(t=>t.includes('Host: 0 pts')&&t.includes('Guest: 0 pts')));
-  await saved.evaluate(()=>{document.querySelector('#gBingo').value='0';document.querySelector('#gBango').value='0';document.querySelector('#gBongo').value='0';document.querySelector('#gSave').click();document.querySelector('#gFinish').click();});
+  await saved.evaluate(()=>{document.querySelector('#gBingo').value='0';document.querySelector('#gBango').value='0';document.querySelector('#gBongo').value='0';document.querySelector('#gSave').click();});
+  check('BBB live balances show stake earned from opponent',await saved.locator('#bbbLiveStandings').textContent().then(t=>t.includes('+$3.75')&&t.includes('−$3.75')));
+  await saved.evaluate(()=>document.querySelector('#gFinish').click());
   await ready(saved);
   check('BBB archived scores persist and active game closes',await saved.locator('#gHistory').textContent().then(t=>t.includes('Host 3')&&t.includes('Guest 0'))&&await saved.locator('#gPlaying').evaluate(e=>e.hidden));
+  check('BBB paid archive enters Ledger once with correct net',await saved.evaluate(()=>{const a=JSON.parse(localStorage.dagger_foursome_history).filter(g=>g.format==='bingo');return a.length===1&&window.wagerMath(a[0]).score[0]===3.75;}));
+  check('BBB Ledger row renders dollar settlement',await saved.locator('#wHistory').textContent().then(t=>t.includes('bingo')&&t.includes('+$3.75')));
+  check('BBB backup validator round-trips paid archive',await saved.evaluate(()=>{const data={activeW:JSON.parse(localStorage.dagger_foursome_active),wHistory:JSON.parse(localStorage.dagger_foursome_history),activeG:null,gHistory:JSON.parse(localStorage.dagger_bbb_history)};return window.dccValidateGamesBackup(data).wHistory.some(g=>g.format==='bingo');}));
+  await ready(saved);
+  check('BBB archive recovery does not duplicate settlement',await saved.evaluate(()=>JSON.parse(localStorage.dagger_foursome_history).filter(g=>g.format==='bingo').length===1));
   await saved.context().close();
   const host=await makePage({restricted:true});await ready(host);
   await host.waitForFunction(()=>document.querySelector('#roomStatus').textContent.includes('unavailable'));
