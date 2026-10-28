@@ -96,6 +96,29 @@ const server=http.createServer(async(req,res)=>{
    check(`${width}px intended Member Account panel retained`,await b.locator('#accountStatus').count()===1);
    await a.context().close();await b.context().close();
   }
+  const saved=await makePage();await ready(saved);
+  await saved.evaluate(()=>{
+   const partial={players:['Host','Guest'],format:'nassau',stake:5,holes:[[4,5]],started:1,ended:2};
+   localStorage.setItem('dagger_foursome_history',JSON.stringify([partial]));
+   localStorage.setItem('dagger_foursome_active',JSON.stringify({...partial,ended:undefined}));
+  });
+  await ready(saved);
+  check('restored partial Nassau archive shows no unearned payout',await saved.locator('#wHistory').textContent().then(t=>t.includes('+$0.00')));
+  check('restored active Nassau shows no unearned payout',await saved.locator('#wLead').textContent().then(t=>t.startsWith('+$0.00')));
+  await saved.evaluate(()=>{
+   document.querySelector('#gP1').value='Host';document.querySelector('#gP2').value='Guest';
+   document.querySelector('#gStart').click();
+   document.querySelector('#gBingo').value='0';document.querySelector('#gBango').value='1';document.querySelector('#gBongo').value='';document.querySelector('#gSave').click();
+  });
+  check('BBB awards one point per selected achievement and none for tie',await saved.locator('#gStandings').textContent().then(t=>t.includes('Host: 1 pts')&&t.includes('Guest: 1 pts')));
+  await ready(saved);
+  check('BBB active scores persist across reload',await saved.locator('#gStandings').textContent().then(t=>t.includes('Host: 1 pts')&&t.includes('Guest: 1 pts')));
+  await saved.evaluate(()=>document.querySelector('#gUndo').click());
+  check('BBB undo removes saved points',await saved.locator('#gStandings').textContent().then(t=>t.includes('Host: 0 pts')&&t.includes('Guest: 0 pts')));
+  await saved.evaluate(()=>{document.querySelector('#gBingo').value='0';document.querySelector('#gBango').value='0';document.querySelector('#gBongo').value='0';document.querySelector('#gSave').click();document.querySelector('#gFinish').click();});
+  await ready(saved);
+  check('BBB archived scores persist and active game closes',await saved.locator('#gHistory').textContent().then(t=>t.includes('Host 3')&&t.includes('Guest 0'))&&await saved.locator('#gPlaying').evaluate(e=>e.hidden));
+  await saved.context().close();
   const host=await makePage({restricted:true});await ready(host);
   await host.waitForFunction(()=>document.querySelector('#roomStatus').textContent.includes('unavailable'));
   check('restricted guest authentication is reproduced',true);

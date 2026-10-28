@@ -28,3 +28,8 @@ test('other game formats preserve original implementation',()=>{
 test('adapter replaces the existing global used by Ledger callers',()=>{
  const target={wagerMath:context.wagerMath};assert.equal(installLedgerSettlement(target),true);assert.deepEqual(target.wagerMath(wager([win()])).score,[0,0]);
 });
+
+test('installation refreshes existing saved rows after replacing calculation',()=>{
+ let displayed;const target={wagerMath:context.wagerMath,renderFoursome(){displayed=this.wagerMath(wager([win()])).score[0];}};
+ installLedgerSettlement(target);assert.equal(displayed,0);
+});

@@ -19,5 +19,8 @@ export function installLedgerSettlement(target) {
   const original = target.wagerMath;
   if (typeof original !== 'function') return false;
   target.wagerMath = game => settleLedgerWager(game, original);
+  // Initial inline rendering ran before this deferred module loaded.
+  // Recompute existing saved rows using the corrected settlement engine.
+  if (typeof target.renderFoursome === 'function') target.renderFoursome();
   return true;
 }
