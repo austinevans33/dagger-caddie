@@ -1,0 +1,87 @@
+{
+  "backend": "Real staging Firebase 11.10 SDK, two isolated Chromium profiles; not physical phones",
+  "app_origin": "https://dagger-country-club-staging--recovery-candidate-wgfgk1rl.web.app",
+  "checks": [
+    {
+      "name": "Actual app signs host in anonymously against staging",
+      "pass": true
+    },
+    {
+      "name": "Host creates room using existing app controls",
+      "pass": true
+    },
+    {
+      "name": "Actual Share control creates PNG QR for this hosted invitation",
+      "pass": true
+    },
+    {
+      "name": "Invitation opens Ledger on a fresh profile without bag setup",
+      "pass": true
+    },
+    {
+      "name": "Name and one tap join the real staging room",
+      "pass": true
+    },
+    {
+      "name": "Guest controls cannot edit scores",
+      "pass": true
+    },
+    {
+      "name": "Host and guest use distinct Firebase identities",
+      "pass": true
+    },
+    {
+      "name": "Firebase live listener delivers host score to other browser",
+      "pass": true
+    },
+    {
+      "name": "Host reload restores same identity and official room without invitation",
+      "pass": true
+    },
+    {
+      "name": "Recovered host can record next official hole and deliver it live",
+      "pass": true
+    },
+    {
+      "name": "Reload and rejoin preserve identity and official score",
+      "pass": true
+    },
+    {
+      "name": "Guest reopening app home resumes same room as read-only",
+      "pass": true
+    },
+    {
+      "name": "Host archive reaches guest through live listener",
+      "pass": true
+    },
+    {
+      "name": "Confirmed archive clears recovery bookmarks on both phones",
+      "pass": true
+    },
+    {
+      "name": "Archived match does not reopen automatically on next launch",
+      "pass": true
+    },
+    {
+      "name": "No uncaught application errors",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "cleanup": [
+    {
+      "action": "Archive QA room",
+      "pass": true
+    },
+    {
+      "action": "Delete disposable staging identity",
+      "pass": true
+    },
+    {
+      "action": "Delete disposable staging identity",
+      "pass": true
+    }
+  ],
+  "test_room_path": "rooms/1edf1ef68af13a0809fdce072a4747f1"
+}
