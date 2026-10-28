@@ -1,5 +1,6 @@
 // Real app + Firebase 11.10 SDK + deployed staging. No fake auth or database.
 const fs=require('fs'),path=require('path'),http=require('http'),crypto=require('crypto'),assert=require('assert/strict');
+const jsQR=require('jsqr');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const root=path.resolve(__dirname,'..'),source=path.join(root,'staging-app'),project='dagger-country-club-staging';
 assert.ok(fs.readFileSync(path.join(source,'firebase-config.js'),'utf8').includes('projectId: "'+project+'"'));
@@ -13,7 +14,7 @@ const server=http.createServer((req,res)=>{
 });
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin=process.env.DCC_STAGING_ORIGIN||('http://127.0.0.1:'+server.address().port);
- if(process.env.DCC_STAGING_ORIGIN){const target=new URL(origin);assert.equal(target.protocol,'https:');assert.match(target.hostname,/^dagger-country-club-staging--sunday-test-[a-z0-9-]+\.web\.app$/);}
+ if(process.env.DCC_STAGING_ORIGIN){const target=new URL(origin);assert.equal(target.protocol,'https:');assert.match(target.hostname,/^dagger-country-club-staging--(?:sunday-test|qr-candidate)-[a-z0-9-]+\.web\.app$/);}
 
  const args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu','--no-zygote'];let proxy;
  // Pin only the known sandbox proxy CA keys in this isolated test process.
@@ -52,7 +53,23 @@ const server=http.createServer((req,res)=>{
   await reveal(host,'roomCreate');await host.locator('#roomMe').fill('QA Host');await host.locator('#roomPlayers').fill('QA Buddy');await host.locator('#roomFormat').selectOption('hole');await host.locator('#roomStake').fill('10');await host.locator('#roomCreate').click();
   await host.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);const compact=await host.locator('#roomCode').inputValue();const [id,invite]=compact.split(':');roomId=id;
   check('Host creates room using existing app controls',/^[0-9a-f]{32}$/.test(id));
-  const guest=await makePage();await ready(guest,origin+'/?room='+id+'&invite='+invite);
+  let joinUrl=origin+'/?room='+id+'&invite='+invite;
+  if(process.env.DCC_EXPECT_QR==='1'){
+   await host.evaluate(()=>{
+    Object.defineProperty(navigator,'canShare',{configurable:true,value:()=>true});
+    Object.defineProperty(navigator,'share',{configurable:true,value:async payload=>{window.__qaShare=payload;}});
+   });
+   await host.locator('#roomShareCurrent').click();await host.waitForFunction(()=>window.__qaShare?.files?.length===1);
+   const raster=await host.evaluate(async()=>{
+    const file=window.__qaShare.files[0],bitmap=await createImageBitmap(file),canvas=document.createElement('canvas');
+    canvas.width=bitmap.width;canvas.height=bitmap.height;const ctx=canvas.getContext('2d');ctx.drawImage(bitmap,0,0);
+    return {pixels:Array.from(ctx.getImageData(0,0,canvas.width,canvas.height).data),width:canvas.width,height:canvas.height,type:file.type};
+   });
+   const scanned=jsQR(Uint8ClampedArray.from(raster.pixels),raster.width,raster.height)?.data;
+   check('Actual Share control creates PNG QR for this hosted invitation',raster.type==='image/png'&&scanned===joinUrl);
+   joinUrl=scanned;
+  }
+  const guest=await makePage();await ready(guest,joinUrl);
   await guest.waitForFunction(()=>document.querySelector('#tab-bets').getAttribute('aria-current')==='page');
   check('Invitation opens Ledger on a fresh profile without bag setup',await guest.locator('#roomQuickName').isVisible());
   await guest.locator('#roomQuickName').fill('QA Buddy');await guest.locator('#roomQuickJoin').click();await guest.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
