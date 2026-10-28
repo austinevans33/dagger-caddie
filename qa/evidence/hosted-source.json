@@ -1,0 +1,360 @@
+{
+  "origin": "https://dagger-country-club-staging--sunday-test-95n00msn.web.app",
+  "checks": [
+    {
+      "path": "dcc-share-preview.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "03b1040eeb11359cba29be6e7ad8f894049e88bee56f9f79c060526076151879"
+    },
+    {
+      "path": "keith_portrait.webp",
+      "pass": true,
+      "status": 200,
+      "sha256": "6e341037124f95d53331f398da2344e0b379bec26a9ccce3796d3e46ccbf9507"
+    },
+    {
+      "path": "ai-chat.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "b25a8da3e73b30cab8d33bf61bf6af78284468d48789255340b29c6db0a5f9bd"
+    },
+    {
+      "path": "dcc-r158-hero-consistency.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "e49d7666de99d0d6be11bd0bff1cd88247e81028c461c27684158c5a2a8db84d"
+    },
+    {
+      "path": "firebase-config.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "18a292de5390525432c968e043d8dd6edf48c7416459fa90e11aa0017f920432"
+    },
+    {
+      "path": "dcc-r133-performance-panel.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "3d335e1298a157cacb09b3eec97518bd7480a90dccfade3b191cc752b5fdcd07"
+    },
+    {
+      "path": "manifest.json",
+      "pass": true,
+      "status": 200,
+      "sha256": "fe8d2be2a0dc1abbad057ad8dd2bc91dd8de3e37c8f342e9d202369b920a3ef2"
+    },
+    {
+      "path": "dcc-r147-equipment-empty-state.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "d774d047c6243735b1cc1ed049bf0c2e4a1f0fdaf7e040db5a456e7aeb805bda"
+    },
+    {
+      "path": "dcc-original-crest-transparent.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "6cc56a8cfa9a217eef19a96ae2ac4d7af6fc333e509b91d1c5bea02ab40242a0"
+    },
+    {
+      "path": "dagger_cc_mark.svg",
+      "pass": true,
+      "status": 200,
+      "sha256": "1fd5be7a9b86261519ae04f6d7dec213049fe997883e0794120bd3ed1c8ab354"
+    },
+    {
+      "path": "dcc-r123-caddy-office.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "2860901a14fc9857fc8e591298fdf44cce92b3f76a9472f39a817ff2111d04f5"
+    },
+    {
+      "path": "keith_portrait.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "da013f2600917be8168db86ecb8e754df2abd3bf2541d941828f6a4adfbb6665"
+    },
+    {
+      "path": "golfer-memories.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "e65f3b07323585f7710f6f76a2bf8a58d6902a0f1ee19e007c1e11d7f2826ab0"
+    },
+    {
+      "path": "dcc-brand-transparent.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "fb3faa46a9e54d88c66fdaa60d3d975658281833478cca99f9eb97dd815cec7f"
+    },
+    {
+      "path": "golfer-account.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "27f2f74cba6a6e1d6909f7bfda78357baaa0db54537929dd5d9ca23ea8adba5e"
+    },
+    {
+      "path": "dcc-ui.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "bce610c7e03f09f522fe7da40312e90c06c87df3adfa2c4032b21fbe26e9801e"
+    },
+    {
+      "path": "kyle_portrait.webp",
+      "pass": true,
+      "status": 200,
+      "sha256": "9042c02bfbb03d90afe4b9cbfaed7871aa76a14396f050e640cf6422ec037854"
+    },
+    {
+      "path": "dcc-competition-context.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "a1674814fad6729b17bb42e7e682355876f651f54fe656a1d353040d2aa88ccd"
+    },
+    {
+      "path": "vinny_portrait.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "07cf7e0f4beca343167e4bf6e1ccef2164cc93329e0e400a4080039160b384af"
+    },
+    {
+      "path": "keith.svg",
+      "pass": true,
+      "status": 200,
+      "sha256": "733b8457193bb13d0d829fdbf0f87edb9088193fe2946c744cfbf40f44dddd0e"
+    },
+    {
+      "path": "dcc-icon-192.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "e263b524105ce70285f79548171f088177170535fba60117e2962f838c2bfcd1"
+    },
+    {
+      "path": "dcc-icon-1024.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "d3961cb7297814f3bec6e2293446ee3a9976a55f13130f642e1c84c49ed8ae92"
+    },
+    {
+      "path": "dcc-r106-finish.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "fd498e761056828ff4de8ef1e335e3be613a43d39f58f3725b3ad74ad075e9d6"
+    },
+    {
+      "path": "dcc-r129-navigation-legibility.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "480ef79ba717a57a4d0110b8229214334dee5f6fe628cd3912f942bfb5a2dd95"
+    },
+    {
+      "path": "dcc-original-emblem.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "de3e2fb57f450b86c386b8f84f8e4b2e3bfe66af0541607e4aca6fb893b04c53"
+    },
+    {
+      "path": "dcc-icon-512.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "8c2728fd62164a40c4cce2f42d3ecbab58a0d2c5569dcb6638b5b794e1ed37fd"
+    },
+    {
+      "path": "dcc-r137-visual-masthead.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "b85033a6309843a81bb6f89a5e86153ebb5fb770d148ec7a26bc45a77d46d588"
+    },
+    {
+      "path": "room-session.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "f886e1ea4bd3f51d2d4037a6a3ee381092390a2002d78b8222f4f7a1bdda8e84"
+    },
+    {
+      "path": "golfer-bag-sync.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "4d508607f36178be6062d9a69d4b2653b6298cb09b21b2aebfe4c2ea2e45ee06"
+    },
+    {
+      "path": "index.html",
+      "pass": true,
+      "status": 200,
+      "sha256": "1c6999fe9a32072767062489cffbb999cd3f3955ac8f28cf71d0016ec145547f"
+    },
+    {
+      "path": "dcc-r134-page-introductions.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "9b0b6be8d018cb1d0b68eb9adb1c1e938d31b4ce877550ac2d98d9cc17904e8a"
+    },
+    {
+      "path": "dcc-r125-clubhouse-contrast.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "da39b924a2b162c25610859aadd5ba63d6551514b7672f7bfcaa81c365401bdb"
+    },
+    {
+      "path": "dcc-r121-interior-cohesion.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "795b343f4bd08b4378a66dd1297be2fb74ed13c71a55220577bb9e8bc2f107fb"
+    },
+    {
+      "path": "vinny_portrait.webp",
+      "pass": true,
+      "status": 200,
+      "sha256": "13297e82573a68039a742f7e690a24574298768f727df7e796ef9929444d9549"
+    },
+    {
+      "path": "dcc-approved-seal.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "00f495b731acdb5dd1d0538fbecc4eb0a8bbc71faa30d4de0df71a0acec74490"
+    },
+    {
+      "path": "dcc-r142-grounds-archive.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "73302651996bfff7611ea2c9b405bec3ad1aae4f17aeb6ec095d71538a06ebfc"
+    },
+    {
+      "path": "dcc-r143-vault-secondary.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "29f4604ae66a2b8d8b9ecb82448905f35afff45fd480b1133b354a49b866b739"
+    },
+    {
+      "path": "dcc-r144-caddy-roster-heading.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "6cc98d97ab5cbf66504e4b0d4d8bdae135f6e7cefa53788376890679d65f7626"
+    },
+    {
+      "path": "icon.svg",
+      "pass": true,
+      "status": 200,
+      "sha256": "84defee49860468a7706b35126f753bfbc71a055662781090a8471c6bbd23f7c"
+    },
+    {
+      "path": "kyle_portrait.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "7d8fedfff391a3b118d8c9c978e94e1c0cc13b352bfdc8a94c38f44a5cec9062"
+    },
+    {
+      "path": "dcc-r128-equipment-hierarchy.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "b74969ce9fc03c4b191b57c8f8b38283214fa4d2d03b7589d296666fa32c3fea"
+    },
+    {
+      "path": "profile.json",
+      "pass": true,
+      "status": 200,
+      "sha256": "ffb674a15e9f5e67eed6df9ab3a7c53ddabc841dbd3afaee475938393fe53753"
+    },
+    {
+      "path": "dcc-r126-ledger-debts.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "c52d29eef9464c804fe003819e6fece2c1f0d06b9d65dd92d99d81e30da40c50"
+    },
+    {
+      "path": "dcc-approved-header-clean.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "e540671f9114b2c536c0f5cdb8cc68314b0e2e6ecf24e15a6ed11ed860f97ae1"
+    },
+    {
+      "path": "dcc-r130-layout-resilience.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "b7de0584f1a761014aa0a2b673ec3492b19d60c4f9e4ca40133a6da809c20244"
+    },
+    {
+      "path": "dcc-r148-bag-real-empty-state.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "924f89e90c6389360bb030a9f053ca49b71a640dede3a96742ab47bce9dd2452"
+    },
+    {
+      "path": "dcc-game-search.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "34bcecc94046ec937570a4d2d966fef5b29688190bdc7553a792799576b0f4a6"
+    },
+    {
+      "path": "dcc-r141-ledger-ticket-hierarchy.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "84e8098a7c38f92dd6a54d7430cefba4fc696577960452561da8779f67cfc12d"
+    },
+    {
+      "path": "reginald_portrait.webp",
+      "pass": true,
+      "status": 200,
+      "sha256": "91a483bf95fa7ae556165c0e8482e1fac3a226daf5ded9677f9f7f9dd69f3edc"
+    },
+    {
+      "path": "dcc-r135-ledger-introduction.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "68e000440dce743c7bc1f2bef608ca6ec2e7ed2126c2cb718a9447989ee4a78a"
+    },
+    {
+      "path": "dcc-r127-grounds-identity.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "a8e3166128041fefd0d1449ddde31d50f3f83a3afde8744d4e0dcf13c0dbd710"
+    },
+    {
+      "path": "dcc-r122-masthead-balance.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "1c9ff46cccea0a77247840ae87dff92a6d849ffa4f823e10b5a5eb9b85a83e19"
+    },
+    {
+      "path": "dcc-r146-ledger-action-layout.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "06c6b5f966841c6dc268966b504aaed8a3be405d03bff457356c8bd354cbdc64"
+    },
+    {
+      "path": "dcc-r124-caddy-conversation.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "ce9d920fb900573f3ff8f2a6bc0509e674287fd7e7d85aa708d4dbca566d265c"
+    },
+    {
+      "path": "reginald_portrait.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "30b6a6d41162211f532239fdbc36bf45c1e544c66a6c1f7256b6032dc2320533"
+    },
+    {
+      "path": "golfer-profile.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "6c1ab43e5f5862f30b91e0dce8f33aff9d305eb932a57de93f1860af3c842f30"
+    },
+    {
+      "path": "dcc-approved-header.png",
+      "pass": true,
+      "status": 200,
+      "sha256": "d944ca4b304074946307ec9263e82b01f91764963ea8983bdc7139fed413e818"
+    },
+    {
+      "path": "dcc-r120-visual-foundation.css",
+      "pass": true,
+      "status": 200,
+      "sha256": "8fef92df21fffe172226860c72528fa4bd45071de64e355d86c619a6e346f8d7"
+    },
+    {
+      "path": "money-room.js",
+      "pass": true,
+      "status": 200,
+      "sha256": "694823e943a8711b37490a371a93b5618fc6d82f3514c6c51705c1eb8985296e"
+    }
+  ],
+  "passed": 59
+}

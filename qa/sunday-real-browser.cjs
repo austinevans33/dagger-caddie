@@ -12,7 +12,9 @@ const server=http.createServer((req,res)=>{
  res.setHeader('Content-Type',types[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));
 });
 (async()=>{
- await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin=process.env.DCC_STAGING_ORIGIN||('http://127.0.0.1:'+server.address().port);
+ if(process.env.DCC_STAGING_ORIGIN){const target=new URL(origin);assert.equal(target.protocol,'https:');assert.match(target.hostname,/^dagger-country-club-staging--sunday-test-[a-z0-9-]+\.web\.app$/);}
+
  const args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu','--no-zygote'];let proxy;
  // Pin only the known sandbox proxy CA keys in this isolated test process.
  // This is transport setup for the runner, never a shipped application change.
@@ -71,7 +73,7 @@ const server=http.createServer((req,res)=>{
   if(host&&roomId){try{cleanup.push(await host.evaluate(async id=>{const {getFirestore,doc,getDoc,updateDoc}=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');const ref=doc(getFirestore(),'rooms',id),snap=await getDoc(ref);if(snap.exists()&&!snap.data().archived)await updateDoc(ref,{archived:true,lastChange:Date.now()});return {action:'Archive QA room',pass:true};},roomId));}catch(e){cleanup.push({action:'Archive QA room',pass:false,error:e.message});}}
   for(const page of pages){try{cleanup.push(await page.evaluate(async()=>{const {getAuth,deleteUser}=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');const user=getAuth().currentUser;if(user)await deleteUser(user);return {action:'Delete disposable staging identity',pass:true};}));}catch(e){cleanup.push({action:'Delete disposable staging identity',pass:false,error:e.message});}}
   if(browser)await browser.close();await new Promise(r=>server.close(r));
-  fs.writeFileSync(path.join(__dirname,'results/staging-real-browser.json'),JSON.stringify({backend:'Real staging Firebase 11.10 SDK, two isolated Chromium profiles, local app origin; not physical phones or hosted release',checks,errors,blocked,cleanup,test_room_path:roomId?'rooms/'+roomId:null},null,2));
+  fs.writeFileSync(path.join(__dirname,'results/staging-real-browser.json'),JSON.stringify({backend:'Real staging Firebase 11.10 SDK, two isolated Chromium profiles; not physical phones',app_origin:origin,checks,errors,blocked,cleanup,test_room_path:roomId?'rooms/'+roomId:null},null,2));
   console.log(JSON.stringify({checks:checks.length,passed:checks.filter(x=>x.pass).length,errors,blocked,cleanup},null,2));
  }
 })();

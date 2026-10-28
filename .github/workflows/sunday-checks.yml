@@ -32,7 +32,7 @@ jobs:
       - run: npm ci --prefix qa
       - run: npm --prefix qa run test:rules
   staging-preview:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/development/sunday-money-room-2026-11-01'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/development/sunday-money-room-2026-11-01' && !contains(github.event.head_commit.message, '[skip preview]')
     needs: [source-checks, firestore-rules]
     runs-on: ubuntu-latest
     permissions:
