@@ -14,7 +14,7 @@ const server=http.createServer((req,res)=>{
 });
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin=process.env.DCC_STAGING_ORIGIN||('http://127.0.0.1:'+server.address().port);
- if(process.env.DCC_STAGING_ORIGIN){const target=new URL(origin);assert.equal(target.protocol,'https:');assert.match(target.hostname,/^dagger-country-club-staging--(?:sunday-test|qr-candidate|recovery-candidate)-[a-z0-9-]+\.web\.app$/);}
+ if(process.env.DCC_STAGING_ORIGIN){const target=new URL(origin);assert.equal(target.protocol,'https:');assert.match(target.hostname,/^dagger-country-club-staging--(?:sunday-test|qr-candidate|recovery-candidate|bbb-candidate)-[a-z0-9-]+\.web\.app$/);}
 
  const args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu','--no-zygote'];let proxy;
  // Pin only the known sandbox proxy CA keys in this isolated test process.
@@ -50,6 +50,21 @@ const server=http.createServer((req,res)=>{
   browser=await chromium.launch({headless:true,proxy,executablePath:path.resolve(root,'../browser-tools/chromium-renderer'),args});
   host=await makePage();await ready(host);await host.waitForFunction(()=>document.querySelector('#roomStatus').textContent.includes('Live sync ready'));
   check('Actual app signs host in anonymously against staging',!!await identity(host));
+  if(process.env.DCC_EXPECT_BBB==='1'){
+   await host.waitForSelector('#gStake',{state:'attached'});
+   await reveal(host,'gStart');await host.locator('#gP1').fill('QA Host');await host.locator('#gP2').fill('QA Buddy');await host.locator('#gStake').fill('1.25');await host.locator('#gStart').click();
+   await reveal(host,'gSave');for(const id of ['gBingo','gBango','gBongo'])await host.locator('#'+id).selectOption('0');await host.locator('#gSave').click();
+   check('Hosted BBB awards show plus and minus $3.75',await host.locator('#bbbLiveStandings').textContent().then(t=>t.includes('+$3.75')&&t.includes('−$3.75')));
+   await ready(host);await host.waitForFunction(()=>document.querySelector('#bbbLiveStandings').textContent.includes('+$3.75'));
+   check('Hosted BBB stake and awards survive reload',await host.evaluate(()=>JSON.parse(localStorage.dagger_bbb_active).stake===1.25));
+   await reveal(host,'gFinish');await host.locator('#gFinish').click();
+   check('Hosted BBB archive enters Ledger',await host.locator('#wHistory').textContent().then(t=>t.includes('bingo')&&t.includes('+$3.75')));
+   await ready(host);await host.waitForFunction(()=>document.querySelector('#wHistory').textContent.includes('+$3.75'));
+   check('Hosted BBB reload does not duplicate settlement',await host.evaluate(()=>JSON.parse(localStorage.dagger_foursome_history).filter(g=>g.format==='bingo').length===1));
+   await reveal(host,'wHistory');await host.locator('#wHistory tr').filter({hasText:'bingo'}).click();
+   check('Hosted BBB inspector preserves point counts including zeros',await host.locator('#dccArchiveHoles tr').first().textContent().then(t=>t==='130'));
+   await host.screenshot({path:path.join(root,'qa/results/bbb-hosted-ledger.png'),fullPage:true});
+  }
   await reveal(host,'roomCreate');await host.locator('#roomMe').fill('QA Host');await host.locator('#roomPlayers').fill('QA Buddy');await host.locator('#roomFormat').selectOption('hole');await host.locator('#roomStake').fill('10');await host.locator('#roomCreate').click();
   await host.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);const compact=await host.locator('#roomCode').inputValue();const [id,invite]=compact.split(':');roomId=id;
   check('Host creates room using existing app controls',/^[0-9a-f]{32}$/.test(id));
