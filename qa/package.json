@@ -2,7 +2,7 @@
   "name": "dagger-sunday-release-checks",
   "private": true,
   "scripts": {
-    "test": "node --test room-session.test.mjs invitation-qr.test.mjs room-recovery.test.mjs && python3 verify-lock.py",
+    "test": "node --test room-session.test.mjs invitation-qr.test.mjs room-recovery.test.mjs ledger-settlement.test.mjs && python3 verify-lock.py",
     "test:rules": "firebase emulators:exec --config firebase-emulator.json --project demo-dagger-qa --only firestore \"node staging-rules.test.cjs\""
   },
   "devDependencies": {

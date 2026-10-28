@@ -1,0 +1,214 @@
+{
+  "backend": "LOCAL FAKE — not deployed Firebase rules, hosted auth, or physical phones",
+  "checks": [
+    {
+      "name": "320px play: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "320px games: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "320px games: approved record/seal pixels unchanged",
+      "pass": true
+    },
+    {
+      "name": "320px bets: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "320px bets: approved record/seal pixels unchanged",
+      "pass": true
+    },
+    {
+      "name": "320px bag: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "320px settings: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "320px rejected global membership banner absent",
+      "pass": true
+    },
+    {
+      "name": "320px intended Member Account panel retained",
+      "pass": true
+    },
+    {
+      "name": "390px play: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "390px games: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "390px games: approved record/seal pixels unchanged",
+      "pass": true
+    },
+    {
+      "name": "390px bets: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "390px bets: approved record/seal pixels unchanged",
+      "pass": true
+    },
+    {
+      "name": "390px bag: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "390px settings: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "390px rejected global membership banner absent",
+      "pass": true
+    },
+    {
+      "name": "390px intended Member Account panel retained",
+      "pass": true
+    },
+    {
+      "name": "430px play: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "430px games: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "430px games: approved record/seal pixels unchanged",
+      "pass": true
+    },
+    {
+      "name": "430px bets: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "430px bets: approved record/seal pixels unchanged",
+      "pass": true
+    },
+    {
+      "name": "430px bag: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "430px settings: existing region dimensions and position preserved",
+      "pass": true
+    },
+    {
+      "name": "430px rejected global membership banner absent",
+      "pass": true
+    },
+    {
+      "name": "430px intended Member Account panel retained",
+      "pass": true
+    },
+    {
+      "name": "restricted guest authentication is reproduced",
+      "pass": true
+    },
+    {
+      "name": "existing member sign-in recovers without reload",
+      "pass": true
+    },
+    {
+      "name": "host creates a room after failed guest startup",
+      "pass": true
+    },
+    {
+      "name": "existing Share control creates a real scannable PNG for the exact room",
+      "pass": true
+    },
+    {
+      "name": "browser without native file sharing saves QR and copies invitation",
+      "pass": true
+    },
+    {
+      "name": "existing Copy invite link control retains link-only sharing",
+      "pass": true
+    },
+    {
+      "name": "fresh invitation lands in Ledger without profile setup",
+      "pass": true
+    },
+    {
+      "name": "buddy joins with name and one tap",
+      "pass": true
+    },
+    {
+      "name": "joining performs no membership pre-read",
+      "pass": true
+    },
+    {
+      "name": "buddy score editing is disabled",
+      "pass": true
+    },
+    {
+      "name": "host score reaches the other browser",
+      "pass": true
+    },
+    {
+      "name": "active room bookmark contains no local score or host privilege fields",
+      "pass": true
+    },
+    {
+      "name": "host reload restores same room without invitation or name re-entry",
+      "pass": true
+    },
+    {
+      "name": "host Firebase identity and official score survive reload",
+      "pass": true
+    },
+    {
+      "name": "restored host can record next hole for connected guest",
+      "pass": true
+    },
+    {
+      "name": "failed server recovery does not expose cached scorekeeper controls",
+      "pass": true
+    },
+    {
+      "name": "online event retries recovery without losing saved room",
+      "pass": true
+    },
+    {
+      "name": "guest reload restores identity and score without joining again",
+      "pass": true
+    },
+    {
+      "name": "automatic recovery performs no new membership registration",
+      "pass": true
+    },
+    {
+      "name": "incorrect invitation does not expose scorecard",
+      "pass": true
+    },
+    {
+      "name": "late recovery cannot replace a newer explicitly created room",
+      "pass": true
+    },
+    {
+      "name": "signout immediately revokes cached host scorecard",
+      "pass": true
+    },
+    {
+      "name": "signout clears the old account active room bookmark",
+      "pass": true
+    },
+    {
+      "name": "Ledger Nassau adapter settles completed segments only in actual browser",
+      "pass": true
+    },
+    {
+      "name": "no uncaught page errors",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

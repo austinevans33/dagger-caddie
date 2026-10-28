@@ -165,6 +165,7 @@ const server=http.createServer(async(req,res)=>{
   await host.evaluate(()=>window.__qaSetUser(null));
   check('signout immediately revokes cached host scorecard',await host.locator('#roomScoreSection').isHidden()&&await host.locator('#roomSaveHole').isDisabled());
   check('signout clears the old account active room bookmark',await host.evaluate(()=>!localStorage.dagger_active_money_room));
+  check('Ledger Nassau adapter settles completed segments only in actual browser',await host.evaluate(()=>{const g={format:'nassau',players:['A','B'],stake:5,holes:[[4,5]]};if(window.wagerMath(g).score[0]!==0)return false;g.holes=Array.from({length:18},()=>[4,5]);return window.wagerMath(g).score[0]===15;}));
   check('no uncaught page errors',errors.length===0);
  }finally{
   await browser.close();await new Promise(r=>server.close(r));

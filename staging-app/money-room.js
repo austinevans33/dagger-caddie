@@ -1,3 +1,5 @@
+import {installLedgerSettlement} from './ledger-settlement.js';
+installLedgerSettlement(window);
 import {firebaseConfig} from './firebase-config.js';
 import {createRoomSession,singleFlight,invitationFrom} from './room-session.js';
 import {createInvitationSharing} from './invitation-qr.js';
