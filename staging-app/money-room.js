@@ -1,11 +1,13 @@
 import {firebaseConfig} from './firebase-config.js';
+import {createRoomSession,singleFlight,invitationFrom} from './room-session.js';
 
 const $=id=>document.getElementById(id);
 const status=t=>{$('roomStatus').textContent=t;};
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);
 const isConfigured=firebaseConfig&&firebaseConfig.apiKey&&firebaseConfig.projectId;
-let db=null,auth=null,functions=null,room=null,roomId='',invite='',roomUnsub=null,user=null,host=false;
+let db=null,auth=null,functions=null,room=null,roomId='',invite='',roomUnsub=null,user=null,host=false,session=null;
+let connectionVersion=0;
 
 function compute(model){
  const players=model.players||[];const n=players.length,holes=model.holes||{},stake=Number(model.stake)||0;
@@ -138,26 +140,28 @@ const step=(sign)=>{const b=document.createElement('button');b.type='button';b.t
 $('roomHole').onchange=()=>{if(room)buildInputs(Number($('roomHole').value));};
 function archiveLocal(){if(!room)return;const k='dagger_room_archives',old=JSON.parse(localStorage.getItem(k)||'[]');const item={...room,roomId,ended:Date.now(),payouts:compute(room).totals};const i=old.findIndex(v=>v.roomId===roomId);if(i>=0)old[i]=item;else old.push(item);localStorage.setItem(k,JSON.stringify(old));}
 function roomLink(){const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('room',roomId);url.searchParams.set('invite',invite);return url.toString();}
-function parseInvite(input){let s=input.trim();try{const url=new URL(s);return {id:url.searchParams.get('room')||'',code:url.searchParams.get('invite')||''};}catch{}let [id,code]=s.split(':');return{id:id||'',code:code||''};}
+function parseInvite(input){return invitationFrom(input)||{id:'',code:''};}
 const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('');};
-async function connect(id){if(roomUnsub)roomUnsub();roomId=id;
+async function connect(id){if(roomUnsub)roomUnsub();roomId=id;const version=++connectionVersion;
  const {doc,onSnapshot}=functions;
- roomUnsub=onSnapshot(doc(db,'rooms',id),snap=>{if(!snap.exists()){status('Room not found, or access denied.');return;}room=snap.data();status('LIVE · Updates delivered across connected phones · '+roomLabel());render();},err=>status('Could not subscribe: '+err.message));
+ roomUnsub=onSnapshot(doc(db,'rooms',id),snap=>{if(version!==connectionVersion)return;if(!snap.exists()){status('Room not found, or access denied.');return;}room=snap.data();status('LIVE · Updates delivered across connected phones · '+roomLabel());render();},err=>status('Could not subscribe: '+err.message));
 }
 async function create(){try{
- if(!db)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
+ if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
+ user=await session.current();const operationUid=user.uid;
  const me=$('roomMe').value.trim();const others=$('roomPlayers').value.split(',').map(x=>x.trim()).filter(Boolean);const players=[me,...others];
  const format=$('roomFormat').value,needed=format==='vegas'?4:format==='hole'||format==='nassau'?2:null;
  if(!me||players.length<2||players.length>4||new Set(players.map(n=>n.toLowerCase())).size!==players.length)throw Error('Enter 2–4 distinct golfer names including yourself.');
  if(needed&&players.length!==needed)throw Error(`${format} requires ${needed} players.`);
  const stake=Number($('roomStake').value);if(!Number.isFinite(stake)||stake<0||stake>10000)throw Error('Invalid stake.');
  const {doc,setDoc}=functions;const id=rand(16),code=rand(8);const model={name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
- await setDoc(doc(db,'rooms',id),model);await setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()});invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);status('Money Room created. You are the ONLY scorekeeper. Share the invitation link.');
+ await setDoc(doc(db,'rooms',id),model);session.assertIdentity(operationUid);await setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()});session.assertIdentity(operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);status('Money Room created. You are the ONLY scorekeeper. Share the invitation link.');
  }catch(e){status('Could not create room: '+e.message);}}
 async function join(){
  let stage='validation';
  try{
-  if(!db)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
+  if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
+ user=await session.current();const operationUid=user.uid;
   const {id,code}=parseInvite($('roomCode').value);
   if(!/^[0-9a-f]{32}$/.test(id)||!/^[0-9a-f]{16}$/.test(code))throw Error('Paste the complete invitation link or ID:code.');
   const name=$('roomMe').value.trim()||'Guest';if(name.length>24)throw Error('Name is too long.');
@@ -165,14 +169,11 @@ async function join(){
   stage='member-registration';status('Verifying invitation and registering your membership…');
   const {doc,setDoc,getDoc}=functions;
   const memberRef=doc(db,'rooms',id,'members',user.uid);
-  const priorMember=await getDoc(memberRef);
-  if(priorMember.exists() && priorMember.data().invite===code){
-   await setDoc(memberRef,{name,joined:Date.now()},{merge:true});
-  }else{
-   await setDoc(memberRef,{uid:user.uid,name,invite:code,joined:Date.now()});
-  }
+  await setDoc(memberRef,{uid:operationUid,name,invite:code,joined:Date.now()});
+  session.assertIdentity(operationUid);
   stage='room-access';status('Membership accepted. Opening the live scorecard…');
   const snapshot=await getDoc(doc(db,'rooms',id));
+  session.assertIdentity(operationUid);
   if(!snapshot.exists())throw Error('Room not found. Ask the scorekeeper for a new invitation.');
   invite=code;roomId=id;room=snapshot.data();
   await connect(id);status('Membership verified. Connecting live updates…');
@@ -184,25 +185,54 @@ async function join(){
   status('Unable to join ('+stage+'): '+e.message+hint+' · If this continues, send this exact message to the caddie developer.');
  }
 }
-$('roomCreate').onclick=create;$('roomJoin').onclick=join;
-$('roomQuickJoin').onclick=()=>{const name=$('roomQuickName').value.trim();if(!name){status('Enter your display name to join.');$('roomQuickName').focus();return;}$('roomMe').value=name;join();};
+const createOnce=singleFlight(create),joinOnce=singleFlight(join);
+$('roomCreate').onclick=createOnce;$('roomJoin').onclick=joinOnce;
+$('roomQuickJoin').onclick=()=>{const name=$('roomQuickName').value.trim();if(!name){status('Enter your display name to join.');$('roomQuickName').focus();return;}$('roomMe').value=name;joinOnce();};
 const shareInvite=async()=>{if(!roomId){status('Create or join a room first.');return;}try{if(navigator.share)await navigator.share({title:'Dagger Money Room',url:roomLink()});else await navigator.clipboard.writeText(roomLink());}catch{status('Copy the room link manually: '+roomLink());}};
 $('roomCopy').onclick=shareInvite;
 $('roomShareCurrent').onclick=shareInvite;
 $('roomLocalArchive').onclick=()=>{if(!room)return;archiveLocal();status('Saved a snapshot in this phone’s local archives.');};
-$('roomSaveHole').onclick=async()=>{try{if(!host||room.archived)throw Error('Only the active scorekeeper may edit.');const hole=Number($('roomHole').value);const scores=[...$('roomScoreRows').querySelectorAll('input')].map(e=>Number(e.value));if(scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Enter a valid stroke score for every player.');const holes={...(room.holes||{}),[hole]:scores};await functions.updateDoc(functions.doc(db,'rooms',roomId),{holes,lastEditor:room.hostName,lastChange:Date.now()});status('Hole '+hole+' recorded and sent to connected members.');}catch(e){status('Save failed: '+e.message);}};
-$('roomFinish').onclick=async()=>{if(!host||room.archived)return;if(!confirm('Archive this match for everyone? Future edits will be locked.'))return;try{await functions.updateDoc(functions.doc(db,'rooms',roomId),{archived:true,lastChange:Date.now()});archiveLocal();status('Match archived. Scorekeeper can no longer edit it.');}catch(e){status('Archive failed: '+e.message);}};
+$('roomSaveHole').onclick=async()=>{try{if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');session.assertIdentity(room.hostUid);const hole=Number($('roomHole').value);const scores=[...$('roomScoreRows').querySelectorAll('input')].map(e=>Number(e.value));if(scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Enter a valid stroke score for every player.');const holes={...(room.holes||{}),[hole]:scores};await functions.updateDoc(functions.doc(db,'rooms',roomId),{holes,lastEditor:room.hostName,lastChange:Date.now()});status('Hole '+hole+' recorded and sent to connected members.');}catch(e){status('Save failed: '+e.message);}};
+$('roomFinish').onclick=async()=>{if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;if(!confirm('Archive this match for everyone? Future edits will be locked.'))return;try{await functions.updateDoc(functions.doc(db,'rooms',roomId),{archived:true,lastChange:Date.now()});archiveLocal();status('Match archived. Scorekeeper can no longer edit it.');}catch(e){status('Archive failed: '+e.message);}};
 async function init(){if(!isConfigured){status('Local mode · Live sync is not configured. See SETUP_FIREBASE.md. Local games and Betting still work.');return;}
  try{
  const appMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js');
  const authMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');
  const fsMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
  const app=appMod.initializeApp(firebaseConfig);auth=authMod.getAuth(app);db=fsMod.getFirestore(app);functions=fsMod;
- await auth.authStateReady();
-
-user = auth.currentUser ||
-  (await authMod.signInAnonymously(auth)).user;
- status('Live sync ready. Create a Money Room, or paste an invite and join.');
- const url=new URL(window.location.href);let id=url.searchParams.get('room'),code=url.searchParams.get('invite');if(id&&code){$('roomCode').value=id+':'+code;$('roomInvitationBanner').hidden=false;$('roomSetup').open=false;if(typeof window.switchTab==='function')window.switchTab('bets');else document.getElementById('tab-bets')?.click();document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'});status('Invitation ready. Enter your name and tap Join live room.');}
+ session=createRoomSession(auth,authMod.signInAnonymously);
+ authMod.onAuthStateChanged(auth,next=>{
+   if(user?.uid!==next?.uid){
+     ++connectionVersion;if(roomUnsub)roomUnsub();roomUnsub=null;
+     room=null;roomId='';invite='';host=false;
+     $('roomScoreSection').hidden=true;
+     $('roomEditor').hidden=true;
+     $('roomSaveHole').disabled=true;$('roomFinish').disabled=true;
+   }
+   user=next;
+   if(next)status('Live sync ready. Create a Money Room, or paste an invite and join.');
+ });
+ showIncomingInvitation();
+ user=await session.current();
+ if(!incomingInvitation)status('Live sync ready. Create a Money Room, or paste an invite and join.');
  }catch(e){status('Live sync unavailable: '+e.message+'. Check Firebase setup and network.');}}
+const incomingInvitation=invitationFrom(window.location.href);
+function showIncomingInvitation(){
+ if(!incomingInvitation)return;
+ $('roomCode').value=incomingInvitation.id+':'+incomingInvitation.code;
+ $('roomInvitationBanner').hidden=false;$('roomSetup').open=false;
+ if(typeof window.switchTab==='function')window.switchTab('bets');
+ else $('tab-bets')?.click();
+ $('moneyRoomSection')?.scrollIntoView({block:'start'});
+ status('Invitation ready. Enter your name and tap Join live room.');
+}
+// The original profile initializer can select Caddy after module startup.
+// Observe its existing club selector once; do not alter HTML or profile setup.
+if(incomingInvitation){
+ const selector=$('manualclub');
+ if(selector&&!selector.children.length){
+   const ready=new MutationObserver(()=>{ready.disconnect();showIncomingInvitation();});
+   ready.observe(selector,{childList:true});
+ }
+}
 init();

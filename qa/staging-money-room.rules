@@ -1,0 +1,79 @@
+// STAGING ONLY: dagger-country-club-staging
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isHost() {
+      return signedIn() && resource.data.hostUid == request.auth.uid;
+    }
+    function isMember(roomId) {
+      return signedIn() && exists(/databases/$(database)/documents/rooms/$(roomId)/members/$(request.auth.uid));
+    }
+    function validName(name) {
+      return name is string && name.size() > 0 && name.size() <= 100;
+    }
+    function validPlayers(players) {
+      return players is list && players.size() >= 2 && players.size() <= 4
+        && players.toSet().size() == players.size()
+        && validName(players[0]) && validName(players[1])
+        && (players.size() < 3 || validName(players[2]))
+        && (players.size() < 4 || validName(players[3]));
+    }
+    function validMembership(roomId, memberId) {
+      let member = request.resource.data;
+      return signedIn() && memberId == request.auth.uid
+        && member.keys().hasAll(['uid', 'name', 'invite', 'joined'])
+        && member.keys().hasOnly(['uid', 'name', 'invite', 'joined'])
+        && member.uid == request.auth.uid
+        && member.name is string && member.name.size() > 0 && member.name.size() <= 24
+        && member.joined is int
+        && member.invite == get(/databases/$(database)/documents/rooms/$(roomId)).data.invite;
+    }
+
+    match /rooms/{roomId} {
+      allow create: if signedIn()
+        && roomId.matches('^[0-9a-f]{32}$')
+        && request.resource.data.hostUid == request.auth.uid
+        && validName(request.resource.data.name)
+        && validName(request.resource.data.hostName)
+        && validPlayers(request.resource.data.players)
+        && request.resource.data.format in ['skins', 'hole', 'nassau', 'vegas']
+        && (request.resource.data.format != 'vegas' || request.resource.data.players.size() == 4)
+        && (!(request.resource.data.format in ['hole', 'nassau']) || request.resource.data.players.size() == 2)
+        && request.resource.data.stake is number
+        && request.resource.data.stake >= 0 && request.resource.data.stake <= 10000
+        && request.resource.data.invite is string
+        && request.resource.data.invite.matches('^[0-9a-f]{16}$')
+        && request.resource.data.archived == false
+        && request.resource.data.holes is map && request.resource.data.holes.size() == 0
+        && request.resource.data.created is int
+        && request.resource.data.lastChange is int
+        && request.resource.data.lastEditor == request.resource.data.hostName;
+
+      allow get: if isHost() || isMember(roomId);
+      allow list: if false;
+      allow update: if isHost() && resource.data.archived == false
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['holes', 'lastEditor', 'lastChange', 'archived'])
+        && request.resource.data.holes is map
+        && request.resource.data.archived is bool
+        && request.resource.data.lastChange is int
+        && request.resource.data.lastEditor == resource.data.hostName;
+      allow delete: if false;
+
+      match /members/{memberId} {
+        allow create: if validMembership(roomId, memberId);
+        allow update: if validMembership(roomId, memberId)
+          && resource.data.uid == request.auth.uid;
+        allow get: if signedIn() && (memberId == request.auth.uid
+          || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostUid == request.auth.uid);
+        allow list, delete: if false;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

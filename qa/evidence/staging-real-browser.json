@@ -1,0 +1,62 @@
+{
+  "backend": "Real staging Firebase 11.10 SDK, two isolated Chromium profiles, local app origin; not physical phones or hosted release",
+  "checks": [
+    {
+      "name": "Actual app signs host in anonymously against staging",
+      "pass": true
+    },
+    {
+      "name": "Host creates room using existing app controls",
+      "pass": true
+    },
+    {
+      "name": "Invitation opens Ledger on a fresh profile without bag setup",
+      "pass": true
+    },
+    {
+      "name": "Name and one tap join the real staging room",
+      "pass": true
+    },
+    {
+      "name": "Guest controls cannot edit scores",
+      "pass": true
+    },
+    {
+      "name": "Host and guest use distinct Firebase identities",
+      "pass": true
+    },
+    {
+      "name": "Firebase live listener delivers host score to other browser",
+      "pass": true
+    },
+    {
+      "name": "Reload and rejoin preserve identity and official score",
+      "pass": true
+    },
+    {
+      "name": "Host archive reaches guest through live listener",
+      "pass": true
+    },
+    {
+      "name": "No uncaught application errors",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "cleanup": [
+    {
+      "action": "Archive QA room",
+      "pass": true
+    },
+    {
+      "action": "Delete disposable staging identity",
+      "pass": true
+    },
+    {
+      "action": "Delete disposable staging identity",
+      "pass": true
+    }
+  ],
+  "test_room_path": "rooms/9f74ea8c7107017bd5166966ebeb81b9"
+}

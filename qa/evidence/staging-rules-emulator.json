@@ -1,0 +1,153 @@
+{
+  "backend": "REAL Firestore rules emulator, simulated identities; not deployed staging",
+  "checks": [
+    {
+      "name": "Unauthenticated room creation denied",
+      "pass": true
+    },
+    {
+      "name": "Room ownership forgery denied",
+      "pass": true
+    },
+    {
+      "name": "Host creates valid two-player room",
+      "pass": true
+    },
+    {
+      "name": "Host can read own room before registering membership",
+      "pass": true
+    },
+    {
+      "name": "Nonmember room read denied",
+      "pass": true
+    },
+    {
+      "name": "Unauthenticated room read denied",
+      "pass": true
+    },
+    {
+      "name": "Wrong invitation denied",
+      "pass": true
+    },
+    {
+      "name": "Guest cannot write another UID membership",
+      "pass": true
+    },
+    {
+      "name": "Empty display name denied",
+      "pass": true
+    },
+    {
+      "name": "Membership privilege fields denied",
+      "pass": true
+    },
+    {
+      "name": "Guest joins with valid invitation without pre-read",
+      "pass": true
+    },
+    {
+      "name": "Joined guest can read room",
+      "pass": true
+    },
+    {
+      "name": "Guest can read own membership",
+      "pass": true
+    },
+    {
+      "name": "Host can read guest membership",
+      "pass": true
+    },
+    {
+      "name": "Outsider cannot read guest membership",
+      "pass": true
+    },
+    {
+      "name": "Returning guest may rejoin",
+      "pass": true
+    },
+    {
+      "name": "Returning guest with wrong invite denied",
+      "pass": true
+    },
+    {
+      "name": "Guest cannot score even with forged editor name",
+      "pass": true
+    },
+    {
+      "name": "Host can save scores",
+      "pass": true
+    },
+    {
+      "name": "Other identity reads saved scores",
+      "pass": true
+    },
+    {
+      "name": "Host cannot change immutable hostUid",
+      "pass": true
+    },
+    {
+      "name": "Host cannot change immutable players",
+      "pass": true
+    },
+    {
+      "name": "Host cannot change immutable invite",
+      "pass": true
+    },
+    {
+      "name": "Host cannot change immutable format",
+      "pass": true
+    },
+    {
+      "name": "Host cannot change immutable stake",
+      "pass": true
+    },
+    {
+      "name": "Room enumeration denied",
+      "pass": true
+    },
+    {
+      "name": "Membership enumeration denied",
+      "pass": true
+    },
+    {
+      "name": "Room deletion denied",
+      "pass": true
+    },
+    {
+      "name": "Unrelated golfer profile access remains denied",
+      "pass": true
+    },
+    {
+      "name": "Unrelated document writes remain denied",
+      "pass": true
+    },
+    {
+      "name": "Three-player match-by-hole creation denied",
+      "pass": true
+    },
+    {
+      "name": "Negative stake denied",
+      "pass": true
+    },
+    {
+      "name": "Guest cannot archive",
+      "pass": true
+    },
+    {
+      "name": "Host can archive",
+      "pass": true
+    },
+    {
+      "name": "Archived scores cannot be edited",
+      "pass": true
+    },
+    {
+      "name": "Archived match cannot be reopened",
+      "pass": true
+    },
+    {
+      "name": "Guest can still read archived match",
+      "pass": true
+    }
+  ]
+}

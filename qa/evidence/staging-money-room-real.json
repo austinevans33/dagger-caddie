@@ -1,0 +1,100 @@
+{
+  "project": "dagger-country-club-staging",
+  "backend": "REAL deployed staging REST APIs; not a browser or physical-phone test",
+  "checks": [
+    {
+      "name": "Host anonymous signup",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Guest anonymous signup",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Outsider anonymous signup",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Host creates a two-player room",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Nonmember cannot read room before joining",
+      "pass": true,
+      "status": 403
+    },
+    {
+      "name": "Incorrect invitation cannot register membership",
+      "pass": true,
+      "status": 403
+    },
+    {
+      "name": "Guest joins by invitation without membership pre-read",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Registered guest can read live scorecard",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Guest cannot edit host scores",
+      "pass": true,
+      "status": 403
+    },
+    {
+      "name": "Host records a hole",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Other identity reads saved scores",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Returning guest can rejoin using same invitation",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Host archives match",
+      "pass": true,
+      "status": 200
+    },
+    {
+      "name": "Archived match rejects later score edits",
+      "pass": true,
+      "status": 403
+    },
+    {
+      "name": "Unauthenticated room access denied",
+      "pass": true,
+      "status": 403
+    }
+  ],
+  "cleanup": [
+    {
+      "action": "Archive labelled staging QA room",
+      "status": 403
+    },
+    {
+      "action": "Delete disposable staging auth identity 1",
+      "status": 200
+    },
+    {
+      "action": "Delete disposable staging auth identity 2",
+      "status": 200
+    },
+    {
+      "action": "Delete disposable staging auth identity 3",
+      "status": 200
+    }
+  ],
+  "test_room_path": "rooms/b498b1c2d0b7a7d0146fbd4154469fc1"
+}
