@@ -1,0 +1,11 @@
+# Active Money Room recovery candidate
+
+Work is isolated on development/money-room-recovery, based on the verified QR candidate. It deploys to a separate recovery-candidate preview; the owner's sunday-test and qr-candidate links remain unchanged.
+
+An active room bookmark stores only version, Firebase UID, room ID, invitation code and display name. It stores no scores, payouts or host privileges. On reload or reopening app home, the app validates that bookmark against the current Firebase identity and reads the room from the server before reconnecting. The backend document determines the user's role and official scores. A different explicit invitation takes precedence. Manual room setup and newer create/join actions supersede in-flight recovery, preventing late responses from replacing the user's new room.
+
+Sign-out/account changes clear the previous account's bookmark and cached scorekeeper controls. Confirmed archived matches clear their bookmarks and do not automatically reopen. A pending archive does not discard the locator before server acknowledgement. Temporary read failures keep the locator for retry on the online event; a15-second deadline prevents an unbounded server read. Missing/archived rooms, changed invitations and permission-denied reads invalidate the matching saved locator. Malformed or unavailable browser storage cannot throw through room operations. Room lookup revalidation is not a replacement for persistent Firebase identity: clearing browser site data or changing origin will not transfer host ownership.
+
+Verification:28 unit tests and51 Chromium checks passed against the LOCAL FAKE backend, including host reload followed by another shared hole, guest automatic return, no repeated membership registration, transient read failure/retry, a deliberately late lookup/new-room action race, account-change clearing, existing QR PNG decoding/joining and frozen visual region comparisons at320/390/430px. Zero page errors. The real staging/hosted check is pending. The previous two previews remain the owner's stable test builds.
+
+No HTML, CSS, layout, branding, seals, button labels or navigation structure were changed. Existing status fields report recovery progress/errors. This does not certify offline cold-start, physical Safari background suspension or camera/native sharing behavior.
