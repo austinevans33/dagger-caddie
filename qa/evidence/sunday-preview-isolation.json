@@ -1,0 +1,8 @@
+{
+  "origin": "https://dagger-country-club-staging--sunday-test-95n00msn.web.app",
+  "path": "money-room.js",
+  "pass": true,
+  "sha256": "694823e943a8711b37490a371a93b5618fc6d82f3514c6c51705c1eb8985296e",
+  "expected_source_commit": "10989031b9d91845a880f7d0db11622b5fe357b6",
+  "verified_after_qr_candidate_deployment": true
+}

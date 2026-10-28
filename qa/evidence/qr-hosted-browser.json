@@ -1,0 +1,67 @@
+{
+  "backend": "Real staging Firebase 11.10 SDK, two isolated Chromium profiles; not physical phones",
+  "app_origin": "https://dagger-country-club-staging--qr-candidate-qrb4e23h.web.app",
+  "checks": [
+    {
+      "name": "Actual app signs host in anonymously against staging",
+      "pass": true
+    },
+    {
+      "name": "Host creates room using existing app controls",
+      "pass": true
+    },
+    {
+      "name": "Actual Share control creates PNG QR for this hosted invitation",
+      "pass": true
+    },
+    {
+      "name": "Invitation opens Ledger on a fresh profile without bag setup",
+      "pass": true
+    },
+    {
+      "name": "Name and one tap join the real staging room",
+      "pass": true
+    },
+    {
+      "name": "Guest controls cannot edit scores",
+      "pass": true
+    },
+    {
+      "name": "Host and guest use distinct Firebase identities",
+      "pass": true
+    },
+    {
+      "name": "Firebase live listener delivers host score to other browser",
+      "pass": true
+    },
+    {
+      "name": "Reload and rejoin preserve identity and official score",
+      "pass": true
+    },
+    {
+      "name": "Host archive reaches guest through live listener",
+      "pass": true
+    },
+    {
+      "name": "No uncaught application errors",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "cleanup": [
+    {
+      "action": "Archive QA room",
+      "pass": true
+    },
+    {
+      "action": "Delete disposable staging identity",
+      "pass": true
+    },
+    {
+      "action": "Delete disposable staging identity",
+      "pass": true
+    }
+  ],
+  "test_room_path": "rooms/57ed2e6ca53ee745c2299e333c3e4621"
+}

@@ -2,12 +2,14 @@
   "name": "dagger-sunday-release-checks",
   "private": true,
   "scripts": {
-    "test": "node --test room-session.test.mjs && python3 verify-lock.py",
+    "test": "node --test room-session.test.mjs invitation-qr.test.mjs && python3 verify-lock.py",
     "test:rules": "firebase emulators:exec --config firebase-emulator.json --project demo-dagger-qa --only firestore \"node staging-rules.test.cjs\""
   },
   "devDependencies": {
-    "firebase-tools": "14.22.0",
+    "@firebase/rules-unit-testing": "6.0.0",
     "firebase": "13.1.0",
-    "@firebase/rules-unit-testing": "6.0.0"
+    "firebase-tools": "14.22.0",
+    "jsqr": "^1.4.0",
+    "qrcode-generator": "^2.0.4"
   }
 }

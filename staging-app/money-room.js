@@ -1,5 +1,7 @@
 import {firebaseConfig} from './firebase-config.js';
 import {createRoomSession,singleFlight,invitationFrom} from './room-session.js';
+import {createInvitationSharing} from './invitation-qr.js';
+const invitationSharing=createInvitationSharing();
 
 const $=id=>document.getElementById(id);
 const status=t=>{$('roomStatus').textContent=t;};
@@ -44,6 +46,7 @@ function roomLabel(){const me=user?.uid||'';return (me===room?.hostUid?'Scorekee
 function render(){
  if(!room)return;
  host=!!(user?.uid===room.hostUid);
+ invitationSharing.prepare(roomLink());
  $('roomScoreSection').hidden=false;
  $('roomEditor').hidden=!host; $('roomSpectator').hidden=host;
  $('roomInvitationBanner').hidden=true;
@@ -188,9 +191,13 @@ async function join(){
 const createOnce=singleFlight(create),joinOnce=singleFlight(join);
 $('roomCreate').onclick=createOnce;$('roomJoin').onclick=joinOnce;
 $('roomQuickJoin').onclick=()=>{const name=$('roomQuickName').value.trim();if(!name){status('Enter your display name to join.');$('roomQuickName').focus();return;}$('roomMe').value=name;joinOnce();};
-const shareInvite=async()=>{if(!roomId){status('Create or join a room first.');return;}try{if(navigator.share)await navigator.share({title:'Dagger Money Room',url:roomLink()});else await navigator.clipboard.writeText(roomLink());}catch{status('Copy the room link manually: '+roomLink());}};
-$('roomCopy').onclick=shareInvite;
-$('roomShareCurrent').onclick=shareInvite;
+const shareInvite=async(qr=false)=>{if(!roomId){status('Create or join a room first.');return;}try{
+ const result=await invitationSharing.share(roomLink(),{qr});
+ if(result.kind==='link-copy')status('Invitation link copied.');
+ if(result.kind==='qr-download')status(result.linkCopied?'QR invitation saved. Invitation link copied.':'QR invitation saved. Copy the room link manually: '+roomLink());
+}catch{status('Copy the room link manually: '+roomLink());}};
+$('roomCopy').onclick=singleFlight(()=>shareInvite(false));
+$('roomShareCurrent').onclick=singleFlight(()=>shareInvite(true));
 $('roomLocalArchive').onclick=()=>{if(!room)return;archiveLocal();status('Saved a snapshot in this phone’s local archives.');};
 $('roomSaveHole').onclick=async()=>{try{if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');session.assertIdentity(room.hostUid);const hole=Number($('roomHole').value);const scores=[...$('roomScoreRows').querySelectorAll('input')].map(e=>Number(e.value));if(scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Enter a valid stroke score for every player.');const holes={...(room.holes||{}),[hole]:scores};await functions.updateDoc(functions.doc(db,'rooms',roomId),{holes,lastEditor:room.hostName,lastChange:Date.now()});status('Hole '+hole+' recorded and sent to connected members.');}catch(e){status('Save failed: '+e.message);}};
 $('roomFinish').onclick=async()=>{if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;if(!confirm('Archive this match for everyone? Future edits will be locked.'))return;try{await functions.updateDoc(functions.doc(db,'rooms',roomId),{archived:true,lastChange:Date.now()});archiveLocal();status('Match archived. Scorekeeper can no longer edit it.');}catch(e){status('Archive failed: '+e.message);}};
@@ -204,7 +211,7 @@ async function init(){if(!isConfigured){status('Local mode · Live sync is not c
  authMod.onAuthStateChanged(auth,next=>{
    if(user?.uid!==next?.uid){
      ++connectionVersion;if(roomUnsub)roomUnsub();roomUnsub=null;
-     room=null;roomId='';invite='';host=false;
+     room=null;roomId='';invite='';host=false;invitationSharing.clear();
      $('roomScoreSection').hidden=true;
      $('roomEditor').hidden=true;
      $('roomSaveHole').disabled=true;$('roomFinish').disabled=true;

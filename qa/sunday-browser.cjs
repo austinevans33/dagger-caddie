@@ -1,5 +1,6 @@
 // Actual Chromium UI; local fake backend, never hosted Firebase certification.
 const fs=require('fs'),path=require('path'),http=require('http'),assert=require('assert/strict');
+const jsQR=require('jsqr');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
 const root=path.resolve(__dirname,'..'),out=path.join(__dirname,'results/sunday');fs.mkdirSync(out,{recursive:true});
 const docs=new Map(),operations=[],checks=[],errors=[];
@@ -104,7 +105,28 @@ const server=http.createServer(async(req,res)=>{
   await host.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);
   const compact=await host.locator('#roomCode').inputValue(),[id,invite]=compact.split(':');const link=origin+'/?room='+id+'&invite='+invite;
   check('host creates a room after failed guest startup',docs.get('rooms/'+id)?.hostUid==='host-member');
-  const guest=await makePage();await ready(guest,link);
+  await host.evaluate(()=>{
+   Object.defineProperty(navigator,'canShare',{configurable:true,value:()=>true});
+   Object.defineProperty(navigator,'share',{configurable:true,value:async payload=>{window.__qaShared=payload;}});
+  });
+  await host.locator('#roomShareCurrent').click();
+  await host.waitForFunction(()=>window.__qaShared?.files?.length===1);
+  const image=await host.evaluate(async()=>{
+   const file=window.__qaShared.files[0],bitmap=await createImageBitmap(file),canvas=document.createElement('canvas');
+   canvas.width=bitmap.width;canvas.height=bitmap.height;const ctx=canvas.getContext('2d');ctx.drawImage(bitmap,0,0);
+   return {type:file.type,name:file.name,width:canvas.width,height:canvas.height,pixels:Array.from(ctx.getImageData(0,0,canvas.width,canvas.height).data),url:window.__qaShared.url};
+  });
+  const scanned=jsQR(Uint8ClampedArray.from(image.pixels),image.width,image.height)?.data;
+  check('existing Share control creates a real scannable PNG for the exact room',image.type==='image/png'&&scanned===link&&image.url===link);
+  await host.evaluate(()=>{
+   Object.defineProperty(navigator,'canShare',{configurable:true,value:()=>false});
+   Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.__qaCopied=text;}}});
+  });
+  const downloadPromise=host.waitForEvent('download');await host.locator('#roomShareCurrent').click();const download=await downloadPromise;
+  check('browser without native file sharing saves QR and copies invitation',download.suggestedFilename()==='dagger-money-room-invitation.png'&&await host.evaluate(()=>window.__qaCopied)===link);
+  await reveal(host,'roomCopy');await host.locator('#roomCopy').click();
+  check('existing Copy invite link control retains link-only sharing',await host.evaluate(()=>window.__qaShared.url===window.__qaCopied&&!window.__qaShared.files));
+  const guest=await makePage();await ready(guest,scanned);
   check('fresh invitation lands in Ledger without profile setup',await guest.locator('#tab-bets').getAttribute('aria-current')==='page');
   await guest.locator('#roomQuickName').fill('Buddy');await guest.locator('#roomQuickJoin').click();
   await guest.waitForFunction(()=>!document.querySelector('#roomScoreSection').hidden);

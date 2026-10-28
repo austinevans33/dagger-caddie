@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: npm ci --prefix qa
       - run: npm --prefix qa test
       - run: git diff --exit-code
   firestore-rules:
@@ -32,14 +33,14 @@ jobs:
       - run: npm ci --prefix qa
       - run: npm --prefix qa run test:rules
   staging-preview:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/development/sunday-money-room-2026-11-01' && !contains(github.event.head_commit.message, '[skip preview]')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/development/sunday-money-room-2026-11-01' || github.ref == 'refs/heads/development/money-room-qr') && !contains(github.event.head_commit.message, '[skip preview]')
     needs: [source-checks, firestore-rules]
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     concurrency:
-      group: dagger-staging-sunday-preview
+      group: dagger-staging-preview-${{ github.ref }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
@@ -70,9 +71,11 @@ jobs:
           STAGING_DEPLOY_TOKEN: ${{ steps.google-auth.outputs.access_token }}
         run: node qa/check-staging-deploy-access.cjs
       - name: Deploy expiring staging Hosting preview only
+        env:
+          PREVIEW_CHANNEL: ${{ github.ref == 'refs/heads/development/money-room-qr' && 'qr-candidate' || 'sunday-test' }}
         shell: bash
         working-directory: staging-app
-        run: npx --yes firebase-tools@14.22.0 hosting:channel:deploy sunday-test --project dagger-country-club-staging --expires 7d --no-authorized-domains --non-interactive --json | tee "$RUNNER_TEMP/staging-preview.json"
+        run: npx --yes firebase-tools@14.22.0 hosting:channel:deploy "$PREVIEW_CHANNEL" --project dagger-country-club-staging --expires 7d --no-authorized-domains --non-interactive --json | tee "$RUNNER_TEMP/staging-preview.json"
       - name: Record preview link
         env:
           PREVIEW_RESULT: ${{ runner.temp }}/staging-preview.json
