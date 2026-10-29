@@ -4,7 +4,7 @@ installLedgerSettlement(window);
 installBingoMoney();
 import {firebaseConfig} from './firebase-config.js';
 import {createRoomSession,singleFlight,invitationFrom} from './room-session.js';
-import {createInvitationSharing} from './invitation-qr.js';
+import {createInvitationSharing, drawInvitationQr} from './invitation-qr.js';
 import {rememberRoom,forgetRoom,recoverRoom,readWithDeadline} from './room-recovery.js';
 const roomStore={getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value),removeItem:key=>localStorage.removeItem(key)};
 const invitationSharing=createInvitationSharing();
@@ -24,6 +24,43 @@ document.addEventListener('click',event=>{
 document.addEventListener('input',event=>{if(event.isTrusted&&(event.target.closest?.('#roomSetup')||event.target.id==='roomQuickName'))actionVersion++;},true);
 function assertOperation(version,uid){session.assertIdentity(uid);if(version!==actionVersion)throw Error('A newer room action has taken over.');}
 
+
+// QR appears on the scorekeeper's phone; guests never receive a host QR panel.
+let displayedQrLink = '';
+function syncHostQr() {
+ const anchor = $('roomShareCurrent')?.closest('.action-room-utilities');
+ if (!anchor) return;
+ let panel = $('roomHostQr');
+ if (!host || !roomId || !invite || room?.archived) {
+  if (panel) panel.remove();
+  displayedQrLink = '';
+  return;
+ }
+ if (!panel) {
+  panel = document.createElement('div');
+  panel.id = 'roomHostQr';
+  panel.setAttribute('aria-label', 'Scan to join this Money Room');
+  panel.style.cssText = 'text-align:center;margin-top:14px;padding:14px;border:1px solid #b79c62;border-radius:12px;background:#fffaf0';
+  const heading = document.createElement('strong');
+  heading.textContent = 'SCAN TO JOIN THIS ROOM';
+  heading.style.cssText = 'display:block;letter-spacing:.06em;color:#193d2d;margin-bottom:10px';
+  const canvas = document.createElement('canvas');
+  canvas.id = 'roomHostQrCanvas';
+  canvas.setAttribute('role', 'img');
+  canvas.setAttribute('aria-label', 'Money Room invitation QR code');
+  canvas.style.cssText = 'display:block;width:min(100%,260px);height:auto;margin:auto;background:white';
+  const help = document.createElement('p');
+  help.textContent = 'Have your playing partner scan this code with their phone camera.';
+  help.style.cssText = 'color:#193d2d;font-size:13px;margin:10px 0 0';
+  panel.append(heading,canvas,help);
+  anchor.append(panel);
+ }
+ const link = roomLink();
+ if (displayedQrLink !== link) {
+  try { drawInvitationQr($('roomHostQrCanvas'), link);displayedQrLink = link; }
+  catch { panel.remove(); displayedQrLink = ''; status('QR display unavailable. Use Share Match Invitation instead.'); }
+ }
+}
 
 function compute(model){
  const players=model.players||[];const n=players.length,holes=model.holes||{},stake=Number(model.stake)||0;
@@ -66,6 +103,7 @@ function render(){
  }
  $('roomScoreSection').hidden=false;
  $('roomEditor').hidden=!host; $('roomSpectator').hidden=host;
+ syncHostQr();
  $('roomInvitationBanner').hidden=true;
  $('roomSetup').open=false;
  
@@ -232,6 +270,7 @@ async function init(){if(!isConfigured){status('Local mode · Live sync is not c
      if(user?.uid){++actionVersion;forgetRoom(roomStore,user.uid);}
      ++connectionVersion;if(roomUnsub)roomUnsub();roomUnsub=null;
      room=null;roomId='';invite='';host=false;invitationSharing.clear();
+     $('roomHostQr')?.remove(); displayedQrLink='';
      $('roomScoreSection').hidden=true;
      $('roomEditor').hidden=true;
      $('roomSaveHole').disabled=true;$('roomFinish').disabled=true;

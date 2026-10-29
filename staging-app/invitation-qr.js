@@ -18,6 +18,22 @@ export function invitationMatrix(input) {
   };
 }
 
+// Draw a high-contrast QR directly on the host's phone, without a remote service.
+export function drawInvitationQr(canvas, input, {scale = 5, quiet = 4} = {}) {
+  const matrix = invitationMatrix(input);
+  if (!Number.isInteger(scale) || scale < 2 || scale > 12 || !Number.isInteger(quiet) || quiet < 4) throw Error('Invalid QR render size.');
+  const side = (matrix.size + 2 * quiet) * scale;
+  canvas.width = canvas.height = side;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw Error('QR display is unavailable.');
+  ctx.fillStyle = '#fff';ctx.fillRect(0, 0, side, side);
+  ctx.fillStyle = '#000';
+  for (let y = 0; y < matrix.size; y++) for (let x = 0; x < matrix.size; x++) {
+    if (matrix.dark(y, x)) ctx.fillRect((x + quiet) * scale, (y + quiet) * scale, scale, scale);
+  }
+  return {side, url: matrix.url};
+}
+
 export async function invitationQrFile(input) {
   const matrix = invitationMatrix(input);
   const quiet = 4, scale = 8;
