@@ -34,7 +34,7 @@ jobs:
       - run: npm ci --prefix qa
       - run: npm --prefix qa run test:rules
   staging-preview:
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/development/sunday-money-room-2026-11-01' || github.ref == 'refs/heads/development/money-room-qr' || github.ref == 'refs/heads/development/money-room-recovery' || github.ref == 'refs/heads/development/m2-host-qr') && !contains(github.event.head_commit.message, '[skip preview]')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/development/sunday-money-room-2026-11-01' || github.ref == 'refs/heads/development/money-room-qr' || github.ref == 'refs/heads/development/money-room-recovery' || github.ref == 'refs/heads/development/m2-host-qr' || github.ref == 'refs/heads/development/release-caddy-layout-nav-20261029') && !contains(github.event.head_commit.message, '[skip preview]')
     needs: [source-checks, firestore-rules]
     runs-on: ubuntu-latest
     permissions:
@@ -73,7 +73,7 @@ jobs:
         run: node qa/check-staging-deploy-access.cjs
       - name: Deploy expiring staging Hosting preview only
         env:
-          PREVIEW_CHANNEL: ${{ github.ref == 'refs/heads/development/m2-host-qr' && 'm2-qr' || github.ref == 'refs/heads/development/money-room-qr' && 'qr-candidate' || github.ref == 'refs/heads/development/money-room-recovery' && 'recovery-candidate' || 'sunday-test' }}
+          PREVIEW_CHANNEL: ${{ github.ref == 'refs/heads/development/m2-host-qr' && 'm2-qr' || github.ref == 'refs/heads/development/money-room-qr' && 'qr-candidate' || github.ref == 'refs/heads/development/money-room-recovery' && 'recovery-candidate' || github.ref == 'refs/heads/development/release-caddy-layout-nav-20261029' && 'caddy-layout' || 'sunday-test' }}
         shell: bash
         working-directory: staging-app
         run: npx --yes firebase-tools@14.22.0 hosting:channel:deploy "$PREVIEW_CHANNEL" --project dagger-country-club-staging --expires 7d --no-authorized-domains --non-interactive --json | tee "$RUNNER_TEMP/staging-preview.json"
