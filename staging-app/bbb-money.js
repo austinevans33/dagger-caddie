@@ -6,6 +6,15 @@ export function bingoPayout(players, holes, stake) {
  const total=points.reduce((a,b)=>a+b,0);
  return {points,score:points.map(p=>((players.length*p-total)*cents/100)||0),carry:1};
 }
+// Read-only receipt adapter for the approved visible Ledger archive. Never mark results paid.
+export function bingoArchiveReceipts(records){
+ if(!Array.isArray(records))return [];
+ const seen=new Set();
+ return records.filter(g=>{if(!g||g.format!=='bingo'||typeof g.bingoId!=='string'||!g.bingoId||!Array.isArray(g.bingoAwards)||seen.has(g.bingoId))return false;seen.add(g.bingoId);return true;}).map(g=>{
+  const result=bingoPayout(g.players,g.bingoAwards,Number(g.stake));
+  return {id:g.bingoId,ended:g.ended,stake:Number(g.stake),players:[...g.players],points:result.points,score:result.score};
+ });
+}
 export function installBingoMoney(){
  const $=id=>document.getElementById(id),fmt=v=>(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);
  const field=document.createElement('div');field.className='grid';
@@ -37,7 +46,31 @@ export function installBingoMoney(){
  bingoPayout(g.players,g.holes,Number(g.stake));
  wHistory.push({players:[...g.players],format:'bingo',stake:g.stake,started:g.started,ended:g.ended,bingoId:g.moneyId,bingoAwards:g.holes.map(h=>[...h]),holes:g.holes.map(h=>g.players.map((_,i)=>h.filter(v=>v===i).length))});changed=true;}
  if(changed)wStore();window.renderFoursome();
+ // Refresh the existing closure-scoped Club Record without changing member identity.
+ if(changed)document.getElementById('refreshRecords')?.click();
+ renderVisibleReceipts();
  }
+ function renderVisibleReceipts(){
+  // The legacy wager ticket is deliberately retired. Show read-only results
+  // inside the *existing* approved Ledger archive, without moving or unhiding it.
+  const archive=$('dccPropHistoryWrap');if(!archive)return;
+  let section=$('dccBbbArchiveReceipts');
+  if(!section){section=document.createElement('div');section.id='dccBbbArchiveReceipts';section.className='dcc-r66-list';section.setAttribute('aria-label','Bingo Bango Bongo archived results');section.setAttribute('aria-live','polite');archive.append(section);}
+  section.replaceChildren();
+  const records=bingoArchiveReceipts(wHistory);
+  if(!records.length){section.hidden=true;return;}
+  section.hidden=false;
+  const heading=document.createElement('p');heading.className='dcc-r66-small';heading.textContent='BINGO BANGO BONGO · RECORDED RESULTS (NOT PAYMENTS)';section.append(heading);
+  for(const receipt of records.slice().reverse()){
+   const card=document.createElement('article');card.className='dcc-r66-slip';card.dataset.bingoId=receipt.id;
+   const header=document.createElement('header');const title=document.createElement('strong');title.textContent='Bingo Bango Bongo · '+(Number.isFinite(Number(receipt.ended))?new Date(Number(receipt.ended)).toLocaleDateString():'Archived game');
+   const state=document.createElement('span');state.className='dcc-r66-pill';state.textContent='RECORDED';header.append(title,state);card.append(header);
+   const stake=document.createElement('p');stake.className='dcc-r66-small';stake.textContent='$'+receipt.stake.toFixed(2)+' per point · '+receipt.points.reduce((a,b)=>a+b,0)+' awarded points';card.append(stake);
+   const payout=document.createElement('p');payout.textContent=receipt.players.map((name,i)=>name+' '+receipt.points[i]+' pts · '+fmt(receipt.score[i])).join(' | ');card.append(payout);
+   section.append(card);
+  }
+ }
+
  // Retry idempotently on startup if the browser closed between the two archive writes.
  syncArchive();window.renderBBB();
  const validate=window.dccValidateGamesBackup;

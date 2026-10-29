@@ -1,7 +1,11 @@
 // Real app + Firebase 11.10 SDK + deployed staging. No fake auth or database.
 const fs=require('fs'),path=require('path'),http=require('http'),crypto=require('crypto'),assert=require('assert/strict');
 const jsQR=require('jsqr');
-const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
+// Resolve Playwright from an explicitly configured runtime or a conventional local install.
+const playwrightModule=process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES
+ ? require(require('path').join(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'playwright'))
+ : require('playwright');
+const {chromium}=playwrightModule;
 const root=path.resolve(__dirname,'..'),source=path.join(root,'staging-app'),project='dagger-country-club-staging';
 assert.ok(fs.readFileSync(path.join(source,'firebase-config.js'),'utf8').includes('projectId: "'+project+'"'));
 const checks=[],errors=[],blocked=[],cleanup=[],pages=[];let browser,host,roomId;
@@ -43,15 +47,32 @@ const server=http.createServer((req,res)=>{
   const page=await context.newPage();pages.push(page);page.setDefaultTimeout(45000);page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());return page;
  }
  async function ready(page,url=origin){await page.goto(url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>document.querySelector('#manualclub')?.children.length>0);}
- async function reveal(page,id){const tab=await page.locator('#'+id).evaluate(e=>e.closest('[data-tab]')?.dataset.tab);if(tab)await page.locator('#tab-'+tab).click();
-  for(const d of await page.locator('#'+id).locator('xpath=ancestor::details').all())if(!await d.evaluate(e=>e.open))await d.locator(':scope > summary').click();}
+ async function reveal(page,id){
+  const target=page.locator('#'+id);
+  const tab=await target.evaluate(e=>e.closest('[data-tab]')?.dataset.tab);
+  if(tab)await page.locator('#tab-'+tab).click();
+  // XPath ancestor::details returns nearest-first; visible clicks require outer-first.
+  // Never change the DOM 'open' attribute directly: this must test real user controls.
+  const ancestors=await target.locator('xpath=ancestor::details').all();
+  for(const detail of ancestors.reverse()){
+   if(!await detail.evaluate(e=>e.open))await detail.locator(':scope > summary').click();
+  }
+  await target.waitFor({state:'visible'});
+ }
  async function identity(page){return page.evaluate(async()=>{const {getAuth}=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');return getAuth().currentUser?.uid;});}
  try{
-  browser=await chromium.launch({headless:true,proxy,executablePath:path.resolve(root,'../browser-tools/chromium-renderer'),args});
+  const configuredBrowser=process.env.DCC_CHROMIUM_EXECUTABLE;
+  const legacyBrowser=path.resolve(root,'../browser-tools/chromium-renderer');
+  const executablePath=configuredBrowser || (fs.existsSync(legacyBrowser)?legacyBrowser:undefined);
+  if(executablePath)assert.ok(fs.existsSync(executablePath),'Configured Chromium executable not found');
+  browser=await chromium.launch({headless:true,proxy,...(executablePath?{executablePath}:{}),args});
   host=await makePage();await ready(host);await host.waitForFunction(()=>document.querySelector('#roomStatus').textContent.includes('Live sync ready'));
   check('Actual app signs host in anonymously against staging',!!await identity(host));
   if(process.env.DCC_EXPECT_BBB==='1'){
    await host.waitForSelector('#gStake',{state:'attached'});
+   await host.locator('#tab-games').click();
+   await host.locator('#dccGameChoices .game-pick[data-game="bingo"]').click();
+   check('Visible Games selector exposes BBB scorecard',await host.locator('#dccSelectedGamePanel').evaluate(e=>e.open)&&await host.locator('#gStart').isVisible());
    await reveal(host,'gStart');await host.locator('#gP1').fill('QA Host');await host.locator('#gP2').fill('QA Buddy');await host.locator('#gStake').fill('1.25');await host.locator('#gStart').click();
    await reveal(host,'gSave');for(const id of ['gBingo','gBango','gBongo'])await host.locator('#'+id).selectOption('0');await host.locator('#gSave').click();
    check('Hosted BBB awards show plus and minus $3.75',await host.locator('#bbbLiveStandings').textContent().then(t=>t.includes('+$3.75')&&t.includes('−$3.75')));
@@ -118,11 +139,15 @@ const server=http.createServer((req,res)=>{
    check('Archived match does not reopen automatically on next launch',await host.locator('#roomScoreSection').isHidden());
   }
   check('No uncaught application errors',errors.length===0);
- }catch(error){errors.push(error.message);console.error(error.message);process.exitCode=1;}
+ }catch(error){errors.push(error.stack||error.message);console.error(error.stack||error.message);process.exitCode=1;
+  // Preserve the actual screen at failure for hosted user-path diagnosis; do not force visibility.
+  if(host&&!host.isClosed())try{fs.mkdirSync(path.join(__dirname,'results'),{recursive:true});await host.screenshot({path:path.join(__dirname,'results/bbb-hosted-failure.png'),fullPage:true,timeout:10000});}catch(_){}
+ }
  finally{
   if(host&&roomId){try{cleanup.push(await host.evaluate(async id=>{const {getFirestore,doc,getDoc,updateDoc}=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');const ref=doc(getFirestore(),'rooms',id),snap=await getDoc(ref);if(snap.exists()&&!snap.data().archived)await updateDoc(ref,{archived:true,lastChange:Date.now()});return {action:'Archive QA room',pass:true};},roomId));}catch(e){cleanup.push({action:'Archive QA room',pass:false,error:e.message});}}
   for(const page of pages){try{cleanup.push(await page.evaluate(async()=>{const {getAuth,deleteUser}=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');const user=getAuth().currentUser;if(user)await deleteUser(user);return {action:'Delete disposable staging identity',pass:true};}));}catch(e){cleanup.push({action:'Delete disposable staging identity',pass:false,error:e.message});}}
   if(browser)await browser.close();await new Promise(r=>server.close(r));
+  fs.mkdirSync(path.join(__dirname,'results'),{recursive:true});
   fs.writeFileSync(path.join(__dirname,'results/staging-real-browser.json'),JSON.stringify({backend:'Real staging Firebase 11.10 SDK, two isolated Chromium profiles; not physical phones',app_origin:origin,checks,errors,blocked,cleanup,test_room_path:roomId?'rooms/'+roomId:null},null,2));
   console.log(JSON.stringify({checks:checks.length,passed:checks.filter(x=>x.pass).length,errors,blocked,cleanup},null,2));
  }

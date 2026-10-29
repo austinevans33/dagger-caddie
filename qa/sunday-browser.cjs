@@ -73,7 +73,7 @@ const server=http.createServer(async(req,res)=>{
   const tab=await page.locator('#'+id).evaluate(e=>e.closest('[data-tab]')?.dataset.tab);
   if(tab)await page.locator('#tab-'+tab).click();
   const ancestors=page.locator('#'+id).locator('xpath=ancestor::details');
-  for(const detail of await ancestors.all())if(!await detail.evaluate(e=>e.open))await detail.locator(':scope > summary').click();
+  for(const detail of (await ancestors.all()).reverse())if(!await detail.evaluate(e=>e.open))await detail.locator(':scope > summary').click();
  }
  try{
   // Compare original R177 and candidate on the same browser, SDK fixture and font stack.
