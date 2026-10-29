@@ -5478,6 +5478,8 @@ document.getElementById('dccRefreshLinkedGame')
   });
 
 ['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+// Fresh launch: show Play, never Ledger/The Action by default.
+switchTab('play');
 
 // DCC — Open The Action from Games.
 const gamesActionButton = document.getElementById('gamesOpenAction');
