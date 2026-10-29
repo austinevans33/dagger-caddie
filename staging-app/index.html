@@ -4274,6 +4274,18 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 #dccPropBets #dccPropFormWrap:not([open]){display:none!important}
 #dccPropBets #dccPropFormWrap>summary.dcc-r163-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;padding:0!important;border:0!important;margin:-1px!important}
 #dccPropFormWrap[open]{margin-top:12px!important}
+/* Dagger Caddy compact advice hierarchy — visual only, no changes to advice text. */
+.dcc-advice-card{display:grid;gap:10px;min-width:0}
+.dcc-advice-card section{min-width:0}
+.dcc-advice-label{font-size:10px;font-weight:800;letter-spacing:.13em;opacity:.75;margin-bottom:5px}
+.dcc-advice-copy{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
+.dcc-advice-club{padding:17px 18px;border-radius:12px;background:#143a2f;color:#f7efd9;border:1px solid #b99a5d}
+.dcc-advice-club .dcc-advice-label{color:#e1bf78;opacity:1}
+.dcc-advice-club .dcc-advice-copy{font-size:clamp(23px,5vw,32px);font-weight:800;line-height:1.13;letter-spacing:-.025em}
+.dcc-advice-detail{padding:0 2px}
+.dcc-advice-hilarity{border-left:3px solid #b99a5d;padding:10px 12px;background:rgba(185,154,93,.12);border-radius:0 8px 8px 0}
+.dcc-advice-hilarity .dcc-advice-copy{font-style:italic}
+@media (max-width:480px){.dcc-advice-card{gap:9px}.dcc-advice-club{padding:14px 15px}}
 </style>
 </head>
 <body>
@@ -5821,6 +5833,8 @@ document.getElementById('dccRefreshLinkedGame')
   });
 
 ['play','bag','bets','settings','games'].forEach(t=>$('tab-'+t).onclick=()=>switchTab(t));
+// Start each new page load on Play; do not expose the wagering Ledger by default.
+switchTab('play');
 
 // R24: focus the destination after cross-tab navigation for keyboard and screen-reader users.
 function dccFocusDestination(id) {
