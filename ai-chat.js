@@ -192,7 +192,8 @@ async function getMemoryDb() {
   memoryDb = getFirestore(app);
   return memoryDb;
 }
-const URL='https://us-central1-dagger-caddie-money-room.cloudfunctions.net/caddieChat';
+// Route to the Firebase project selected by this build. Never mix staging user tokens with production.
+const URL=`https://us-central1-${firebaseConfig.projectId}.cloudfunctions.net/caddieChat`;
 const ui={
   status:$('aiStatus'),
   history:$('aiHistory'),
