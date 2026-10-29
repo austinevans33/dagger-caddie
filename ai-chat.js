@@ -301,13 +301,49 @@ const option = Array.from(select.options).find(opt => {
 }
 
 function activeCaddie(){const el=document.querySelector('.staff-pick.active');return el?.dataset?.caddie||'keith';}
+// Dagger advice card: visual-only parser. Preserve the full original reply when labels differ.
+function renderDaggerAdvice(target, reply) {
+  const original = String(reply ?? '');
+  const normalized = original.replace(/\r\n/g, '\n');
+  const label = /(?:^|\n)\s*(?:\*\*)?\s*(CLUB(?: SELECTION)?|SHOT(?: PLAN)?|WHY|HILARITY|THE CADDY SAYS)\s*(?:\*\*)?\s*[:—-]\s*/gim;
+  const matches = [...normalized.matchAll(label)];
+  const plain = () => { target.textContent = original; };
+  if (!matches.length || !matches.some(m => /^CLUB/i.test(m[1]))) { plain(); return; }
+  const sections = {};
+  matches.forEach((m, i) => {
+    const key = /^CLUB/i.test(m[1]) ? 'club' : /^SHOT/i.test(m[1]) ? 'shot' : /^WHY/i.test(m[1]) ? 'why' : 'hilarity';
+    const start = m.index + m[0].length;
+    const end = i+1 < matches.length ? matches[i+1].index : normalized.length;
+    const value = normalized.slice(start,end).trim();
+    if(value) sections[key] = sections[key] ? sections[key]+'\n'+value : value;
+  });
+  if (!sections.club) { plain(); return; }
+  // Keep any introductory prose rather than silently discarding generated advice.
+  const intro = normalized.slice(0,matches[0].index).trim();
+  const card = document.createElement('div');
+  card.className = 'dcc-advice-card';
+  const section = (className,heading,value) => {
+    if (!value) return;
+    const el=document.createElement('section'); el.className=className;
+    const h=document.createElement('div');h.className='dcc-advice-label';h.textContent=heading;
+    const body=document.createElement('div');body.className='dcc-advice-copy';body.textContent=value;
+    el.append(h,body);card.append(el);
+  };
+  if(intro) section('dcc-advice-intro','CADDY NOTE',intro);
+  section('dcc-advice-club','CLUB SELECTION',sections.club);
+  section('dcc-advice-detail','SHOT',sections.shot);
+  section('dcc-advice-detail','WHY',sections.why);
+  section('dcc-advice-hilarity','THE CADDY SAYS',sections.hilarity);
+  target.replaceChildren(card);
+}
 function add(role,content){
   const p=document.createElement('div');
   p.className='ai-bubble '+role;
   const label=document.createElement('strong');
   label.textContent=role==='user'?'You':caddies[activeCaddie()]||'Caddie';
   const text=document.createElement('div');
-  text.textContent=content;
+  if(role==='assistant') renderDaggerAdvice(text,content);
+  else text.textContent=content;
   p.append(label,text);
   ui.history.append(p);
 
