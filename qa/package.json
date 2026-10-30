@@ -2,7 +2,7 @@
   "name": "dagger-sunday-release-checks",
   "private": true,
   "scripts": {
-    "test": "node --test opengolf-catalog.test.mjs course-catalog.test.mjs starters-desk-ui.test.mjs starters-desk-session.test.mjs verified-hole-context.test.mjs course-identity.test.mjs course-weather-context.test.mjs room-session.test.mjs invitation-qr.test.mjs room-recovery.test.mjs ledger-settlement.test.mjs bbb-money.test.mjs && python3 verify-lock.py",
+    "test": "node --test opengolf-holes.test.mjs opengolf-catalog.test.mjs course-catalog.test.mjs starters-desk-ui.test.mjs starters-desk-session.test.mjs verified-hole-context.test.mjs course-identity.test.mjs course-weather-context.test.mjs room-session.test.mjs invitation-qr.test.mjs room-recovery.test.mjs ledger-settlement.test.mjs bbb-money.test.mjs && python3 verify-lock.py",
     "test:rules": "firebase emulators:exec --config firebase-emulator.json --project demo-dagger-qa --only firestore \"node staging-rules.test.cjs\""
   },
   "devDependencies": {
