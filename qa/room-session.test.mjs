@@ -44,5 +44,6 @@ test('host score save is serialized and patches only selected hole',async()=>{
  assert.match(handler,/\['holes\.'\+hole\]:scores/,'writes only selected hole');
  assert.doesNotMatch(handler,/holes:\s*\{\.\.\./,'does not rewrite stale hole map');
  assert.match(handler,/hole<1\|\|hole>18/,'rejects invalid hole number');
- assert.match(handler,/session\.assertIdentity\(scorekeeperUid\)/,'identity remains verified');
+ assert.match(handler,/session\.assertIdentity\(room\.hostUid\)/,'identity remains verified');
+ assert.match(handler,/if\(roomId===savingRoomId&&auth\.currentUser\?\.uid===scorekeeperUid\)status\('Save failed:/,'stale errors cannot replace a new room status');
 });
