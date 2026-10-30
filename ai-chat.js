@@ -1,4 +1,3 @@
-import {installPartialGhostArchive} from './ghost-partial-archive.js';
 import {firebaseConfig} from './firebase-config.js';
 import {
   getFirestore,
@@ -577,5 +576,3 @@ document.querySelectorAll('.staff-pick').forEach(b =>
       'New caddie selected · Start talking';
   })
 );
-
-installPartialGhostArchive();
