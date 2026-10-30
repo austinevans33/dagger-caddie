@@ -20,3 +20,13 @@ test('invalid query does not invoke provider',async()=>{
  assert.deepEqual(await searchOpenGolfCourses('x',{fetcher:()=>{called=true;}}),[]);
  assert.equal(called,false);
 });
+
+test('tee data uses the documented course-specific tees endpoint',async()=>{
+ const selected={provider:'opengolfapi',providerCourseId:'abc123',name:'Example Golf Club',region:'NC'};
+ let requested='';
+ const rows=await loadOpenGolfTees(selected,{fetcher:async url=>{
+  requested=url;return {ok:true,json:async()=>({tees:[{name:'White',total_yardage:6000}]})};
+ }});
+ assert.match(requested,/\/v1\/courses\/abc123\/tees$/);
+ assert.equal(rows[0].tees[0].name,'White');
+});
