@@ -1,0 +1,11 @@
+/* R130 — visual resilience; scoped to layout only, never application logic. */
+/* Prevent oversized legacy content from making the whole page horizontally scroll. */
+.app-shell,.app-shell>.content,.content>[data-tab]{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+.content>[data-tab] :is(.card,.ai-card,details,fieldset,form){min-width:0;max-width:100%;box-sizing:border-box}
+/* Preserve deliberate horizontal scrolling inside tabular information, not the page. */
+.content [data-tab] :is(.table-wrap,.table-scroll,.table-responsive){max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+/* Consistent wrapping for long amounts, account identifiers and detail labels. */
+.content [data-tab] :is(h2,h3,p,summary){overflow-wrap:break-word}
+/* Navigation type scale belongs to R129; keep this layer for layout resilience. */
+/* Small-screen margins and columns must not force the viewport wider. */
+@media(max-width:390px){.content{min-width:0!important}.content [data-tab] :is(input,select,textarea){max-width:100%;box-sizing:border-box}}

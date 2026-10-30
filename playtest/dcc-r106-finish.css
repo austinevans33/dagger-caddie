@@ -1,0 +1,100 @@
+/* R106: approved full-green design treatment. Presentation only: original form IDs and listeners remain. */
+:root{--dcc-forest:#153629;--dcc-gold:#d4af6e;--dcc-ivory:#f5ecdc;--dcc-line:#d4af6e;--dcc-muted:#52685b}
+html,body{background:#153629!important;color:#f5ecdc!important}
+body .content,body .app,body .shell,body main{background:#153629!important}
+/* Root-level sections share a single deliberate rhythm instead of independent billboard styles. */
+.content>[data-tab]{margin-bottom:12px!important}
+.dcc-r60-games-header,.dcc-r60-locker-hero,.dcc-r60-club-hero,#dccR86Clubhouse,#dccPropBets .dcc-r94-ledger-header{background:#153629!important;border-radius:22px!important;border:0!important;box-shadow:none!important}
+.dcc-r60-games-header .dcc-competition-portal__hero{padding:18px 20px!important;background:#153629!important;background-image:none!important;min-height:0!important}
+.dcc-r60-games-header .dcc-competition-portal__hero h2{font-size:clamp(30px,6vw,42px)!important;color:#f5ecdc!important}
+.dcc-r60-games-header .dcc-competition-portal__hero h2 em{display:none!important}
+.dcc-r60-locker-hero,.dcc-r60-club-hero{padding:18px 20px!important}
+.dcc-r60-kicker,.dcc-r60-games-header .dcc-competition-portal__eyebrow{color:#d4af6e!important}
+/* The signature ticket window: the entire section is the green frame, the form is the ivory ticket. */
+#dccPropBets{background:#153629!important;color:#f5ecdc!important;border:0!important;box-shadow:none!important;border-radius:24px!important;padding:16px!important}
+#dccPropBets .dcc-r94-ledger-header{padding:8px 8px 16px!important}
+#dccPropBets .dcc-r66-intro{background:transparent!important;border:0!important;padding:10px 8px 12px!important;color:#f5ecdc!important}
+#dccPropBets .dcc-r66-intro strong{color:#f5ecdc!important;font:700 clamp(25px,5vw,35px)/1.2 Georgia,serif!important}
+#dccPropBets .dcc-r66-intro p{color:#d4af6e!important;font-size:14px!important}
+#dccPropBets .dcc-r66-stats{gap:9px!important}
+#dccPropBets .dcc-r66-stats>div{background:#f5ecdc!important;border:0!important;border-radius:15px!important;padding:13px 6px!important}
+#dccPropBets .dcc-r66-stats small{color:#52685b!important;font-size:10px!important}
+#dccPropBets .dcc-r66-stats strong{color:#153629!important}
+#dccPropTotal[data-position="up"]{color:#18734e!important}#dccPropTotal[data-position="down"]{color:#a23d34!important}
+#dccPropBets .dcc-r66-formwrap{background:#f5ecdc!important;color:#153629!important;border:0!important;border-radius:22px!important;overflow:hidden!important;padding:9px!important}
+#dccPropBets .dcc-r66-formwrap>summary{background:#153629!important;color:#f5ecdc!important;border-radius:13px!important;padding:15px!important;font:750 16px system-ui,sans-serif!important}
+#dccPropBets .dcc-r66-formwrap form{padding:15px 10px!important;background:#f5ecdc!important}
+#dccPropBets .dcc-r66-formwrap label{color:#153629!important;font-weight:750!important;font-size:13px!important;letter-spacing:.02em!important}
+#dccPropBets :is(input:not([type=file]),select,textarea){background:#fffaf1!important;color:#153629!important;border:1px solid #bba478!important;border-radius:12px!important;min-height:46px!important;font-size:16px!important}
+#dccPropBets :is(input,textarea)::placeholder{color:#59685d!important;opacity:1!important}
+#dccPropBets .dcc-r66-preview{background:#234d3c!important;color:#f5ecdc!important;border-radius:12px!important;padding:12px!important}
+#dccPropBets .dcc-r66-mainbtn{background:#d4af6e!important;color:#153629!important;border:0!important;border-radius:14px!important;min-height:52px!important}
+#dccPropBets .dcc-r66-note,#dccPropBets .dcc-r66-archive p{color:#506257!important}
+#dccPropBets .dcc-r70-accounts{background:#153629!important;color:#f5ecdc!important;border:1px solid #597061!important;border-radius:20px!important;padding:17px!important}
+#dccPropBets .dcc-r70-account-head strong{color:#f5ecdc!important;font-size:clamp(21px,4vw,28px)!important}
+#dccPropBets .dcc-r70-account-head small{color:#d4af6e!important}
+#dccPropBets .dcc-r70-clear{background:#f5ecdc!important;color:#153629!important;border-radius:13px!important;padding:15px!important}
+#dccPropBets .dcc-r95-history,#dccPropBets .dcc-r66-archive{background:#f5ecdc!important;border:0!important;color:#153629!important;border-radius:15px!important;overflow:hidden!important}
+#dccPropBets .dcc-r95-history>summary,#dccPropBets .dcc-r66-archive>summary{background:#f5ecdc!important;color:#153629!important;font-weight:750!important;padding:17px!important}
+/* Money Room: one attractive entrance, with the existing real setup below. */
+#moneyRoomSection.dcc-r106-money{background:#153629!important;color:#f5ecdc!important;border:0!important;border-radius:24px!important;padding:16px!important;box-shadow:none!important}
+#moneyRoomSection .dcc-r95-live-head{background:transparent!important;border:0!important;padding:6px 8px 16px!important;display:grid!important;grid-template-columns:1fr!important;gap:14px!important}
+#moneyRoomSection .dcc-r95-live-head strong{color:#f5ecdc!important;font:700 clamp(28px,6vw,40px)/1.2 Georgia,serif!important}
+#moneyRoomSection .dcc-r95-live-head p{color:#d4af6e!important;font-size:14px!important}
+#moneyRoomSection .dcc-r95-open-room{background:#d4af6e!important;color:#153629!important;border:0!important;border-radius:14px!important;width:100%!important;min-height:55px!important;font-weight:800!important}
+#moneyRoomSection .room-status,#moneyRoomSection #roomWho{background:#f5ecdc!important;color:#153629!important;border-radius:12px!important;padding:12px!important}
+#moneyRoomSection .action-room-setup,#moneyRoomSection .dcc-r95-archive{background:#f5ecdc!important;color:#153629!important;border-radius:15px!important;border:0!important;padding:10px!important}
+#moneyRoomSection .action-room-setup>summary,#moneyRoomSection .dcc-r95-archive>summary{color:#153629!important;font-weight:750!important}
+#moneyRoomSection :is(input,select){background:#fffaf1!important;color:#153629!important;border:1px solid #ac956a!important}
+/* Only one bag heading: place it within the actual bag data-tab section. */
+#dccR67Bag{background:#f5ecdc!important;color:#153629!important;border-radius:20px!important;padding:13px!important}
+#dccR67EquipmentLead{margin:0 0 8px!important;background:#f5ecdc!important;padding:8px!important}
+#dccR67Bag :is(details,summary){color:#153629!important}
+/* Primary shot logging gets a real action affordance, not an oversized empty tile. */
+#aiShotReport.dcc-r106-shot-primary{background:#d4af6e!important;color:#153629!important;border:0!important;border-radius:15px!important;padding:0!important;min-height:0!important}
+#aiShotReport.dcc-r106-shot-primary>summary{color:#153629!important;font:800 15px/1.3 system-ui,sans-serif!important;padding:16px!important;min-height:52px!important}
+#caddyExtras>summary{background:#f5ecdc!important;color:#153629!important;border-radius:14px!important;padding:14px!important}
+#caddyExtras .dcc-r76-extras-hint{color:#52685b!important}
+#dccR91SoloPanel.dcc-r106-ghost-feature{background:#153629!important;color:#f5ecdc!important;border:1px solid #d4af6e!important;border-radius:20px!important;overflow:hidden!important}
+#dccR91SoloPanel.dcc-r106-ghost-feature>summary{padding:18px!important;color:#f5ecdc!important;min-height:76px!important}
+#dccR91SoloPanel.dcc-r106-ghost-feature>summary strong{color:#f5ecdc!important;font-size:23px!important}
+#dccR91SoloPanel.dcc-r106-ghost-feature>summary small{color:#d4af6e!important}
+/* Consistent secondary drawers across main tabs. */
+.content details:not(.dcc-r66-formwrap):not(.dcc-r106-ghost-feature)>summary{min-height:48px}
+#dccR68Emergency,#dccR86Clubhouse .dcc-r86-drawer,.dcc-r97-tools{border-radius:15px!important}
+/* R111: single responsive masthead rule. The original approved artwork is never modified. */
+.dcc-r62-header.mast{position:relative!important;box-sizing:border-box!important;display:grid!important;place-items:center!important;width:100%!important;min-height:135px!important;padding:16px 116px 16px 18px!important;background:#153629!important;background-image:none!important;border:1px solid rgba(212,175,110,.35)!important;border-radius:20px!important;overflow:hidden!important;box-shadow:none!important}
+.dcc-r62-header .dcc-r62-approved-logo{display:block!important;max-width:100%!important;width:380px!important;max-height:112px!important;height:auto!important;object-fit:contain!important;margin:0 auto!important;mix-blend-mode:normal!important;mask-image:none!important;-webkit-mask-image:none!important}
+.dcc-r62-header .dcc-r62-account,#dccR106Handicap{position:absolute!important;left:auto!important;bottom:auto!important;right:12px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;max-width:92px!important;min-height:33px!important;padding:6px 8px!important;background:#153629!important;color:#f5ecdc!important;border:1px solid #d4af6e!important;border-radius:10px!important;box-sizing:border-box!important;white-space:nowrap!important;z-index:10!important;font:700 11px/1.2 system-ui,sans-serif!important}
+.dcc-r62-header .dcc-r62-account{top:12px!important}
+#dccR106Handicap{top:53px!important}
+@media(max-width:600px){
+ .dcc-r62-header.mast{min-height:108px!important;padding:10px 88px 10px 10px!important;border-radius:18px!important}
+ .dcc-r62-header .dcc-r62-approved-logo{width:100%!important;max-height:88px!important;object-position:center!important}
+ .dcc-r62-header .dcc-r62-account,#dccR106Handicap{right:7px!important;max-width:75px!important;font-size:10px!important;min-height:29px!important;padding:5px 6px!important}
+ .dcc-r62-header .dcc-r62-account{top:8px!important}
+ #dccR106Handicap{top:45px!important}
+}
+@media(max-width:350px){.dcc-r62-header.mast{padding-right:81px!important}.dcc-r62-header .dcc-r62-approved-logo{max-height:77px!important}}
+/* Keep off-scope legacy utilities intact but out of the flagship experience. */
+#quickReset,#dccR68Emergency{display:none!important}
+/* No floating section headings, visually duplicated by legacy bag decorators. */
+#dccR67EquipmentLead{max-width:100%!important}
+/* Shared hierarchy: gold only on primary actions, ivory controls within forest panels. */
+.content [data-tab] details>summary{border-radius:14px}
+
+@media(max-width:600px){#dccPropBets{padding:10px!important}#dccPropBets .dcc-r66-formwrap form{padding:10px 4px!important}#moneyRoomSection.dcc-r106-money{padding:12px!important}}
+
+/* R109 equipment cohesion: existing data-backed table/editor retained. */
+#dccR67Bag{border:1px solid rgba(212,175,110,.65)!important;padding:16px!important;margin:0 0 12px!important;box-shadow:none!important}
+#dccR67EquipmentLead{background:transparent!important;padding:0 0 13px!important;margin:0 0 12px!important;border-bottom:1px solid #d4af6e!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important}
+#dccR67EquipmentLead strong{font:700 clamp(20px,4vw,27px)/1.15 Georgia,serif!important;color:#153629!important}
+#dccR67EquipmentLead button{background:#d4af6e!important;color:#153629!important;border:0!important;min-height:44px!important;border-radius:13px!important;padding:9px 13px!important;font-weight:750!important}
+#dccR67Bag th{background:#f5ecdc!important;color:#52685b!important;border-bottom:1px solid #d4af6e!important}
+#dccR67Bag td{background:#fffaf1!important;color:#153629!important}
+#dccR67Bag table{border-spacing:0 5px!important;border-collapse:separate!important}
+#dccR67Bag td:first-child{border-radius:10px 0 0 10px!important}#dccR67Bag td:last-child{border-radius:0 10px 10px 0!important}
+#dccR67Bag .dcc-bag-editor{background:#f5ecdc!important;border:1px solid #d4af6e!important;border-radius:13px!important}
+#dccR67Bag .dcc-bag-editor>summary{min-height:48px!important;padding:12px!important;color:#153629!important;font-weight:700!important}
+/* Utility disclosures use one high-contrast interaction pattern. */
+#dccR79ClubTools>summary,.dcc-r97-tools>summary,.dcc-r68-secondary>summary{background:#f5ecdc!important;color:#153629!important;border:1px solid #d4af6e!important;border-radius:13px!important;min-height:48px!important;padding:12px 15px!important;font:700 15px system-ui,sans-serif!important}

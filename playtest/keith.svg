@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 400" role="img" aria-label="Keith, a permanently unimpressed illustrated old school golf caddie">
+<rect width="480" height="400" rx="22" fill="#eadfc8"/>
+<path d="M15 345 Q240 283 466 350 V400 H15Z" fill="#b4bd9e"/>
+<circle cx="241" cy="198" r="151" fill="none" stroke="#ad9561" stroke-width="3" stroke-dasharray="5 9"/>
+<path d="M117 391 Q118 293 180 278 L293 278 Q377 300 376 391Z" fill="#1b392d" stroke="#182d24" stroke-width="7"/>
+<path d="M197 286 L220 337 L258 337 L288 283" fill="#d8c5a2"/>
+<path d="M171 177 Q177 124 246 124 Q309 132 312 207 L291 264 L264 289 L218 284 L179 253Z" fill="#cfac82" stroke="#3a342b" stroke-width="6"/>
+<path d="M164 192 Q166 170 187 166 L188 234 L176 225Z M312 191 Q326 165 337 188 L321 235 L308 224Z" fill="#c59c77" stroke="#3a342b" stroke-width="5"/>
+<path d="M177 154 Q157 139 168 113 Q179 84 233 82 Q276 79 312 105 L338 150 Q241 179 164 156Z" fill="#274a36" stroke="#253528" stroke-width="7"/>
+<path d="M167 127 Q244 118 332 151" fill="none" stroke="#bfa36b" stroke-width="9"/>
+<path d="M225 104 L225 141 L250 141Z" fill="#d5c399"/>
+<path d="M186 193 Q205 182 222 192 M264 192 Q281 180 301 193" fill="none" stroke="#3b322c" stroke-width="8" stroke-linecap="round"/>
+<ellipse cx="209" cy="205" rx="6" ry="5" fill="#2f2926"/><ellipse cx="286" cy="205" rx="6" ry="5" fill="#2f2926"/>
+<path d="M247 206 L237 231 L256 238" stroke="#674c3d" stroke-width="6" fill="none"/>
+<path d="M209 253 Q250 244 286 251" fill="none" stroke="#3c312a" stroke-width="7" stroke-linecap="round"/>
+<path d="M204 225 L216 233 M283 227 L292 220" stroke="#75523d" stroke-width="4"/>
+<path d="M301 250 L368 235" stroke="#3b3028" stroke-width="7" stroke-linecap="round"/>
+<path d="M365 228 L385 234 L366 244Z" fill="#a89168"/>
+<path d="M169 309 Q212 356 234 398" fill="none" stroke="#a38d68" stroke-width="20"/>
+<text x="27" y="42" font-family="Georgia,serif" font-size="20" font-weight="bold" fill="#224233">KEITH • SENIOR CADDIE</text>
+<text x="28" y="374" font-family="Georgia,serif" font-size="12" letter-spacing="3" fill="#204132">DAGGER COUNTRY CLUB</text>
+</svg>

@@ -1,0 +1,9 @@
+/* R148 — Real app-rendered empty profile has one placeholder row. */
+#dccR67Bag #dccBagClubList:has(#manualtable > tr:only-child > td[colspan="3"]) > table {display:none!important}
+#dccR67Bag #dccBagClubList:has(#manualtable > tr:only-child > td[colspan="3"])::after {
+ content:"Your bag is ready for its first club. Select Edit Bag to add your carry distances.";
+ display:block; margin:13px 0 4px; padding:15px 16px;
+ background:#f9f4e9; border:1px solid #decda9; border-radius:12px;
+ color:#435b4b; font:500 13px/1.55 system-ui,sans-serif;
+}
+@media(max-width:350px){#dccR67Bag #dccBagClubList:has(#manualtable > tr:only-child > td[colspan="3"])::after{padding:13px;font-size:12px}}
