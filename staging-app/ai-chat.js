@@ -385,7 +385,7 @@ function add(role,content){
 }
 function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
-const holeNumber=Number(document.getElementById('currentHole')?.value);
+const holeNumber=Number(document.getElementById('hole')?.value);
 const courseBriefing=createCaddyCourseBriefing(activeRoundEnvironment,holeNumber);
 return {courseBriefing:courseBriefing?.slice(0,900)||null,yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
 async function getAuth() {
