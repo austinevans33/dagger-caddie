@@ -2,7 +2,7 @@
 // Opens on member request until a verified course catalog is connected.
 import {readActiveRound,clearActiveRound,saveActiveRound} from './starters-desk-session.js';
 import {searchOpenGolfCourses,loadOpenGolfTees} from './opengolf-catalog.js';
-import {getActiveCourseContext} from './active-course-context.js';
+import {getRoundEnvironment} from './round-environment.js';
 export function mountStartersDesk({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-starter-open'))return;
  const style=doc.createElement('style');
@@ -65,7 +65,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
    doc.dispatchEvent(new CustomEvent('dcc:course-selected',{detail:{course:selected,tee,holeNumber:1}}));
    dialog.close();
    // Check-in never waits on the network; verified hole data arrives separately.
-   getActiveCourseContext({storage,notify:context=>doc.dispatchEvent(new CustomEvent('dcc:course-context',{detail:context}))}).catch(()=>{});
+   getRoundEnvironment({storage}).then(context=>{if(context.state!=='selection-changed')doc.dispatchEvent(new CustomEvent('dcc:round-environment',{detail:context}));}).catch(()=>{});
   }else results.textContent='This browser could not remember your selection. You can still enter without checking in.';
  });
  button.addEventListener('click',()=>{
