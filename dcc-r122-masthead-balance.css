@@ -1,0 +1,26 @@
+/* R122 — Header alignment to approved DCC visual reference.
+   Balanced left/right safe zones keep the untouched artwork centered on the actual viewport. */
+.dcc-r62-header.mast{
+  padding-left:116px!important;
+  padding-right:116px!important;
+  isolation:isolate!important;
+}
+.dcc-r62-header .dcc-r62-approved-logo{
+  justify-self:center!important;
+  object-position:center!important;
+  min-width:0!important;
+}
+.dcc-r62-header .dcc-r62-account,
+.dcc-r62-header #dccR106Handicap{
+  max-width:92px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+@media(max-width:600px){
+  .dcc-r62-header.mast{padding-left:86px!important;padding-right:86px!important}
+  .dcc-r62-header .dcc-r62-approved-logo{max-height:88px!important}
+}
+@media(max-width:350px){
+  .dcc-r62-header.mast{padding-left:79px!important;padding-right:79px!important}
+  .dcc-r62-header .dcc-r62-account,.dcc-r62-header #dccR106Handicap{max-width:70px!important}
+}

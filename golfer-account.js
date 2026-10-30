@@ -191,9 +191,10 @@ dccMemberButton.append(dccMemberText, dccMemberArrow);
 
 const dccMast = document.querySelector('.app-shell .mast');
 
-if (dccMast) {
-  dccMast.insertAdjacentElement('afterend', dccMemberButton);
-}
+// Approved R163 design has no injected membership-status banner.
+// Preserve the account drawer and authentication logic, but do not attach
+// this legacy status button to the visible masthead.
+// (The existing account control remains in the approved header.)
 
 function dccUpdateMemberIndicator(user) {
   if (!user) {
