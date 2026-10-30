@@ -1,3 +1,4 @@
+import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
 import {mountStartersDesk} from './starters-desk-ui.js';
 import {firebaseConfig} from './firebase-config.js';
 import {
@@ -32,6 +33,8 @@ if (!window.location.search && !window.location.hash) {
 }
 
 let conversation=[],working=false,authPromise=null;
+let activeRoundEnvironment=null;
+document.addEventListener('dcc:round-environment',event=>{activeRoundEnvironment=event.detail?.selection?event.detail:null;});
 let latestMemoryCandidate = null;
 
 let shotQuality = null;
@@ -382,7 +385,9 @@ function add(role,content){
 }
 function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
-return {yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
+const holeNumber=Number(document.getElementById('currentHole')?.value);
+const courseBriefing=createCaddyCourseBriefing(activeRoundEnvironment,holeNumber);
+return {courseBriefing:courseBriefing?.slice(0,900)||null,yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
 async function getAuth() {
   if (!authPromise) {
     authPromise = (async () => {
