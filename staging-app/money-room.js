@@ -205,6 +205,7 @@ async function connect(id){if(roomUnsub)roomUnsub();roomId=id;const version=++co
  roomUnsub=onSnapshot(doc(db,'rooms',id),snap=>{if(version!==connectionVersion||auth.currentUser?.uid!==user?.uid)return;if(!snap.exists()){status('Room not found, or access denied.');return;}room=snap.data();if(room.archived&&!snap.metadata?.hasPendingWrites&&!snap.metadata?.fromCache)forgetRoom(roomStore,user.uid,roomId);status('LIVE · Updates delivered across connected phones · '+roomLabel());render();},err=>{if(version===connectionVersion)status('Could not subscribe: '+err.message);});
 }
 async function create(){const attempt=++actionVersion;try{
+ await initialization;
  if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
  user=await session.current();const operationUid=user.uid;
  const me=$('roomMe').value.trim();const others=$('roomPlayers').value.split(',').map(x=>x.trim()).filter(Boolean);const players=[me,...others];
@@ -219,6 +220,11 @@ async function join(){
  const attempt=++actionVersion;
  let stage='validation';
  try{
+  stage='connection-startup';
+  status('Preparing secure connection to the Money Room…');
+  await initialization;
+  if(attempt!==actionVersion)return;
+  stage='validation';
   if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
  user=await session.current();const operationUid=user.uid;
   const {id,code}=parseInvite($('roomCode').value);
@@ -341,4 +347,5 @@ if(selector&&!selector.children.length){
  const ready=new MutationObserver(()=>{ready.disconnect();if(roomId)focusMoneyRoom();else showIncomingInvitation();});
  ready.observe(selector,{childList:true});
 }
-init();
+// First-tap joins wait for Firebase startup rather than failing before imports load.
+const initialization=init();
