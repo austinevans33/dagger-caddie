@@ -1,3 +1,4 @@
+import {buildCaddyTarget} from './caddy-target-policy.js';
 import {getRoundEnvironment} from './round-environment.js';
 import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
@@ -407,7 +408,8 @@ function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dag
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
 const holeNumber=Number(document.getElementById('hole')?.value);
 const courseBriefing=createCaddyCourseBriefing(activeRoundEnvironment,holeNumber);
-return {courseBriefing:courseBriefing?.slice(0,900)||null,yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
+const aim=buildCaddyTarget({remainingYards:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||''});
+return {aimTarget:aim?.target||'center-green',remainingDistanceSource:aim?.distanceSource||'golfer-needed',courseBriefing:courseBriefing?.slice(0,900)||null,yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
 async function getAuth() {
   if (!authPromise) {
     authPromise = (async () => {
