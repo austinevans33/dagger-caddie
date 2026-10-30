@@ -32,3 +32,17 @@ test('invitation validates complete link and compact code',()=>{
  assert.deepEqual(invitationFrom(`${id}:${code}`),{id,code});
  for(const invalid of ['','missing','abc:123',`https://example.test/?room=${id}`,`${id}:${code}x`])assert.equal(invitationFrom(invalid),null);
 });
+
+test('host score save is serialized and patches only selected hole',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const src=readFileSync(new URL('../staging-app/money-room.js',import.meta.url),'utf8');
+ const start=src.indexOf("$('roomSaveHole').onclick=");
+ const end=src.indexOf("$('roomFinish').onclick=",start);
+ assert.ok(start>=0&&end>start,'live host save handler exists');
+ const handler=src.slice(start,end);
+ assert.match(handler,/singleFlight\(async\(\)=>/,'duplicate host saves coalesce');
+ assert.match(handler,/\['holes\.'\+hole\]:scores/,'writes only selected hole');
+ assert.doesNotMatch(handler,/holes:\s*\{\.\.\./,'does not rewrite stale hole map');
+ assert.match(handler,/hole<1\|\|hole>18/,'rejects invalid hole number');
+ assert.match(handler,/session\.assertIdentity\(scorekeeperUid\)/,'identity remains verified');
+});
