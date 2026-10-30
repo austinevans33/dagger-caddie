@@ -23,10 +23,22 @@ test('failed archive write never clears draft',()=>{
  assert.throws(()=>archivePartialGhost(s,{confirmArchive:()=>true}));
  assert.equal(JSON.parse(s.getItem(D)).holes.length,1);
 });
-test('empty or completed matches preserve original event handler',()=>{
+test('empty matches remain untouched, completed matches archive and reset',()=>{
  const s=make();s.setItem(D,JSON.stringify({...partial,holes:[]}));
  assert.equal(archivePartialGhost(s).handled,false);
  const complete={...partial,holes:Array(18).fill({par:4,player:4,ghost:4})};
  s.setItem(D,JSON.stringify(complete));
- assert.equal(archivePartialGhost(s).handled,false);
+ assert.equal(archivePartialGhost(s,{confirmArchive:()=>true}).archived,true);
+ assert.equal(JSON.parse(s.getItem(A))[0].result.status,'Completed · 18 of 18 holes');
+ assert.equal(JSON.parse(s.getItem(D)).holes.length,0);
+});
+
+test('match won 7&5 after 13 holes can archive and restart',()=>{
+ const s=make();const holes=Array.from({length:13},(_,i)=>({par:4,player:i<7?4:5,ghost:i<7?5:5}));
+ s.setItem(D,JSON.stringify({...partial,holes}));
+ const result=archivePartialGhost(s,{confirmArchive:()=>true,now:20000});
+ assert.equal(result.archived,true);
+ assert.equal(JSON.parse(s.getItem(A))[0].holes.length,13);
+ assert.match(JSON.parse(s.getItem(A))[0].result.status,/Completed/);
+ assert.deepEqual(JSON.parse(s.getItem(D)).holes,[]);
 });
