@@ -1,3 +1,6 @@
+import {getRoundEnvironment} from './round-environment.js';
+import {readActiveRound} from './starters-desk-session.js';
+import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
 import {mountStartersDesk} from './starters-desk-ui.js';
 import {firebaseConfig} from './firebase-config.js';
@@ -34,7 +37,24 @@ if (!window.location.search && !window.location.hash) {
 
 let conversation=[],working=false,authPromise=null;
 let activeRoundEnvironment=null;
-document.addEventListener('dcc:round-environment',event=>{activeRoundEnvironment=event.detail?.selection?event.detail:null;});
+let roundEnvironmentLoading=null;
+async function refreshCaddyRoundEnvironment(){
+ const active=readActiveRound(localStorage);
+ if(!active){activeRoundEnvironment=null;return null;}
+ if(roundEnvironmentLoading)return roundEnvironmentLoading;
+ roundEnvironmentLoading=getRoundEnvironment({storage:localStorage}).then(result=>{
+  const current=readActiveRound(localStorage);
+  if(current&&result.selection&&sameCourseSelection(current.selection,result.selection)&&result.state!=='selection-changed'){
+   activeRoundEnvironment=result;
+  }else if(!current){activeRoundEnvironment=null;}
+  return activeRoundEnvironment;
+ }).catch(()=>null).finally(()=>{roundEnvironmentLoading=null;});
+ return roundEnvironmentLoading;
+}
+document.addEventListener('dcc:round-environment',event=>{
+ const incoming=event.detail,active=readActiveRound(localStorage);
+ if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection))activeRoundEnvironment=incoming;
+});
 let latestMemoryCandidate = null;
 
 let shotQuality = null;
@@ -443,6 +463,11 @@ try {
     );
   }
 
+  // Restore course and conditions when returning to the app before asking a Caddy.
+  const selectedRound=readActiveRound(localStorage);
+  if(selectedRound&&(!activeRoundEnvironment||!sameCourseSelection(selectedRound.selection,activeRoundEnvironment.selection))){
+   await refreshCaddyRoundEnvironment();
+  }
   const token = await user.getIdToken();const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({caddie:activeCaddie(),messages:conversation.slice(-12).map(m=>({
   role:m.role,
   content:m.content.slice(0,950)
@@ -585,4 +610,6 @@ document.querySelectorAll('.staff-pick').forEach(b =>
 
 // Opt-in preview until a verified course/tee catalog is available.
 mountStartersDesk();
+// Reopening Dagger must restore the existing check-in without another selection.
+if(readActiveRound(localStorage))refreshCaddyRoundEnvironment();
 
