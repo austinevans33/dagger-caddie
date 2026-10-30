@@ -1,0 +1,295 @@
+/* Dagger Country Club / R88 — canonical UI foundation.
+   Deliberately independent of game, auth, betting and persistence scripts. */
+:root{
+ --dcc-forest:#153629;--dcc-forest-deep:#103126;--dcc-ivory:#f5ecdc;
+ --dcc-gold:#d4af6e;--dcc-line:#d6c5a4;--dcc-muted:#5a6a60;
+ --dcc-radius:14px;--dcc-gap:12px;
+}
+html{overflow-x:hidden}body{overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+/* Do not make new page-wide billboards. */
+.dcc-r60-games-header,.dcc-r60-locker-hero,.dcc-r60-club-hero,
+#dccR86Clubhouse{border:0!important;border-radius:16px!important;box-shadow:none!important;background:var(--dcc-forest)!important;color:var(--dcc-ivory)!important;margin:8px 0 12px!important;max-width:100%!important}
+.dcc-r60-games-header .dcc-competition-portal__hero{min-height:0!important;padding:16px 18px!important}
+.dcc-r60-games-header .dcc-competition-portal__hero h2,
+.dcc-r60-locker-hero h2,.dcc-r60-club-hero h2,
+#dccR86Clubhouse .dcc-r86-title{font:700 clamp(25px,4.5vw,36px)/1.14 Georgia,serif!important;letter-spacing:-.025em!important;margin:4px 0 7px!important;color:var(--dcc-ivory)!important;text-transform:none!important}
+.dcc-r60-games-header .dcc-competition-portal__hero h2 em{color:var(--dcc-gold)!important}
+.dcc-r60-games-header .dcc-competition-portal__top,.dcc-r60-games-header .dcc-competition-portal__foot,.dcc-r60-games-header .dcc-competition-portal__meta{display:none!important}
+.dcc-r60-locker-hero,.dcc-r60-club-hero{padding:16px 18px!important}
+.dcc-r60-locker-hero p,.dcc-r60-club-hero p{display:none!important}
+/* The bag action must fit its label and never break out of the card. */
+#dccR67EquipmentLead{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:12px!important;max-width:100%!important;min-width:0!important;padding:14px 16px!important;border:0!important;background:var(--dcc-ivory)!important;color:var(--dcc-forest)!important;border-radius:var(--dcc-radius)!important}
+#dccR67EquipmentLead>div{flex:1 1 140px!important;min-width:0!important}
+#dccR67EquipmentLead small{display:none!important}
+#dccR67EquipmentLead strong{font:700 20px/1.2 Georgia,serif!important;color:var(--dcc-forest)!important}
+#dccR67EquipmentLead button{flex:0 0 auto!important;position:static!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;min-width:0!important;max-width:100%!important;white-space:normal!important;padding:11px 16px!important;font:700 14px/1.2 system-ui,sans-serif!important;border-radius:10px!important;border:0!important;background:var(--dcc-gold)!important;color:var(--dcc-forest)!important}
+/* Solo mode remains featured, but is visually subordinate to playable games. */
+.dcc-r61-ghost-feature{width:100%!important;max-width:100%!important;min-height:0!important;margin:10px 0!important;padding:12px 15px!important;border:1px solid var(--dcc-line)!important;border-radius:var(--dcc-radius)!important;box-shadow:none!important;background:var(--dcc-forest)!important}
+.dcc-r61-ghost-feature .dcc-r61-ghost-info strong{font:700 clamp(18px,3vw,24px)/1.2 Georgia,serif!important}
+.dcc-r61-ghost-feature .dcc-r61-ghost-info strong br{display:none!important}
+.dcc-r61-ghost-feature .dcc-r61-ghost-info em{font-size:12px!important}
+.dcc-r61-ghost-art{height:42px!important;width:42px!important;flex-basis:42px!important;font-size:28px!important}
+/* Compact Clubhouse using the approved concept's hierarchy. */
+#dccR86Clubhouse{padding:16px 18px!important}
+#dccR86Clubhouse .dcc-r86-account{background:var(--dcc-ivory)!important;color:var(--dcc-forest)!important;border:0!important;border-radius:var(--dcc-radius)!important;padding:16px!important;margin:0 0 6px!important}
+#dccR86Clubhouse .dcc-r86-drawer{background:transparent!important;border:0!important;border-bottom:1px solid rgba(245,236,220,.26)!important;box-shadow:none!important;border-radius:0!important;margin:0!important}
+#dccR86Clubhouse .dcc-r86-drawer>summary{padding:15px 0!important;min-height:48px!important;font:650 16px/1.3 system-ui,sans-serif!important;color:var(--dcc-ivory)!important}
+/* Use a common action geometry; don't override special tab-navigation controls. */
+:where(.btn-primary,.btn-secondary,.btn-ghost,.dcc-r86-account button,#dccPropBets button){max-width:100%;min-height:42px;border-radius:10px!important;padding:10px 15px!important;font:650 14px/1.35 system-ui,sans-serif!important;letter-spacing:0!important;box-shadow:none!important}
+:where(.btn-primary){background:var(--dcc-gold)!important;color:var(--dcc-forest)!important}
+:where(.btn-secondary){background:var(--dcc-forest)!important;color:var(--dcc-ivory)!important}
+:where(button,summary,input,select,textarea):focus-visible{outline:2px solid var(--dcc-gold)!important;outline-offset:2px}
+/* Maintain genuinely usable controls on phones. */
+@media(max-width:600px){
+ .dcc-r60-games-header .dcc-competition-portal__hero{padding:13px 15px!important}
+ .dcc-r60-locker-hero,.dcc-r60-club-hero,#dccR86Clubhouse{padding:14px 15px!important}
+ #dccR67EquipmentLead{padding:12px!important}
+ #dccR67EquipmentLead button{padding:10px 14px!important}
+ :where(input,select,textarea){max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important}}
+
+/* R89: Arccos-inspired information density, Dagger identity. Quiet chrome; functions first. */
+:root{--dcc-surface:#f5ecdc;--dcc-ink:#123528;--dcc-subtle:#e6d9c1;--dcc-control-h:44px}
+/* Keep page headers compact and identical across tabs. */
+.dcc-r60-games-header,.dcc-r60-locker-hero,.dcc-r60-club-hero,#dccR86Clubhouse{border-radius:14px!important;margin:6px 0 10px!important}
+.dcc-r60-games-header .dcc-competition-portal__hero{padding:13px 16px!important}
+.dcc-r60-games-header .dcc-competition-portal__hero h2,.dcc-r60-locker-hero h2,.dcc-r60-club-hero h2,#dccR86Clubhouse .dcc-r86-title{font:700 clamp(23px,5vw,31px)/1.15 Georgia,serif!important;margin:3px 0 6px!important;text-transform:none!important;letter-spacing:-.02em!important}
+.dcc-r60-games-header .dcc-competition-portal__hero p{font-size:12px!important;line-height:1.35!important;margin:3px 0!important}
+.dcc-r60-games-header .dcc-competition-portal__eyebrow,.dcc-r60-kicker,#dccR86Clubhouse .dcc-r86-eyebrow{font:650 10px/1.3 system-ui,sans-serif!important;letter-spacing:.08em!important;color:var(--dcc-gold)!important}
+/* Eliminate repetitive poster framing around House Ghost scorer; preserve every scorer control. */
+#dccGhostCard{margin:8px 0!important;padding:12px 14px!important;border:1px solid var(--dcc-line)!important;border-radius:14px!important;box-shadow:none!important}
+#dccGhostCard .dcc-ghost-hero{padding:4px 0 9px!important;min-height:0!important;background:transparent!important;border:0!important;color:var(--dcc-ink)!important}
+#dccGhostCard .dcc-ghost-hero h2{font:700 20px/1.2 Georgia,serif!important;margin:2px 0!important;color:var(--dcc-ink)!important}
+#dccGhostCard .dcc-ghost-hero small,#dccGhostCard .dcc-ghost-hero p{display:none!important}
+/* The game chooser must feel like the primary action, not three nested rulebooks. */
+.dcc-r61-ghost-feature{padding:10px 12px!important;min-height:0!important;gap:10px!important}
+.dcc-r61-ghost-feature .dcc-r61-ghost-info small{font-size:9px!important;letter-spacing:.05em!important}
+.dcc-r61-ghost-feature .dcc-r61-ghost-info em{display:none!important}
+/* Bounded buttons and input geometry; never stretch a utility button across its host panel. */
+#dccR67EquipmentLead button{width:max-content!important;max-width:100%!important;min-height:var(--dcc-control-h)!important;align-self:center!important;margin:0!important}
+#dccR67EquipmentLead{overflow:hidden!important}
+#dccR67EquipmentLead>div{overflow-wrap:anywhere!important}
+:where(.dcc-r86-account,.dcc-r86-drawer,#dccGhostCard,#dccPropBets) :is(button,select,input:not([type=checkbox]),textarea){box-sizing:border-box;max-width:100%}
+:where(.btn-primary,.btn-secondary,.btn-ghost){min-height:var(--dcc-control-h)!important;border-radius:10px!important;font-size:14px!important}
+/* A restrained section rhythm is easier to scan on a phone. */
+#dccR86Clubhouse .dcc-r86-drawer>summary{padding:12px 0!important;min-height:44px!important}
+#dccR86Clubhouse .dcc-r86-account{padding:13px 15px!important}
+#dccR86Clubhouse .dcc-r86-account h3{font-size:19px!important}
+@media(max-width:600px){
+ .dcc-r60-games-header,.dcc-r60-locker-hero,.dcc-r60-club-hero,#dccR86Clubhouse{margin:5px 0 9px!important}
+ .dcc-r60-games-header .dcc-competition-portal__hero{padding:12px 14px!important}
+ #dccR67EquipmentLead{gap:8px!important}
+ #dccR67EquipmentLead button{padding:10px 12px!important;font-size:13px!important}
+ #dccGhostCard{padding:11px 12px!important}
+}
+
+/* R90: Club Record is one quiet stats strip, not a theatrical archival dashboard. */
+#dccR77RecordsDrawer{border:0!important;margin:8px 0!important;background:transparent!important;box-shadow:none!important}
+#dccR77RecordsDrawer>span[hidden]{display:none!important}
+#dccR77RecordsDrawer #clubRecordsSection,#clubRecordsSection{background:var(--dcc-ivory)!important;color:var(--dcc-forest)!important;border:1px solid var(--dcc-line)!important;border-radius:12px!important;padding:13px!important;margin:0!important;box-shadow:none!important}
+.dcc-r90-records-top{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:5px 12px;margin-bottom:10px}
+.dcc-r90-records-top h3{font:700 18px/1.2 Georgia,serif!important;margin:0!important;color:var(--dcc-forest)!important}
+.dcc-r90-records-top small{font:400 12px/1.35 system-ui,sans-serif;color:#69746c}
+#hallStats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;margin:0!important;padding:0!important}
+#hallStats .betbox{min-width:0!important;padding:9px 6px!important;background:#fffaf0!important;border:1px solid #ddd1bb!important;border-radius:8px!important;text-align:center!important;box-shadow:none!important}
+#hallStats .betbox strong{display:block!important;font:600 10px/1.2 system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:var(--dcc-forest)!important}
+#hallStats .betbox span{display:block!important;font:700 17px/1.3 Georgia,serif!important;color:var(--dcc-forest)!important;overflow-wrap:anywhere}
+@media(max-width:430px){#hallStats{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+
+/* R91 — structural priority: multiplayer Game Library, then optional House Ghost. */
+.dcc-competition-portal[data-tab="games"]{padding:0!important;overflow:hidden!important;min-height:0!important;background:#153629!important;border:0!important;border-radius:12px!important;margin:8px 0!important;box-shadow:none!important}
+.dcc-competition-portal[data-tab="games"] .dcc-competition-portal__hero{padding:13px 15px!important;min-height:0!important;display:block!important}
+.dcc-competition-portal[data-tab="games"] .dcc-competition-portal__orb,
+.dcc-competition-portal[data-tab="games"] .dcc-competition-portal__meta,
+.dcc-competition-portal[data-tab="games"] .dcc-competition-portal__top,
+.dcc-competition-portal[data-tab="games"] .dcc-competition-portal__foot,
+.dcc-competition-portal[data-tab="games"] .dcc-r61-ghost-feature{display:none!important}
+.dcc-competition-portal[data-tab="games"] h2{font:700 25px/1.13 Georgia,serif!important;margin:2px 0!important;letter-spacing:-.02em!important}
+.dcc-competition-portal[data-tab="games"] p{font:400 12px/1.35 system-ui,sans-serif!important;margin:3px 0 0!important;color:#f5ecdc!important}
+#gamesMenu{padding:13px!important;margin:0 0 10px!important;box-shadow:none!important;border-radius:12px!important}
+#gamesMenu .games-desk-heading{margin:0 0 10px!important;padding:0!important}
+#gamesMenu .games-desk-heading h2{font:700 21px/1.2 Georgia,serif!important;margin:2px 0!important}
+#gamesMenu .game-picks{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+#gamesMenu .game-pick{min-height:76px!important;height:auto!important;padding:10px 11px!important;border-radius:10px!important;box-shadow:none!important;gap:4px!important}
+#gamesMenu .game-pick strong{font:650 15px/1.2 system-ui,sans-serif!important;margin:0!important}
+#gamesMenu .game-pick small{font:400 11px/1.3 system-ui,sans-serif!important;margin:0!important}
+.dcc-r91-solo-panel{display:block;max-width:100%;margin:9px 0!important;border:1px solid #d6c5a4!important;border-radius:12px!important;background:#f5ecdc!important;box-shadow:none!important;overflow:hidden}
+.dcc-r91-solo-panel>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:13px 15px;min-height:65px;color:#153629!important}
+.dcc-r91-solo-panel>summary::-webkit-details-marker{display:none}
+.dcc-r91-solo-panel>summary span:first-child{display:grid;gap:2px}
+.dcc-r91-solo-panel>summary small{font:700 9px/1.2 system-ui,sans-serif;letter-spacing:.1em;color:#76613e}
+.dcc-r91-solo-panel>summary strong{font:700 19px/1.1 Georgia,serif}
+.dcc-r91-solo-panel>summary em{font:400 11px/1.3 system-ui,sans-serif;font-style:normal;color:#647369}
+.dcc-r91-plus{font:400 22px/1 system-ui,sans-serif;color:#153629}
+.dcc-r91-solo-panel[open] .dcc-r91-plus{transform:rotate(45deg)}
+.dcc-r91-solo-panel #dccGhostCard{display:block!important;margin:0!important;border:0!important;border-top:1px solid #d6c5a4!important;border-radius:0!important}
+#dccR61GhostFeature[hidden]{display:none!important}
+@media(max-width:390px){#gamesMenu .game-pick{min-height:72px!important;padding:9px!important}#gamesMenu .game-pick strong{font-size:13px!important}}
+
+/* R92 — Grounds: a single optional reference shelf for rules and future formats. */
+#gamesMenu .dcc-r92-reference{margin:10px 0 0;border:1px solid rgba(20,58,43,.22);border-radius:12px;background:#f7f2e9;overflow:hidden}
+#gamesMenu .dcc-r92-reference>summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;min-height:48px;cursor:pointer;color:#163a2c;list-style:none}
+#gamesMenu .dcc-r92-reference>summary::-webkit-details-marker{display:none}
+#gamesMenu .dcc-r92-reference>summary strong{font-size:14px;display:block}
+#gamesMenu .dcc-r92-reference>summary small{display:block;font-size:11px;opacity:.75;margin-top:2px}
+#gamesMenu .dcc-r92-reference>summary>span:last-child{font-size:20px;color:#9c7534}
+#gamesMenu .dcc-r92-reference[open]>summary>span:last-child{transform:rotate(45deg)}
+#gamesMenu .dcc-r92-reference-inner{padding:0 10px 12px}
+#gamesMenu .dcc-r92-reference .dcc-rulebook{margin:4px 0!important}
+#gamesMenu .dcc-r92-reference .games-classics{padding:8px 0;margin:0;box-shadow:none;}
+#gamesMenu .dcc-r92-reference .games-classics-heading{margin-top:6px}
+#gamesMenu .dcc-r92-reference .games-classics-heading h3{font-size:16px}
+
+/* R93: One game selection and one visible scorecard. */
+#gamesMenu .dcc-r93-scorecard[hidden]{display:none!important}
+#gamesMenu .dcc-r93-scorecard{margin-top:10px}
+#gamesMenu .dcc-r93-scorecard>summary{display:none}
+#gamesMenu .dcc-r93-scorecard[open]>.dcc-match-desk{margin:0}
+#gamesMenu .game-picks{margin-bottom:8px}
+#gamesMenu .dcc-game-quick-rules{margin-top:8px}
+
+/* R94: Ledger-first redesign — one restrained header and a clear action hierarchy. */
+#dccPropBets{padding:0!important;margin:6px 0 10px!important;border:0!important;box-shadow:none!important;background:transparent!important;display:block;max-width:100%!important}
+#dccPropBets .dcc-r94-ledger-header{background:var(--dcc-forest)!important;color:var(--dcc-ivory)!important;border-radius:14px!important;padding:15px 17px!important;margin-bottom:10px!important}
+#dccPropBets .dcc-r94-ledger-header span{display:block;font:650 10px/1.3 system-ui,sans-serif;letter-spacing:.1em;color:var(--dcc-gold)}
+#dccPropBets .dcc-r94-ledger-header h2{font:700 clamp(25px,5vw,32px)/1.13 Georgia,serif!important;margin:5px 0 3px!important;color:var(--dcc-ivory)!important;letter-spacing:-.02em!important}
+#dccPropBets .dcc-r94-ledger-header p{font:400 13px/1.4 system-ui,sans-serif!important;margin:0!important;color:var(--dcc-ivory)!important}
+#dccPropBets .dcc-r94-ledger-action{display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:space-between!important;gap:8px 12px!important;padding:9px 2px!important;margin:0 0 8px!important;background:transparent!important;min-height:0!important}
+#dccPropBets .dcc-r94-ledger-action>div{flex:1 1 155px!important;min-width:0!important}
+#dccPropBets .dcc-r94-ledger-action strong{font:700 18px/1.2 Georgia,serif!important;color:var(--dcc-forest)!important}
+#dccPropBets .dcc-r94-ledger-action p{font:400 12px/1.35 system-ui,sans-serif!important;color:#57685d!important;margin:4px 0 0!important}
+#dccPropBets #dccPropNew{width:auto!important;min-width:0!important;flex:0 0 auto!important;align-self:center!important;white-space:nowrap!important;min-height:42px!important;margin:0!important;padding:10px 14px!important;background:var(--dcc-gold)!important;color:var(--dcc-forest)!important;border-radius:10px!important}
+#dccPropBets .dcc-r66-stats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;margin:0 0 10px!important}
+#dccPropBets .dcc-r66-stats>div{min-width:0!important;padding:10px 6px!important;border:1px solid var(--dcc-line)!important;border-radius:10px!important;box-shadow:none!important;background:#fff9ee!important;text-align:center!important}
+#dccPropBets .dcc-r66-stats small{font:650 9px/1.25 system-ui,sans-serif!important;letter-spacing:0!important;color:#57685d!important}
+#dccPropBets .dcc-r66-stats strong{font:700 23px/1.2 Georgia,serif!important;color:var(--dcc-forest)!important}
+#dccPropBets .dcc-r66-formwrap{margin:6px 0 10px!important;border:1px solid var(--dcc-line)!important;border-radius:12px!important;box-shadow:none!important;background:var(--dcc-ivory)!important}
+#dccPropBets .dcc-r66-formwrap>summary{padding:12px 14px!important;font:650 14px/1.35 system-ui,sans-serif!important;color:var(--dcc-forest)!important;min-height:42px!important}
+#dccPropBets .dcc-r70-accounts{margin:8px 0!important;padding:12px 13px!important;border:1px solid var(--dcc-line)!important;border-radius:12px!important;background:var(--dcc-ivory)!important;box-shadow:none!important}
+#dccPropBets .dcc-r70-account-head{margin-bottom:5px!important}
+#dccPropBets .dcc-r70-account-head strong{font:700 18px/1.2 Georgia,serif!important;color:var(--dcc-forest)!important}
+#dccPropBets .dcc-r66-archive{margin:8px 0!important;border:1px solid var(--dcc-line)!important;border-radius:10px!important;box-shadow:none!important}
+#moneyRoomSection{margin:8px 0 12px!important}
+#moneyRoomSection #roomSetup{margin:0 0 7px!important;border-radius:12px!important}
+#moneyRoomSection #roomSetup>summary{min-height:48px!important;padding:12px 14px!important}
+#moneyRoomSection #roomSetup>summary>span:before{font-size:15px!important}
+#moneyRoomSection #roomSetup>summary>small{font-size:10px!important}
+@media(max-width:390px){#dccPropBets .dcc-r94-ledger-header{padding:13px 14px!important}#dccPropBets .dcc-r66-stats strong{font-size:19px!important}#dccPropBets .dcc-r66-stats small{font-size:8px!important}}
+
+/* R95: Single Ledger hierarchy; compact accessible controls. */
+#dccPropBets .dcc-r95-history, #dccPropBets .dcc-r66-archive,
+#moneyRoomSection .dcc-r95-archive{border:1px solid #d9ccb2;border-radius:12px;background:#faf6eb;margin:12px 0;overflow:hidden}
+#dccPropBets .dcc-r95-history>summary, #moneyRoomSection .dcc-r95-archive>summary{cursor:pointer;padding:13px 14px;font-size:14px;font-weight:700;color:#173c2d;list-style-position:inside}
+#dccPropBets .dcc-r95-history .dcc-r66-list{padding:0 12px 12px}
+#moneyRoomSection .dcc-r95-live-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;background:#183c2d;color:#f7f0df;border-radius:12px}
+#moneyRoomSection .dcc-r95-live-head strong{font:700 20px/1.2 Georgia,serif}
+#moneyRoomSection .dcc-r95-live-head p{margin:3px 0 0;font-size:12px;color:#efe1bd}
+#moneyRoomSection .dcc-r95-open-room{width:auto!important;min-width:0!important;flex:none!important;white-space:nowrap;padding:10px 12px!important;border-radius:8px!important;background:#d4af6e!important;color:#133b2b!important;font-weight:700!important;font-size:12px!important}
+#moneyRoomSection .dcc-r95-archive .dcc-r57-ledger-glance{margin:0;box-shadow:none}
+@media(max-width:400px){#moneyRoomSection .dcc-r95-live-head{align-items:flex-start;flex-direction:column}#moneyRoomSection .dcc-r95-open-room{align-self:flex-start}}
+
+/* R97 Equipment Room: actual bag and tendencies remain visible; secondary tools are optional. */
+.dcc-r60-locker-hero{padding:13px 16px!important}
+.dcc-r60-locker-hero .dcc-r60-kicker{display:none!important}
+.dcc-r60-locker-hero h2{margin:0!important}
+#dccR67EquipmentLead{margin:0 0 7px!important}
+#dccR67Bag{margin-bottom:9px!important}
+#shotTendencies{margin:0 0 8px!important}
+#dccR97EquipmentTools{display:block;max-width:100%;margin:8px 0 12px!important;border:1px solid var(--dcc-line)!important;background:var(--dcc-ivory)!important;border-radius:12px!important;overflow:hidden!important;color:var(--dcc-forest)!important}
+#dccR97EquipmentTools>summary{cursor:pointer;min-height:46px;padding:12px 14px;font:650 14px/1.35 system-ui,sans-serif;list-style:none;color:var(--dcc-forest);display:flex;align-items:center;justify-content:space-between;gap:12px}
+#dccR97EquipmentTools>summary::-webkit-details-marker{display:none}
+#dccR97EquipmentTools>summary:after{content:'+';font-size:20px;color:#8c6c32}
+#dccR97EquipmentTools[open]>summary:after{content:'−'}
+#dccR97EquipmentTools .dcc-r97-tools-inner{padding:0 10px 10px}
+#dccR97EquipmentTools #playersLocker{margin:0 0 10px!important}
+#dccR97EquipmentTools .dcc-r97-tools-inner>section{max-width:100%;width:100%}
+
+/* R98 — The Caddy, shot-first mobile experience. */
+.ai-card[data-tab="play"]{padding:0!important;overflow:hidden;border-radius:15px!important;}
+.ai-card .dcc-caddy-heading{padding:15px 16px 9px!important;background:#153629!important;}
+.ai-card .dcc-service-label{font:650 10px/1.4 system-ui,sans-serif!important;letter-spacing:.09em!important;color:#d4af6e!important;}
+.ai-card #aiHeading{font:700 clamp(24px,5vw,30px)/1.15 Georgia,serif!important;margin:3px 0 4px!important;}
+.ai-card .dcc-service-intro{font-size:12px!important;margin:0!important;}
+.ai-card .caddie-roster{margin:0!important;padding:9px 12px!important;border-radius:0!important;border-left:0!important;border-right:0!important;box-shadow:none!important;background:#f5ecdc!important;}
+.ai-card .caddie-roster .roster-heading{display:flex!important;align-items:center!important;justify-content:space-between!important;margin:0 0 6px!important;padding:0!important;min-height:0!important;}
+.ai-card .caddie-roster .roster-heading>span{font-size:9px!important;letter-spacing:.08em!important;color:#153629!important;}
+.ai-card .caddie-roster .roster-abuse{display:flex!important;gap:5px!important;align-items:center!important;}
+.ai-card .caddie-roster .roster-abuse label{font-size:9px!important;color:#153629!important;}
+.ai-card .caddie-roster #aiAbuseLevel{width:auto!important;max-width:130px!important;min-height:32px!important;padding:4px 7px!important;font-size:11px!important;}
+.ai-card .caddie-roster .staff-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;padding:0!important;margin:0!important;}
+.ai-card .caddie-roster .staff-pick{min-width:0!important;min-height:0!important;padding:6px 3px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:3px!important;border-radius:9px!important;}
+.ai-card .caddie-roster .staff-thumb{width:33px!important;height:33px!important;object-fit:cover!important;border-radius:50%!important;}
+.ai-card .caddie-roster .staff-pick strong{font-size:11px!important;line-height:1.1!important;}
+.ai-card .caddie-roster .staff-pick small{display:none!important;}
+.ai-card #staffBanter{font-size:11px!important;line-height:1.3!important;margin:5px 0 0!important;padding:0!important;}
+.ai-card .dcc-r53-caddy-brief{padding:7px 12px!important;margin:0!important;background:#f5ecdc!important;border:0!important;}
+.ai-card .dcc-r53-ask-examples{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;margin:0!important;}
+.ai-card .dcc-r53-ask-examples button{padding:7px 4px!important;min-height:36px!important;font-size:10px!important;line-height:1.2!important;border-radius:8px!important;text-align:center!important;}
+.ai-card #aiMic{width:auto!important;max-width:calc(100% - 24px)!important;margin:10px 12px 5px!important;padding:8px 12px!important;min-height:36px!important;font-size:12px!important;}
+.ai-card #aiStatus{margin:5px 12px!important;font-size:11px!important;}
+.ai-card .dcc-r55-transcript-heading,.ai-card .dcc-r55-composer-label{display:none!important;}
+.ai-card #aiHistory{margin:8px 12px!important;min-height:70px!important;max-height:240px!important;overflow-y:auto!important;}
+.ai-card .ai-row{margin:8px 12px 12px!important;gap:8px!important;align-items:stretch!important;}
+.ai-card #aiInput{min-height:55px!important;font-size:14px!important;flex:1 1 auto!important;}
+.ai-card #aiSend{min-width:66px!important;width:auto!important;min-height:44px!important;padding:9px 12px!important;}
+.ai-card .ai-tools{margin:0 12px 9px!important;display:flex!important;flex-wrap:wrap!important;gap:6px!important;}
+.ai-card .ai-tools button{width:auto!important;flex:0 0 auto!important;min-height:32px!important;padding:6px 10px!important;font-size:11px!important;}
+.ai-card #aiShotReport,.ai-card #caddyExtras{margin:7px 12px 10px!important;padding:9px 11px!important;}
+.ai-card #aiShotReport>summary{font-size:13px!important;padding:5px 0!important;}
+.ai-card #aiShotReport>summary span{font-size:10px!important;}
+@media(max-width:375px){.ai-card .caddie-roster .staff-thumb{width:28px!important;height:28px!important}.ai-card .dcc-r53-ask-examples button{font-size:9px!important}}
+
+
+/* R99 — global five-tab consistency pass. Shared chrome only; no data logic touched. */
+:root {--dcc-forest:#153629;--dcc-gold:#d4af6e;--dcc-ivory:#f5ecdc;--dcc-radius:12px;}
+.app-shell{border:0!important;border-radius:0!important;box-shadow:none!important;background:#f5ecdc!important;max-width:100%!important;}
+.dcc-r62-header.mast{background:#153629!important;border-bottom:1px solid #d4af6e!important;border-radius:0!important;box-shadow:none!important;min-height:90px!important;overflow:hidden!important;}
+.dcc-r62-header .dcc-r62-approved-logo{object-fit:contain!important;max-height:108px!important;}
+.dcc-r62-header .dcc-r62-account{border:1px solid #d4af6e!important;border-radius:8px!important;box-shadow:none!important;background:#153629!important;color:#f5ecdc!important;}
+.content{background:#f5ecdc!important;}
+.tabbar.dcc-bespoke-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important;background:#f5ecdc!important;border:1px solid #d6c5a4!important;border-bottom:0!important;border-radius:13px 13px 0 0!important;box-shadow:0 -4px 15px #10291d16!important;max-width:720px!important;}
+.tabbar.dcc-bespoke-nav button{width:100%!important;min-width:0!important;min-height:55px!important;border:0!important;border-radius:9px!important;padding:7px 2px!important;background:transparent!important;color:#153629!important;box-shadow:none!important;font:650 10px/1.14 system-ui,sans-serif!important;letter-spacing:0!important;}
+.tabbar.dcc-bespoke-nav button.active{background:#153629!important;color:#f5ecdc!important;}
+.tabbar.dcc-bespoke-nav .nav-ico{font-size:19px!important;line-height:1.1!important;}
+.tabbar.dcc-bespoke-nav .dcc-tab-title{max-width:100%!important;overflow-wrap:normal!important;}
+.dcc-competition-portal[data-tab="games"],.dcc-r60-locker-hero,#dccR86Clubhouse,#dccPropBets .dcc-r94-ledger-header{background:#153629!important;color:#f5ecdc!important;border:0!important;border-radius:12px!important;box-shadow:none!important;margin:6px 0 9px!important;}
+.dcc-competition-portal[data-tab="games"] h2,.dcc-r60-locker-hero h2,#dccR86Clubhouse .dcc-r86-title,#dccPropBets .dcc-r94-ledger-header h2,.ai-card #aiHeading{font:700 clamp(23px,5.5vw,29px)/1.15 Georgia,serif!important;letter-spacing:-.025em!important;text-transform:none!important;}
+.dcc-r60-locker-hero{padding:13px 16px!important;}
+#dccR86Clubhouse{padding:14px 16px!important;}
+#dccPropBets .dcc-r94-ledger-header{padding:14px 16px!important;}
+/* Shared utility buttons: no inherited oversized width or theatrical gradients. */
+#dccR86Clubhouse button,#dccR67EquipmentLead button,#dccPropBets .dcc-r94-new-bet,#moneyRoomSection .dcc-r95-open-room{box-shadow:none!important;border-radius:9px!important;min-height:40px!important;max-width:100%!important;}
+@media(max-width:420px){.tabbar.dcc-bespoke-nav{gap:2px!important;padding-left:3px!important;padding-right:3px!important}.tabbar.dcc-bespoke-nav button{font-size:9px!important}.dcc-r62-header .dcc-r62-approved-logo{max-height:94px!important}}
+
+/* R101: keep actual member identity readable inside the masthead on small screens. */
+.dcc-r62-header .dcc-r62-account{max-width:min(38vw,160px)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+@media(max-width:420px){.dcc-r62-header .dcc-r62-account{max-width:36vw!important;}}
+
+/* R118 — scalable Grounds game finder; existing game buttons remain the source of truth. */
+#gamesMenu .dcc-game-filter{margin:10px 0 12px;padding:12px;background:#f5ecdc;border:1px solid #d4af6e;border-radius:14px;color:#153629}
+#gamesMenu .dcc-game-filter label{display:block;color:#153629;font:700 11px/1.4 system-ui,sans-serif;letter-spacing:.12em;margin-bottom:7px}
+#gamesMenu .dcc-game-filter-row{display:flex;gap:8px;align-items:center}
+#gamesMenu #dccGameSearch{width:100%;min-width:0;min-height:44px;background:#fffcf3!important;color:#153629!important;border:1px solid #ac9b77!important;border-radius:10px;padding:10px 12px;font-size:16px}
+#gamesMenu #dccGameSearch::placeholder{color:#59685c;opacity:1}
+#gamesMenu #dccGameSearchClear{background:#153629;color:#f5ecdc;border:0;border-radius:9px;min-height:44px;padding:9px 12px;font-weight:700}
+#gamesMenu #dccGameSearchSummary{font-size:12px;color:#526453;margin:7px 0 0}
+#gamesMenu #dccGameSearchEmpty{padding:12px;border:1px solid #d4af6e;border-radius:12px;color:#153629;background:#f5ecdc}
+#gamesMenu .game-pick[hidden]{display:none!important}
+
+/* R119 — One featured House Ghost surface. Existing scorer stays in the same DOM. */
+.dcc-r91-solo-panel{background:#153629!important;border:1px solid #d4af6e!important;border-radius:16px!important;overflow:hidden!important;box-shadow:none!important}
+.dcc-r91-solo-panel>summary{min-height:118px!important;padding:16px!important;align-items:center!important;gap:12px!important;background:radial-gradient(circle at 95% 0%,rgba(212,175,110,.17),transparent 52%),#153629!important;color:#f5ecdc!important}
+.dcc-r91-solo-panel>summary:focus-visible{outline:3px solid #d4af6e;outline-offset:-4px}
+.dcc-r119-ghost-copy{display:flex!important;flex-direction:column!important;gap:6px!important;min-width:0!important}
+.dcc-r91-solo-panel>summary .dcc-r119-ghost-copy small{color:#d4af6e!important;font:700 10px/1.2 system-ui,sans-serif!important;letter-spacing:.09em!important}
+.dcc-r91-solo-panel>summary .dcc-r119-ghost-copy strong{color:#f5ecdc!important;font:700 clamp(24px,6vw,32px)/1 Georgia,serif!important;letter-spacing:-.02em}
+.dcc-r91-solo-panel>summary .dcc-r119-ghost-copy em{color:#e9e0d1!important;font:400 12px/1.35 system-ui,sans-serif!important}
+.dcc-r119-ghost-action{display:flex;flex:0 0 auto;align-items:center;gap:5px;color:#153629;background:#d4af6e;border-radius:10px;padding:10px;font:800 9px/1.2 system-ui,sans-serif;letter-spacing:.04em;max-width:118px;text-align:center}
+.dcc-r119-ghost-action .dcc-r91-plus{color:#153629!important;font-size:19px!important;line-height:1!important}
+.dcc-r91-solo-panel[open] .dcc-r119-ghost-action{background:#f5ecdc}
+.dcc-r91-solo-panel #dccGhostCard{background:#f5ecdc!important;border-top:1px solid #d4af6e!important;padding:14px!important}
+.dcc-r91-solo-panel #dccGhostCard .dcc-ghost-hero{display:none!important}
+@media(max-width:390px){.dcc-r91-solo-panel>summary{min-height:110px!important;padding:13px!important}.dcc-r119-ghost-action{padding:8px;max-width:100px;font-size:8px}}

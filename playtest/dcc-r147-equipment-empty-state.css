@@ -1,0 +1,16 @@
+/* R147 — Equipment Room empty-state hierarchy, visual-only.
+   When the real bag table has no rows, replace the orphaned column headings
+   with a helpful first-use prompt. Rows appearing later restore the table. */
+#dccR67Bag #dccBagClubList:has(> table > #manualtable:empty) > table {display:none!important}
+#dccR67Bag #dccBagClubList:has(> table > #manualtable:empty)::after {
+  content:"Your bag is ready for its first club. Select Edit Bag to add your carry distances.";
+  display:block;
+  margin:13px 0 4px;
+  padding:15px 16px;
+  background:#f9f4e9;
+  border:1px solid #decda9;
+  border-radius:12px;
+  color:#435b4b;
+  font:500 13px/1.55 system-ui,sans-serif;
+}
+@media (max-width:350px){#dccR67Bag #dccBagClubList:has(> table > #manualtable:empty)::after {padding:13px;font-size:12px}}

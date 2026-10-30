@@ -1,0 +1,6 @@
+/* R143: quiet utility presentation in existing Clubhouse secondary services. */
+#dccR79ClubTools .dcc-r143-vault-service{display:block!important;margin:12px 0!important;padding:0!important;border:1px solid rgba(212,175,110,.4)!important;border-radius:12px!important;background:#f5ecdc!important;color:#153629!important;box-shadow:none!important}
+#dccR79ClubTools .dcc-r143-vault-service>summary{padding:12px 14px!important;color:#153629!important;font:650 13px/1.4 system-ui,sans-serif!important;cursor:pointer}
+#dccR79ClubTools .dcc-r143-vault-service[open]{padding-bottom:13px!important}
+#dccR79ClubTools .dcc-r143-vault-service>p{margin:8px 14px!important;color:#506358!important;line-height:1.45!important}
+#dccR79ClubTools .dcc-r143-vault-service>button{margin:6px 6px 4px 14px!important;max-width:calc(100% - 28px)!important;white-space:normal!important}

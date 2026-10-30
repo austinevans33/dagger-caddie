@@ -1,0 +1,10 @@
+/* R137 - screenshot-informed masthead scale; retains approved original image.
+   R135 390px capture left 86px gutters making the logo unnaturally small.
+   Reserve equal narrower safe lanes for anchored member controls. */
+@media(max-width:600px){
+ .dcc-r62-header.mast{padding-left:72px!important;padding-right:72px!important}
+ .dcc-r62-header .dcc-r62-approved-logo{width:100%!important;max-width:100%!important;max-height:92px!important}
+}
+@media(max-width:350px){
+ .dcc-r62-header.mast{padding-left:68px!important;padding-right:68px!important}
+}
