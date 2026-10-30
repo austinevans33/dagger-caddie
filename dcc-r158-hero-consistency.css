@@ -1,0 +1,4 @@
+/* R158 — unified sentence-case hero titles and visible one-line taglines. */
+.content>.dcc-r60-games-header .dcc-competition-portal__hero h2{text-transform:none!important}
+.content>.dcc-r60-games-header .dcc-competition-portal__hero p{display:block!important;visibility:visible!important;opacity:1!important;margin-top:11px!important;color:#f5ecdc!important;font:400 clamp(13px,3.4vw,17px)/1.45 system-ui,sans-serif!important}
+#dccR86Clubhouse>.dcc-r158-clubhouse-tagline{display:block!important;margin:8px 0 18px!important;color:#f5ecdc!important;font:400 clamp(13px,3.4vw,17px)/1.45 system-ui,sans-serif!important;letter-spacing:normal!important;text-transform:none!important}
