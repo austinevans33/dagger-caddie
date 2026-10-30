@@ -10,7 +10,7 @@ function courseOf(x){
  return {provider,providerCourseId,name:String(x.course_name||'').trim(),region:[x.city,x.state].filter(Boolean).join(', ')};
 }
 function teesOf(detail){
- const raw=Array.isArray(detail?.tees)?detail.tees:[];
+ const raw=Array.isArray(detail?.tees)?detail.tees:Array.isArray(detail)?detail:[];
  return raw.map((t,i)=>({
   providerTeeId:validId(t.id??t.tee_id??t.name??t.tee_name??''),
   name:String(t.name??t.tee_name??'').trim(),
@@ -23,7 +23,7 @@ export function searchResultCourses(body){
 }
 export function courseDetailToCatalog(course,detail){
  if(!course||!detail)return [];
- if(validId(detail.id)!==course.providerCourseId)return [];
+ if(detail.id!=null&&validId(detail.id)!==course.providerCourseId)return [];
  return normalizeCatalog([{course,tees:teesOf(detail)}]);
 }
 async function getJSON(url,fetcher){
@@ -41,7 +41,7 @@ export async function searchOpenGolfCourses(query,{fetcher=fetch,signal}={}){
 }
 export async function loadOpenGolfTees(course,{fetcher=fetch,signal}={}){
  if(course?.provider!==provider||!course.providerCourseId||!/^[a-zA-Z0-9._:-]+$/.test(course.providerCourseId))return [];
- const url=BASE+'/'+encodeURIComponent(course.providerCourseId);
+ const url=BASE+'/'+encodeURIComponent(course.providerCourseId)+'/tees';
  const response=await fetcher(url,{headers:{Accept:'application/json'},signal});
  if(!response.ok)throw Error('Course details unavailable ('+response.status+').');
  return courseDetailToCatalog(course,await response.json());
