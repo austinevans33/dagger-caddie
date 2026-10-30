@@ -36,3 +36,22 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installGhostRecovery,{once:true});
  else installGhostRecovery();
 })();
+
+// R91 move repair: a panel moved out of the original tab may retain inert.
+// Never remove inert from a genuinely inactive Grounds tab.
+(function(){'use strict';
+ function repair(){
+  const ghost=document.getElementById('dccGhostCard');
+  const solo=document.getElementById('dccR91SoloPanel');
+  const active=document.getElementById('tab-games')?.classList.contains('active');
+  if(!ghost||!solo||!solo.contains(ghost)||!active)return;
+  ghost.removeAttribute('inert');
+  ghost.removeAttribute('aria-hidden');
+  ghost.classList.remove('hidden-panel');
+ }
+ document.addEventListener('click',e=>{
+  if(e.target.closest?.('#tab-games,#dccR91SoloPanel'))setTimeout(repair,0);
+ });
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(repair,150),{once:true});
+ else setTimeout(repair,150);
+})();
