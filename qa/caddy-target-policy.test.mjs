@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {buildCaddyTarget} from '../staging-app/caddy-target-policy.js';import {readFileSync} from 'node:fs';
+test('golfer yardage supports center green without fabricated green GPS',()=>{const r=buildCaddyTarget({remainingYards:'157',lie:'Fairway'});assert.equal(r.target,'center-green');assert.equal(r.distanceYards,157);assert.equal(r.distanceSource,'golfer-reported');});
+test('no distance uses conservative ask, not scorecard inference',()=>{for(const x of ['',null,'bad',900]){const r=buildCaddyTarget({remainingYards:x});assert.equal(r.distanceYards,null);assert.equal(r.distanceSource,'golfer-needed');}});
+test('backend applies center-green instructions',()=>{const s=readFileSync(new URL('../functions/index.js',import.meta.url),'utf8');assert.match(s,/Default intended target is center of green/);assert.match(s,/remainingDistanceSource/);});
