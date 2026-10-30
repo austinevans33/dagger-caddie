@@ -30,7 +30,6 @@ if (!window.location.search && !window.location.hash) {
   document.getElementById('tab-play')?.click();
 }
 
-
 let conversation=[],working=false,authPromise=null;
 let latestMemoryCandidate = null;
 
@@ -215,7 +214,7 @@ async function getMemoryDb() {
   memoryDb = getFirestore(app);
   return memoryDb;
 }
-const URL='https://us-central1-dagger-caddie-money-room.cloudfunctions.net/caddieChat';
+const URL=`https://us-central1-${firebaseConfig.projectId}.cloudfunctions.net/caddieChat`;
 const ui={
   status:$('aiStatus'),
   history:$('aiHistory'),
