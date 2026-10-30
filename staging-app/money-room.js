@@ -256,7 +256,22 @@ const shareInvite=async(qr=false)=>{if(!roomId){status('Create or join a room fi
 $('roomCopy').onclick=singleFlight(()=>shareInvite(false));
 $('roomShareCurrent').onclick=singleFlight(()=>shareInvite(true));
 $('roomLocalArchive').onclick=()=>{if(!room)return;archiveLocal();status('Saved a snapshot in this phone’s local archives.');};
-$('roomSaveHole').onclick=async()=>{try{if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');session.assertIdentity(room.hostUid);const hole=Number($('roomHole').value);const scores=[...$('roomScoreRows').querySelectorAll('input')].map(e=>Number(e.value));if(scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Enter a valid stroke score for every player.');const holes={...(room.holes||{}),[hole]:scores};await functions.updateDoc(functions.doc(db,'rooms',roomId),{holes,lastEditor:room.hostName,lastChange:Date.now()});status('Hole '+hole+' recorded and sent to connected members.');}catch(e){status('Save failed: '+e.message);}};
+// One save in flight per host phone; update only the selected hole so a stale
+// listener snapshot cannot overwrite another hole's scores.
+$('roomSaveHole').onclick=singleFlight(async()=>{try{
+ if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');
+ const scorekeeperUid=room.hostUid, savingRoomId=roomId;
+ session.assertIdentity(scorekeeperUid);
+ const hole=Number($('roomHole').value);
+ if(!Number.isInteger(hole)||hole<1||hole>18)throw Error('Choose a hole from 1 to 18.');
+ const scores=[...$('roomScoreRows').querySelectorAll('input')].map(e=>Number(e.value));
+ if(scores.length!==room.players.length||scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Enter a valid stroke score for every player.');
+ await functions.updateDoc(functions.doc(db,'rooms',savingRoomId),{
+  ['holes.'+hole]:scores,lastEditor:room.hostName,lastChange:Date.now()
+ });
+ if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Hole '+hole+' recorded and sent to connected members.');
+ }catch(e){status('Save failed: '+e.message);}
+});
 $('roomFinish').onclick=async()=>{if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;if(!confirm('Archive this match for everyone? Future edits will be locked.'))return;try{const closingId=roomId,closingUid=auth.currentUser.uid;await functions.updateDoc(functions.doc(db,'rooms',closingId),{archived:true,lastChange:Date.now()});forgetRoom(roomStore,closingUid,closingId);if(roomId===closingId&&auth.currentUser?.uid===closingUid){archiveLocal();status('Match archived. Scorekeeper can no longer edit it.');}}catch(e){status('Archive failed: '+e.message);}};
 async function init(){if(!isConfigured){status('Local mode · Live sync is not configured. See SETUP_FIREBASE.md. Local games and Betting still work.');return;}
  try{
