@@ -101,8 +101,8 @@ function render(){
  if(user?.uid&&roomId&&invite){
   if(!room.archived&&!rememberRoom(roomStore,{uid:user.uid,id:roomId,invite,name:($('roomMe').value.trim()||room.hostName||'Guest').slice(0,24)}))status('Live room connected. Save your invitation link; this browser cannot remember the room.');
  }
- $('roomScoreSection').hidden=false;
- $('roomEditor').hidden=!host; $('roomSpectator').hidden=host;
+ $('roomScoreSection').hidden=!!room.archived;
+ $('roomEditor').hidden=!host||!!room.archived; $('roomSpectator').hidden=host;
  syncHostQr();
  $('roomInvitationBanner').hidden=true;
  $('roomSetup').open=false;
@@ -205,6 +205,7 @@ async function connect(id){if(roomUnsub)roomUnsub();roomId=id;const version=++co
  roomUnsub=onSnapshot(doc(db,'rooms',id),snap=>{if(version!==connectionVersion||auth.currentUser?.uid!==user?.uid)return;if(!snap.exists()){status('Room not found, or access denied.');return;}room=snap.data();if(room.archived&&!snap.metadata?.hasPendingWrites&&!snap.metadata?.fromCache)forgetRoom(roomStore,user.uid,roomId);status('LIVE · Updates delivered across connected phones · '+roomLabel());render();},err=>{if(version===connectionVersion)status('Could not subscribe: '+err.message);});
 }
 async function create(){const attempt=++actionVersion;try{
+ await initialization;
  if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
  user=await session.current();const operationUid=user.uid;
  const me=$('roomMe').value.trim();const others=$('roomPlayers').value.split(',').map(x=>x.trim()).filter(Boolean);const players=[me,...others];
@@ -219,6 +220,11 @@ async function join(){
  const attempt=++actionVersion;
  let stage='validation';
  try{
+  stage='connection-startup';
+  status('Preparing secure connection to the Money Room…');
+  await initialization;
+  if(attempt!==actionVersion)return;
+  stage='validation';
   if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
  user=await session.current();const operationUid=user.uid;
   const {id,code}=parseInvite($('roomCode').value);
@@ -256,8 +262,24 @@ const shareInvite=async(qr=false)=>{if(!roomId){status('Create or join a room fi
 $('roomCopy').onclick=singleFlight(()=>shareInvite(false));
 $('roomShareCurrent').onclick=singleFlight(()=>shareInvite(true));
 $('roomLocalArchive').onclick=()=>{if(!room)return;archiveLocal();status('Saved a snapshot in this phone’s local archives.');};
-$('roomSaveHole').onclick=async()=>{try{if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');session.assertIdentity(room.hostUid);const hole=Number($('roomHole').value);const scores=[...$('roomScoreRows').querySelectorAll('input')].map(e=>Number(e.value));if(scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Enter a valid stroke score for every player.');const holes={...(room.holes||{}),[hole]:scores};await functions.updateDoc(functions.doc(db,'rooms',roomId),{holes,lastEditor:room.hostName,lastChange:Date.now()});status('Hole '+hole+' recorded and sent to connected members.');}catch(e){status('Save failed: '+e.message);}};
-$('roomFinish').onclick=async()=>{if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;if(!confirm('Archive this match for everyone? Future edits will be locked.'))return;try{const closingId=roomId,closingUid=auth.currentUser.uid;await functions.updateDoc(functions.doc(db,'rooms',closingId),{archived:true,lastChange:Date.now()});forgetRoom(roomStore,closingUid,closingId);if(roomId===closingId&&auth.currentUser?.uid===closingUid){archiveLocal();status('Match archived. Scorekeeper can no longer edit it.');}}catch(e){status('Archive failed: '+e.message);}};
+// One save in flight per host phone; update only the selected hole so a stale
+// listener snapshot cannot overwrite another hole's scores.
+$('roomSaveHole').onclick=singleFlight(async()=>{
+ const savingRoomId=roomId,scorekeeperUid=auth?.currentUser?.uid;
+ try{
+ if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');
+ session.assertIdentity(room.hostUid);
+ const hole=Number($('roomHole').value);
+ if(!Number.isInteger(hole)||hole<1||hole>18)throw Error('Choose a hole from 1 to 18.');
+ const scores=[...$('roomScoreRows').querySelectorAll('input')].map(e=>Number(e.value));
+ if(scores.length!==room.players.length||scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Enter a valid stroke score for every player.');
+ await functions.updateDoc(functions.doc(db,'rooms',savingRoomId),{
+  ['holes.'+hole]:scores,lastEditor:room.hostName,lastChange:Date.now()
+ });
+ if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Hole '+hole+' recorded and sent to connected members.');
+ }catch(e){if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Save failed: '+e.message);}
+});
+$('roomFinish').onclick=async()=>{if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;if(!confirm('Archive this match for everyone? Future edits will be locked.'))return;try{const closingId=roomId,closingUid=auth.currentUser.uid;await functions.updateDoc(functions.doc(db,'rooms',closingId),{archived:true,lastChange:Date.now()});forgetRoom(roomStore,closingUid,closingId);if(roomId===closingId&&auth.currentUser?.uid===closingUid){archiveLocal();$('roomSetup').open=false;$('roomScoreSection').hidden=true;$('roomHostQr')?.remove();displayedQrLink='';status('Match archived. Live Money Room closed; the archived record is saved.');}}catch(e){status('Archive failed: '+e.message);}};
 async function init(){if(!isConfigured){status('Local mode · Live sync is not configured. See SETUP_FIREBASE.md. Local games and Betting still work.');return;}
  try{
  const appMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js');
@@ -325,4 +347,5 @@ if(selector&&!selector.children.length){
  const ready=new MutationObserver(()=>{ready.disconnect();if(roomId)focusMoneyRoom();else showIncomingInvitation();});
  ready.observe(selector,{childList:true});
 }
-init();
+// First-tap joins wait for Firebase startup rather than failing before imports load.
+const initialization=init();
