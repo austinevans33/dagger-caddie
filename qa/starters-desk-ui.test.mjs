@@ -9,7 +9,7 @@ test('Starter Desk searches real catalog, supports tee check-in and skip',()=>{
  assert.match(ui,/saveActiveRound\(storage,/);
  assert.match(ui,/My course isn’t listed yet/);
  assert.match(ui,/Course data © OpenStreetMap contributors/);
- assert.match(ui,/Course name<\\/label>/);
+ assert.ok(ui.includes('Course name</label>'));
  assert.match(ui,/dialog\.showModal\(\)/);
  assert.match(ui,/readActiveRound\(storage\)/);
  assert.match(chat,/mountStartersDesk\(\)/);
