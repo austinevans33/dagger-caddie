@@ -47,3 +47,16 @@ test('host score save is serialized and patches only selected hole',async()=>{
  assert.match(handler,/session\.assertIdentity\(room\.hostUid\)/,'identity remains verified');
  assert.match(handler,/if\(roomId===savingRoomId&&auth\.currentUser\?\.uid===scorekeeperUid\)status\('Save failed:/,'stale errors cannot replace a new room status');
 });
+
+test('QR first tap waits for Firebase initialization before joining',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const src=readFileSync(new URL('../staging-app/money-room.js',import.meta.url),'utf8');
+ const joinStart=src.indexOf('async function join(){');
+ const joinEnd=src.indexOf('const createOnce=',joinStart);
+ assert.ok(joinStart>=0&&joinEnd>joinStart);
+ const join=src.slice(joinStart,joinEnd);
+ assert.match(join,/await initialization;/);
+ assert.ok(join.indexOf('await initialization;')<join.indexOf('if(!session)'),'startup finishes before readiness check');
+ assert.match(join,/if\(attempt!==actionVersion\)return;/,'canceled join cannot resume after startup');
+ assert.match(src,/const initialization=init\(\);/);
+});
