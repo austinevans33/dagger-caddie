@@ -1,3 +1,5 @@
+import {mountSoloScorecard} from './solo-scorecard-ui.js';
+import {readSoloCard} from './solo-scorecard.js';
 import {buildCaddyTarget} from './caddy-target-policy.js';
 import {getRoundEnvironment} from './round-environment.js';
 import {readActiveRound} from './starters-desk-session.js';
@@ -406,7 +408,7 @@ function add(role,content){
 }
 function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
-const holeNumber=Number(document.getElementById('hole')?.value);
+const holeNumber=Number((readSoloCard(localStorage)?.hole ?? document.getElementById('hole')?.value));
 const courseBriefing=createCaddyCourseBriefing(activeRoundEnvironment,holeNumber);
 const aim=buildCaddyTarget({remainingYards:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||''});
 return {aimTarget:aim?.target||'center-green',remainingDistanceSource:aim?.distanceSource||'golfer-needed',courseBriefing:courseBriefing?.slice(0,900)||null,yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
@@ -612,6 +614,7 @@ document.querySelectorAll('.staff-pick').forEach(b =>
 
 // Opt-in preview until a verified course/tee catalog is available.
 mountStartersDesk();
+mountSoloScorecard();
 // Reopening Dagger must restore the existing check-in without another selection.
 if(readActiveRound(localStorage))refreshCaddyRoundEnvironment();
 
