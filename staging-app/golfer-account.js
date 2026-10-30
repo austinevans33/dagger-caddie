@@ -401,7 +401,7 @@ let resetBusy=false;
 $('golferPasswordReset').addEventListener('click', async()=>{
  if(resetBusy)return;
  const email=$('golferEmail').value.trim();
- if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
   status('Enter your membership email above, then tap Forgot password.');return;
  }
  resetBusy=true;
