@@ -8,6 +8,29 @@ import {
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const $=id=>document.getElementById(id);
 const caddies={keith:'Keith',reginald:'Reginald',vinny:'Vinny',kyle:'Kyle'};
+/* Frontend-only Caddy layout. Injected here to preserve frozen R160 index.html. */
+const daggerAdviceStyle = document.createElement('style');
+daggerAdviceStyle.textContent = `
+.dcc-advice-card{display:grid;gap:10px;min-width:0}
+.dcc-advice-card section{min-width:0}
+.dcc-advice-label{font-size:10px;font-weight:800;letter-spacing:.13em;opacity:.75;margin-bottom:5px}
+.dcc-advice-copy{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
+.dcc-advice-club{padding:17px 18px;border-radius:12px;background:#143a2f;color:#f7efd9;border:1px solid #b99a5d}
+.dcc-advice-club .dcc-advice-label{color:#e1bf78;opacity:1}
+.dcc-advice-club .dcc-advice-copy{font-size:clamp(23px,5vw,32px);font-weight:800;line-height:1.13;letter-spacing:-.025em}
+.dcc-advice-detail{padding:0 2px}
+.dcc-advice-hilarity{border-left:3px solid #b99a5d;padding:10px 12px;background:rgba(185,154,93,.12);border-radius:0 8px 8px 0}
+.dcc-advice-hilarity .dcc-advice-copy{font-style:italic}
+@media(max-width:480px){.dcc-advice-card{gap:9px}.dcc-advice-club{padding:14px 15px}}
+`;
+document.head.append(daggerAdviceStyle);
+
+// New visits begin on Play. Keep room invitation deep links untouched.
+if (!window.location.search && !window.location.hash) {
+  document.getElementById('tab-play')?.click();
+}
+
+
 let conversation=[],working=false,authPromise=null;
 let latestMemoryCandidate = null;
 
@@ -301,13 +324,49 @@ const option = Array.from(select.options).find(opt => {
 }
 
 function activeCaddie(){const el=document.querySelector('.staff-pick.active');return el?.dataset?.caddie||'keith';}
+// Dagger advice card: visual-only parser. Preserve the full original reply when labels differ.
+function renderDaggerAdvice(target, reply) {
+  const original = String(reply ?? '');
+  const normalized = original.replace(/\r\n/g, '\n');
+  const label = /(?:^|\n)\s*(?:\*\*)?\s*(CLUB(?: SELECTION)?|SHOT(?: PLAN)?|WHY|HILARITY|THE CADDY SAYS)\s*(?:\*\*)?\s*[:—-]\s*/gim;
+  const matches = [...normalized.matchAll(label)];
+  const plain = () => { target.textContent = original; };
+  if (!matches.length || !matches.some(m => /^CLUB/i.test(m[1]))) { plain(); return; }
+  const sections = {};
+  matches.forEach((m, i) => {
+    const key = /^CLUB/i.test(m[1]) ? 'club' : /^SHOT/i.test(m[1]) ? 'shot' : /^WHY/i.test(m[1]) ? 'why' : 'hilarity';
+    const start = m.index + m[0].length;
+    const end = i+1 < matches.length ? matches[i+1].index : normalized.length;
+    const value = normalized.slice(start,end).trim();
+    if(value) sections[key] = sections[key] ? sections[key]+'\n'+value : value;
+  });
+  if (!sections.club) { plain(); return; }
+  // Keep any introductory prose rather than silently discarding generated advice.
+  const intro = normalized.slice(0,matches[0].index).trim();
+  const card = document.createElement('div');
+  card.className = 'dcc-advice-card';
+  const section = (className,heading,value) => {
+    if (!value) return;
+    const el=document.createElement('section'); el.className=className;
+    const h=document.createElement('div');h.className='dcc-advice-label';h.textContent=heading;
+    const body=document.createElement('div');body.className='dcc-advice-copy';body.textContent=value;
+    el.append(h,body);card.append(el);
+  };
+  if(intro) section('dcc-advice-intro','CADDY NOTE',intro);
+  section('dcc-advice-club','CLUB SELECTION',sections.club);
+  section('dcc-advice-detail','SHOT',sections.shot);
+  section('dcc-advice-detail','WHY',sections.why);
+  section('dcc-advice-hilarity','THE CADDY SAYS',sections.hilarity);
+  target.replaceChildren(card);
+}
 function add(role,content){
   const p=document.createElement('div');
   p.className='ai-bubble '+role;
   const label=document.createElement('strong');
   label.textContent=role==='user'?'You':caddies[activeCaddie()]||'Caddie';
   const text=document.createElement('div');
-  text.textContent=content;
+  if(role==='assistant') renderDaggerAdvice(text,content);
+  else text.textContent=content;
   p.append(label,text);
   ui.history.append(p);
 
