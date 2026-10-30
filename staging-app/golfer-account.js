@@ -12,6 +12,7 @@ import {
   browserLocalPersistence,
   signInAnonymously,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   EmailAuthProvider,
   linkWithCredential
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
@@ -92,6 +93,8 @@ section.innerHTML = `
         Sign In
       </button>
     </div>
+
+    <button id="golferPasswordReset" type="button" class="btn-secondary" style="margin-top:12px;width:100%">Forgot password? Email me a reset link</button>
 
     <p class="tiny-print">
       Creating an account upgrades your current anonymous
@@ -288,13 +291,15 @@ function friendlyError(error) {
   }
 
   if (code === 'auth/invalid-credential') {
-    return 'Email or password was not accepted.';
+    return 'Email or password was not accepted. Use Forgot password to reset it.';
   }
 
   if (code === 'auth/weak-password') {
     return 'Choose a stronger password.';
   }
 
+  if (code === 'auth/invalid-email') return 'Enter a valid email address.';
+  if (code === 'auth/too-many-requests') return 'Too many attempts. Try again later.';
   if (code === 'auth/network-request-failed') {
     return 'Network unavailable. Try again.';
   }
@@ -389,3 +394,26 @@ $('golferLogin').addEventListener(
   'click',
   () => runAction('login')
 );
+
+// Password reset is an email-only operation. Never sign out, change UID,
+// disclose account existence, or request the forgotten password.
+let resetBusy=false;
+$('golferPasswordReset').addEventListener('click', async()=>{
+ if(resetBusy)return;
+ const email=$('golferEmail').value.trim();
+ if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){
+  status('Enter your membership email above, then tap Forgot password.');return;
+ }
+ resetBusy=true;
+ $('golferPasswordReset').disabled=true;
+ try{
+  await sendPasswordResetEmail(auth,email);
+  status('If an account uses that email, a password reset link will arrive. Check your inbox and spam folder.');
+ }catch(error){
+  // Do not reveal whether an account exists; Firebase may enumerate users
+  // when email enumeration protection is not enabled.
+  if(['auth/user-not-found','auth/invalid-credential'].includes(error.code)){
+   status('If an account uses that email, a password reset link will arrive. Check your inbox and spam folder.');
+  }else status(friendlyError(error));
+ }finally{resetBusy=false;$('golferPasswordReset').disabled=false;}
+});
