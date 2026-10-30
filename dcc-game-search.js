@@ -21,3 +21,18 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
+
+// Independent House Ghost recovery hook: runs even if the AI Caddy module fails.
+(function(){
+ function installGhostRecovery(){
+  import('./ghost-partial-archive.js').then(({installPartialGhostArchive})=>{
+   installPartialGhostArchive();
+  }).catch(error=>{
+   console.warn('House Ghost recovery unavailable:',error);
+   const message=document.getElementById('dccGhostMessage');
+   if(message)message.textContent='House Ghost recovery could not load. Your scores are unchanged.';
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installGhostRecovery,{once:true});
+ else installGhostRecovery();
+})();
