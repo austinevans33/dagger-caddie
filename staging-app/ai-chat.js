@@ -1,3 +1,4 @@
+import {mountStartersDesk} from './starters-desk-ui.js';
 import {firebaseConfig} from './firebase-config.js';
 import {
   getFirestore,
@@ -576,3 +577,6 @@ document.querySelectorAll('.staff-pick').forEach(b =>
       'New caddie selected · Start talking';
   })
 );
+
+// Opt-in preview until a verified course/tee catalog is available.
+mountStartersDesk();
