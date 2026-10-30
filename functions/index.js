@@ -109,7 +109,7 @@ try {
  const last=messages.at(-1);if(last.role!=='user'||!last.content.trim()){reply(res,400,{error:'Send a question first'});return;}
  const info=body.context&&typeof body.context==='object'?body.context:{};
  const limitText=(v,n)=>String(v==null?'':v).slice(0,n);
- const context={yardage:limitText(info.yardage,5),lie:limitText(info.lie,35),wind:limitText(info.wind,35),pin:limitText(info.pin,35),hazard:limitText(info.hazard,50),clubs:limitText(info.clubs,1200),money:limitText(info.money,300),courseBriefing:typeof info.courseBriefing==='string'&&info.courseBriefing.length<=900?info.courseBriefing.replace(/[\\u0000-\\u001f]/g,' ').slice(0,900):''};
+ const context={yardage:limitText(info.yardage,5),lie:limitText(info.lie,35),wind:limitText(info.wind,35),pin:limitText(info.pin,35),hazard:limitText(info.hazard,50),clubs:limitText(info.clubs,1200),money:limitText(info.money,300),courseBriefing:typeof info.courseBriefing==='string'&&info.courseBriefing.length<=900?info.courseBriefing.replace(/[\u0000-\u001f]/g,' ').slice(0,900):''};
   // Load saved golfer memory using the verified Firebase UID.
  // If unavailable, the caddie can still answer normally.
  let golferMemory = null;
