@@ -101,8 +101,8 @@ function render(){
  if(user?.uid&&roomId&&invite){
   if(!room.archived&&!rememberRoom(roomStore,{uid:user.uid,id:roomId,invite,name:($('roomMe').value.trim()||room.hostName||'Guest').slice(0,24)}))status('Live room connected. Save your invitation link; this browser cannot remember the room.');
  }
- $('roomScoreSection').hidden=false;
- $('roomEditor').hidden=!host; $('roomSpectator').hidden=host;
+ $('roomScoreSection').hidden=!!room.archived;
+ $('roomEditor').hidden=!host||!!room.archived; $('roomSpectator').hidden=host;
  syncHostQr();
  $('roomInvitationBanner').hidden=true;
  $('roomSetup').open=false;
@@ -279,7 +279,7 @@ $('roomSaveHole').onclick=singleFlight(async()=>{
  if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Hole '+hole+' recorded and sent to connected members.');
  }catch(e){if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Save failed: '+e.message);}
 });
-$('roomFinish').onclick=async()=>{if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;if(!confirm('Archive this match for everyone? Future edits will be locked.'))return;try{const closingId=roomId,closingUid=auth.currentUser.uid;await functions.updateDoc(functions.doc(db,'rooms',closingId),{archived:true,lastChange:Date.now()});forgetRoom(roomStore,closingUid,closingId);if(roomId===closingId&&auth.currentUser?.uid===closingUid){archiveLocal();status('Match archived. Scorekeeper can no longer edit it.');}}catch(e){status('Archive failed: '+e.message);}};
+$('roomFinish').onclick=async()=>{if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;if(!confirm('Archive this match for everyone? Future edits will be locked.'))return;try{const closingId=roomId,closingUid=auth.currentUser.uid;await functions.updateDoc(functions.doc(db,'rooms',closingId),{archived:true,lastChange:Date.now()});forgetRoom(roomStore,closingUid,closingId);if(roomId===closingId&&auth.currentUser?.uid===closingUid){archiveLocal();$('roomSetup').open=false;$('roomScoreSection').hidden=true;$('roomHostQr')?.remove();displayedQrLink='';status('Match archived. Live Money Room closed; the archived record is saved.');}}catch(e){status('Archive failed: '+e.message);}};
 async function init(){if(!isConfigured){status('Local mode · Live sync is not configured. See SETUP_FIREBASE.md. Local games and Betting still work.');return;}
  try{
  const appMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js');
