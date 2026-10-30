@@ -1,4 +1,3 @@
-import {installPartialGhostArchive} from './ghost-partial-archive.js';
 import {mountStartersDesk} from './starters-desk-ui.js';
 import {firebaseConfig} from './firebase-config.js';
 import {
@@ -582,4 +581,3 @@ document.querySelectorAll('.staff-pick').forEach(b =>
 // Opt-in preview until a verified course/tee catalog is available.
 mountStartersDesk();
 
-installPartialGhostArchive();
