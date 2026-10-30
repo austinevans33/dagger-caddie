@@ -60,3 +60,16 @@ test('QR first tap waits for Firebase initialization before joining',async()=>{
  assert.match(join,/if\(attempt!==actionVersion\)return;/,'canceled join cannot resume after startup');
  assert.match(src,/const initialization=init\(\);/);
 });
+
+test('archiving hides the active Money Room and preserves its local archive',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const src=readFileSync(new URL('../staging-app/money-room.js',import.meta.url),'utf8');
+ assert.match(src,/\$\('roomScoreSection'\)\.hidden=!!room\.archived/,'archived snapshot closes the live scorecard');
+ const start=src.indexOf("$('roomFinish').onclick=");
+ const end=src.indexOf('async function init()',start);
+ assert.ok(start>=0&&end>start);
+ const archive=src.slice(start,end);
+ assert.ok(archive.indexOf("await functions.updateDoc")<archive.indexOf("archiveLocal()"),'archive is saved before UI closes');
+ assert.match(archive,/archiveLocal\(\);\$\('roomSetup'\)\.open=false;\$\('roomScoreSection'\)\.hidden=true/);
+ assert.match(archive,/catch\(e\)\{status\('Archive failed:/,'failed archive does not close UI');
+});
