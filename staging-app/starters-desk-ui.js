@@ -73,9 +73,16 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
   dialog.querySelector('#dcc-starter-current').textContent=active?`Checked in: ${active.selection.course.name} · ${active.selection.tee.name} · Hole ${active.selection.holeNumber}`:'No course checked in yet.';
   if(!dialog.open)dialog.showModal();
  });
- dialog.querySelector('#dcc-starter-later').addEventListener('click',()=>dialog.close());
+ dialog.querySelector('#dcc-starter-later').addEventListener('click',()=>{try{sessionStorage.setItem('dcc_starter_skipped_session_v1','1');}catch{}dialog.close();});
  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
  const mast=doc.querySelector('.app-shell .mast')||doc.querySelector('[data-tab="settings"]')||doc.body;
  mast.append(button);doc.body.append(dialog);
+ // First visit: offer the course register once per browser tab, without
+ // blocking the clubhouse on repeat opens when a user chose to skip.
+ try{
+  if(!readActiveRound(storage)&&sessionStorage.getItem('dcc_starter_skipped_session_v1')!=='1'){
+   setTimeout(()=>{if(!dialog.open)button.click();},0);
+  }
+ }catch{/* Session storage can be disabled; manual entry remains available. */}
  return {open:()=>button.click(),clear:()=>clearActiveRound(storage)};
 }
