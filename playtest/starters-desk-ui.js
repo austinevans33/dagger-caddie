@@ -3,6 +3,8 @@
 import {readActiveRound,clearActiveRound,saveActiveRound} from './starters-desk-session.js';
 import {searchOpenGolfCourses,loadOpenGolfTees} from './opengolf-catalog.js';
 import {getRoundEnvironment} from './round-environment.js';
+import {readSoloCard} from './solo-scorecard.js';
+import {archiveAndClearSoloRound} from './solo-round-reset.js';
 export function mountStartersDesk({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-starter-open'))return;
  const style=doc.createElement('style');
@@ -22,7 +24,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  const button=doc.createElement('button');button.id='dcc-starter-open';button.type='button';button.textContent='THE STARTER’S DESK';
  const dialog=doc.createElement('dialog');dialog.id='dcc-starter-dialog';
  dialog.setAttribute('aria-label','Dagger Country Club Starter’s Desk');
- dialog.innerHTML=`<div class="dcc-starter-head"><div class="dcc-starter-eyebrow">DAGGER COUNTRY CLUB · THE FIRST TEE</div><h2>The Starter’s Desk</h2><p>“Where shall we be conducting today’s investigation into your handicap?”</p></div><div class="dcc-starter-body"><p id="dcc-starter-current"></p><label for="dcc-starter-query">Course name</label><input id="dcc-starter-query" placeholder="Search a golf course by name" maxlength="100"/><button type="button" id="dcc-starter-search">Find courses</button><div id="dcc-starter-results" aria-live="polite"></div><label for="dcc-starter-tees">Your tees</label><select id="dcc-starter-tees" disabled><option value="">Select a course first</option></select><button type="button" id="dcc-starter-checkin" disabled>Begin Round</button><button class="secondary" id="dcc-starter-later" type="button">My course isn’t listed yet — enter the clubhouse</button><p style="font-size:10px;opacity:.75">Course data © OpenStreetMap contributors (ODbL 1.0) via OpenGolfAPI.</p></div>`;
+ dialog.innerHTML=`<div class="dcc-starter-head"><div class="dcc-starter-eyebrow">DAGGER COUNTRY CLUB · THE FIRST TEE</div><h2>The Starter’s Desk</h2><p>“Where shall we be conducting today’s investigation into your handicap?”</p></div><div class="dcc-starter-body"><p id="dcc-starter-current"></p><label for="dcc-starter-query">Course name</label><input id="dcc-starter-query" placeholder="Search a golf course by name" maxlength="100"/><button type="button" id="dcc-starter-search">Find courses</button><div id="dcc-starter-results" aria-live="polite"></div><label for="dcc-starter-tees">Your tees</label><select id="dcc-starter-tees" disabled><option value="">Select a course first</option></select><button type="button" id="dcc-starter-checkin" disabled>Begin Round</button><button class="secondary" id="dcc-starter-new-round" type="button" hidden>Archive & Change Course / New Round</button><button class="secondary" id="dcc-starter-later" type="button">My course isn’t listed yet — enter the clubhouse</button><p style="font-size:10px;opacity:.75">Course data © OpenStreetMap contributors (ODbL 1.0) via OpenGolfAPI.</p></div>`;
  const query=dialog.querySelector('#dcc-starter-query');
  const results=dialog.querySelector('#dcc-starter-results');
  const tees=dialog.querySelector('#dcc-starter-tees');
@@ -61,6 +63,15 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  checkin.addEventListener('click',()=>{
   const tee=available[Number(tees.value)];
   if(!selected||!tee||tees.value==='')return;
+  const previous=readActiveRound(storage);
+  if(previous){
+   const existing=readSoloCard(storage);
+   const haveScores=!!existing?.scores.some(Number.isInteger);
+   const explanation=haveScores?'Your current solo scorecard will be archived before starting this round. Continue?':'Start a new round and replace your existing course check-in?';
+   if(!confirm(explanation))return;
+   const result=archiveAndClearSoloRound(storage);
+   if(!result.ok){results.textContent='Could not safely archive the current round. Your scores were retained.';return;}
+  }
   if(saveActiveRound(storage,{course:selected,tee,holeNumber:1})){
    doc.dispatchEvent(new CustomEvent('dcc:course-selected',{detail:{course:selected,tee,holeNumber:1}}));
    dialog.close();
@@ -71,7 +82,22 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  button.addEventListener('click',()=>{
   const active=readActiveRound(storage);
   dialog.querySelector('#dcc-starter-current').textContent=active?`Checked in: ${active.selection.course.name} · ${active.selection.tee.name} · Hole ${active.selection.holeNumber}`:'No course checked in yet.';
+  dialog.querySelector('#dcc-starter-new-round').hidden=!active;
   if(!dialog.open)dialog.showModal();
+ });
+ dialog.querySelector('#dcc-starter-new-round').addEventListener('click',()=>{
+  const active=readActiveRound(storage);
+  if(!active)return;
+  const existing=readSoloCard(storage);
+  const haveScores=!!existing?.scores.some(Number.isInteger);
+  if(!confirm(haveScores?'Archive your current solo scorecard and choose a new course?':'Clear your current check-in and choose a new course?'))return;
+  const result=archiveAndClearSoloRound(storage);
+  if(!result.ok){results.textContent='Could not safely archive your round. Nothing was intentionally discarded.';return;}
+  selected=null;available=[];checkin.disabled=true;tees.disabled=true;tees.replaceChildren(new Option('Select a course first',''));
+  results.textContent='Round archived. Search for a new course to check in.';
+  dialog.querySelector('#dcc-starter-current').textContent='No course checked in yet.';
+  dialog.querySelector('#dcc-starter-new-round').hidden=true;
+  doc.dispatchEvent(new CustomEvent('dcc:course-cleared'));
  });
  dialog.querySelector('#dcc-starter-later').addEventListener('click',()=>{try{sessionStorage.setItem('dcc_starter_skipped_session_v1','1');}catch{}dialog.close();});
  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
