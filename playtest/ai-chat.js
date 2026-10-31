@@ -1,11 +1,11 @@
-import {mountSoloScorecard} from './solo-scorecard-ui.js?v=two-rows-2';
+import {mountSoloScorecard} from './solo-scorecard-ui.js?v=course-reset-1';
 import {readSoloCard} from './solo-scorecard.js';
 import {buildCaddyTarget} from './caddy-target-policy.js';
 import {getRoundEnvironment} from './round-environment.js';
 import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
-import {mountStartersDesk} from './starters-desk-ui.js';
+import {mountStartersDesk} from './starters-desk-ui.js?v=course-reset-1';
 import {firebaseConfig} from './firebase-config.js';
 import {
   getFirestore,
