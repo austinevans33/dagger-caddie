@@ -70,7 +70,6 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
    entries.append(b);
   }
   if(state.scores[state.hole-1]>10){const more=doc.createElement('button');more.textContent='Other: '+state.scores[state.hole-1];more.setAttribute('aria-label','Previously entered '+state.scores[state.hole-1]+' strokes');more.disabled=true;entries.append(more);}
-  const other=doc.createElement('button');other.type='button';other.textContent='10+';other.setAttribute('aria-label','Enter a score over ten');other.addEventListener('click',()=>{const value=Number(prompt('Strokes on hole '+state.hole+' (11–15):'));if(Number.isInteger(value)&&value>=11&&value<=15){const next=saveSoloScore(storage,value);if(next){render();broadcast(next.hole);}}});entries.append(other);
   const summary=summarizeSoloCard(state,pars);
   const selectedCaddy=doc.querySelector('.staff-pick.active')?.dataset.caddie||'keith';
   const recap=writeRecap(summary,selectedCaddy);
