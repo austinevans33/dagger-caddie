@@ -5,6 +5,7 @@ import {getRoundEnvironment} from './round-environment.js?v=premium-paper-9';
 import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
+import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js';
 import {mountStartersDesk} from './starters-desk-ui.js?v=premium-paper-9';
 import {firebaseConfig} from './firebase-config.js';
 import {
@@ -40,11 +41,12 @@ if (!window.location.search && !window.location.hash) {
 
 let conversation=[],working=false,authPromise=null;
 let activeRoundEnvironment=null;
+let roundEnvironmentFetchedAt=0;
 let roundEnvironmentLoading=null;
 let roundEnvironmentLoadingSelection=null;
 async function refreshCaddyRoundEnvironment(){
  const active=readActiveRound(localStorage);
- if(!active){activeRoundEnvironment=null;return null;}
+ if(!active){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;return null;}
  // Share in-flight requests only for the same course and tee, never a previous round.
  if(roundEnvironmentLoading&&roundEnvironmentLoadingSelection&&sameCourseSelection(active.selection,roundEnvironmentLoadingSelection))return roundEnvironmentLoading;
  const selection=active.selection;
@@ -52,22 +54,23 @@ async function refreshCaddyRoundEnvironment(){
   const current=readActiveRound(localStorage);
   if(current&&result.selection&&sameCourseSelection(current.selection,result.selection)&&result.state!=='selection-changed'){
    activeRoundEnvironment=result;
+   roundEnvironmentFetchedAt=Date.now();
    document.dispatchEvent(new CustomEvent('dcc:round-environment',{detail:result}));
    return result;
   }
-  if(!current)activeRoundEnvironment=null;
+  if(!current){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;}
   return null;
- }).catch(()=>null);
+ }).catch(()=>{const current=readActiveRound(localStorage);if(current&&sameCourseSelection(current.selection,selection)){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;}return null;});
  roundEnvironmentLoading=pending;
  roundEnvironmentLoadingSelection=selection;
  try{return await pending;}
  finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingSelection=null;}}
 }
-document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;});
-document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;void refreshCaddyRoundEnvironment();});
+document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;});
+document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;void refreshCaddyRoundEnvironment();});
 document.addEventListener('dcc:round-environment',event=>{
  const incoming=event.detail,active=readActiveRound(localStorage);
- if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection))activeRoundEnvironment=incoming;
+ if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection)){activeRoundEnvironment=incoming;roundEnvironmentFetchedAt=Date.now();}
 });
 let latestMemoryCandidate = null;
 
@@ -420,7 +423,7 @@ function add(role,content){
 function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
 const holeNumber=Number((readSoloCard(localStorage)?.hole ?? document.getElementById('hole')?.value));
-const courseBriefing=createCaddyCourseBriefing(activeRoundEnvironment,holeNumber);
+const courseBriefing=createCaddyCourseBriefing(safeCaddyEnvironment(readActiveRound(localStorage),activeRoundEnvironment,roundEnvironmentFetchedAt),holeNumber);
 const aim=buildCaddyTarget({remainingYards:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||''});
 return {aimTarget:aim?.target||'center-green',remainingDistanceSource:aim?.distanceSource||'golfer-needed',courseBriefing:courseBriefing?.slice(0,900)||null,yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
 async function getAuth() {
@@ -480,7 +483,7 @@ try {
 
   // Restore course and conditions when returning to the app before asking a Caddy.
   const selectedRound=readActiveRound(localStorage);
-  if(selectedRound&&(!activeRoundEnvironment||!sameCourseSelection(selectedRound.selection,activeRoundEnvironment.selection))){
+  if(selectedRound&&needsCaddyEnvironmentRefresh(selectedRound,activeRoundEnvironment,roundEnvironmentFetchedAt)){
    await refreshCaddyRoundEnvironment();
   }
   const token = await user.getIdToken();const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({caddie:activeCaddie(),messages:conversation.slice(-12).map(m=>({
