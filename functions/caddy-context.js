@@ -27,7 +27,7 @@ function structuredCourseFacts(value,now=Date.now()){
    windMph:Math.round(w.windMph*10)/10,
    windFromDegrees:Math.round(w.windFromDegrees),
    temperatureF:Math.round(w.temperatureF),
-   observedAt:w.observedAt,isObservation:false};
+   observedAt:w.observedAt,isObservation:false,cached:w.cached===true};
  }
  return result;
 }
