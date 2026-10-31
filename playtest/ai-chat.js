@@ -7,6 +7,7 @@ import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js';
 import {createShotRecordContext} from './shot-record-context.js';
+import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js';
 import {mountStartersDesk} from './starters-desk-ui.js?v=premium-paper-9';
 import {firebaseConfig} from './firebase-config.js';
 import {
@@ -45,17 +46,28 @@ let activeRoundEnvironment=null;
 let roundEnvironmentFetchedAt=0;
 let roundEnvironmentLoading=null;
 let roundEnvironmentLoadingSelection=null;
+let conditionsUI=null;
+function renderCaddyConditions(loading=false){
+ if(!conditionsUI)return;
+ const active=readActiveRound(localStorage);
+ const selectedHole=readSoloCard(localStorage)?.hole;
+ const safe=safeCaddyEnvironment(active,activeRoundEnvironment,roundEnvironmentFetchedAt);
+ conditionsUI.render(describeCaddyConditions(active?{...active,holeNumber:selectedHole||active.selection.holeNumber}:null,safe,{fetchedAt:roundEnvironmentFetchedAt,loading}));
+ conditionsUI.setLoading(loading);
+}
 async function refreshCaddyRoundEnvironment(){
  const active=readActiveRound(localStorage);
- if(!active){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;return null;}
+ if(!active){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;renderCaddyConditions();return null;}
  // Share in-flight requests only for the same course and tee, never a previous round.
  if(roundEnvironmentLoading&&roundEnvironmentLoadingSelection&&sameCourseSelection(active.selection,roundEnvironmentLoadingSelection))return roundEnvironmentLoading;
  const selection=active.selection;
+ renderCaddyConditions(true);
  const pending=getRoundEnvironment({storage:localStorage}).then(result=>{
   const current=readActiveRound(localStorage);
   if(current&&result.selection&&sameCourseSelection(current.selection,result.selection)&&result.state!=='selection-changed'){
    activeRoundEnvironment=result;
    roundEnvironmentFetchedAt=Date.now();
+   renderCaddyConditions();
    document.dispatchEvent(new CustomEvent('dcc:round-environment',{detail:result}));
    return result;
   }
@@ -65,14 +77,17 @@ async function refreshCaddyRoundEnvironment(){
  roundEnvironmentLoading=pending;
  roundEnvironmentLoadingSelection=selection;
  try{return await pending;}
- finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingSelection=null;}}
+ finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingSelection=null;}renderCaddyConditions();}
 }
-document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;});
-document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;void refreshCaddyRoundEnvironment();});
+document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;renderCaddyConditions();});
+document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;renderCaddyConditions();void refreshCaddyRoundEnvironment();});
 document.addEventListener('dcc:round-environment',event=>{
  const incoming=event.detail,active=readActiveRound(localStorage);
- if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection)){activeRoundEnvironment=incoming;roundEnvironmentFetchedAt=Date.now();}
+ if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection)){activeRoundEnvironment=incoming;roundEnvironmentFetchedAt=Date.now();renderCaddyConditions();}
 });
+conditionsUI=mountCaddyConditions({onRefresh:refreshCaddyRoundEnvironment});
+document.addEventListener('dcc:solo-hole-change',()=>renderCaddyConditions());
+renderCaddyConditions();
 let latestMemoryCandidate = null;
 
 let shotQuality = null;
