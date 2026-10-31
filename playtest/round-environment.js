@@ -2,7 +2,7 @@
 // Every asynchronous result is bound to the same selected course and tee.
 import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
-import {getActiveCourseContext} from './active-course-context.js?v=premium-paper-9';
+import {getActiveCourseContext} from './active-course-context.js?v=multi-course-15';
 import {loadCourseLocation} from './course-location.js';
 import {loadOpenMeteoWeather} from './open-meteo-weather.js';
 export async function getRoundEnvironment({storage,fetcher,signal,now=Date.now()}={}){
