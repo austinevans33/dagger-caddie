@@ -20,7 +20,7 @@ export function buildCaddyCourseFacts(environment,holeNumber){
   Number.isFinite(w.temperatureF)&&w.temperatureF>=-100&&w.temperatureF<=150&&
   Number.isSafeInteger(w.observedAt)&&w.observedAt>0){
   facts.weather={source:'open-meteo-model',windMph:w.windMph,windFromDegrees:w.windDegrees,
-   temperatureF:w.temperatureF,observedAt:w.observedAt,isObservation:false};
+   temperatureF:w.temperatureF,observedAt:w.observedAt,isObservation:false,cached:environment.weatherState==='model-cached'};
  }
  return facts;
 }
