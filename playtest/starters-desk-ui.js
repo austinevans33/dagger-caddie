@@ -18,6 +18,11 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  .dcc-starter-body{padding:24px;display:grid;gap:14px}
  .dcc-starter-body p{margin:0;line-height:1.5}\n .dcc-starter-body input,.dcc-starter-body select{padding:11px;border-radius:8px;width:100%;box-sizing:border-box;border:1px solid #b79c62}\n #dcc-starter-results{display:grid;gap:6px;max-height:200px;overflow:auto}
  .dcc-starter-body button{padding:12px;border-radius:10px;border:1px solid #b79c62;background:#173528;color:#f3e9d3;cursor:pointer}
+ #dcc-starter-dialog .dcc-starter-body,#dcc-starter-dialog .dcc-starter-body label,#dcc-starter-dialog #dcc-starter-current,#dcc-starter-dialog #dcc-starter-results{color:#173528}
+ #dcc-starter-dialog .dcc-starter-head p{color:#f3e9d3}
+ #dcc-starter-dialog .dcc-starter-body input,#dcc-starter-dialog .dcc-starter-body select{background:#fffcf3;color:#173528}
+ #dcc-starter-dialog .dcc-starter-body input::placeholder{color:#59695d;opacity:1}
+ #dcc-starter-dialog .dcc-starter-body button:disabled{opacity:.55;cursor:not-allowed}
  .dcc-starter-body button.secondary{background:transparent;color:#173528}
  `;
  doc.head.append(style);
