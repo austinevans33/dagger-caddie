@@ -6,6 +6,7 @@ import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js';
+import {createShotRecordContext} from './shot-record-context.js';
 import {mountStartersDesk} from './starters-desk-ui.js?v=premium-paper-9';
 import {firebaseConfig} from './firebase-config.js';
 import {
@@ -189,6 +190,9 @@ updateShotReport();
 shotReport.record.addEventListener('click', () => {
   if (!shotQuality) return;
 
+  const activeShotRound=readActiveRound(localStorage);
+  const shotHole=Number(readSoloCard(localStorage)?.hole??activeShotRound?.selection?.holeNumber);
+  const shotCourseContext=createShotRecordContext(activeShotRound,shotHole,activeRoundEnvironment,roundEnvironmentFetchedAt);
   const report = {
     result: [shotQuality, shotHorizontal, shotVertical]
       .filter(Boolean).join(' · '),
@@ -200,6 +204,7 @@ club: document.getElementById('aiShotClub').value || 'Club not selected',
 yards: Number(document.getElementById('aiShotYards').value) || null,
 caddie: activeCaddie(),
 source: 'ai-chat',
+courseContext:shotCourseContext,
 date: new Date().toISOString()
 
   };
