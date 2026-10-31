@@ -27,6 +27,7 @@ jobs:
         run: |
           node --check functions/index.js
           node --check functions/caddy-context.js
+          node --check functions/deployment-target.js
           node --check playtest/ai-chat.js
           node --check playtest/caddy-course-facts.js
           node --check playtest/active-course-context.js
@@ -36,6 +37,7 @@ jobs:
           node --test \
             tests/caddy-structured-facts.test.mjs \
             tests/caddy-backend-context.test.mjs \
+            tests/caddy-deployment-target.test.mjs \
             tests/caddy-club-baseline.test.mjs \
             tests/caddy-environment-policy.test.mjs \
             tests/caddy-conditions-ui.test.mjs \
