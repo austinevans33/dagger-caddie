@@ -16,6 +16,6 @@ test('18 holes gives a turn recap before completing back nine',()=>{
 });
 test('pencil UI does not overwrite House Ghost or betting data',()=>{
  const ui=readFileSync(new URL('../staging-app/solo-scorecard-ui.js',import.meta.url),'utf8');
- assert.match(ui,/DAGGER COUNTRY CLUB/);assert.match(ui,/score<=10/);assert.match(ui,/10\+/);assert.match(ui,/Pencil in your strokes/);
+ assert.match(ui,/DAGGER COUNTRY CLUB/);assert.match(ui,/score<=10/);assert.doesNotMatch(ui,/textContent='10\+'/);assert.match(ui,/Pencil in your strokes/);
  assert.doesNotMatch(ui,/setItem\(['"](?:dcc_house_ghost|dagger_foursome|dcc_bet)/);
 });
