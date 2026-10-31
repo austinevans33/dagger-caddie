@@ -248,12 +248,13 @@ async function join(){
   if(e.code==='permission-denied'||/permissions/i.test(e.message)){
    hint=stage==='member-registration'?' The invite may be old or the member security rules may need updating. Confirm that your host sent the link for the currently active room.':' The membership was accepted, but the room read was denied. Check the published Firestore rules.';
   }
+  if(incomingInvitation){$('roomInvitationBanner').hidden=false;$('roomQuickJoin').disabled=false;}
   status('Unable to join ('+stage+'): '+e.message+hint+' · If this continues, send this exact message to the caddie developer.');
  }
 }
 const createOnce=singleFlight(create),joinOnce=singleFlight(join);
 $('roomCreate').onclick=createOnce;$('roomJoin').onclick=joinOnce;
-$('roomQuickJoin').onclick=()=>{const name=$('roomQuickName').value.trim();if(!name){status('Enter your display name to join.');$('roomQuickName').focus();return;}$('roomMe').value=name;joinOnce();};
+$('roomQuickJoin').onclick=()=>{$('roomMe').value=$('roomQuickName').value.trim()||'Guest';$('roomQuickJoin').disabled=true;joinOnce();};
 const shareInvite=async(qr=false)=>{if(!roomId){status('Create or join a room first.');return;}try{
  const result=await invitationSharing.share(roomLink(),{qr});
  if(result.kind==='link-copy')status('Invitation link copied.');
@@ -298,13 +299,13 @@ async function init(){if(!isConfigured){status('Local mode · Live sync is not c
      $('roomSaveHole').disabled=true;$('roomFinish').disabled=true;
    }
    user=next;
-   if(next){status('Live sync ready. Create a Money Room, or paste an invite and join.');if(authInitialized)restoreOnce();}
+   if(next){status('Live sync ready. Create a Money Room, or paste an invite and join.');if(authInitialized&&!incomingInvitation)restoreOnce();}
  });
  showIncomingInvitation();
  user=await session.current();
  authInitialized=true;
  const initialAction=actionVersion;
- const restored=await restoreOnce();
+ const restored=incomingInvitation?false:await restoreOnce();
  if(restored===false&&actionVersion===initialAction&&!roomId&&!incomingInvitation)status('Live sync ready. Create a Money Room, or paste an invite and join.');
  }catch(e){status('Live sync unavailable: '+e.message+'. Check Firebase setup and network.');}}
 const incomingInvitation=invitationFrom(window.location.href);
@@ -316,9 +317,9 @@ function focusMoneyRoom(){
 function showIncomingInvitation(){
  if(!incomingInvitation||roomId)return;
  $('roomCode').value=incomingInvitation.id+':'+incomingInvitation.code;
- $('roomInvitationBanner').hidden=false;$('roomSetup').open=false;
+ $('roomInvitationBanner').hidden=true;$('roomSetup').open=false;
  focusMoneyRoom();
- status('Invitation ready. Enter your name and tap Join live room.');
+ status('Invitation detected. Joining your Money Room automatically…');
 }
 async function restoreSavedRoom(){
  if(!session||roomId||!auth.currentUser?.uid)return false;
@@ -340,7 +341,7 @@ async function restoreSavedRoom(){
  }
 }
 const restoreOnce=singleFlight(restoreSavedRoom);
-window.addEventListener('online',()=>{if(authInitialized&&!roomId)restoreOnce();});
+window.addEventListener('online',()=>{if(authInitialized&&!roomId){if(incomingInvitation)joinOnce();else restoreOnce();}});
 // Restore the correct destination after the original profile initializer runs.
 const selector=$('manualclub');
 if(selector&&!selector.children.length){
@@ -349,3 +350,6 @@ if(selector&&!selector.children.length){
 }
 // First-tap joins wait for Firebase startup rather than failing before imports load.
 const initialization=init();
+// Scanning the host QR is the join action: no display-name gate or second tap.
+// Wait until Firebase/auth startup settles, then register the invited member.
+initialization.then(()=>{if(incomingInvitation&&!roomId){$('roomMe').value=$('roomQuickName').value.trim()||'Guest';joinOnce();}});
