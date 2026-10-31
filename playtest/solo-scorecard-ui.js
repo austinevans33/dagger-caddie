@@ -2,7 +2,7 @@
 // Scores remain in the original isolated localStorage key; no bets/Ghost writes.
 import {readActiveRound} from './starters-desk-session.js';
 import {startSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard,soloRange} from './solo-scorecard.js?v=premium-paper-9';
-import {readCourseScorecard} from './active-course-context.js?v=premium-paper-9';
+import {readCourseScorecard} from './active-course-context.js?v=multi-course-15';
 import {scorecardCoverage} from './course-scorecard-coverage.js';
 
 const paperCSS=`
