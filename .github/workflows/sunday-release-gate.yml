@@ -1,0 +1,27 @@
+name: Sunday course release gate
+on:
+  push:
+    branches:
+      - release/sunday-course-weather-scorecard-20261031
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check course and Caddy JavaScript syntax
+        run: |
+          node --check ai-chat.js
+          node --check active-course-context.js
+          node --check starters-desk-ui.js
+          node --check solo-scorecard-ui.js
+          node --check round-environment.js
+          node --check course-location.js
+          node --check open-meteo-weather.js
+          for file in caddy-*.js course-*.js opengolf-*.js solo-*.js shot-record-context.js verified-hole-context.js; do node --check "$file"; done
+      - name: Run full Node regression suite
+        run: node --test tests/*.test.mjs
