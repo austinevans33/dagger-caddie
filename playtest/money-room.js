@@ -101,7 +101,7 @@ function render(){
  if(user?.uid&&roomId&&invite){
   if(!room.archived&&!rememberRoom(roomStore,{uid:user.uid,id:roomId,invite,name:($('roomMe').value.trim()||room.hostName||'Guest').slice(0,24)}))status('Live room connected. Save your invitation link; this browser cannot remember the room.');
  }
- $('roomScoreSection').hidden=!!room.archived;
+ $('roomScoreSection').hidden=false;
  $('roomEditor').hidden=!host||!!room.archived; $('roomSpectator').hidden=host;
  syncHostQr();
  $('roomInvitationBanner').hidden=true;
@@ -132,6 +132,7 @@ function render(){
  $('roomScoreHead').innerHTML='<tr><th>Player</th><th>Strokes</th></tr>';
  const h=Number($('roomHole').value);buildInputs(h);
  const x=compute(room);
+ renderFinishSummary(room,x);
  $('roomStandings').textContent=room.players.map((name,i)=>`${name}: ${money(x.totals[i])}`).join(' · ')+(room.format==='skins'?` · ${x.carry} skin(s) in next pot`:'')+` · ${x.settled} holes scored`;
  $('roomFormatDisplay').textContent=room.format.toUpperCase();$('roomStakeDisplay').textContent='$'+room.stake;$('roomNextDisplay').textContent=String(pending);
  const lead=x.totals.reduce((a,v,i)=>v>x.totals[a]?i:a,0);
@@ -190,13 +191,244 @@ function render(){
   }
  $('roomAudit').textContent=room.lastChange?`Last updated ${new Date(room.lastChange).toLocaleString()} by ${room.lastEditor||'scorekeeper'}. Score history includes the current official value for each hole.`:'';
  $('roomSaveHole').disabled=!host||room.archived;
+ $('roomUndoHole').disabled=!host||room.archived||!x.settled;
  $('roomFinish').disabled=!host||room.archived;
  $('roomHole').disabled=!host||room.archived;
  }
 function buildInputs(h){const scores=room?.holes?.[h]||[];$('roomScoreRows').innerHTML='';(room?.players||[]).forEach((name,i)=>{const tr=document.createElement('tr'),first=document.createElement('td'),td=document.createElement('td'),input=document.createElement('input'),wrap=document.createElement('div');first.textContent=name;input.type='number';input.min='1';input.max='20';input.inputMode='numeric';input.dataset.player=String(i);input.value=scores[i]||'';input.disabled=!host||room.archived;wrap.className='room-score-step';
 const step=(sign)=>{const b=document.createElement('button');b.type='button';b.textContent=sign===1?'+':'−';b.disabled=!host||room.archived;b.setAttribute('aria-label',(sign===1?'Increase ':'Decrease ')+name+' score');b.onclick=()=>{input.value=String(Math.max(1,Math.min(20,(Number(input.value)||4)+sign)));};return b;};wrap.append(step(-1),input,step(1));td.append(wrap);tr.append(first,td);$('roomScoreRows').append(tr);});}
 $('roomHole').onchange=()=>{if(room)buildInputs(Number($('roomHole').value));};
-function archiveLocal(){if(!room)return;const k='dagger_room_archives',old=JSON.parse(localStorage.getItem(k)||'[]');const item={...room,roomId,ended:Date.now(),payouts:compute(room).totals};const i=old.findIndex(v=>v.roomId===roomId);if(i>=0)old[i]=item;else old.push(item);localStorage.setItem(k,JSON.stringify(old));}
+function archiveLocal(){
+ if(!room||!roomId)return;
+ try{
+  const k='dagger_room_archives',old=JSON.parse(localStorage.getItem(k)||'[]');
+  const item={...room,roomId,ended:Date.now(),payouts:compute(room).totals};
+  const i=old.findIndex(v=>v.roomId===roomId);
+  if(i>=0)old[i]=item;else old.push(item);
+  localStorage.setItem(k,JSON.stringify(old));renderMatchHistory();
+ }catch(e){status('Match ended, but this phone could not save a local copy: '+e.message);}
+}
+function settlementLabel(model,x){
+ const pending=model.format==='skins'&&x.carry>1?' · '+(x.carry-1)+' carried skin(s) unawarded':'';
+ return x.settled+'/18 holes scored'+pending;
+}
+function renderFinishSummary(model,x){
+ const panel=$('roomFinalSummary');
+ if(!panel)return;
+ panel.hidden=!model.archived;
+ if(!model.archived)return;
+ $('roomFinalStatus').textContent=x.settled===18?'OFFICIAL FINAL RESULT':'ARCHIVED · PARTIAL MATCH';
+ $('roomFinalMeta').textContent=model.format.toUpperCase()+' · '+settlementLabel(model,x)+' · 
+function roomLink(){const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('room',roomId);url.searchParams.set('invite',invite);return url.toString();}
+function parseInvite(input){return invitationFrom(input)||{id:'',code:''};}
+const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('');};
+async function connect(id){if(roomUnsub)roomUnsub();roomId=id;const version=++connectionVersion;
+ const {doc,onSnapshot}=functions;
+ roomUnsub=onSnapshot(doc(db,'rooms',id),snap=>{if(version!==connectionVersion||auth.currentUser?.uid!==user?.uid)return;if(!snap.exists()){status('Room not found, or access denied.');return;}room=snap.data();if(room.archived&&!snap.metadata?.hasPendingWrites&&!snap.metadata?.fromCache){archiveLocal();forgetRoom(roomStore,user.uid,roomId);}status('LIVE · Updates delivered across connected phones · '+roomLabel());render();},err=>{if(version===connectionVersion)status('Could not subscribe: '+err.message);});
+}
+async function create(){const attempt=++actionVersion;try{
+ await initialization;
+ if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
+ user=await session.current();const operationUid=user.uid;
+ const me=$('roomMe').value.trim();const others=$('roomPlayers').value.split(',').map(x=>x.trim()).filter(Boolean);const players=[me,...others];
+ const format=$('roomFormat').value,needed=format==='vegas'?4:format==='hole'||format==='nassau'?2:null;
+ if(!me||players.length<2||players.length>4||new Set(players.map(n=>n.toLowerCase())).size!==players.length)throw Error('Enter 2–4 distinct golfer names including yourself.');
+ if(needed&&players.length!==needed)throw Error(`${format} requires ${needed} players.`);
+ const stake=Number($('roomStake').value);if(!Number.isFinite(stake)||stake<0||stake>10000)throw Error('Invalid stake.');
+ const {doc,setDoc}=functions;const id=rand(16),code=rand(8);const model={name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
+ await setDoc(doc(db,'rooms',id),model);assertOperation(attempt,operationUid);await setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()});assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);status('Money Room created. You are the ONLY scorekeeper. Share the invitation link.');
+ }catch(e){if(attempt===actionVersion)status('Could not create room: '+e.message);}}
+async function join(){
+ const attempt=++actionVersion;
+ let stage='validation';
+ try{
+  stage='connection-startup';
+  status('Preparing secure connection to the Money Room…');
+  await initialization;
+  if(attempt!==actionVersion)return;
+  stage='validation';
+  if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
+ user=await session.current();const operationUid=user.uid;
+  const {id,code}=parseInvite($('roomCode').value);
+  if(!/^[0-9a-f]{32}$/.test(id)||!/^[0-9a-f]{16}$/.test(code))throw Error('Paste the complete invitation link or ID:code.');
+  const name=$('roomMe').value.trim()||'Guest';if(name.length>24)throw Error('Name is too long.');
+  if(!user?.uid)throw Error('Anonymous authentication did not finish. Reload the app.');
+  stage='member-registration';status('Verifying invitation and registering your membership…');
+  const {doc,setDoc,getDoc}=functions;
+  const memberRef=doc(db,'rooms',id,'members',user.uid);
+  await setDoc(memberRef,{uid:operationUid,name,invite:code,joined:Date.now()});
+  assertOperation(attempt,operationUid);
+  stage='room-access';status('Membership accepted. Opening the live scorecard…');
+  const snapshot=await getDoc(doc(db,'rooms',id));
+  assertOperation(attempt,operationUid);
+  if(!snapshot.exists())throw Error('Room not found. Ask the scorekeeper for a new invitation.');
+  invite=code;roomId=id;room=snapshot.data();
+  await connect(id);status('Membership verified. Connecting live updates…');
+ }catch(e){
+  if(attempt!==actionVersion)return;
+  let hint='';
+  if(e.code==='permission-denied'||/permissions/i.test(e.message)){
+   hint=stage==='member-registration'?' The invite may be old or the member security rules may need updating. Confirm that your host sent the link for the currently active room.':' The membership was accepted, but the room read was denied. Check the published Firestore rules.';
+  }
+  if(incomingInvitation){$('roomInvitationBanner').hidden=false;$('roomQuickJoin').disabled=false;}
+  status('Unable to join ('+stage+'): '+e.message+hint+' · If this continues, send this exact message to the caddie developer.');
+ }
+}
+const createOnce=singleFlight(create),joinOnce=singleFlight(join);
+$('roomCreate').onclick=createOnce;$('roomJoin').onclick=joinOnce;
+$('roomQuickJoin').onclick=()=>{$('roomMe').value=$('roomQuickName').value.trim()||'Guest';$('roomQuickJoin').disabled=true;joinOnce();};
+const shareInvite=async(qr=false)=>{if(!roomId){status('Create or join a room first.');return;}try{
+ const result=await invitationSharing.share(roomLink(),{qr});
+ if(result.kind==='link-copy')status('Invitation link copied.');
+ if(result.kind==='qr-download')status(result.linkCopied?'QR invitation saved. Invitation link copied.':'QR invitation saved. Copy the room link manually: '+roomLink());
+}catch{status('Copy the room link manually: '+roomLink());}};
+$('roomCopy').onclick=singleFlight(()=>shareInvite(false));
+$('roomShareCurrent').onclick=singleFlight(()=>shareInvite(true));
+$('roomLocalArchive').onclick=()=>{if(!room)return;archiveLocal();status('Saved a snapshot in this phone’s local archives.');};
+renderMatchHistory();
+// One save in flight per host phone; update only the selected hole so a stale
+// listener snapshot cannot overwrite another hole's scores.
+$('roomSaveHole').onclick=singleFlight(async()=>{
+ const savingRoomId=roomId,scorekeeperUid=auth?.currentUser?.uid;
+ try{
+ if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');
+ session.assertIdentity(room.hostUid);
+ const hole=Number($('roomHole').value);
+ if(!Number.isInteger(hole)||hole<1||hole>18)throw Error('Choose a hole from 1 to 18.');
+ const scores=[...$('roomScoreRows').querySelectorAll('input')].map(e=>Number(e.value));
+ if(scores.length!==room.players.length||scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Enter a valid stroke score for every player.');
+ await functions.updateDoc(functions.doc(db,'rooms',savingRoomId),{
+  ['holes.'+hole]:scores,lastEditor:room.hostName,lastChange:Date.now()
+ });
+ if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Hole '+hole+' recorded and sent to connected members.');
+ }catch(e){if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Save failed: '+e.message);}
+});
+$('roomUndoHole').onclick=singleFlight(async()=>{
+ const id=roomId,uid=auth?.currentUser?.uid;
+ if(!host||!room||room.archived||uid!==room.hostUid)return;
+ const recorded=Object.keys(room.holes||{}).map(Number).filter(h=>Number.isInteger(h)&&h>=1&&h<=18&&Array.isArray(room.holes[h]));
+ const last=Math.max(0,...recorded);
+ if(!last)return;
+ if(!confirm('Undo hole '+last+'? Its scores and wager result will be removed for everyone.'))return;
+ try{
+  session.assertIdentity(room.hostUid);
+  await functions.updateDoc(functions.doc(db,'rooms',id),{['holes.'+last]:functions.deleteField(),lastEditor:room.hostName,lastChange:Date.now()});
+  if(roomId===id&&auth.currentUser?.uid===uid)status('Hole '+last+' undone. Scores and payouts recalculated for both phones.');
+ }catch(e){if(roomId===id)status('Undo failed: '+e.message);}
+});
+$('roomFinish').onclick=singleFlight(async()=>{
+ if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;
+ const id=roomId,uid=auth.currentUser.uid,x=compute(room);
+ const incomplete=x.settled<18?' Only '+x.settled+' of 18 holes are scored.':'';
+ const carry=room.format==='skins'&&x.carry>1?' '+(x.carry-1)+' carried skin(s) remain unawarded.':'';
+ if(!confirm('Finish and archive this match for everyone?'+incomplete+carry+' Final payouts will be shown. This cannot be undone.'))return;
+ try{
+  session.assertIdentity(room.hostUid);
+  await functions.updateDoc(functions.doc(db,'rooms',id),{archived:true,lastChange:Date.now()});
+  if(roomId===id&&auth.currentUser?.uid===uid)status('Match finished. Final settlement is displayed below and saved to match history on this phone.');
+ }catch(e){if(roomId===id)status('Finish failed: '+e.message);}
+});
+async function init(){if(!isConfigured){status('Local mode · Live sync is not configured. See SETUP_FIREBASE.md. Local games and Betting still work.');return;}
+ try{
+ const appMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js');
+ const authMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js');
+ const fsMod=await import('https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js');
+ const app=appMod.initializeApp(firebaseConfig);auth=authMod.getAuth(app);db=fsMod.getFirestore(app);functions=fsMod;
+ session=createRoomSession(auth,authMod.signInAnonymously);
+ authMod.onAuthStateChanged(auth,next=>{
+   if(user?.uid!==next?.uid){
+     if(user?.uid){++actionVersion;forgetRoom(roomStore,user.uid);}
+     ++connectionVersion;if(roomUnsub)roomUnsub();roomUnsub=null;
+     room=null;roomId='';invite='';host=false;invitationSharing.clear();
+     $('roomHostQr')?.remove(); displayedQrLink='';
+     $('roomScoreSection').hidden=true;
+     $('roomEditor').hidden=true;
+     $('roomSaveHole').disabled=true;$('roomFinish').disabled=true;
+   }
+   user=next;
+   if(next){status('Live sync ready. Create a Money Room, or paste an invite and join.');if(authInitialized&&!incomingInvitation)restoreOnce();}
+ });
+ showIncomingInvitation();
+ user=await session.current();
+ authInitialized=true;
+ const initialAction=actionVersion;
+ const restored=incomingInvitation?false:await restoreOnce();
+ if(restored===false&&actionVersion===initialAction&&!roomId&&!incomingInvitation)status('Live sync ready. Create a Money Room, or paste an invite and join.');
+ }catch(e){status('Live sync unavailable: '+e.message+'. Check Firebase setup and network.');}}
+const incomingInvitation=invitationFrom(window.location.href);
+function focusMoneyRoom(){
+ if(navigationVersion)return;
+ if(typeof window.switchTab==='function')window.switchTab('bets');else $('tab-bets')?.click();
+ $('moneyRoomSection')?.scrollIntoView({block:'start'});
+}
+function showIncomingInvitation(){
+ if(!incomingInvitation||roomId)return;
+ $('roomCode').value=incomingInvitation.id+':'+incomingInvitation.code;
+ $('roomInvitationBanner').hidden=true;$('roomSetup').open=false;
+ focusMoneyRoom();
+ status('Invitation detected. Joining your Money Room automatically…');
+}
+async function restoreSavedRoom(){
+ if(!session||roomId||!auth.currentUser?.uid)return false;
+ const uid=auth.currentUser.uid,version=actionVersion;
+ const isCurrent=()=>auth.currentUser?.uid===uid&&actionVersion===version&&!roomId;
+ try{
+  const saved=await recoverRoom({storage:roomStore,uid,incoming:incomingInvitation,isCurrent,readRoom:async id=>{
+   status('Reconnecting to your active Money Room…');
+   const snapshot=await readWithDeadline(()=>functions.getDocFromServer(functions.doc(db,'rooms',id)));
+   return snapshot.exists()?snapshot.data():null;
+  }});
+  if(!saved||!isCurrent())return false;
+  user=auth.currentUser;invite=saved.bookmark.invite;room=saved.room;
+  $('roomMe').value=saved.bookmark.name;$('roomCode').value=saved.bookmark.id+':'+invite;
+  await connect(saved.bookmark.id);focusMoneyRoom();return true;
+ }catch(error){
+  if(isCurrent())status('Could not restore the active room: '+error.message+'. Reconnect or use your invitation to rejoin.');
+  return null;
+ }
+}
+const restoreOnce=singleFlight(restoreSavedRoom);
+window.addEventListener('online',()=>{if(authInitialized&&!roomId){if(incomingInvitation)joinOnce();else restoreOnce();}});
+// Restore the correct destination after the original profile initializer runs.
+const selector=$('manualclub');
+if(selector&&!selector.children.length){
+ const ready=new MutationObserver(()=>{ready.disconnect();if(roomId)focusMoneyRoom();else showIncomingInvitation();});
+ ready.observe(selector,{childList:true});
+}
+// First-tap joins wait for Firebase startup rather than failing before imports load.
+const initialization=init();
+// Scanning the host QR is the join action: no display-name gate or second tap.
+// Wait until Firebase/auth startup settles, then register the invited member.
+initialization.then(()=>{if(incomingInvitation&&!roomId){$('roomMe').value=$('roomQuickName').value.trim()||'Guest';joinOnce();}});
++model.stake+' per unit';
+ $('roomFinalPayouts').replaceChildren();
+ model.players.forEach((name,i)=>{
+  const row=document.createElement('div');row.className='ledger-line';
+  const player=document.createElement('span');player.textContent=name;
+  const payout=document.createElement('strong');payout.textContent=money(x.totals[i]);
+  row.append(player,payout);$('roomFinalPayouts').append(row);
+ });
+}
+function renderMatchHistory(){
+ const list=$('roomMatchHistoryList');if(!list)return;
+ list.replaceChildren();
+ let records=[];
+ try{records=JSON.parse(localStorage.getItem('dagger_room_archives')||'[]');if(!Array.isArray(records))records=[];}catch{}
+ const valid=records.filter(v=>v&&Array.isArray(v.players)&&v.roomId).sort((a,b)=>(b.ended||0)-(a.ended||0));
+ $('roomMatchHistoryCount').textContent=valid.length+' saved on this phone';
+ if(!valid.length){const p=document.createElement('p');p.className='game-note';p.textContent='Completed matches saved on this phone will appear here.';list.append(p);return;}
+ valid.slice(0,12).forEach(record=>{
+  const card=document.createElement('details');card.className='ledger-detail';
+  const title=document.createElement('summary');
+  title.textContent=record.players.join(' vs ')+' · '+(record.format||'match').toUpperCase()+' · '+new Date(record.ended||record.created).toLocaleDateString();
+  card.append(title);
+  const body=document.createElement('div');body.className='ledger-hole';
+  const x=compute(record);
+  const note=document.createElement('p');note.className='game-note';note.textContent=settlementLabel(record,x);body.append(note);
+  record.players.forEach((name,i)=>{const line=document.createElement('div');line.className='ledger-line';const label=document.createElement('span');label.textContent=name;const amount=document.createElement('strong');amount.textContent=money(x.totals[i]);line.append(label,amount);body.append(line);});
+  card.append(body);list.append(card);
+ });
+}
 function roomLink(){const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('room',roomId);url.searchParams.set('invite',invite);return url.toString();}
 function parseInvite(input){return invitationFrom(input)||{id:'',code:''};}
 const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('');};
