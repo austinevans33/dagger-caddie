@@ -31,7 +31,10 @@ export function describeCaddyConditions(active,environment,{now=Date.now(),fetch
  const weatherSummary=valid
   ?'Conditions · '+Math.round(w.temperatureF)+'°F · '+Math.round(w.windMph)+' mph wind'
   :'Conditions · weather unavailable';
- return {course:heading,hole:holeText,weather,weatherSummary,status};
+ const holeSummary=hole&&Number.isInteger(hole.par)&&Number.isInteger(hole.yards)
+  ?'Hole '+number+' · Par '+hole.par+' · '+hole.yards+' yd tee'
+  :'Hole '+number+' · Yardage unavailable';
+ return {course:heading,hole:holeText,holeSummary,weather,weatherSummary,status};
 }
 export function mountCaddyConditions({doc=document,onRefresh}={}){
  if(doc.getElementById('dcc-caddy-conditions'))return null;
@@ -40,10 +43,11 @@ export function mountCaddyConditions({doc=document,onRefresh}={}){
  const style=doc.createElement('style');
  style.textContent=`
  #dcc-caddy-conditions{margin:10px 0 12px;padding:10px 12px;border:1px solid #b79c62;border-radius:11px;background:#f3ecda;color:#173729;font:12px/1.35 system-ui,sans-serif}
- #dcc-caddy-conditions .dcc-conditions-label{font-size:9px;font-weight:800;letter-spacing:.13em;color:#655535}
- #dcc-caddy-conditions .dcc-conditions-course{display:block;font:700 15px/1.2 Georgia,serif;overflow-wrap:anywhere;min-width:0}
- #dcc-caddy-conditions .dcc-conditions-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
- #dcc-caddy-conditions .dcc-conditions-heading{min-width:0;flex:1}
+ #dcc-caddy-conditions .dcc-conditions-label{display:block;padding-right:106px;font-size:9px;font-weight:800;letter-spacing:.11em;color:#655535}
+ #dcc-caddy-conditions .dcc-conditions-course{display:block;margin-top:7px;font:700 15px/1.2 Georgia,serif;overflow-wrap:anywhere;min-width:0}
+ #dcc-caddy-conditions .dcc-conditions-top{display:block;position:relative}
+ #dcc-caddy-conditions .dcc-conditions-heading{min-width:0}
+ #dcc-caddy-conditions #dcc-caddy-conditions-actions{position:absolute;right:0;top:0}
  #dcc-caddy-conditions .dcc-conditions-hole{display:block;margin-top:4px;font-size:11px;color:#3a5142}
  #dcc-caddy-conditions .dcc-conditions-details{margin-top:7px;border-top:1px solid #d4c5a3;padding-top:7px}
  #dcc-caddy-conditions .dcc-conditions-details summary{cursor:pointer;font:700 11px system-ui;color:#315740;list-style-position:inside;padding:3px 0;touch-action:manipulation}
@@ -68,11 +72,12 @@ export function mountCaddyConditions({doc=document,onRefresh}={}){
  const details=doc.createElement('details');details.className='dcc-conditions-details';
  const summary=doc.createElement('summary');summary.textContent='Weather, club distances & data sources';
  const weather=doc.createElement('span');weather.className='dcc-conditions-weather';
+ const disclaimer=doc.createElement('span');disclaimer.style.cssText='display:block;font-size:10px;color:#596453;margin-bottom:6px';disclaimer.textContent='Tee yardages are not live pin distances.';
  const clubs=doc.createElement('span');clubs.className='dcc-conditions-clubs';
  const footer=doc.createElement('div');footer.className='dcc-conditions-footer';
  const status=doc.createElement('span');
  const refresh=doc.createElement('button');refresh.type='button';refresh.textContent='Refresh conditions';
- footer.append(status,refresh);details.append(summary,weather,clubs,footer);card.append(top,details);
+ footer.append(status,refresh);details.append(summary,disclaimer,weather,clubs,footer);card.append(top,details);
  const anchor=doc.getElementById('aiHeading').closest('.dcc-caddy-heading')||doc.getElementById('aiHeading');
  anchor.insertAdjacentElement('afterend',card);
  let busy=false;
@@ -82,7 +87,7 @@ export function mountCaddyConditions({doc=document,onRefresh}={}){
   try{await onRefresh();}finally{busy=false;refresh.disabled=false;}
  });
  return {render(data){
-  course.textContent=data.course;hole.textContent=data.hole;
+  course.textContent=data.course;hole.textContent=data.holeSummary||data.hole;
   summary.textContent=data.weatherSummary||'Conditions & course data';
   weather.textContent=data.weather;clubs.textContent=data.clubBaseline||'';status.textContent=data.status;
  },setLoading(value){refresh.disabled=!!value||busy;}};
