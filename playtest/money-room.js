@@ -244,6 +244,15 @@ function renderMatchHistory(){
   const x=compute(record);
   const note=document.createElement('p');note.className='game-note';note.textContent=settlementLabel(record,x);body.append(note);
   record.players.forEach((name,i)=>{const line=document.createElement('div');line.className='ledger-line';const label=document.createElement('span');label.textContent=name;const amount=document.createElement('strong');amount.textContent=money(x.totals[i]);line.append(label,amount);body.append(line);});
+  const holes=document.createElement('details');holes.className='ledger-detail';
+  const holeTitle=document.createElement('summary');holeTitle.textContent='Review hole-by-hole results';holes.append(holeTitle);
+  x.ledger.filter(row=>row.scores).forEach(row=>{
+   const line=document.createElement('div');line.className='ledger-line';
+   const label=document.createElement('span');label.textContent='Hole '+row.hole+' · '+row.event;
+   const values=document.createElement('span');values.textContent=row.scores.join(' – ');
+   line.append(label,values);holes.append(line);
+  });
+  body.append(holes);
   card.append(body);list.append(card);
  });
 }
