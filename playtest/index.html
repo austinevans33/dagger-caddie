@@ -4729,7 +4729,7 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <p>Games decides the winners. This room records money and history. No balances are invented, and a recorded result is not proof of payment.</p>
 </section></details>
 <div class="room-status" aria-live="polite" id="roomStatus">Offline/local mode. Live sync needs Firebase configuration once.</div>
-<div class="invite-banner" hidden="" id="roomInvitationBanner"><strong>YOU’RE INVITED TO THE ACTION</strong><label for="roomQuickName">Your name</label><input id="roomQuickName" maxlength="24" placeholder="Optional display name"/><button class="btn-primary" id="roomQuickJoin" type="button">Retry joining room</button><p class="note">Invited players can watch the live scorecard. Only the scorekeeper edits scores.</p></div>
+<div class="invite-banner" hidden="" id="roomInvitationBanner"><strong>YOU’RE INVITED TO THE ACTION</strong><label for="roomQuickName">Display name (optional)</label><input id="roomQuickName" maxlength="24" placeholder="Optional display name"/><button class="btn-primary" id="roomQuickJoin" type="button">Try joining again</button><p class="note">Invited players can watch the live scorecard. Only the scorekeeper edits scores.</p></div>
 
 <details class="action-room-setup" id="roomSetup">
 <summary>
@@ -10425,7 +10425,7 @@ $('roastOpponent').onclick=()=>{
  $('opponentRoastLine').textContent=CADDIES[selectedCaddie].name+': “'+lines[(roastIndex++)%lines.length].replaceAll('{name}',name)+'”';
 };
 </script>
-<script src="money-room.js" type="module"></script>
+<script src="money-room.js?v=qr-auto-join-1" type="module"></script>
 <script src="ai-chat.js?v=paper-score-11" type="module"></script>
 <script src="golfer-account.js" type="module"></script>
 <script src="golfer-profile.js" type="module"></script>
