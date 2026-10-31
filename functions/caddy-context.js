@@ -12,7 +12,7 @@ function caddyContext(info){
  // Treat the course briefing as untrusted client input even if the browser
  // claims the data came from OpenGolfAPI or Open-Meteo.
  return {
-  yardage:reportedTarget?String(number):'',
+  yardage:targetSource==='golfer-reported'?String(number):'',
   lie:clip(input.lie,35),wind:clip(input.wind,35),
   pin:clip(input.pin,35),hazard:clip(input.hazard,50),
   clubs:clip(input.clubs,1200),money:clip(input.money,300),
