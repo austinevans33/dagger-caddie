@@ -1,4 +1,4 @@
-import {mountSoloScorecard} from './solo-scorecard-ui.js?v=coverage-15';
+import {mountSoloScorecard} from './solo-scorecard-ui.js?v=caddy-baseline-16';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
 import {getRoundEnvironment} from './round-environment.js?v=coverage-15';
