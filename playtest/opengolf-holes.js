@@ -16,7 +16,10 @@ export function normalizeOpenGolfHoles(body,selection){
  const raw=Array.isArray(body?.holes)?body.holes:[];
  const seen=new Set(),out=[];
  for(const source of raw){
-  const number=Number(source?.hole_number),par=Number(source?.par);
+  // Current provider uses `number`; keep the older documented fixture format too.
+  // Conflicting aliases are ambiguous and must never be assigned to a hole.
+  if(source?.number!=null&&source?.hole_number!=null&&Number(source.number)!==Number(source.hole_number))continue;
+  const number=Number(source?.number??source?.hole_number),par=Number(source?.par);
   const yards=teeYardage(source,chosen);
   if(seen.has(number))continue;
   const normalized=normalizeHole({number,par,yards,hazards:[]});

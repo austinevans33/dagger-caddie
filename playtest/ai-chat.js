@@ -1,11 +1,11 @@
-import {mountSoloScorecard} from './solo-scorecard-ui.js?v=premium-scorecard-8';
-import {readSoloCard} from './solo-scorecard.js';
+import {mountSoloScorecard} from './solo-scorecard-ui.js?v=premium-paper-9';
+import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
-import {getRoundEnvironment} from './round-environment.js';
+import {getRoundEnvironment} from './round-environment.js?v=premium-paper-9';
 import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
-import {mountStartersDesk} from './starters-desk-ui.js?v=premium-scorecard-8';
+import {mountStartersDesk} from './starters-desk-ui.js?v=premium-paper-9';
 import {firebaseConfig} from './firebase-config.js';
 import {
   getFirestore,
@@ -52,6 +52,7 @@ async function refreshCaddyRoundEnvironment(){
   const current=readActiveRound(localStorage);
   if(current&&result.selection&&sameCourseSelection(current.selection,result.selection)&&result.state!=='selection-changed'){
    activeRoundEnvironment=result;
+   document.dispatchEvent(new CustomEvent('dcc:round-environment',{detail:result}));
    return result;
   }
   if(!current)activeRoundEnvironment=null;

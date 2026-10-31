@@ -1,0 +1,75 @@
+{
+  "base": "http://127.0.0.1:36747/playtest/",
+  "results": [
+    {
+      "name": "320px: two ruled nines, verified 72/6300 totals, no scorecard overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "320px: entry 15, correction 3, progression and reload persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "320px: nine-hole front grid/totals and restoring eighteen preserves score",
+      "status": "PASS"
+    },
+    {
+      "name": "375px: two ruled nines, verified 72/6300 totals, no scorecard overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "375px: entry 15, correction 3, progression and reload persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "375px: nine-hole front grid/totals and restoring eighteen preserves score",
+      "status": "PASS"
+    },
+    {
+      "name": "completed nine-hole UI: 35 strokes, verified par 36 and score-based Caddy recap",
+      "status": "PASS"
+    },
+    {
+      "name": "390px: two ruled nines, verified 72/6300 totals, no scorecard overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "390px: entry 15, correction 3, progression and reload persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "390px: nine-hole front grid/totals and restoring eighteen preserves score",
+      "status": "PASS"
+    },
+    {
+      "name": "actual New Round confirmation archives partial score before clearing; Starter heading stays cream",
+      "status": "PASS"
+    },
+    {
+      "name": "back-nine start: holes 10–18, 12 strokes and IN totals",
+      "status": "PASS"
+    },
+    {
+      "name": "course change immediately removes prior facts and full totals while async request is pending",
+      "status": "PASS"
+    },
+    {
+      "name": "430px: two ruled nines, verified 72/6300 totals, no scorecard overflow",
+      "status": "PASS"
+    },
+    {
+      "name": "430px: entry 15, correction 3, progression and reload persistence",
+      "status": "PASS"
+    },
+    {
+      "name": "430px: nine-hole front grid/totals and restoring eighteen preserves score",
+      "status": "PASS"
+    },
+    {
+      "name": "no uncaught page errors",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "fixtureDisclosure": "Synthetic QA course; real SDK served unchanged from official download if SCORECARD_SDK_DIR is supplied; backend operations blocked. No physical iPhone or Firebase multiplayer test."
+}

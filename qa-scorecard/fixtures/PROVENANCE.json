@@ -1,0 +1,10 @@
+{
+  "course": "Country Club Of Whispering Pines Pines Course",
+  "provider": "OpenGolfAPI",
+  "providerCourseId": "5f8213eb-ad01-444e-92d7-b4710d643dc1",
+  "url": "https://api.opengolfapi.org/v1/courses/5f8213eb-ad01-444e-92d7-b4710d643dc1/holes",
+  "retrievedAt": "2026-10-31T02:10:12.225974+00:00",
+  "usage": "Read-only captured provider response for adapter regression tests; not GPS coordinates or independent survey certification.",
+  "attribution": "Course data \u00a9 OpenStreetMap contributors (ODbL 1.0) via OpenGolfAPI. Existing app attribution retained.",
+  "serialization": "JSON pretty-printed; provider body values unchanged."
+}

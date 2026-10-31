@@ -1,7 +1,7 @@
 // Shared course context for Dagger's Caddies, Games and future shot tracking.
 // Never invent missing hole data or imply live pin distance.
 import {readActiveRound} from './starters-desk-session.js';
-import {loadOpenGolfHoles} from './opengolf-holes.js';
+import {loadOpenGolfHoles} from './opengolf-holes.js?v=premium-paper-9';
 import {sameCourseSelection} from './course-identity.js';
 const CACHED='dcc_course_scorecard_v1';
 export function readCourseScorecard(storage,selection){
