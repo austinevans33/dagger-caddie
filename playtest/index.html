@@ -9153,7 +9153,7 @@ dccRenderVWScoreboard();
  const safeArray=(k)=>{try{const x=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(x)?x:[]}catch{return[]}};
  function memberName(){return (el('roomMe').value||'Member').trim().slice(0,24)}
  function formatMoney(n){return (n<0?'−':'')+'$'+Math.abs(n).toFixed(2)}
- function collection(){return [...safeArray('dagger_foursome_history'),...safeArray('dagger_vegas_wolf_history'),...safeArray('dagger_room_archives')];}
+ function collection(){return [...safeArray('dagger_foursome_history'),...safeArray('dagger_vegas_wolf_history'),...safeArray('dagger_room_archives').filter(r=>r&&r.archived===true)];}
  function scoreName(w){return w.players||[]}
  function renderHall(){
   const records=collection();const shots=safeArray('dagger_shot_log'); const group=records.filter(x=>x&&Array.isArray(x.players));
@@ -9175,6 +9175,7 @@ dccRenderVWScoreboard();
   return {me,group,wins,losses,net,bad,good,versus};
  }
  el('refreshRecords').onclick=renderHall;
+ window.addEventListener('dagger:money-room-archive-updated',renderHall);
  el('makeReport').onclick=()=>{const x=renderHall();const c=(typeof selectedCaddie!=='undefined'?selectedCaddie:'keith');
  const message=(c==='kyle'?'BROTHER. The tactical paperwork is finished.':c==='vinny'?'Listen, sweetheart. The ledger never lies.':c==='reginald'?'The committee has reviewed your rather athletic record.':'Right. The committee has seen enough.');
  const text=`DAGGER COUNTRY CLUB — FORM 19-B
@@ -10427,7 +10428,7 @@ $('roastOpponent').onclick=()=>{
  $('opponentRoastLine').textContent=CADDIES[selectedCaddie].name+': “'+lines[(roastIndex++)%lines.length].replaceAll('{name}',name)+'”';
 };
 </script>
-<script src="money-room.js?v=match-finish-3" type="module"></script>
+<script src="money-room.js?v=match-finish-4" type="module"></script>
 <script src="ai-chat.js?v=paper-score-11" type="module"></script>
 <script src="golfer-account.js" type="module"></script>
 <script src="golfer-profile.js" type="module"></script>
