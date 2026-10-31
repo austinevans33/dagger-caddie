@@ -201,7 +201,11 @@ $('roomHole').onchange=()=>{if(room)buildInputs(Number($('roomHole').value));};
 function renderFinishSummary(model,x){
  const panel=$('roomFinalSummary');if(!panel)return;panel.hidden=!model.archived;if(!model.archived)return;
  $('roomFinalStatus').textContent=x.settled===18?'OFFICIAL FINAL RESULT':'ARCHIVED · PARTIAL MATCH';
- $('roomFinalMeta').textContent=model.format.toUpperCase()+' · '+x.settled+'/18 holes scored · if(!room)return;const k='dagger_room_archives',old=JSON.parse(localStorage.getItem(k)||'[]');const item={...room,roomId,ended:Date.now(),payouts:compute(room).totals};const i=old.findIndex(v=>v.roomId===roomId);if(i>=0)old[i]=item;else old.push(item);localStorage.setItem(k,JSON.stringify(old));}
+ $('roomFinalMeta').textContent=model.format.toUpperCase()+' · '+x.settled+'/18 holes scored · $'+model.stake+' per unit';
+ const list=$('roomFinalPayouts');list.replaceChildren();
+ model.players.forEach((name,i)=>{const line=document.createElement('div');line.className='ledger-line';const who=document.createElement('span');who.textContent=name;const amount=document.createElement('strong');amount.textContent=money(x.totals[i]);line.append(who,amount);list.append(line);});
+}
+function archiveLocal(){if(!room)return;const k='dagger_room_archives',old=JSON.parse(localStorage.getItem(k)||'[]');const item={...room,roomId,ended:Date.now(),payouts:compute(room).totals};const i=old.findIndex(v=>v.roomId===roomId);if(i>=0)old[i]=item;else old.push(item);localStorage.setItem(k,JSON.stringify(old));}
 function roomLink(){const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('room',roomId);url.searchParams.set('invite',invite);return url.toString();}
 function parseInvite(input){return invitationFrom(input)||{id:'',code:''};}
 const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('');};
