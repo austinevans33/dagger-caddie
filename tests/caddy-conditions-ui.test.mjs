@@ -8,6 +8,7 @@ test('Caddy course report shows selected tee distance and correct wind FROM sema
  const d=describeCaddyConditions(active,env,{now,fetchedAt:now-1000});
  assert.match(d.course,/Whispering Pines/);
  assert.match(d.hole,/Hole 7 · Par 4 · 382 yd from tee \(not pin distance\)/);
+ assert.equal(d.holeSummary,'Hole 7 · Par 4 · 382 yd tee');
  assert.match(d.weather,/70°F · 13 mph wind FROM 265°/);
  assert.equal(d.weatherSummary,'Conditions · 70°F · 13 mph wind');
  assert.match(d.status,/verified/i);
