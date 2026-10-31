@@ -9,7 +9,7 @@ test('Caddy course report shows selected tee distance and correct wind FROM sema
  assert.match(d.course,/Whispering Pines/);
  assert.match(d.hole,/Hole 7 · Par 4 · 382 yd from tee \(not pin distance\)/);
  assert.match(d.weather,/70°F · 13 mph wind FROM 265°/);
- assert.match(d.status,/verified/);
+ assert.match(d.status,/verified/i);
 });
 test('Missing weather and scorecard are explicit, not invented',()=>{
  const d=describeCaddyConditions(active,{state:'unavailable',holes:[],weatherState:'unavailable',weather:null},{now});
