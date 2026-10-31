@@ -12,7 +12,7 @@ export function safeCaddyEnvironment(active,environment,fetchedAt,now=Date.now()
  if(!active?.selection||!environment?.selection)return null;
  if(needsCaddyEnvironmentRefresh(active,environment,fetchedAt,now))return null;
  const weather=environment.weather;
- const validWeather=weather&&environment.weatherState==='model-current'&&
+ const validWeather=weather&&['model-current','model-cached'].includes(environment.weatherState)&&
   Number.isFinite(weather.observedAt)&&weather.observedAt<=now+5*60000&&
   now-weather.observedAt<=90*60000;
  return validWeather?environment:{...environment,weather:null,weatherState:'unavailable',weatherSource:null};
