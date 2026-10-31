@@ -17,6 +17,9 @@ const paperCSS=`
 .dcc-paper-cell{text-align:center;border:1px solid #c9b994;background:#fff9e8;padding:5px 1px;min-width:0;min-height:49px}
 .dcc-paper-cell.current{outline:2px solid #1d5b41;outline-offset:-2px;background:#f1e0ae}
 .dcc-paper-cell small{display:block;color:#776d53;font:700 9px system-ui}
+.dcc-paper-facts{font:700 9px/1.35 system-ui;color:#375140;white-space:nowrap;letter-spacing:-.015em}
+.dcc-paper-facts.missing{color:#817763}
+.dcc-paper-totals{margin-top:5px;font:700 10px/1.5 system-ui;color:#344f3e;text-align:center}
 .dcc-paper-cell strong{display:block;padding-top:2px;font:italic 21px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#3e4241;transform:rotate(-5deg)}
 .dcc-paper-navigation{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
 .dcc-paper-navigation button,.dcc-paper-scorebuttons button{border:1px solid #bca576;border-radius:5px;background:#fffaf0;color:#1b3b2b;min-height:42px;padding:8px;font-weight:800}
@@ -44,7 +47,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-solo-scorecard'))return;
  const style=doc.createElement('style');style.textContent=paperCSS;doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-solo-scorecard';
- card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-scoregrid" id="dcc-paper-grid"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><p class="dcc-paper-pencil">Pencil in your strokes</p><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div></div>`;
+ card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-scoregrid" id="dcc-paper-grid"></div><div class="dcc-paper-totals" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><p class="dcc-paper-pencil">Pencil in your strokes</p><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div></div>`;
  const target=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]');
  (target||doc.body).append(card);
  const $=id=>card.querySelector('#'+id);
@@ -62,8 +65,20 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   for(let i=0;i<length;i++){
    const cell=doc.createElement('div');cell.className='dcc-paper-cell'+(i+1===state.hole?' current':'');
    const number=doc.createElement('small');number.textContent=String(i+1);
-   const pencil=doc.createElement('strong');pencil.textContent=state.scores[i]??'—';cell.append(number,pencil);grid.append(cell);
+   const fact=scorecard?.holes.find(h=>h.number===i+1);
+   const details=doc.createElement('div');details.className='dcc-paper-facts'+(fact?'':' missing');
+   details.textContent=fact?'P'+fact.par+' · '+fact.yards+'y':'P— · —y';
+   details.title=fact?'Verified tee scorecard yardage, not distance to the pin':'Par and yardage not yet verified';
+   const pencil=doc.createElement('strong');pencil.textContent=state.scores[i]??'—';cell.append(number,details,pencil);grid.append(cell);
   }
+  const totals=$('dcc-paper-totals');
+  const groups=[{name:'OUT',from:0,to:9},...(length===18?[{name:'IN',from:9,to:18}]:[]),{name:'TOTAL',from:0,to:length}];
+  totals.textContent=groups.map(group=>{
+   const holes=Array.from({length:group.to-group.from},(_,j)=>scorecard?.holes.find(h=>h.number===group.from+j+1));
+   const verified=holes.every(h=>h&&Number.isInteger(h.par)&&Number.isInteger(h.yards));
+   const strokes=state.scores.slice(group.from,group.to).reduce((sum,n)=>sum+(Number.isInteger(n)?n:0),0);
+   return group.name+' '+strokes+' strokes · Par '+(verified?holes.reduce((n,h)=>n+h.par,0):'—')+' · '+(verified?holes.reduce((n,h)=>n+h.yards,0)+' yd':'— yd');
+  }).join('  |  ');
   const entries=$('dcc-paper-entries');entries.replaceChildren();
   for(let score=1;score<=10;score++){
    const b=doc.createElement('button');b.type='button';b.textContent=String(score);
@@ -83,6 +98,6 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  $('dcc-paper-prev').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole>1){const next=setSoloHole(storage,state.hole-1);if(next){render();broadcast(next.hole);}}});
  $('dcc-paper-next').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole<(state.length===9?9:18)){const next=setSoloHole(storage,state.hole+1);if(next){render();broadcast(next.hole);}}});
  $('dcc-paper-length').addEventListener('change',event=>{if(setSoloLength(storage,Number(event.target.value)))render();});
- doc.addEventListener('dcc:course-selected',render);doc.addEventListener('dcc:course-cleared',render);doc.addEventListener('click',event=>{if(event.target.closest?.('.staff-pick'))setTimeout(render,0);});
+ doc.addEventListener('dcc:round-environment',render);doc.addEventListener('dcc:course-selected',render);doc.addEventListener('dcc:course-cleared',render);doc.addEventListener('click',event=>{if(event.target.closest?.('.staff-pick'))setTimeout(render,0);});
  render();
 }
