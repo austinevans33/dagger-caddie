@@ -5,9 +5,21 @@ import {normalizeCourseCoordinates} from './open-meteo-weather.js';
 const BASE='https://api.opengolfapi.org/v1/courses/';
 export function normalizeOpenGolfLocation(course,record){
  const selected=normalizeCourse(course);
- if(!selected||selected.provider!=='opengolfapi'||!record||String(record.id)!==selected.providerCourseId)return null;
- const latitude=record.latitude,longitude=record.longitude;
- const coordinates=normalizeCourseCoordinates({latitude,longitude});
+ if(!selected||selected.provider!=='opengolfapi'||!record||typeof record!=='object')return null;
+ // Provider records can arrive as a direct course, a {course} detail, or a
+ // GeoJSON feature. Every accepted shape must carry the exact selected ID.
+ const detail=record.course&&typeof record.course==='object'?record.course:record;
+ if(String(detail.id??'')!==selected.providerCourseId)return null;
+ if(record!==detail&&record.id!=null&&String(record.id)!==selected.providerCourseId)return null;
+ const candidates=[
+  {latitude:detail.latitude,longitude:detail.longitude},
+  {latitude:detail.location?.latitude,longitude:detail.location?.longitude},
+  {latitude:detail.properties?.latitude,longitude:detail.properties?.longitude}
+ ];
+ // GeoJSON uses [longitude, latitude], unlike most web map coordinate pairs.
+ const geo=detail.geometry?.type==='Point'?detail.geometry.coordinates:null;
+ if(Array.isArray(geo)&&geo.length===2)candidates.push({latitude:geo[1],longitude:geo[0]});
+ const coordinates=candidates.map(normalizeCourseCoordinates).find(Boolean);
  if(!coordinates)return null;
  return Object.freeze({course:selected,coordinates,source:'opengolfapi-course-location'});
 }
