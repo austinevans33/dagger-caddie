@@ -36,59 +36,37 @@ export function describeCaddyConditions(active,environment,{now=Date.now(),fetch
   :'Hole '+number+' · Yardage unavailable';
  return {course:heading,hole:holeText,holeSummary,weather,weatherSummary,status};
 }
+// A quiet on-course indicator. Conditions are consumed by the Caddy context
+// behind the scenes; this UI does not claim weather is available.
 export function mountCaddyConditions({doc=document,onRefresh}={}){
  if(doc.getElementById('dcc-caddy-conditions'))return null;
  const heading=doc.getElementById('aiHeading');
  if(!heading)return null;
  const style=doc.createElement('style');
  style.textContent=`
- #dcc-caddy-conditions{margin:10px 0 12px;padding:10px 12px;border:1px solid #b79c62;border-radius:11px;background:#f3ecda;color:#173729;font:12px/1.35 system-ui,sans-serif}
- #dcc-caddy-conditions .dcc-conditions-label{display:block;padding-right:106px;font-size:9px;font-weight:800;letter-spacing:.11em;color:#655535}
- #dcc-caddy-conditions .dcc-conditions-course{display:block;margin-top:7px;font:700 15px/1.2 Georgia,serif;overflow-wrap:anywhere;min-width:0}
- #dcc-caddy-conditions .dcc-conditions-top{display:block;position:relative}
- #dcc-caddy-conditions .dcc-conditions-heading{min-width:0}
- #dcc-caddy-conditions #dcc-caddy-conditions-actions{position:absolute;right:0;top:0}
- #dcc-caddy-conditions .dcc-conditions-hole{display:block;margin-top:4px;font-size:11px;color:#3a5142}
- #dcc-caddy-conditions .dcc-conditions-details{margin-top:7px;border-top:1px solid #d4c5a3;padding-top:7px}
- #dcc-caddy-conditions .dcc-conditions-details summary{cursor:pointer;font:700 11px system-ui;color:#315740;list-style-position:inside;padding:3px 0;touch-action:manipulation}
- #dcc-caddy-conditions .dcc-conditions-weather{display:block;font-size:11px;margin:8px 0 5px;font-weight:600}
- #dcc-caddy-conditions .dcc-conditions-clubs{display:block;padding-top:6px;border-top:1px solid #d3c6a6;font-size:11px;color:#38543f}
- #dcc-caddy-conditions .dcc-conditions-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;color:#596453;font-size:10px;margin-top:8px}
- #dcc-caddy-conditions button{background:transparent;border:1px solid #b79c62;color:#173729;border-radius:7px;padding:6px 9px;font:700 10px system-ui;min-height:34px;cursor:pointer}
- #dcc-caddy-conditions button:disabled{opacity:.55;cursor:wait}
- #dcc-caddy-conditions #dcc-starter-open{background:transparent;color:#173729;white-space:nowrap;flex-shrink:0;font:700 10px system-ui;letter-spacing:0}
+ #dcc-caddy-conditions{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;margin:9px 0 11px;padding:9px 10px;border:1px solid #b79c62;border-radius:10px;background:#f3ecda;color:#173729;font:11px/1.3 system-ui,sans-serif}
+ #dcc-caddy-conditions .dcc-conditions-heading{min-width:0;flex:1}
+ #dcc-caddy-conditions .dcc-conditions-label{display:block;font:800 9px/1.2 system-ui;letter-spacing:.1em;color:#655535;margin-bottom:3px}
+ #dcc-caddy-conditions .dcc-conditions-course{display:block;font:700 13px/1.2 Georgia,serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ #dcc-caddy-conditions .dcc-conditions-hole{display:block;margin-top:3px;font:11px/1.3 system-ui;color:#3a5142}
+ #dcc-caddy-conditions #dcc-caddy-conditions-actions{flex-shrink:0}
+ #dcc-caddy-conditions #dcc-starter-open{border:1px solid #b79c62;background:transparent;color:#173729;border-radius:8px;padding:8px 9px;min-height:35px;font:700 10px/1.1 system-ui;white-space:nowrap;cursor:pointer}
  `;
  doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-caddy-conditions';
- card.setAttribute('aria-label','Selected course and modeled conditions');
- const top=doc.createElement('div');top.className='dcc-conditions-top';
- const headingText=doc.createElement('div');headingText.className='dcc-conditions-heading';
- const label=doc.createElement('span');label.className='dcc-conditions-label';label.textContent='THE CADDY’S COURSE REPORT';
+ card.setAttribute('aria-label','Current course and hole');
+ const text=doc.createElement('div');text.className='dcc-conditions-heading';
+ const label=doc.createElement('span');label.className='dcc-conditions-label';label.textContent='ON THE COURSE';
  const course=doc.createElement('strong');course.className='dcc-conditions-course';
  const hole=doc.createElement('span');hole.className='dcc-conditions-hole';
- headingText.append(label,course,hole);
+ text.append(label,course,hole);
  const actions=doc.createElement('div');actions.id='dcc-caddy-conditions-actions';
- top.append(headingText,actions);
- const details=doc.createElement('details');details.className='dcc-conditions-details';
- const summary=doc.createElement('summary');summary.textContent='Weather, club distances & data sources';
- const weather=doc.createElement('span');weather.className='dcc-conditions-weather';
- const disclaimer=doc.createElement('span');disclaimer.style.cssText='display:block;font-size:10px;color:#596453;margin-bottom:6px';disclaimer.textContent='Tee yardages are not live pin distances.';
- const clubs=doc.createElement('span');clubs.className='dcc-conditions-clubs';
- const footer=doc.createElement('div');footer.className='dcc-conditions-footer';
- const status=doc.createElement('span');
- const refresh=doc.createElement('button');refresh.type='button';refresh.textContent='Refresh conditions';
- footer.append(status,refresh);details.append(summary,disclaimer,weather,clubs,footer);card.append(top,details);
- const anchor=doc.getElementById('aiHeading').closest('.dcc-caddy-heading')||doc.getElementById('aiHeading');
+ card.append(text,actions);
+ const anchor=heading.closest('.dcc-caddy-heading')||heading;
  anchor.insertAdjacentElement('afterend',card);
- let busy=false;
- refresh.addEventListener('click',async()=>{
-  if(busy||typeof onRefresh!=='function')return;
-  busy=true;refresh.disabled=true;
-  try{await onRefresh();}finally{busy=false;refresh.disabled=false;}
- });
  return {render(data){
-  course.textContent=data.course;hole.textContent=data.holeSummary||data.hole;
-  summary.textContent=data.weatherSummary||'Conditions & course data';
-  weather.textContent=data.weather;clubs.textContent=data.clubBaseline||'';status.textContent=data.status;
- },setLoading(value){refresh.disabled=!!value||busy;}};
+  course.textContent=data.course||'No course selected';
+  course.title=data.course||'';
+  hole.textContent=data.holeSummary||data.hole||'';
+ },setLoading(){}};
 }
