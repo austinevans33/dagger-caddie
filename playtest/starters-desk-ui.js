@@ -108,8 +108,14 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  });
  dialog.querySelector('#dcc-starter-later').addEventListener('click',()=>{try{sessionStorage.setItem('dcc_starter_skipped_session_v1','1');}catch{}dialog.close();});
  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
- const mast=doc.querySelector('.app-shell .mast')||doc.querySelector('[data-tab="settings"]')||doc.body;
- mast.append(button);doc.body.append(dialog);
+ // Keep course changes with the Caddy's course report, not as a large
+ // masthead button above the country-club branding. The scorecard's
+ // Change Course / New Round action remains available independently.
+ const reportActions=doc.getElementById('dcc-caddy-conditions-actions');
+ const fallback=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]')||doc.body;
+ button.textContent='CHANGE COURSE';
+ button.setAttribute('aria-label','Open the Starter’s Desk to choose or change course and tees');
+ (reportActions||fallback).append(button);doc.body.append(dialog);
  // First visit: offer the course register once per browser tab, without
  // blocking the clubhouse on repeat opens when a user chose to skip.
  try{
