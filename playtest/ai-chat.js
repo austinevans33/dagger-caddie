@@ -8,7 +8,7 @@ import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js';
 import {createShotRecordContext} from './shot-record-context.js';
 import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js';
-import {mountStartersDesk} from './starters-desk-ui.js?v=premium-paper-9';
+import {mountStartersDesk} from './starters-desk-ui.js?v=parallel-conditions-14';
 import {firebaseConfig} from './firebase-config.js';
 import {
   getFirestore,
