@@ -3,8 +3,11 @@
 import {readActiveRound} from './starters-desk-session.js';
 import {loadOpenGolfHoles} from './opengolf-holes.js?v=premium-paper-9';
 import {sameCourseSelection} from './course-identity.js';
+import {readCachedCourseScorecard,saveCachedCourseScorecard} from './course-scorecard-cache.js';
 const CACHED='dcc_course_scorecard_v1';
 export function readCourseScorecard(storage,selection){
+ const multi=readCachedCourseScorecard(storage,selection);
+ if(multi)return multi;
  try{
   const saved=JSON.parse(storage.getItem(CACHED)||'null');
   if(!saved||saved.version!==1||!sameCourseSelection(saved.selection,selection))return null;
@@ -27,6 +30,9 @@ export async function getActiveCourseContext({storage,fetcher,signal,now=Date.no
   if(!latest||!sameCourseSelection(latest.selection,selection))return {state:'selection-changed',holes:[],livePinDistance:false};
   if(!holes.length)return {state:'no-verified-holes',selection,holes:[],livePinDistance:false};
   const result={version:1,selection,holes,loadedAt:now};
+  // Retain the legacy single-course cache for existing installations, while
+  // keeping a bounded per-course/tee history for returning players.
+  saveCachedCourseScorecard(storage,selection,holes,now);
   try{storage.setItem(CACHED,JSON.stringify(result));}catch{/* Memory-only success. */}
   const context={state:'ready',selection,holes,source:'opengolfapi-scorecard',livePinDistance:false,loadedAt:now};
   if(typeof notify==='function')notify(context);
