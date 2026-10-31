@@ -4750,6 +4750,7 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <div hidden="" id="roomScoreSection">
 <div class="bet-summary" style="grid-template-columns:repeat(3,1fr)"><div class="betbox"><strong>Format</strong><span id="roomFormatDisplay" style="font-size:15px">—</span></div><div class="betbox"><strong>Stake</strong><span id="roomStakeDisplay" style="font-size:15px">—</span></div><div class="betbox"><strong>Next hole</strong><span id="roomNextDisplay" style="font-size:15px">1</span></div></div>
 <div class="room-grid" id="roomTotalsCards" style="margin:8px 0"></div>
+<div id="roomFinalSummary" hidden style="background:#fffaf0;border:1px solid #b79c62;border-radius:12px;padding:14px;margin:10px 0;color:#193d2d"><div style="font-size:11px;letter-spacing:.12em;font-weight:700;color:#846a35">DAGGER COUNTRY CLUB · THE FINAL CARD</div><strong id="roomFinalStatus" style="display:block;font-size:19px;margin:5px 0">OFFICIAL FINAL RESULT</strong><p id="roomFinalMeta" class="game-note"></p><div id="roomFinalPayouts"></div><p class="game-note" style="margin:8px 0 0">Final balances only · No money transfers</p></div>
 <div class="room-editor" id="roomEditor">
 <div class="action-scorekeeper-heading">
 <span>OFFICIAL SCORING STATION</span>
@@ -4757,7 +4758,7 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <small>One scorekeeper · Live updates to every member</small>
 </div><div class="room-grid" style="margin:10px 0"><div><label>Hole to record</label><select id="roomHole"></select></div><div><label>Scorekeeper</label><input id="roomHostName" readonly=""/></div></div>
 <div style="overflow-x:auto"><table class="room-table"><thead id="roomScoreHead"></thead><tbody id="roomScoreRows"></tbody></table></div>
-<div class="room-controls"><button class="btn-primary" id="roomSaveHole" type="button">Save hole</button><button class="btn-secondary" id="roomFinish" type="button">Archive match</button></div>
+<div class="room-controls"><button class="btn-primary" id="roomSaveHole" type="button">Save hole</button><button class="btn-secondary" id="roomUndoHole" type="button">Undo last hole</button><button class="btn-secondary" id="roomFinish" type="button">Finish match</button></div>
 </div><div class="spectator-banner" hidden="" id="roomSpectator"><strong>WATCHING LIVE</strong><p>Only the designated scorekeeper can enter or change scores. Your view updates automatically.</p></div><div class="notice-card" id="roomStandings"></div><div aria-live="polite" class="notice-card" id="roomCaddieBanter">Your caddie is studying the scoreboard and preparing a totally unnecessary remark.</div>
 <div class="tiny-print" id="roomAudit"></div>
 <div class="game-live"><h3>Hole-by-hole live ledger</h3><p class="game-note">Official strokes, hole result, and running payouts. Unscored holes stay blank; skins carry forward on ties.</p><div aria-live="polite" class="ledger-cards" id="roomLedgerCards" role="list"><p>Waiting for the live scorecard…</p></div><details class="ledger-detail"><summary>Expanded payout table</summary><div style="overflow-x:auto"><table class="room-table" id="roomLedgerTable"><thead id="roomLedgerHead"></thead><tbody id="roomLedgerBody"></tbody></table></div></details></div>
@@ -4778,6 +4779,7 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 </div>
 </div>
 <p class="tiny-print" style="margin-top:10px">Scorekeeper alone can change scores; members can view. One gross-score entry per golfer per hole powers the chosen format. Live mode needs internet and an authenticated Firebase connection. No money transfers.</p>
+<details id="roomMatchHistory" class="ledger-detail" style="margin:12px 0"><summary>Money Room match history · <span id="roomMatchHistoryCount">0 saved on this phone</span></summary><div id="roomMatchHistoryList" style="padding:8px 0"></div></details>
 </section><details class="dcc-r60-legacy-ticket" data-tab="bets"><summary>Optional · Legacy wagering &amp; match ticket</summary><section aria-label="The Action wager ticket" class="card dcc-bet-ticket">
 <div class="dcc-bet-ticket__mast"><span>DCC / OFFICIAL MATCH TICKET</span><span>NO. 018 — AS IT LIES</span></div>
 <div class="dcc-bet-ticket__heading"><div><span class="dcc-bet-ticket__eyebrow">THE DAILY ACTION / 01</span><h2>Make it<br/><em>interesting.</em></h2><p>One opponent. Eighteen holes. Every dollar accounted for.</p></div><span aria-hidden="true" class="dcc-bet-ticket__stamp">DCC<span>18</span></span></div>
@@ -10425,7 +10427,7 @@ $('roastOpponent').onclick=()=>{
  $('opponentRoastLine').textContent=CADDIES[selectedCaddie].name+': “'+lines[(roastIndex++)%lines.length].replaceAll('{name}',name)+'”';
 };
 </script>
-<script src="money-room.js?v=qr-auto-join-1" type="module"></script>
+<script src="money-room.js?v=match-finish-2" type="module"></script>
 <script src="ai-chat.js?v=paper-score-11" type="module"></script>
 <script src="golfer-account.js" type="module"></script>
 <script src="golfer-profile.js" type="module"></script>
