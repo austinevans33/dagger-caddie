@@ -7,6 +7,7 @@ import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js';
 import {createShotRecordContext} from './shot-record-context.js';
+import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
 import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js';
 import {mountStartersDesk} from './starters-desk-ui.js?v=coverage-15';
 import {firebaseConfig} from './firebase-config.js';
@@ -47,12 +48,21 @@ let roundEnvironmentFetchedAt=0;
 let roundEnvironmentLoading=null;
 let roundEnvironmentLoadingSelection=null;
 let conditionsUI=null;
+let golferConfirmedTarget=false;
+function savedClubProfile(){
+ try{const profile=JSON.parse(localStorage.getItem('dagger_profile')||'[]');return Array.isArray(profile)?profile:[];}
+ catch{return [];}
+}
 function renderCaddyConditions(loading=false){
  if(!conditionsUI)return;
  const active=readActiveRound(localStorage);
  const selectedHole=readSoloCard(localStorage)?.hole;
  const safe=safeCaddyEnvironment(active,activeRoundEnvironment,roundEnvironmentFetchedAt);
- conditionsUI.render(describeCaddyConditions(active?{...active,holeNumber:selectedHole||active.selection.holeNumber}:null,safe,{fetchedAt:roundEnvironmentFetchedAt,loading}));
+ const data=describeCaddyConditions(active?{...active,holeNumber:selectedHole||active.selection.holeNumber}:null,safe,{fetchedAt:roundEnvironmentFetchedAt,loading});
+ const target=golferConfirmedTarget?document.getElementById('yards')?.value:null;
+ data.clubBaseline=golferConfirmedTarget?formatCaddyClubBaseline(buildCaddyClubBaseline(savedClubProfile(),target)):
+  'Enter your actual target yardage to compare your saved club carries.';
+ conditionsUI.render(data);
  conditionsUI.setLoading(loading);
 }
 async function refreshCaddyRoundEnvironment(){
@@ -86,6 +96,7 @@ document.addEventListener('dcc:round-environment',event=>{
  if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection)){activeRoundEnvironment=incoming;roundEnvironmentFetchedAt=Date.now();renderCaddyConditions();}
 });
 conditionsUI=mountCaddyConditions({onRefresh:refreshCaddyRoundEnvironment});
+document.getElementById('yards')?.addEventListener('input',()=>{golferConfirmedTarget=true;renderCaddyConditions();});
 document.addEventListener('dcc:solo-hole-change',()=>renderCaddyConditions());
 renderCaddyConditions();
 let latestMemoryCandidate = null;
@@ -444,8 +455,8 @@ function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dag
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
 const holeNumber=Number((readSoloCard(localStorage)?.hole ?? document.getElementById('hole')?.value));
 const courseBriefing=createCaddyCourseBriefing(safeCaddyEnvironment(readActiveRound(localStorage),activeRoundEnvironment,roundEnvironmentFetchedAt),holeNumber);
-const aim=buildCaddyTarget({remainingYards:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||''});
-return {aimTarget:aim?.target||'center-green',remainingDistanceSource:aim?.distanceSource||'golfer-needed',courseBriefing:courseBriefing?.slice(0,900)||null,yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
+const aim=buildCaddyTarget({remainingYards:golferConfirmedTarget?$('yards')?.value:null,lie:document.querySelector('#lieButtons .active')?.textContent||''});
+return {aimTarget:aim?.target||'center-green',remainingDistanceSource:aim?.distanceSource||'golfer-needed',courseBriefing:courseBriefing?.slice(0,900)||null,yardage:golferConfirmedTarget?$('yards')?.value:'',lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
 async function getAuth() {
   if (!authPromise) {
     authPromise = (async () => {
