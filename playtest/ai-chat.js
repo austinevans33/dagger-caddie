@@ -9,7 +9,7 @@ import {buildCaddyCourseFacts} from './caddy-course-facts.js';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js';
 import {createShotRecordContext} from './shot-record-context.js';
 import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
-import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=compact-course-report-19';
+import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=quiet-course-strip-20';
 import {mountStartersDesk} from './starters-desk-ui.js?v=compact-course-report-19';
 import {firebaseConfig} from './firebase-config.js';
 import {
