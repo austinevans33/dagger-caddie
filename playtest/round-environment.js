@@ -5,6 +5,7 @@ import {sameCourseSelection} from './course-identity.js';
 import {getActiveCourseContext} from './active-course-context.js?v=cached-fallback-16';
 import {loadCourseLocation} from './course-location.js';
 import {loadOpenMeteoWeather} from './open-meteo-weather.js';
+import {readCachedCourseWeather,saveCachedCourseWeather} from './course-weather-cache.js';
 export async function getRoundEnvironment({storage,fetcher,signal,now=Date.now()}={}){
  const active=readActiveRound(storage);
  if(!active)return Object.freeze({state:'not-selected',holes:[],weather:null,livePinDistance:false});
@@ -17,10 +18,22 @@ export async function getRoundEnvironment({storage,fetcher,signal,now=Date.now()
   try{
    const location=await loadCourseLocation(selection.course,{fetcher,signal});
    if(!same())return {weather:null,weatherState:'selection-changed'};
-   if(!location)return {weather:null,weatherState:'location-unavailable'};
+   if(!location){
+    const cached=readCachedCourseWeather(storage,selection.course,now);
+    return {weather:cached,weatherState:cached?'model-cached':'location-unavailable'};
+   }
    const weather=await loadOpenMeteoWeather(location.coordinates,{fetcher,signal,now});
-   return {weather,weatherState:weather?'model-current':'model-unavailable'};
-  }catch{return {weather:null,weatherState:'unavailable'};}
+   if(weather){
+    // Never cache a response if the player changed course while it loaded.
+    if(same())saveCachedCourseWeather(storage,selection.course,weather,now);
+    return {weather,weatherState:'model-current'};
+   }
+   const cached=readCachedCourseWeather(storage,selection.course,now);
+   return {weather:cached,weatherState:cached?'model-cached':'model-unavailable'};
+  }catch{
+   const cached=readCachedCourseWeather(storage,selection.course,now);
+   return {weather:cached,weatherState:cached?'model-cached':'unavailable'};
+  }
  })();
  const [scorecard,{weather,weatherState}]=await Promise.all([scorecardTask,weatherTask]);
  if(!same())return Object.freeze({state:'selection-changed',holes:[],weather:null,livePinDistance:false});
