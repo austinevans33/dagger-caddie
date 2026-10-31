@@ -40,6 +40,7 @@ export function mountCaddyConditions({doc=document,onRefresh}={}){
  #dcc-caddy-conditions .dcc-conditions-label{font-size:10px;font-weight:800;letter-spacing:.13em;color:#655535}
  #dcc-caddy-conditions .dcc-conditions-course{font:700 17px/1.25 Georgia,serif;overflow-wrap:anywhere}
  #dcc-caddy-conditions .dcc-conditions-weather{font-weight:600}
+ #dcc-caddy-conditions .dcc-conditions-clubs{padding-top:6px;border-top:1px solid #d3c6a6;font-size:11px;color:#38543f}
  #dcc-caddy-conditions .dcc-conditions-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;color:#596453;font-size:11px}
  #dcc-caddy-conditions button{background:transparent;border:1px solid #b79c62;color:#173729;border-radius:7px;padding:7px 10px;font:700 11px system-ui;min-height:35px;cursor:pointer}
  #dcc-caddy-conditions button:disabled{opacity:.55;cursor:wait}
@@ -51,10 +52,11 @@ export function mountCaddyConditions({doc=document,onRefresh}={}){
  const course=doc.createElement('strong');course.className='dcc-conditions-course';
  const hole=doc.createElement('span');
  const weather=doc.createElement('span');weather.className='dcc-conditions-weather';
+ const clubs=doc.createElement('span');clubs.className='dcc-conditions-clubs';
  const footer=doc.createElement('div');footer.className='dcc-conditions-footer';
  const status=doc.createElement('span');
  const refresh=doc.createElement('button');refresh.type='button';refresh.textContent='Refresh conditions';
- footer.append(status,refresh);card.append(label,course,hole,weather,footer);
+ footer.append(status,refresh);card.append(label,course,hole,weather,clubs,footer);
  const anchor=heading.closest('.dcc-caddy-heading')||heading;
  anchor.insertAdjacentElement('afterend',card);
  let busy=false;
@@ -65,6 +67,6 @@ export function mountCaddyConditions({doc=document,onRefresh}={}){
  });
  return {render(data){
   course.textContent=data.course;hole.textContent=data.hole;
-  weather.textContent=data.weather;status.textContent=data.status;
+  weather.textContent=data.weather;clubs.textContent=data.clubBaseline||'';status.textContent=data.status;
  },setLoading(value){refresh.disabled=!!value||busy;}};
 }
