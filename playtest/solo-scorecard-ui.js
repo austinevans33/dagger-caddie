@@ -13,14 +13,14 @@ const paperCSS=`
 .dcc-paper-body{padding:17px;background:repeating-linear-gradient(0deg,transparent 0,transparent 32px,#806f4d13 33px),#f4ecd6}
 .dcc-paper-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font:700 11px system-ui;letter-spacing:.05em}
 .dcc-paper-meta select{border:1px solid #a98b56;border-radius:6px;background:#fffaed;color:#243c2d;padding:8px}
-.dcc-paper-scoregrid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;margin:15px 0}
-.dcc-paper-cell{text-align:center;border:1px solid #c9b994;background:#fff9e8;padding:5px 1px;min-width:0;min-height:52px}
+.dcc-paper-scoregrid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:2px;margin:15px 0}
+.dcc-paper-cell{text-align:center;border:1px solid #c9b994;background:#fff9e8;padding:5px 1px;min-width:0;min-height:49px}
 .dcc-paper-cell.current{outline:2px solid #1d5b41;outline-offset:-2px;background:#f1e0ae}
 .dcc-paper-cell small{display:block;color:#776d53;font:700 9px system-ui}
 .dcc-paper-cell strong{display:block;padding-top:2px;font:italic 21px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#3e4241;transform:rotate(-5deg)}
 .dcc-paper-navigation{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
 .dcc-paper-navigation button,.dcc-paper-scorebuttons button{border:1px solid #bca576;border-radius:5px;background:#fffaf0;color:#1b3b2b;min-height:42px;padding:8px;font-weight:800}
-.dcc-paper-scorebuttons{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+.dcc-paper-scorebuttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
 .dcc-paper-scorebuttons button.selected{background:#d6bb82}
 .dcc-paper-pencil{font:italic 16px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#625f56;transform:rotate(-2deg)}
 .dcc-paper-recap{margin-top:15px;border-top:1px dashed #927e57;padding-top:14px}
@@ -58,17 +58,19 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   const grid=$('dcc-paper-grid');grid.replaceChildren();
   for(let i=0;i<length;i++){
    const cell=doc.createElement('div');cell.className='dcc-paper-cell'+(i+1===state.hole?' current':'');
-   const number=doc.createElement('small');number.textContent='HOLE '+(i+1);
+   const number=doc.createElement('small');number.textContent=String(i+1);
    const pencil=doc.createElement('strong');pencil.textContent=state.scores[i]??'—';cell.append(number,pencil);grid.append(cell);
   }
   const entries=$('dcc-paper-entries');entries.replaceChildren();
-  for(let score=1;score<=15;score++){
+  for(let score=1;score<=10;score++){
    const b=doc.createElement('button');b.type='button';b.textContent=String(score);
    if(state.scores[state.hole-1]===score)b.className='selected';
    b.setAttribute('aria-label','Pencil '+score+' strokes for hole '+state.hole);
    b.addEventListener('click',()=>{const next=saveSoloScore(storage,score);if(next){render();broadcast(next.hole);}});
    entries.append(b);
   }
+  if(state.scores[state.hole-1]>10){const more=doc.createElement('button');more.textContent='Other: '+state.scores[state.hole-1];more.setAttribute('aria-label','Previously entered '+state.scores[state.hole-1]+' strokes');more.disabled=true;entries.append(more);}
+  const other=doc.createElement('button');other.type='button';other.textContent='10+';other.setAttribute('aria-label','Enter a score over ten');other.addEventListener('click',()=>{const value=Number(prompt('Strokes on hole '+state.hole+' (11–15):'));if(Number.isInteger(value)&&value>=11&&value<=15){const next=saveSoloScore(storage,value);if(next){render();broadcast(next.hole);}}});entries.append(other);
   const summary=summarizeSoloCard(state,pars);
   const selectedCaddy=doc.querySelector('.staff-pick.active')?.dataset.caddie||'keith';
   const recap=writeRecap(summary,selectedCaddy);
