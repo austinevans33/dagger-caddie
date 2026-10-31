@@ -99,7 +99,8 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
   if(!confirm(haveScores?'Archive your current solo scorecard and choose a new course?':'Clear your current check-in and choose a new course?'))return;
   const result=archiveAndClearSoloRound(storage);
   if(!result.ok){results.textContent='Could not safely archive your round. Nothing was intentionally discarded.';return;}
-  selected=null;available=[];checkin.disabled=true;tees.disabled=true;tees.replaceChildren(new Option('Select a course first',''));
+  // Invalidate any previous course/tee requests so a late response cannot restore a stale selection.
+  ++requestId;selected=null;available=[];query.value='';checkin.disabled=true;tees.disabled=true;tees.replaceChildren(new Option('Select a course first',''));
   results.textContent='Round archived. Search for a new course to check in.';
   dialog.querySelector('#dcc-starter-current').textContent='No course checked in yet.';
   doc.dispatchEvent(new CustomEvent('dcc:course-cleared'));
