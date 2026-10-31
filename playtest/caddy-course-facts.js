@@ -14,7 +14,7 @@ export function buildCaddyCourseFacts(environment,holeNumber){
   facts.scorecardCached=['offline-cached','cached-no-provider-holes'].includes(environment.state);
  }
  const w=environment.weather;
- if(environment.weatherState==='model-current'&&w?.source==='open-meteo-model'&&
+ if(['model-current','model-cached'].includes(environment.weatherState)&&w?.source==='open-meteo-model'&&
   Number.isFinite(w.windMph)&&w.windMph>=0&&w.windMph<=150&&
   Number.isFinite(w.windDegrees)&&w.windDegrees>=0&&w.windDegrees<=360&&
   Number.isFinite(w.temperatureF)&&w.temperatureF>=-100&&w.temperatureF<=150&&
