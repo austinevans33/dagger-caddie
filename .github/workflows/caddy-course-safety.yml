@@ -42,4 +42,5 @@ jobs:
             tests/caddy-environment-policy.test.mjs \
             tests/caddy-conditions-ui.test.mjs \
             tests/course-scorecard-coverage-cache.test.mjs \
-            tests/course-empty-provider-fallback.test.mjs
+            tests/course-empty-provider-fallback.test.mjs \
+            tests/solo-scorecard-backup.test.mjs
