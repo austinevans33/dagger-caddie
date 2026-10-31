@@ -9,7 +9,7 @@ import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environ
 import {createShotRecordContext} from './shot-record-context.js';
 import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
 import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js';
-import {mountStartersDesk} from './starters-desk-ui.js?v=coverage-15';
+import {mountStartersDesk} from './starters-desk-ui.js?v=caddy-baseline-16';
 import {firebaseConfig} from './firebase-config.js';
 import {
   getFirestore,
