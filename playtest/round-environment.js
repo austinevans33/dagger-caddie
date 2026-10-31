@@ -9,18 +9,20 @@ export async function getRoundEnvironment({storage,fetcher,signal,now=Date.now()
  const active=readActiveRound(storage);
  if(!active)return Object.freeze({state:'not-selected',holes:[],weather:null,livePinDistance:false});
  const selection=active.selection;
- const scorecard=await getActiveCourseContext({storage,fetcher,signal,now});
+ // Course scorecard and course-coordinate lookup are independent public reads.
+ // Run them concurrently to avoid three serial network waits on the first tee.
  const same=()=>{const latest=readActiveRound(storage);return !!latest&&sameCourseSelection(latest.selection,selection);};
- if(!same())return Object.freeze({state:'selection-changed',holes:[],weather:null,livePinDistance:false});
- let weather=null,weatherState='unavailable';
- try{
-  const location=await loadCourseLocation(selection.course,{fetcher,signal});
-  if(!same())return Object.freeze({state:'selection-changed',holes:[],weather:null,livePinDistance:false});
-  if(location){
-   weather=await loadOpenMeteoWeather(location.coordinates,{fetcher,signal,now});
-   weatherState=weather?'model-current':'model-unavailable';
-  }else weatherState='location-unavailable';
- }catch{weatherState='unavailable';}
+ const scorecardTask=getActiveCourseContext({storage,fetcher,signal,now});
+ const weatherTask=(async()=>{
+  try{
+   const location=await loadCourseLocation(selection.course,{fetcher,signal});
+   if(!same())return {weather:null,weatherState:'selection-changed'};
+   if(!location)return {weather:null,weatherState:'location-unavailable'};
+   const weather=await loadOpenMeteoWeather(location.coordinates,{fetcher,signal,now});
+   return {weather,weatherState:weather?'model-current':'model-unavailable'};
+  }catch{return {weather:null,weatherState:'unavailable'};}
+ })();
+ const [scorecard,{weather,weatherState}]=await Promise.all([scorecardTask,weatherTask]);
  if(!same())return Object.freeze({state:'selection-changed',holes:[],weather:null,livePinDistance:false});
  return Object.freeze({
   state:scorecard.state,selection,holes:scorecard.holes||[],
