@@ -3,10 +3,11 @@ const {onRequest}=require('firebase-functions/v2/https');
 const {defineSecret}=require('firebase-functions/params');
 const admin=require('firebase-admin');
 const {caddyContext,caddyContextInstructions}=require('./caddy-context');
+const {resolveCaddyDeploymentTarget}=require('./deployment-target');
 admin.initializeApp();
 const key=defineSecret('OPENAI_API_KEY');
 const ORIGIN='https://austinevans33.github.io';
-const PROJECT='dagger-caddie-money-room';
+const {project:PROJECT,serviceAccount:CADDY_SERVICE_ACCOUNT}=resolveCaddyDeploymentTarget();
 const personas = {
   keith: `You are Keith, a grizzled, foul-mouthed veteran
 golf caddie with extraordinary course-management instincts.
@@ -84,7 +85,7 @@ scores, or bets. Roast golf decisions, not protected traits.
 The actual golf strategy must remain sound.`
 };
 function reply(res,status,obj){res.status(status).json(obj)}
-exports.caddieChat=onRequest({region:'us-central1',serviceAccount:'dagger-caddie-ai-runtime@dagger-caddie-money-room.iam.gserviceaccount.com',secrets:[key],memory:'256MiB',timeoutSeconds:35,maxInstances:2,concurrency:5,invoker:'public'},async(req,res)=>{
+exports.caddieChat=onRequest({region:'us-central1',serviceAccount:CADDY_SERVICE_ACCOUNT,secrets:[key],memory:'256MiB',timeoutSeconds:35,maxInstances:2,concurrency:5,invoker:'public'},async(req,res)=>{
  res.set('Vary','Origin');
  const origin=req.get('origin');if(origin===ORIGIN)res.set('Access-Control-Allow-Origin',ORIGIN);
  res.set('Access-Control-Allow-Headers','Authorization, Content-Type');res.set('Access-Control-Allow-Methods','POST, OPTIONS');
@@ -100,7 +101,10 @@ try {
   reply(res, 401, {error: 'Invalid login token'});
   return;
 }
- if(PROJECT!==process.env.GCLOUD_PROJECT && process.env.GCLOUD_PROJECT){reply(res,500,{error:'Wrong Firebase project'});return;}
+ if((process.env.GCLOUD_PROJECT&&PROJECT!==process.env.GCLOUD_PROJECT)||
+    (process.env.GCP_PROJECT&&PROJECT!==process.env.GCP_PROJECT)){
+  reply(res,500,{error:'Wrong Firebase project'});return;
+ }
  const body=req.body||{};
  const who=typeof body.caddie==='string'&&personas[body.caddie]?body.caddie:'keith';
  const abuseLevel = [1,2,3].includes(Number(body.abuseLevel))
