@@ -7,6 +7,12 @@ import {scorecardCoverage} from './course-scorecard-coverage.js';
 import {formatSoloScorecardBackup} from './solo-scorecard-backup.js';
 
 const paperCSS=`
+#dcc-paper-dialog{width:min(690px,calc(100vw - 16px));max-width:690px;max-height:calc(100dvh - 24px);margin:auto;padding:0;border:1px solid #b79c62;border-radius:12px;background:#f4ecd6;color:#173729;box-shadow:0 16px 50px #061e16a8;overflow:auto;overscroll-behavior:contain}
+#dcc-paper-dialog::backdrop{background:rgba(5,22,16,.79)}
+#dcc-paper-dialog .dcc-paper-dialog-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#143729;color:#f3ead7;border-bottom:1px solid #b79c62;padding:10px 12px;font:700 11px system-ui;letter-spacing:.1em}
+#dcc-paper-dialog .dcc-paper-close{width:auto;min-height:40px;border:1px solid #c5ad78;border-radius:8px;background:#f4ecd6;color:#173729;padding:8px 12px;font:800 11px system-ui;cursor:pointer}
+#dcc-paper-launch{display:block;width:100%;min-height:42px;margin:5px 0 12px;padding:10px 14px;border:1px solid #b79c62;border-radius:9px;background:#f3ecda;color:#173729;font:800 11px/1.3 system-ui;letter-spacing:.09em;text-align:center;cursor:pointer}
+#dcc-paper-launch[hidden]{display:none}
 #dcc-solo-scorecard{box-sizing:border-box;margin:10px -10px;border:1px solid #ac9364;border-radius:4px;background:#f4ecd6;color:#302e26;box-shadow:0 2px 0 #d6c6a3;font-family:Georgia,serif;overflow:hidden}
 #dcc-solo-scorecard *{box-sizing:border-box}
 #dcc-solo-scorecard .dcc-paper-head{background:#143729;color:#f7efd8;padding:12px 14px 11px;text-align:center;border-bottom:3px double #d2b777}
@@ -59,13 +65,29 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  const style=doc.createElement('style');style.textContent=paperCSS;doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-solo-scorecard';
  card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div><div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-copy">Copy Round Card</button><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div><div id="dcc-paper-copy-status" role="status" aria-live="polite" style="font:11px/1.4 system-ui;color:#34543c;margin-top:5px"></div></div>`;
+ const dialog=doc.createElement('dialog');dialog.id='dcc-paper-dialog';
+ dialog.setAttribute('aria-label','Dagger Country Club scorecard');
+ const bar=doc.createElement('div');bar.className='dcc-paper-dialog-bar';
+ const barTitle=doc.createElement('span');barTitle.textContent='THE OFFICIAL SCORECARD';
+ const close=doc.createElement('button');close.type='button';close.className='dcc-paper-close';close.textContent='← BACK TO CADDY';
+ bar.append(barTitle,close);dialog.append(bar,card);doc.body.append(dialog);
+ const launch=doc.createElement('button');launch.type='button';launch.id='dcc-paper-launch';
+ launch.textContent='OPEN SCORECARD';launch.hidden=true;
+ const courseStrip=doc.getElementById('dcc-caddy-conditions');
  const target=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]');
- (target||doc.body).append(card);
+ if(courseStrip)courseStrip.insertAdjacentElement('afterend',launch);
+ else (target||doc.body).prepend(launch);
+ launch.addEventListener('click',()=>{if(launch.hidden||dialog.open)return;dialog.showModal();dialog.scrollTop=0;});
+ close.addEventListener('click',()=>dialog.close());
+ // Never move the live card or recreate its scoring listeners on open/close.
+ // Native dialog Escape support and focus restoration work in iPhone Safari.
  const $=id=>card.querySelector('#'+id);
  function broadcast(hole){doc.dispatchEvent(new CustomEvent('dcc:solo-hole-change',{detail:{hole}}));}
  function render(){
   const active=readActiveRound(storage),state=startSoloCard(storage);
-  if(!active||!state){card.hidden=true;return;}card.hidden=false;
+  if(!active||!state){card.hidden=true;launch.hidden=true;if(dialog.open)dialog.close();return;}card.hidden=false;launch.hidden=false;
+  const scored=state.scores.filter(Number.isInteger).length;
+  launch.textContent='OPEN SCORECARD  ·  '+scored+'/'+(state.length===9?9:18)+' HOLES SCORED';
   const length=state.length===9?9:18,scorecard=readCourseScorecard(storage,active.selection);
   const range=soloRange(state);
   const coverage=scorecardCoverage(scorecard?.holes);
