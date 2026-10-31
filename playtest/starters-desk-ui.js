@@ -13,8 +13,8 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  #dcc-starter-dialog{border:1px solid #b79c62;border-radius:18px;background:#f5f0e5;color:#143126;max-width:min(92vw,490px);width:100%;padding:0;box-shadow:0 15px 60px #0008}
  #dcc-starter-dialog::backdrop{background:#101e19b8}
  .dcc-starter-head{background:#173528;color:#f3e9d3;text-align:center;padding:28px 22px;border-radius:17px 17px 0 0}
- .dcc-starter-eyebrow{color:#d8ba77;letter-spacing:.18em;font:800 10px system-ui}
- .dcc-starter-head h2{font:normal 30px Georgia,serif;margin:10px 0}
+ #dcc-starter-dialog .dcc-starter-eyebrow{color:#d8ba77;letter-spacing:.18em;font:800 10px system-ui}
+ #dcc-starter-dialog .dcc-starter-head h2{font:normal 30px Georgia,serif;margin:10px 0;color:#f3e9d3!important;opacity:1}
  .dcc-starter-body{padding:24px;display:grid;gap:14px}
  .dcc-starter-body p{margin:0;line-height:1.5}\n .dcc-starter-body input,.dcc-starter-body select{padding:11px;border-radius:8px;width:100%;box-sizing:border-box;border:1px solid #b79c62}\n #dcc-starter-results{display:grid;gap:6px;max-height:200px;overflow:auto}
  .dcc-starter-body button{padding:12px;border-radius:10px;border:1px solid #b79c62;background:#173528;color:#f3e9d3;cursor:pointer}
