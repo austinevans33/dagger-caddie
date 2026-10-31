@@ -102,7 +102,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   const totalPar=sumFacts(selectedFacts,'par'),totalYards=sumFacts(selectedFacts,'yards');
   $('dcc-paper-totals').textContent='TOTAL  ·  '+scoreSum(range.start-1,range.end)+' STROKES   /   PAR '+(totalPar??'—')+'   /   '+(totalYards??'—')+' YDS';
   const entries=$('dcc-paper-entries');entries.replaceChildren();
-  for(let score=1;score<=15;score++){
+  for(let score=1;score<=10;score++){
    const b=doc.createElement('button');b.type='button';b.textContent=String(score);
    if(state.scores[state.hole-1]===score)b.className='selected';
    b.setAttribute('aria-label','Pencil '+score+' strokes for hole '+state.hole);
