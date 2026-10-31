@@ -41,19 +41,29 @@ if (!window.location.search && !window.location.hash) {
 let conversation=[],working=false,authPromise=null;
 let activeRoundEnvironment=null;
 let roundEnvironmentLoading=null;
+let roundEnvironmentLoadingSelection=null;
 async function refreshCaddyRoundEnvironment(){
  const active=readActiveRound(localStorage);
  if(!active){activeRoundEnvironment=null;return null;}
- if(roundEnvironmentLoading)return roundEnvironmentLoading;
- roundEnvironmentLoading=getRoundEnvironment({storage:localStorage}).then(result=>{
+ // Share in-flight requests only for the same course and tee, never a previous round.
+ if(roundEnvironmentLoading&&roundEnvironmentLoadingSelection&&sameCourseSelection(active.selection,roundEnvironmentLoadingSelection))return roundEnvironmentLoading;
+ const selection=active.selection;
+ const pending=getRoundEnvironment({storage:localStorage}).then(result=>{
   const current=readActiveRound(localStorage);
   if(current&&result.selection&&sameCourseSelection(current.selection,result.selection)&&result.state!=='selection-changed'){
    activeRoundEnvironment=result;
-  }else if(!current){activeRoundEnvironment=null;}
-  return activeRoundEnvironment;
- }).catch(()=>null).finally(()=>{roundEnvironmentLoading=null;});
- return roundEnvironmentLoading;
+   return result;
+  }
+  if(!current)activeRoundEnvironment=null;
+  return null;
+ }).catch(()=>null);
+ roundEnvironmentLoading=pending;
+ roundEnvironmentLoadingSelection=selection;
+ try{return await pending;}
+ finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingSelection=null;}}
 }
+document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;});
+document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;void refreshCaddyRoundEnvironment();});
 document.addEventListener('dcc:round-environment',event=>{
  const incoming=event.detail,active=readActiveRound(localStorage);
  if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection))activeRoundEnvironment=incoming;
