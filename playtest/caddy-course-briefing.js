@@ -7,7 +7,7 @@ export function createCaddyCourseBriefing(environment,holeNumber){
  if(hole)lines.push('Scorecard: par '+hole.par+', '+hole.yards+' yards from selected tee. NOT a live target/pin distance.');
  else lines.push('Hole scorecard not verified. Ask golfer for yardage, par and target.');
  const w=environment.weather;
- if(w&&environment.weatherState==='model-current'&&w.source==='open-meteo-model'){
+ if(w&&['model-current','model-cached'].includes(environment.weatherState)&&w.source==='open-meteo-model'){
   lines.push('Weather: modeled '+w.windMph+' mph wind FROM '+w.windDegrees+'°; '+(w.temperatureF===null?'temperature unavailable':w.temperatureF+'°F')+'. Not on-course measured.');
  }else lines.push('Weather unavailable or unverified. Do not assume wind or temperature.');
  lines.push('No live GPS pin, hazard distances, elevation or exact wind effect verified. Ask for actual shot distance, lie and aim direction before a specific club.');
