@@ -20,7 +20,7 @@ export function saveSoloScore(storage,score){
  try{storage.setItem(SOLO_CARD_KEY,JSON.stringify(next));return next;}catch{return null;}
 }
 export function setSoloHole(storage,hole){
- const card=startSoloCard(storage);if(!card||!Number.isInteger(hole)||hole<1||hole>18)return null;
+ const card=startSoloCard(storage);if(!card||!Number.isInteger(hole)||hole<1||hole>(card.length===9?9:18))return null;
  const next={...card,hole};try{storage.setItem(SOLO_CARD_KEY,JSON.stringify(next));return next;}catch{return null;}
 }
 
