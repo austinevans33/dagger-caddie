@@ -1,38 +1,83 @@
+// The Caddy's paper scorecard: presentation-only replacement for solo scoring.
+// Scores remain in the original isolated localStorage key; no bets/Ghost writes.
 import {readActiveRound} from './starters-desk-session.js';
-import {startSoloCard,saveSoloScore,setSoloHole} from './solo-scorecard.js';
+import {startSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard} from './solo-scorecard.js';
+import {readCourseScorecard} from './active-course-context.js';
+
+const paperCSS=`
+#dcc-solo-scorecard{box-sizing:border-box;margin:18px 0;padding:0;border:1px solid #a98b56;border-radius:10px;background:#f4ecd6;color:#302e26;box-shadow:0 7px 0 #d6c6a3,0 15px 25px #10291a35;font-family:Georgia,serif;overflow:hidden}
+#dcc-solo-scorecard *{box-sizing:border-box}
+.dcc-paper-head{background:#143729;color:#f7efd8;padding:20px 18px 16px;text-align:center;border-bottom:4px double #d2b777}
+.dcc-paper-head small{display:block;letter-spacing:.22em;color:#ddc388;font:700 10px system-ui;margin-bottom:6px}
+.dcc-paper-head strong{font:24px Georgia,serif;letter-spacing:.06em}
+.dcc-paper-body{padding:17px;background:repeating-linear-gradient(0deg,transparent 0,transparent 32px,#806f4d13 33px),#f4ecd6}
+.dcc-paper-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font:700 11px system-ui;letter-spacing:.05em}
+.dcc-paper-meta select{border:1px solid #a98b56;border-radius:6px;background:#fffaed;color:#243c2d;padding:8px}
+.dcc-paper-scoregrid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;margin:15px 0}
+.dcc-paper-cell{text-align:center;border:1px solid #c9b994;background:#fff9e8;padding:5px 1px;min-width:0;min-height:52px}
+.dcc-paper-cell.current{outline:2px solid #1d5b41;outline-offset:-2px;background:#f1e0ae}
+.dcc-paper-cell small{display:block;color:#776d53;font:700 9px system-ui}
+.dcc-paper-cell strong{display:block;padding-top:2px;font:italic 21px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#3e4241;transform:rotate(-5deg)}
+.dcc-paper-navigation{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
+.dcc-paper-navigation button,.dcc-paper-scorebuttons button{border:1px solid #bca576;border-radius:5px;background:#fffaf0;color:#1b3b2b;min-height:42px;padding:8px;font-weight:800}
+.dcc-paper-scorebuttons{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+.dcc-paper-scorebuttons button.selected{background:#d6bb82}
+.dcc-paper-pencil{font:italic 16px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#625f56;transform:rotate(-2deg)}
+.dcc-paper-recap{margin-top:15px;border-top:1px dashed #927e57;padding-top:14px}
+.dcc-paper-recap strong{display:block;font:700 12px system-ui;letter-spacing:.08em;color:#1d4934}
+.dcc-paper-recap p{margin:7px 0 0;font:italic 16px/1.45 Georgia,serif}
+@media(max-width:390px){.dcc-paper-body{padding:12px}.dcc-paper-cell strong{font-size:18px}}
+`;
+function writeRecap(summary,name){
+ const voice={keith:'Keith',reginald:'Reginald',vinny:'Vinny',kyle:'Kyle'}[name]||'Your Caddy';
+ const milestone=summary.complete?'Round finished':summary.turnComplete?'At the turn':null;
+ if(!milestone)return null;
+ const total=summary.complete?summary.total:summary.front;
+ const wording=summary.relativeToPar!==null&&summary.complete?' ('+(summary.relativeToPar>0?'+':'')+summary.relativeToPar+' against verified par)':'';
+ const line=voice==='Keith'?'Put the pencil down for a second. ':voice==='Reginald'?'A moment for the official record. ':voice==='Vinny'?'Alright, boss. Here’s the damage. ':'Here’s what the card says. ';
+ return {title:milestone+' · '+voice,line:line+(summary.complete?summary.length+' holes':'Front nine')+' in '+total+' strokes'+wording+'. '+(summary.complete?'Card signed. Go get yourself something cold.':'Nine more if you’re playing eighteen. Keep it sensible.')};
+}
 export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-solo-scorecard'))return;
+ const style=doc.createElement('style');style.textContent=paperCSS;doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-solo-scorecard';
- card.style.cssText='margin:12px 0;padding:16px;border:1px solid #b79c62;border-radius:14px;background:#173528;color:#f3e9d3;font:14px system-ui';
- const header=doc.createElement('div');header.style.cssText='font:700 11px system-ui;letter-spacing:.12em;color:#d8ba77';header.textContent='THE CADDY’S SCORECARD';
- const info=doc.createElement('p'),progress=doc.createElement('p'),controls=doc.createElement('div'),scores=doc.createElement('div');
- controls.style.cssText='display:flex;gap:9px;align-items:center;flex-wrap:wrap';
- scores.style.cssText='display:flex;gap:7px;flex-wrap:wrap;margin-top:12px';
- const back=doc.createElement('button'),next=doc.createElement('button');
- back.textContent='← Previous';next.textContent='Next →';
- for(const b of [back,next])b.style.cssText='padding:10px;border:1px solid #b79c62;border-radius:9px;background:#f5f0e5;color:#143126;font-weight:700';
- controls.append(back,next);
- card.append(header,info,progress,controls,scores);
+ card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-scoregrid" id="dcc-paper-grid"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><p class="dcc-paper-pencil">Pencil in your strokes</p><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div></div>`;
  const target=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]');
- if(target)target.append(card);else doc.body.append(card);
+ (target||doc.body).append(card);
+ const $=id=>card.querySelector('#'+id);
+ function broadcast(hole){doc.dispatchEvent(new CustomEvent('dcc:solo-hole-change',{detail:{hole}}));}
  function render(){
   const active=readActiveRound(storage),state=startSoloCard(storage);
   if(!active||!state){card.hidden=true;return;}card.hidden=false;
-  info.textContent=active.selection.course.name+' · '+active.selection.tee.name;
-  const done=state.scores.filter(x=>x!==null);
-  progress.textContent='Hole '+state.hole+' of 18 · '+done.length+' recorded · '+done.reduce((a,b)=>a+b,0)+' strokes';
-  back.disabled=state.hole===1;next.disabled=state.hole===18;
-  scores.replaceChildren();
-  for(let n=2;n<=10;n++){
-   const b=doc.createElement('button');b.textContent=String(n);
-   b.setAttribute('aria-label','Record '+n+' strokes on hole '+state.hole);
-   b.style.cssText='min-width:38px;min-height:42px;border-radius:9px;border:1px solid #b79c62;background:'+(state.scores[state.hole-1]===n?'#d8ba77':'#f5f0e5')+';color:#143126;font-weight:800';
-   b.addEventListener('click',()=>{if(saveSoloScore(storage,n)){render();doc.dispatchEvent(new CustomEvent('dcc:solo-hole-change',{detail:{hole:startSoloCard(storage).hole}}));}});
-   scores.append(b);
+  const length=state.length===9?9:18,scorecard=readCourseScorecard(storage,active.selection);
+  const pars=Array.from({length},(_,i)=>scorecard?.holes.find(h=>h.number===i+1)?.par??null);
+  $('dcc-paper-course').textContent=active.selection.course.name+' · '+active.selection.tee.name;
+  $('dcc-paper-length').value=String(length);
+  $('dcc-paper-progress').textContent='Hole '+state.hole+' of '+length;
+  $('dcc-paper-prev').disabled=state.hole<=1;$('dcc-paper-next').disabled=state.hole>=length;
+  const grid=$('dcc-paper-grid');grid.replaceChildren();
+  for(let i=0;i<length;i++){
+   const cell=doc.createElement('div');cell.className='dcc-paper-cell'+(i+1===state.hole?' current':'');
+   const number=doc.createElement('small');number.textContent='HOLE '+(i+1);
+   const pencil=doc.createElement('strong');pencil.textContent=state.scores[i]??'—';cell.append(number,pencil);grid.append(cell);
   }
+  const entries=$('dcc-paper-entries');entries.replaceChildren();
+  for(let score=1;score<=15;score++){
+   const b=doc.createElement('button');b.type='button';b.textContent=String(score);
+   if(state.scores[state.hole-1]===score)b.className='selected';
+   b.setAttribute('aria-label','Pencil '+score+' strokes for hole '+state.hole);
+   b.addEventListener('click',()=>{const next=saveSoloScore(storage,score);if(next){render();broadcast(next.hole);}});
+   entries.append(b);
+  }
+  const summary=summarizeSoloCard(state,pars);
+  const selectedCaddy=doc.querySelector('.staff-pick.active')?.dataset.caddie||'keith';
+  const recap=writeRecap(summary,selectedCaddy);
+  $('dcc-paper-recap').hidden=!recap;
+  if(recap){$('dcc-paper-recap-title').textContent=recap.title;$('dcc-paper-recap-copy').textContent=recap.line;}
  }
- back.addEventListener('click',()=>{const s=startSoloCard(storage);if(s&&setSoloHole(storage,Math.max(1,s.hole-1))){render();doc.dispatchEvent(new CustomEvent('dcc:solo-hole-change',{detail:{hole:s.hole-1}}));}});
- next.addEventListener('click',()=>{const s=startSoloCard(storage);if(s&&setSoloHole(storage,Math.min(18,s.hole+1))){render();doc.dispatchEvent(new CustomEvent('dcc:solo-hole-change',{detail:{hole:s.hole+1}}));}});
- doc.addEventListener('dcc:course-selected',render);
+ $('dcc-paper-prev').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole>1){const next=setSoloHole(storage,state.hole-1);if(next){render();broadcast(next.hole);}}});
+ $('dcc-paper-next').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole<(state.length===9?9:18)){const next=setSoloHole(storage,state.hole+1);if(next){render();broadcast(next.hole);}}});
+ $('dcc-paper-length').addEventListener('change',event=>{if(setSoloLength(storage,Number(event.target.value)))render();});
+ doc.addEventListener('dcc:course-selected',render);doc.addEventListener('click',event=>{if(event.target.closest?.('.staff-pick'))setTimeout(render,0);});
  render();
 }
