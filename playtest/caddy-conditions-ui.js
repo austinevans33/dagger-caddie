@@ -25,7 +25,7 @@ export function describeCaddyConditions(active,environment,{now=Date.now(),fetch
  const coverage=scorecardCoverage(environment?.holes);
  const status=loading?'Checking course and conditions…':
   !environment?'Waiting for verified course information…':
-  environment.state==='offline-cached'?'Offline scorecard cache · '+coverage.verifiedHoles+'/18 holes'+age:
+  ['offline-cached','cached-no-provider-holes'].includes(environment.state)?'Previously verified scorecard cache · '+coverage.verifiedHoles+'/18 holes'+age:
   environment.state==='ready'?'Verified tee data · '+coverage.verifiedHoles+'/18 holes'+age:
   'Course data unavailable'+age;
  return {course:heading,hole:holeText,weather,status};
