@@ -2,7 +2,7 @@
 // Opens on member request until a verified course catalog is connected.
 import {readActiveRound,clearActiveRound,saveActiveRound} from './starters-desk-session.js';
 import {searchOpenGolfCourses,loadOpenGolfTees} from './opengolf-catalog.js';
-import {getRoundEnvironment} from './round-environment.js?v=premium-paper-9';
+import {getRoundEnvironment} from './round-environment.js?v=parallel-conditions-14';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {archiveAndClearSoloRound} from './solo-round-reset.js';
 export function mountStartersDesk({doc=document,storage=localStorage}={}){
