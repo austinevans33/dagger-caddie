@@ -1,3 +1,16 @@
+import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
+import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
+import {buildCaddyTarget} from './caddy-target-policy.js';
+import {getRoundEnvironment} from './round-environment.js?v=location-shapes-23';
+import {readActiveRound} from './starters-desk-session.js';
+import {sameCourseSelection} from './course-identity.js';
+import {createCaddyCourseBriefing} from './caddy-course-briefing.js?v=weather-cache-22';
+import {buildCaddyCourseFacts} from './caddy-course-facts.js?v=weather-cache-22';
+import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js?v=weather-cache-22';
+import {createShotRecordContext} from './shot-record-context.js';
+import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
+import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=weather-cache-22';
+import {mountStartersDesk} from './starters-desk-ui.js?v=weather-cache-22';
 import {firebaseConfig} from './firebase-config.js';
 import {
   getFirestore,
@@ -31,6 +44,77 @@ if (!window.location.search && !window.location.hash) {
 }
 
 let conversation=[],working=false,authPromise=null;
+let activeRoundEnvironment=null;
+let roundEnvironmentFetchedAt=0;
+let roundEnvironmentLoading=null;
+let roundEnvironmentLoadingSelection=null;
+let conditionsUI=null;
+let golferConfirmedTarget=false;
+let caddyTargetHole=readSoloCard(localStorage)?.hole??null;
+function resetCaddyTarget(){
+ golferConfirmedTarget=false;
+ // These are all shot-specific distances. Never carry an approach yardage
+ // into the next hole, a new course, or a new round.
+ for(const id of ['yards','aiShotYards','riskYards']){
+  const target=document.getElementById(id);
+  if(target)target.value='';
+ }
+ renderCaddyConditions();
+}
+function savedClubProfile(){
+ try{const profile=JSON.parse(localStorage.getItem('dagger_profile')||'[]');return Array.isArray(profile)?profile:[];}
+ catch{return [];}
+}
+function renderCaddyConditions(loading=false){
+ if(!conditionsUI)return;
+ const active=readActiveRound(localStorage);
+ const selectedHole=readSoloCard(localStorage)?.hole;
+ const safe=safeCaddyEnvironment(active,activeRoundEnvironment,roundEnvironmentFetchedAt);
+ const data=describeCaddyConditions(active?{...active,holeNumber:selectedHole||active.selection.holeNumber}:null,safe,{fetchedAt:roundEnvironmentFetchedAt,loading});
+ const target=golferConfirmedTarget?document.getElementById('yards')?.value:null;
+ data.clubBaseline=golferConfirmedTarget?formatCaddyClubBaseline(buildCaddyClubBaseline(savedClubProfile(),target)):
+  'Enter your actual target yardage to compare your saved club carries.';
+ conditionsUI.render(data);
+ conditionsUI.setLoading(loading);
+}
+async function refreshCaddyRoundEnvironment(){
+ const active=readActiveRound(localStorage);
+ if(!active){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;renderCaddyConditions();return null;}
+ // Share in-flight requests only for the same course and tee, never a previous round.
+ if(roundEnvironmentLoading&&roundEnvironmentLoadingSelection&&sameCourseSelection(active.selection,roundEnvironmentLoadingSelection))return roundEnvironmentLoading;
+ const selection=active.selection;
+ renderCaddyConditions(true);
+ const pending=getRoundEnvironment({storage:localStorage}).then(result=>{
+  const current=readActiveRound(localStorage);
+  if(current&&result.selection&&sameCourseSelection(current.selection,result.selection)&&result.state!=='selection-changed'){
+   activeRoundEnvironment=result;
+   roundEnvironmentFetchedAt=Date.now();
+   renderCaddyConditions();
+   document.dispatchEvent(new CustomEvent('dcc:round-environment',{detail:result}));
+   return result;
+  }
+  if(!current){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;}
+  return null;
+ }).catch(()=>{const current=readActiveRound(localStorage);if(current&&sameCourseSelection(current.selection,selection)){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;}return null;});
+ roundEnvironmentLoading=pending;
+ roundEnvironmentLoadingSelection=selection;
+ try{return await pending;}
+ finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingSelection=null;}renderCaddyConditions();}
+}
+document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;caddyTargetHole=null;resetCaddyTarget();});
+document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;caddyTargetHole=readSoloCard(localStorage)?.hole??null;resetCaddyTarget();void refreshCaddyRoundEnvironment();});
+document.addEventListener('dcc:round-environment',event=>{
+ const incoming=event.detail,active=readActiveRound(localStorage);
+ if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection)){activeRoundEnvironment=incoming;roundEnvironmentFetchedAt=Date.now();renderCaddyConditions();}
+});
+conditionsUI=mountCaddyConditions({onRefresh:refreshCaddyRoundEnvironment});
+document.getElementById('yards')?.addEventListener('input',()=>{golferConfirmedTarget=true;renderCaddyConditions();});
+document.addEventListener('dcc:solo-hole-change',event=>{
+ const hole=Number(event.detail?.hole);
+ if(Number.isInteger(hole)&&hole>=1&&hole<=18&&hole!==caddyTargetHole){caddyTargetHole=hole;resetCaddyTarget();}
+ else renderCaddyConditions();
+});
+renderCaddyConditions();
 let latestMemoryCandidate = null;
 
 let shotQuality = null;
@@ -148,6 +232,9 @@ updateShotReport();
 shotReport.record.addEventListener('click', () => {
   if (!shotQuality) return;
 
+  const activeShotRound=readActiveRound(localStorage);
+  const shotHole=Number(readSoloCard(localStorage)?.hole??activeShotRound?.selection?.holeNumber);
+  const shotCourseContext=createShotRecordContext(activeShotRound,shotHole,activeRoundEnvironment,roundEnvironmentFetchedAt);
   const report = {
     result: [shotQuality, shotHorizontal, shotVertical]
       .filter(Boolean).join(' · '),
@@ -159,6 +246,7 @@ club: document.getElementById('aiShotClub').value || 'Club not selected',
 yards: Number(document.getElementById('aiShotYards').value) || null,
 caddie: activeCaddie(),
 source: 'ai-chat',
+courseContext:shotCourseContext,
 date: new Date().toISOString()
 
   };
@@ -251,6 +339,10 @@ function autofillShotYardage(message) {
 
   if (shotYards) shotYards.value = String(yards);
   if (riskYards) riskYards.value = String(yards);
+  // The golfer explicitly supplied this remaining distance; do not use the
+  // prefilled 168-yard UI placeholder as if it were a real measurement.
+  const targetInput=document.getElementById('yards');
+  if(targetInput){targetInput.value=String(yards);golferConfirmedTarget=true;renderCaddyConditions();}
 }
 
 // DCC 5.2 — Suggest a club from the golfer's explicit choice.
@@ -381,7 +473,12 @@ function add(role,content){
 }
 function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
-return {yardage:$('yards')?.value,lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
+const holeNumber=Number((readSoloCard(localStorage)?.hole ?? document.getElementById('hole')?.value));
+const safeEnvironment=safeCaddyEnvironment(readActiveRound(localStorage),activeRoundEnvironment,roundEnvironmentFetchedAt);
+const courseBriefing=createCaddyCourseBriefing(safeEnvironment,holeNumber);
+const courseFacts=buildCaddyCourseFacts(safeEnvironment,holeNumber);
+const aim=buildCaddyTarget({remainingYards:golferConfirmedTarget?$('yards')?.value:null,lie:document.querySelector('#lieButtons .active')?.textContent||''});
+return {aimTarget:aim?.target||'center-green',remainingDistanceSource:aim?.distanceSource||'golfer-needed',courseBriefing:courseBriefing?.slice(0,900)||null,courseFacts,yardage:golferConfirmedTarget?$('yards')?.value:'',lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
 async function getAuth() {
   if (!authPromise) {
     authPromise = (async () => {
@@ -437,6 +534,11 @@ try {
     );
   }
 
+  // Restore course and conditions when returning to the app before asking a Caddy.
+  const selectedRound=readActiveRound(localStorage);
+  if(selectedRound&&needsCaddyEnvironmentRefresh(selectedRound,activeRoundEnvironment,roundEnvironmentFetchedAt)){
+   await refreshCaddyRoundEnvironment();
+  }
   const token = await user.getIdToken();const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({caddie:activeCaddie(),messages:conversation.slice(-12).map(m=>({
   role:m.role,
   content:m.content.slice(0,950)
@@ -576,3 +678,10 @@ document.querySelectorAll('.staff-pick').forEach(b =>
       'New caddie selected · Start talking';
   })
 );
+
+// Opt-in preview until a verified course/tee catalog is available.
+mountStartersDesk();
+mountSoloScorecard();
+// Reopening Dagger must restore the existing check-in without another selection.
+if(readActiveRound(localStorage))refreshCaddyRoundEnvironment();
+
