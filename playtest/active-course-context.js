@@ -28,7 +28,13 @@ export async function getActiveCourseContext({storage,fetcher,signal,now=Date.no
   // A selection made while a request is in flight must not receive another course's holes.
   const latest=readActiveRound(storage);
   if(!latest||!sameCourseSelection(latest.selection,selection))return {state:'selection-changed',holes:[],livePinDistance:false};
-  if(!holes.length)return {state:'no-verified-holes',selection,holes:[],livePinDistance:false};
+  if(!holes.length){
+   // A successful but empty provider response does not erase a previously
+   // verified card. Preserve it with explicit cache provenance.
+   const cached=readCourseScorecard(storage,selection);
+   if(cached)return {state:'cached-no-provider-holes',selection,...cached};
+   return {state:'no-verified-holes',selection,holes:[],livePinDistance:false};
+  }
   const result={version:1,selection,holes,loadedAt:now};
   // Retain the legacy single-course cache for existing installations, while
   // keeping a bounded per-course/tee history for returning players.
