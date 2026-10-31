@@ -3,6 +3,7 @@
 import {readActiveRound} from './starters-desk-session.js';
 import {startSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard,soloRange} from './solo-scorecard.js?v=premium-paper-9';
 import {readCourseScorecard} from './active-course-context.js?v=premium-paper-9';
+import {scorecardCoverage} from './course-scorecard-coverage.js';
 
 const paperCSS=`
 #dcc-solo-scorecard{box-sizing:border-box;margin:10px -10px;border:1px solid #ac9364;border-radius:4px;background:#f4ecd6;color:#302e26;box-shadow:0 2px 0 #d6c6a3;font-family:Georgia,serif;overflow:hidden}
@@ -13,6 +14,9 @@ const paperCSS=`
 #dcc-solo-scorecard .dcc-paper-body{padding:12px;background:repeating-linear-gradient(0deg,transparent 0,transparent 32px,#806f4d0c 33px),#f4ecd6}
 #dcc-solo-scorecard .dcc-paper-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font:700 11px system-ui;letter-spacing:.03em}
 #dcc-solo-scorecard .dcc-paper-meta select{border:1px solid #a98b56;border-radius:4px;background:#fffaed;color:#243c2d;padding:8px}
+#dcc-solo-scorecard .dcc-paper-coverage{margin-top:9px;border:1px solid #c9b994;border-radius:4px;padding:8px 9px;background:#fff9e8;font:11px/1.45 system-ui;color:#304636}
+#dcc-solo-scorecard .dcc-paper-coverage strong{display:block;font-size:11px;letter-spacing:.02em}
+#dcc-solo-scorecard .dcc-paper-coverage small{display:block;margin-top:2px;font-size:10px;color:#695f49}
 #dcc-solo-scorecard .dcc-paper-nine{margin:10px 0 0}
 #dcc-solo-scorecard .dcc-paper-nine-title{font:700 10px system-ui;letter-spacing:.16em;color:#31503a;padding:0 0 4px}
 #dcc-solo-scorecard .dcc-paper-grid{display:grid;grid-template-columns:minmax(40px,1.28fr) repeat(9,minmax(0,1fr)) minmax(29px,1.15fr);border-top:1px solid #ac9364;border-left:1px solid #ac9364;background:#fff9e8}
@@ -53,7 +57,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-solo-scorecard'))return;
  const style=doc.createElement('style');style.textContent=paperCSS;doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-solo-scorecard';
- card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div></div>`;
+ card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div><div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div></div>`;
  const target=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]');
  (target||doc.body).append(card);
  const $=id=>card.querySelector('#'+id);
@@ -63,6 +67,12 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   if(!active||!state){card.hidden=true;return;}card.hidden=false;
   const length=state.length===9?9:18,scorecard=readCourseScorecard(storage,active.selection);
   const range=soloRange(state);
+  const coverage=scorecardCoverage(scorecard?.holes);
+  const coverageEl=$('dcc-paper-coverage');
+  coverageEl.replaceChildren();
+  const coverageTitle=doc.createElement('strong');coverageTitle.textContent=coverage.label;
+  const coverageDetail=doc.createElement('small');coverageDetail.textContent=coverage.detail;
+  coverageEl.append(coverageTitle,coverageDetail);
   const pars=Array.from({length:18},(_,i)=>scorecard?.holes.find(h=>h.number===i+1)?.par??null);
   $('dcc-paper-course').textContent=active.selection.course.name+' · '+active.selection.tee.name;
   $('dcc-paper-length').value=String(length);
