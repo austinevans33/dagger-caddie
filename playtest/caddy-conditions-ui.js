@@ -14,7 +14,7 @@ export function describeCaddyConditions(active,environment,{now=Date.now(),fetch
   ?'Hole '+number+' · Par '+hole.par+' · '+hole.yards+' yd from tee (not pin distance)'
   :'Hole '+number+' · Verified hole yardage unavailable';
  const w=environment?.weather;
- const valid=!!w&&environment.weatherState==='model-current'&&w.source==='open-meteo-model'&&
+ const valid=!!w&&['model-current','model-cached'].includes(environment.weatherState)&&w.source==='open-meteo-model'&&
   Number.isFinite(w.observedAt)&&w.observedAt<=now+5*60000&&now-w.observedAt<=90*60000&&
   Number.isFinite(w.windMph)&&Number.isFinite(w.windDegrees)&&Number.isFinite(w.temperatureF);
  const weather=valid
