@@ -1,16 +1,16 @@
 import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
-import {getRoundEnvironment} from './round-environment.js?v=caddy-baseline-16';
+import {getRoundEnvironment} from './round-environment.js?v=weather-cache-22';
 import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
-import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
-import {buildCaddyCourseFacts} from './caddy-course-facts.js';
-import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js';
+import {createCaddyCourseBriefing} from './caddy-course-briefing.js?v=weather-cache-22';
+import {buildCaddyCourseFacts} from './caddy-course-facts.js?v=weather-cache-22';
+import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js?v=weather-cache-22';
 import {createShotRecordContext} from './shot-record-context.js';
 import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
-import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=quiet-course-strip-20';
-import {mountStartersDesk} from './starters-desk-ui.js?v=compact-course-report-19';
+import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=weather-cache-22';
+import {mountStartersDesk} from './starters-desk-ui.js?v=weather-cache-22';
 import {firebaseConfig} from './firebase-config.js';
 import {
   getFirestore,
