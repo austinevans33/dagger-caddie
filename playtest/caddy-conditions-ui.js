@@ -28,7 +28,10 @@ export function describeCaddyConditions(active,environment,{now=Date.now(),fetch
   ['offline-cached','cached-no-provider-holes'].includes(environment.state)?'Previously verified scorecard cache · '+coverage.verifiedHoles+'/18 holes'+age:
   environment.state==='ready'?'Verified tee data · '+coverage.verifiedHoles+'/18 holes'+age:
   'Course data unavailable'+age;
- return {course:heading,hole:holeText,weather,status};
+ const weatherSummary=valid
+  ?'Conditions · '+Math.round(w.temperatureF)+'°F · '+Math.round(w.windMph)+' mph wind'
+  :'Conditions · weather unavailable';
+ return {course:heading,hole:holeText,weather,weatherSummary,status};
 }
 export function mountCaddyConditions({doc=document,onRefresh}={}){
  if(doc.getElementById('dcc-caddy-conditions'))return null;
@@ -80,6 +83,7 @@ export function mountCaddyConditions({doc=document,onRefresh}={}){
  });
  return {render(data){
   course.textContent=data.course;hole.textContent=data.hole;
+  summary.textContent=data.weatherSummary||'Conditions & course data';
   weather.textContent=data.weather;clubs.textContent=data.clubBaseline||'';status.textContent=data.status;
  },setLoading(value){refresh.disabled=!!value||busy;}};
 }
