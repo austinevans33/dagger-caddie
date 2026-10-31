@@ -1,9 +1,10 @@
 // The Caddy's paper scorecard: presentation-only replacement for solo scoring.
 // Scores remain in the original isolated localStorage key; no bets/Ghost writes.
 import {readActiveRound} from './starters-desk-session.js';
-import {startSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard,soloRange} from './solo-scorecard.js?v=premium-paper-9';
+import {startSoloCard,readSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard,soloRange} from './solo-scorecard.js?v=premium-paper-9';
 import {readCourseScorecard} from './active-course-context.js?v=cached-fallback-16';
 import {scorecardCoverage} from './course-scorecard-coverage.js';
+import {formatSoloScorecardBackup} from './solo-scorecard-backup.js';
 
 const paperCSS=`
 #dcc-solo-scorecard{box-sizing:border-box;margin:10px -10px;border:1px solid #ac9364;border-radius:4px;background:#f4ecd6;color:#302e26;box-shadow:0 2px 0 #d6c6a3;font-family:Georgia,serif;overflow:hidden}
@@ -37,7 +38,7 @@ const paperCSS=`
 #dcc-solo-scorecard .dcc-paper-scorebuttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
 #dcc-solo-scorecard .dcc-paper-scorebuttons button.selected{background:#d6bb82}
 #dcc-solo-scorecard .dcc-paper-pencil{font:italic 16px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#625f56}
-#dcc-solo-scorecard .dcc-paper-actions{display:flex;justify-content:flex-end;margin-top:10px;padding-top:8px;border-top:1px solid #c9b994}
+#dcc-solo-scorecard .dcc-paper-actions{display:flex;justify-content:flex-end;gap:7px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid #c9b994}
 #dcc-solo-scorecard .dcc-paper-actions button{border:1px solid #a98b56;border-radius:5px;background:#fffaed;color:#234333;padding:10px 12px;min-height:40px;font:700 10px system-ui;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
 #dcc-solo-scorecard .dcc-paper-recap{margin-top:10px;border-top:1px dashed #927e57;padding-top:14px}
 #dcc-solo-scorecard .dcc-paper-recap strong{display:block;font:700 12px system-ui;letter-spacing:.08em;color:#1d4934}
@@ -57,7 +58,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-solo-scorecard'))return;
  const style=doc.createElement('style');style.textContent=paperCSS;doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-solo-scorecard';
- card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div><div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div></div>`;
+ card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div><div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-copy">Copy Round Card</button><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div><div id="dcc-paper-copy-status" role="status" aria-live="polite" style="font:11px/1.4 system-ui;color:#34543c;margin-top:5px"></div></div>`;
  const target=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]');
  (target||doc.body).append(card);
  const $=id=>card.querySelector('#'+id);
@@ -125,6 +126,21 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   $('dcc-paper-recap').hidden=!recap;
   if(recap){$('dcc-paper-recap-title').textContent=recap.title;$('dcc-paper-recap-copy').textContent=recap.line;}
  }
+ $('dcc-paper-copy').addEventListener('click',async()=>{
+  const active=readActiveRound(storage),state=readSoloCard(storage);
+  const text=formatSoloScorecardBackup(active,state,active?readCourseScorecard(storage,active.selection):null);
+  const status=$('dcc-paper-copy-status');
+  if(!text){status.textContent='No active round to copy.';return;}
+  try{
+   if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');
+   await navigator.clipboard.writeText(text);
+   status.textContent='Round card copied. Paste into Notes or a message for backup.';
+  }catch{
+   // iOS Safari may deny clipboard access. Share sheet provides a second
+   // explicit user action without mutating the round or scores.
+   status.textContent='Clipboard unavailable. Use Safari Share or take a screenshot of your card.';
+  }
+ });
  $('dcc-paper-new-round').addEventListener('click',()=>doc.dispatchEvent(new CustomEvent('dcc:request-new-round')));
  $('dcc-paper-prev').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole>soloRange(state).start){const next=setSoloHole(storage,state.hole-1);if(next){render();broadcast(next.hole);}}});
  $('dcc-paper-next').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole<soloRange(state).end){const next=setSoloHole(storage,state.hole+1);if(next){render();broadcast(next.hole);}}});
