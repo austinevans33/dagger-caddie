@@ -23,6 +23,9 @@ const paperCSS=`
 .dcc-paper-scorebuttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
 .dcc-paper-scorebuttons button.selected{background:#d6bb82}
 .dcc-paper-pencil{font:italic 16px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#625f56;transform:rotate(-2deg)}
+.dcc-paper-actions{display:flex;justify-content:flex-end;margin-top:18px;padding-top:12px;border-top:1px solid #c9b994}
+.dcc-paper-actions button{border:1px solid #a98b56;border-radius:5px;background:#fffaed;color:#234333;padding:10px 12px;min-height:40px;font:700 10px system-ui;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
+.dcc-paper-actions button:focus-visible{outline:2px solid #1d5b41;outline-offset:3px}
 .dcc-paper-recap{margin-top:15px;border-top:1px dashed #927e57;padding-top:14px}
 .dcc-paper-recap strong{display:block;font:700 12px system-ui;letter-spacing:.08em;color:#1d4934}
 .dcc-paper-recap p{margin:7px 0 0;font:italic 16px/1.45 Georgia,serif}
@@ -41,7 +44,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-solo-scorecard'))return;
  const style=doc.createElement('style');style.textContent=paperCSS;doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-solo-scorecard';
- card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-scoregrid" id="dcc-paper-grid"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><p class="dcc-paper-pencil">Pencil in your strokes</p><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div></div>`;
+ card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-scoregrid" id="dcc-paper-grid"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><p class="dcc-paper-pencil">Pencil in your strokes</p><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div></div>`;
  const target=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]');
  (target||doc.body).append(card);
  const $=id=>card.querySelector('#'+id);
@@ -76,6 +79,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   $('dcc-paper-recap').hidden=!recap;
   if(recap){$('dcc-paper-recap-title').textContent=recap.title;$('dcc-paper-recap-copy').textContent=recap.line;}
  }
+ $('dcc-paper-new-round').addEventListener('click',()=>doc.dispatchEvent(new CustomEvent('dcc:request-new-round')));
  $('dcc-paper-prev').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole>1){const next=setSoloHole(storage,state.hole-1);if(next){render();broadcast(next.hole);}}});
  $('dcc-paper-next').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole<(state.length===9?9:18)){const next=setSoloHole(storage,state.hole+1);if(next){render();broadcast(next.hole);}}});
  $('dcc-paper-length').addEventListener('change',event=>{if(setSoloLength(storage,Number(event.target.value)))render();});
