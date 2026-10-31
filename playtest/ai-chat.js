@@ -323,6 +323,10 @@ function autofillShotYardage(message) {
 
   if (shotYards) shotYards.value = String(yards);
   if (riskYards) riskYards.value = String(yards);
+  // The golfer explicitly supplied this remaining distance; do not use the
+  // prefilled 168-yard UI placeholder as if it were a real measurement.
+  const targetInput=document.getElementById('yards');
+  if(targetInput){targetInput.value=String(yards);golferConfirmedTarget=true;renderCaddyConditions();}
 }
 
 // DCC 5.2 — Suggest a club from the golfer's explicit choice.
