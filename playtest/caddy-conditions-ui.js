@@ -1,4 +1,5 @@
 // Read-only, provenance-first course and conditions strip for the AI Caddy.
+import {scorecardCoverage} from './course-scorecard-coverage.js';
 // Never turn tee yardage into a pin distance or wind-from into wind-to.
 export function describeCaddyConditions(active,environment,{now=Date.now(),fetchedAt=0,loading=false}={}){
  if(!active?.selection)return {
@@ -21,10 +22,11 @@ export function describeCaddyConditions(active,environment,{now=Date.now(),fetch
   :'Modeled weather unavailable — ask your caddy using conditions you observe.';
  const age=Number.isFinite(fetchedAt)&&fetchedAt>0&&fetchedAt<=now
   ?' · checked '+Math.max(0,Math.floor((now-fetchedAt)/60000))+'m ago':'';
+ const coverage=scorecardCoverage(environment?.holes);
  const status=loading?'Checking course and conditions…':
   !environment?'Waiting for verified course information…':
-  environment.state==='offline-cached'?'Offline scorecard cache'+age:
-  environment.state==='ready'?'Course scorecard verified'+age:
+  environment.state==='offline-cached'?'Offline scorecard cache · '+coverage.verifiedHoles+'/18 holes'+age:
+  environment.state==='ready'?'Verified tee data · '+coverage.verifiedHoles+'/18 holes'+age:
   'Course data unavailable'+age;
  return {course:heading,hole:holeText,weather,status};
 }
