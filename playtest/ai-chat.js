@@ -53,8 +53,12 @@ let golferConfirmedTarget=false;
 let caddyTargetHole=readSoloCard(localStorage)?.hole??null;
 function resetCaddyTarget(){
  golferConfirmedTarget=false;
- const target=document.getElementById('yards');
- if(target)target.value='';
+ // These are all shot-specific distances. Never carry an approach yardage
+ // into the next hole, a new course, or a new round.
+ for(const id of ['yards','aiShotYards','riskYards']){
+  const target=document.getElementById(id);
+  if(target)target.value='';
+ }
  renderCaddyConditions();
 }
 function savedClubProfile(){
