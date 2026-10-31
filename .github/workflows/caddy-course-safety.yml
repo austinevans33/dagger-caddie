@@ -32,6 +32,7 @@ jobs:
           node --check playtest/caddy-course-facts.js
           node --check playtest/active-course-context.js
           node --check playtest/round-environment.js
+          node --check playtest/course-weather-cache.js
       - name: Test typed Caddy facts, backend context and course safety
         run: |
           node --test \
@@ -43,4 +44,5 @@ jobs:
             tests/caddy-conditions-ui.test.mjs \
             tests/course-scorecard-coverage-cache.test.mjs \
             tests/course-empty-provider-fallback.test.mjs \
-            tests/solo-scorecard-backup.test.mjs
+            tests/solo-scorecard-backup.test.mjs \
+            tests/course-weather-cache.test.mjs
