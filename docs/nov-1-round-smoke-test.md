@@ -11,7 +11,7 @@
 ## 10-minute iPhone preflight
 1. Open https://austinevans33.github.io/dagger-caddie/playtest/ in Safari and reload once. Check the scorecard and Starter's Desk are visible.
 2. Select **Whispering Pines — Pines Course**, then your actual tee. If search or tee facts are missing, do **not** assume Dagger has complete provider coverage; you can still use scoring.
-3. Enter a test score on hole 1, switch to hole 2, and check the scorecard persists. Confirm all three shot-specific yardage fields clear on the hole change. **Do not delete a real round to run this test.**
+3. Enter a test score on hole 1, switch to hole 2, and check the scorecard persists. Confirm all three shot-specific yardage fields clear on the hole change. Tap **Copy Round Card**, paste into iPhone Notes, and verify the course, tee and score are accurate. **Do not delete a real round to run this test.**
 4. Open the Caddy Course Report. It must say how many verified holes it has; wind must be labeled **modeled** and **FROM**, or explicitly unavailable.
 5. Enter a real remaining yardage. Confirm club reference comes from saved carries and that tee distance is not treated as pin distance.
 6. With both phones present: scan host QR, confirm the guest joins without permission errors, score one hole on host, verify guest sync, then test Undo Last Hole and Finish Match on a **test room**. Check the settlement card and Club Record. Do not mix test-room data with live wagers.
