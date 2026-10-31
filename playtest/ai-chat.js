@@ -5,6 +5,7 @@ import {getRoundEnvironment} from './round-environment.js?v=caddy-baseline-16';
 import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js';
+import {buildCaddyCourseFacts} from './caddy-course-facts.js';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js';
 import {createShotRecordContext} from './shot-record-context.js';
 import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
@@ -49,6 +50,13 @@ let roundEnvironmentLoading=null;
 let roundEnvironmentLoadingSelection=null;
 let conditionsUI=null;
 let golferConfirmedTarget=false;
+let caddyTargetHole=readSoloCard(localStorage)?.hole??null;
+function resetCaddyTarget(){
+ golferConfirmedTarget=false;
+ const target=document.getElementById('yards');
+ if(target)target.value='';
+ renderCaddyConditions();
+}
 function savedClubProfile(){
  try{const profile=JSON.parse(localStorage.getItem('dagger_profile')||'[]');return Array.isArray(profile)?profile:[];}
  catch{return [];}
@@ -89,15 +97,19 @@ async function refreshCaddyRoundEnvironment(){
  try{return await pending;}
  finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingSelection=null;}renderCaddyConditions();}
 }
-document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;renderCaddyConditions();});
-document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;renderCaddyConditions();void refreshCaddyRoundEnvironment();});
+document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;caddyTargetHole=null;resetCaddyTarget();});
+document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;caddyTargetHole=readSoloCard(localStorage)?.hole??null;resetCaddyTarget();void refreshCaddyRoundEnvironment();});
 document.addEventListener('dcc:round-environment',event=>{
  const incoming=event.detail,active=readActiveRound(localStorage);
  if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection)){activeRoundEnvironment=incoming;roundEnvironmentFetchedAt=Date.now();renderCaddyConditions();}
 });
 conditionsUI=mountCaddyConditions({onRefresh:refreshCaddyRoundEnvironment});
 document.getElementById('yards')?.addEventListener('input',()=>{golferConfirmedTarget=true;renderCaddyConditions();});
-document.addEventListener('dcc:solo-hole-change',()=>renderCaddyConditions());
+document.addEventListener('dcc:solo-hole-change',event=>{
+ const hole=Number(event.detail?.hole);
+ if(Number.isInteger(hole)&&hole>=1&&hole<=18&&hole!==caddyTargetHole){caddyTargetHole=hole;resetCaddyTarget();}
+ else renderCaddyConditions();
+});
 renderCaddyConditions();
 let latestMemoryCandidate = null;
 
@@ -458,9 +470,11 @@ function add(role,content){
 function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
 const holeNumber=Number((readSoloCard(localStorage)?.hole ?? document.getElementById('hole')?.value));
-const courseBriefing=createCaddyCourseBriefing(safeCaddyEnvironment(readActiveRound(localStorage),activeRoundEnvironment,roundEnvironmentFetchedAt),holeNumber);
+const safeEnvironment=safeCaddyEnvironment(readActiveRound(localStorage),activeRoundEnvironment,roundEnvironmentFetchedAt);
+const courseBriefing=createCaddyCourseBriefing(safeEnvironment,holeNumber);
+const courseFacts=buildCaddyCourseFacts(safeEnvironment,holeNumber);
 const aim=buildCaddyTarget({remainingYards:golferConfirmedTarget?$('yards')?.value:null,lie:document.querySelector('#lieButtons .active')?.textContent||''});
-return {aimTarget:aim?.target||'center-green',remainingDistanceSource:aim?.distanceSource||'golfer-needed',courseBriefing:courseBriefing?.slice(0,900)||null,yardage:golferConfirmedTarget?$('yards')?.value:'',lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
+return {aimTarget:aim?.target||'center-green',remainingDistanceSource:aim?.distanceSource||'golfer-needed',courseBriefing:courseBriefing?.slice(0,900)||null,courseFacts,yardage:golferConfirmedTarget?$('yards')?.value:'',lie:document.querySelector('#lieButtons .active')?.textContent||'',wind:document.querySelector('#windButtons .active')?.textContent||'',pin:document.querySelector('#pinButtons .active')?.textContent||'',hazard:document.querySelector('#dangerButtons .active')?.textContent||'',clubs,money};}
 async function getAuth() {
   if (!authPromise) {
     authPromise = (async () => {
