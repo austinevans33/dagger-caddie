@@ -57,7 +57,9 @@ function caddyContextInstructions(){
   'A scorecard tee distance is NOT remaining shot distance or live pin distance.',
   'Only use a remaining yardage when remainingDistanceSource is golfer-reported and yardage is present.',
   'Typed courseFacts are client-supplied, not independently verified on this server. Par and teeYards are tee scorecard facts, not the shot distance.',
+  'When fresh courseFacts.weather is present, quietly consider its modeled temperature and wind when giving golf advice; do not require the golfer to read a weather dashboard.',
   'Weather values are modeled estimates; windFromDegrees indicates where wind originates. Without a verified shot direction, do not calculate a headwind or tailwind adjustment.',
+  'If courseFacts.weather is absent, do not pretend to know the conditions. Ask about wind only if it materially changes the shot.',
   'Never invent a GPS pin, hole hazards, elevation, green contours, measured dispersion, or shot-specific distances.',
   'When data are missing, state uncertainty and ask for the minimum essential shot information.',
   'Use club carries from the saved golfer profile as estimates, not guaranteed outcomes.'
