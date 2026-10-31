@@ -9,6 +9,7 @@ import {formatSoloScorecardBackup} from './solo-scorecard-backup.js';
 const paperCSS=`
 #dcc-paper-dialog{width:min(690px,calc(100vw - 16px));max-width:690px;max-height:calc(100dvh - 24px);margin:auto;padding:0;border:1px solid #b79c62;border-radius:12px;background:#f4ecd6;color:#173729;box-shadow:0 16px 50px #061e16a8;overflow:auto;overscroll-behavior:contain}
 #dcc-paper-dialog::backdrop{background:rgba(5,22,16,.79)}
+#dcc-paper-dialog #dcc-solo-scorecard{margin:0;border:0;border-radius:0;box-shadow:none}
 #dcc-paper-dialog .dcc-paper-dialog-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#143729;color:#f3ead7;border-bottom:1px solid #b79c62;padding:10px 12px;font:700 11px system-ui;letter-spacing:.1em}
 #dcc-paper-dialog .dcc-paper-close{width:auto;min-height:40px;border:1px solid #c5ad78;border-radius:8px;background:#f4ecd6;color:#173729;padding:8px 12px;font:800 11px system-ui;cursor:pointer}
 #dcc-paper-launch{display:block;width:100%;min-height:42px;margin:5px 0 12px;padding:10px 14px;border:1px solid #b79c62;border-radius:9px;background:#f3ecda;color:#173729;font:800 11px/1.3 system-ui;letter-spacing:.09em;text-align:center;cursor:pointer}
@@ -86,10 +87,10 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  function render(){
   const active=readActiveRound(storage),state=startSoloCard(storage);
   if(!active||!state){card.hidden=true;launch.hidden=true;if(dialog.open)dialog.close();return;}card.hidden=false;launch.hidden=false;
-  const scored=state.scores.filter(Number.isInteger).length;
+  const range=soloRange(state);
+  const scored=state.scores.slice(range.start-1,range.end).filter(Number.isInteger).length;
   launch.textContent='OPEN SCORECARD  ·  '+scored+'/'+(state.length===9?9:18)+' HOLES SCORED';
   const length=state.length===9?9:18,scorecard=readCourseScorecard(storage,active.selection);
-  const range=soloRange(state);
   const coverage=scorecardCoverage(scorecard?.holes);
   const coverageEl=$('dcc-paper-coverage');
   coverageEl.replaceChildren();
