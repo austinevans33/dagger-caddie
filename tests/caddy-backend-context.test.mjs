@@ -15,6 +15,7 @@ test('Course, selected tee, hole, and modeled weather reach the bounded backend 
 test('No user-reported target means no claim of remaining distance',()=>{
  const result=caddyContext({yardage:'168',remainingDistanceSource:'golfer-needed',courseBriefing:'Hole 1: 380 from tee'});
  assert.equal(result.remainingDistanceSource,'golfer-needed');
+ assert.equal(result.yardage,''); // Never leak the prefilled 168 as a real shot measurement.
  assert.match(caddyContextInstructions(),/tee distance is NOT remaining shot distance/);
 });
 test('Malformed and overlong inputs cannot inflate backend context',()=>{
