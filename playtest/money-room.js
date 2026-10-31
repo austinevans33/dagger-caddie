@@ -206,6 +206,7 @@ function archiveLocal(){
   const i=old.findIndex(v=>v.roomId===roomId);
   if(i>=0)old[i]=item;else old.push(item);
   localStorage.setItem(k,JSON.stringify(old));renderMatchHistory();
+  window.dispatchEvent(new CustomEvent('dagger:money-room-archive-updated',{detail:{roomId,archived:!!room.archived}}));
  }catch(e){status('Match ended, but this phone could not save a local copy: '+e.message);}
 }
 function settlementLabel(model,x){
