@@ -15,7 +15,7 @@ jobs:
           node-version: '22'
       - name: Syntax check
         run: |
-          for file in trip-*.js multi-game-core.js weekend-*.js two-player-action.js skins-trial-ui.js group-skins.js scorecard-trip-bridge.js skins-action-preview.js yardage-*.js house-ghost-match.js ai-chat.js; do
+          for file in trip-*.js multi-game-core.js weekend-*.js money-room.js two-player-action.js skins-trial-ui.js group-skins.js scorecard-trip-bridge.js skins-action-preview.js yardage-*.js house-ghost-match.js ai-chat.js; do
             node --check "$file" || exit 1
           done
       - name: Run all Node regression tests
