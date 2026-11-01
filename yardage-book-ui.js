@@ -29,12 +29,15 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  const target=doc.getElementById('dcc-starter-open')?.parentElement || doc.getElementById('tab-play')?.parentElement || doc.body;
  target.append(btn);
  const dlg=doc.createElement('dialog');dlg.id='dcc-yardage-dialog';dlg.setAttribute('aria-label','Dagger Country Club Yardage Book');
- dlg.innerHTML='<div class="dcc-book-controls"><span class="dcc-book-overline">DAGGER COUNTRY CLUB</span><button type="button" id="dcc-book-close">Close ×</button></div><div id="dcc-book-content" aria-live="polite"></div><div class="dcc-book-controls"><button type="button" id="dcc-book-prev">← Previous</button><button type="button" id="dcc-book-next">Next →</button></div>';
+ dlg.innerHTML='<div class="dcc-book-controls"><span class="dcc-book-overline">DAGGER COUNTRY CLUB</span><button type="button" id="dcc-book-close">Close ×</button></div><div id="dcc-book-content" aria-live="polite"></div><div class="dcc-book-controls"><button type="button" id="dcc-book-prev">← Previous</button><label for="dcc-book-hole-select">HOLE <select id="dcc-book-hole-select" aria-label="Choose hole"></select></label><button type="button" id="dcc-book-next">Next →</button></div>';
  doc.body.append(dlg);
  const content=dlg.querySelector('#dcc-book-content');
+ const selector=dlg.querySelector('#dcc-book-hole-select');
+ for(let n=1;n<=18;n++){const opt=doc.createElement('option');opt.value=String(n);opt.textContent=String(n);selector.append(opt);}
  const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let hole=1,env=null,token=0;
  function draw(){
+  selector.value=String(hole);
   const active=readActiveRound(storage);
   const fallback={holeNumber:hole,courseName:active?.selection?.course?.name,teeName:active?.selection?.tee?.name};
   const facts=env?.selection?buildCaddyCourseFacts(env,hole):fallback;
@@ -56,4 +59,5 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  dlg.addEventListener('close',()=>{token++;});
  dlg.querySelector('#dcc-book-prev').addEventListener('click',()=>{hole=Math.max(1,hole-1);draw();});
  dlg.querySelector('#dcc-book-next').addEventListener('click',()=>{hole=Math.min(18,hole+1);draw();});
+ selector.addEventListener('change',()=>{const next=Number(selector.value);if(Number.isInteger(next)&&next>=1&&next<=18){hole=next;draw();}});
 }
