@@ -1,3 +1,4 @@
+import {skinsMoments} from './skins-moments.js';
 import {changeSkinsTrialHole,undoSkinsTrialHole} from './skins-trial-edits.js';
 import {previewSkinsAction} from './skins-action-preview.js';
 // Standalone local Skins score-entry trial. No live Money Room mutations.
@@ -22,6 +23,11 @@ export function mountSkinsTrial({doc=document,storage=localStorage}={}){
   paragraph(result.pendingCarry?'SKINS CARRIED: '+result.pendingCarry:'NO SKINS CARRIED');
   const board=doc.createElement('div');board.style.cssText='display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0';
   for(let i=0;i<4;i++){const tile=doc.createElement('div');tile.style.cssText='border:1px solid #baaa85;border-radius:8px;padding:11px;background:#fff8e8';const label=doc.createElement('div');label.style.cssText='font:700 12px system-ui';label.textContent=state.names[i];const sum=doc.createElement('div');sum.style.cssText='font:700 23px Georgia,serif;margin-top:5px';const amount=result.balances[i].netCents;sum.textContent=(amount>=0?'+':'−')+'
+  const highlights=skinsMoments({names:state.names,holes,stakeCents:state.stakeCents});
+  if(highlights.moments.length){
+   const h=doc.createElement('h3');h.textContent='FROM THE CLUBHOUSE';h.style.cssText='font:700 16px Georgia,serif;margin:12px 0 6px';area.append(h);
+   for(const item of highlights.moments){const p=doc.createElement('p');p.textContent=item.text;p.style.cssText='border-left:3px solid #b59a60;padding:5px 10px;margin:5px 0;font:italic 14px Georgia,serif';area.append(p);}
+  }
   if(holes.length<18){
    const inputs=[];
    for(let i=0;i<4;i++){
