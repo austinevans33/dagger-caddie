@@ -27,6 +27,11 @@ export function mountWeekendMatch({doc=document,storage=localStorage}={}){
   }
   const last=x.holes.at(-1);
   if(last)line('LAST HOLE · '+(last[0]===last[1]?'HALVED':last[0]<last[1]?x.names[0]+' WINS':x.names[1]+' WINS'));
+  const book=doc.createElement('button');
+  book.textContent='▤ Yardage Book';book.type='button';
+  book.style.cssText='padding:11px;margin:5px;border:1px solid #a98a54;border-radius:8px;background:#fffaf0;color:#173b2c;font-weight:800';
+  book.onclick=()=>{dlg.close();doc.getElementById('dcc-yardage-open')?.click();};
+  if(doc.getElementById('dcc-yardage-open'))area.append(book);
   if(x.holes.length<18){
    const inputs=[];
    for(const name of x.names){const label=doc.createElement('label');label.textContent=name+' strokes ';const v=doc.createElement('input');v.type='number';v.min='1';v.max='20';v.inputMode='numeric';v.style.cssText='width:64px;min-height:44px;font-size:18px;margin:7px';label.append(v);area.append(label);inputs.push(v);}
