@@ -1,6 +1,7 @@
 import {createTrip,addTripRound,tripRosterSummary} from './trip-roster.js';
 import {changeTripRoundStatus} from './trip-round-status.js';
 import {summarizeTrip} from './trip-settlement.js';
+import {buildTripRecap} from './trip-recap.js';
 // Local draft only: do not confuse this UI with live shared Trip Mode.
 export function mountTripDesk({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-trip-open'))return;
@@ -47,6 +48,42 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
    const who=id=>trip.players.find(p=>p.id===id)?.name||id;
    addText(who(transfer.from)+' owes '+who(transfer.to)+' $'+(transfer.amountCents/100).toFixed(2));
   }
+  body.append(action('Open Clubhouse Report',()=>{
+   const report=buildTripRecap(read());
+   const previous=doc.getElementById('dcc-trip-report');if(previous)previous.remove();
+   const page=doc.createElement('section');page.id='dcc-trip-report';
+   page.style.cssText='background:#fff7e5;border:2px solid #aa936b;padding:16px;margin:12px 0;color:#224133;font-family:Georgia,serif';
+   const headline=doc.createElement('h3');headline.textContent=report.title;page.append(headline);
+   const status=doc.createElement('p');status.textContent=report.status+' · '+report.completedRounds+' rounds · '+report.countedGames+' counted games';page.append(status);
+   for(const row of report.leaderboard){
+    const p=doc.createElement('p');
+    p.textContent=row.name+' · '+(row.netCents>=0?'+':'−')+'
+  body.append(roundName,action('Add Draft Round',()=>{
+   const groups=[];for(let i=0;i<trip.players.length;i+=4)
+    groups.push({id:makeId(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
+   storage.setItem(key,JSON.stringify(addTripRound(read(),{id:makeId(),name:roundName.value,status:'draft',groups})));draw();
+  }));
+ }
+ open.onclick=()=>{draw();dialog.showModal();};
+}
++(Math.abs(row.netCents)/100).toFixed(2);page.append(p);
+   }
+   for(const line of report.headlines){const p=doc.createElement('p');p.textContent=line;page.append(p);}
+   const foot=doc.createElement('p');foot.textContent=report.disclaimer;page.append(foot);
+   if(report.status==='FINAL')for(const x of report.settlements){
+    const p=doc.createElement('p');p.textContent=x.from+' pays '+x.to+' 
+  body.append(roundName,action('Add Draft Round',()=>{
+   const groups=[];for(let i=0;i<trip.players.length;i+=4)
+    groups.push({id:makeId(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
+   storage.setItem(key,JSON.stringify(addTripRound(read(),{id:makeId(),name:roundName.value,status:'draft',groups})));draw();
+  }));
+ }
+ open.onclick=()=>{draw();dialog.showModal();};
+}
++(x.amountCents/100).toFixed(2);page.append(p);
+   }
+   body.append(page);
+  }));
   const roundName=input('Next round — Friday');
   body.append(roundName,action('Add Draft Round',()=>{
    const groups=[];for(let i=0;i<trip.players.length;i+=4)
