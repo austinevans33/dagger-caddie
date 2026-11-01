@@ -25,12 +25,14 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  .dcc-book-controls button{border:1px solid #aa956e;border-radius:7px;padding:9px;background:transparent;color:inherit;font-weight:700}
  `;
  doc.head.append(css);
- const btn=doc.createElement('button');btn.id='dcc-yardage-open';btn.type='button';btn.textContent='▤ Yardage Book';
- const target=doc.getElementById('dcc-starter-open')?.parentElement || doc.getElementById('tab-play')?.parentElement || doc.body;
- target.append(btn);
+ const btn=doc.createElement('button');btn.id='dcc-yardage-open';btn.type='button';btn.textContent='▤ OPEN YARDAGE BOOK';btn.style.cssText='display:block;width:100%;min-height:48px;margin:8px 0 14px;font-size:15px';
+ const caddyCard=doc.getElementById('aiInput')?.closest('.ai-card');
+ const target=caddyCard || doc.getElementById('dcc-starter-open')?.parentElement || doc.body;
+ if(caddyCard)target.insertBefore(btn,target.firstChild);else target.append(btn);
  const dlg=doc.createElement('dialog');dlg.id='dcc-yardage-dialog';dlg.setAttribute('aria-label','Dagger Country Club Yardage Book');
  dlg.innerHTML='<div class="dcc-book-controls"><span class="dcc-book-overline">DAGGER COUNTRY CLUB</span><button type="button" id="dcc-book-close">Close ×</button></div><div id="dcc-book-content" aria-live="polite"></div><div class="dcc-book-controls"><button type="button" id="dcc-book-prev">← Previous</button><label for="dcc-book-hole-select">HOLE <select id="dcc-book-hole-select" aria-label="Choose hole"></select></label><button type="button" id="dcc-book-next">Next →</button></div>';
  doc.body.append(dlg);
+ const ask=doc.createElement('button');ask.type='button';ask.id='dcc-book-ask';ask.textContent='Ask Caddy about this hole';ask.style.cssText='display:block;width:calc(100% - 32px);margin:0 16px 12px;background:#204332;color:#f8efd8;padding:13px;border:1px solid #b79a64;border-radius:9px;font-weight:800';dlg.querySelector('#dcc-book-content').after(ask);
  const content=dlg.querySelector('#dcc-book-content');
  const selector=dlg.querySelector('#dcc-book-hole-select');
  for(let n=1;n<=18;n++){const opt=doc.createElement('option');opt.value=String(n);opt.textContent=String(n);selector.append(opt);}
@@ -60,4 +62,13 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  dlg.querySelector('#dcc-book-prev').addEventListener('click',()=>{hole=Math.max(1,hole-1);draw();});
  dlg.querySelector('#dcc-book-next').addEventListener('click',()=>{hole=Math.min(18,hole+1);draw();});
  selector.addEventListener('change',()=>{const next=Number(selector.value);if(Number.isInteger(next)&&next>=1&&next<=18){hole=next;draw();}});
+ ask.addEventListener('click',()=>{
+  const input=doc.getElementById('aiInput');if(!input)return;
+  const active=readActiveRound(storage);
+  const facts=env?.selection?buildCaddyCourseFacts(env,hole):{holeNumber:hole,courseName:active?.selection?.course?.name,teeName:active?.selection?.tee?.name};
+  const page=buildYardagePage(facts);
+  const context=['Help me play hole '+hole+' at '+(page?.courseName||'this course'),page?.par?'par '+page.par:null,page?.yards?'scorecard yardage '+page.yards+' yards':null,'Give me one club, one target, and one swing cue. Ask my distance and lie if needed; do not assume pin or hazards.'].filter(Boolean).join('. ');
+  input.value=context;input.dispatchEvent(new Event('input',{bubbles:true}));dlg.close();
+  doc.getElementById('tab-play')?.click();input.focus();
+ });
 }
