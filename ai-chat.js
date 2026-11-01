@@ -1,3 +1,4 @@
+import {mountSkinsTrial} from './skins-trial-ui.js';
 import {mountTripDesk} from './trip-desk-ui.js';
 import {mountYardageBook} from './yardage-book-ui.js';
 import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
@@ -691,3 +692,5 @@ if(readActiveRound(localStorage))refreshCaddyRoundEnvironment();
 mountYardageBook();
 
 mountTripDesk();
+
+mountSkinsTrial();
