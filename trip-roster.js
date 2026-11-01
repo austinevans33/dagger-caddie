@@ -52,14 +52,14 @@ function validateRound(round,roster){
   return {id:round.id,name:round.name.trim(),status:round.status,groups,games:copied};
 }
 export function addTripRound(trip,round){
-  const current=createTrip(trip);
+  const current=createTrip({tripId:trip?.id,name:trip?.name,players:trip?.players,rounds:trip?.rounds});
   if(current.rounds.some(r=>r.id===round?.id))throw new Error('Duplicate round');
   if(current.rounds.length>=100)throw new Error('Too many trip rounds');
   current.rounds.push(validateRound(round,new Set(current.players.map(p=>p.id))));
   return current;
 }
 export function tripRosterSummary(trip){
-  const current=createTrip(trip);
+  const current=createTrip({tripId:trip?.id,name:trip?.name,players:trip?.players,rounds:trip?.rounds});
   return {playerCount:current.players.length,roundCount:current.rounds.length,
     rounds:current.rounds.map(r=>({id:r.id,status:r.status,
       foursomes:r.groups.length,assignedGolfers:r.groups.reduce((n,g)=>n+g.playerIds.length,0)}))};
