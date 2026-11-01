@@ -36,6 +36,9 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  const content=dlg.querySelector('#dcc-book-content');
  const selector=dlg.querySelector('#dcc-book-hole-select');
  for(let n=1;n<=18;n++){const opt=doc.createElement('option');opt.value=String(n);opt.textContent=String(n);selector.append(opt);}
+ const compactStyle=doc.createElement('style');
+ compactStyle.textContent='#dcc-yardage-dialog .dcc-book-controls{position:sticky;bottom:0;background:#f3eedf;z-index:2;border-top:1px solid #c5b38b}#dcc-yardage-dialog select{font-size:16px;background:#fff9eb;color:#213b2e;padding:8px;border:1px solid #ad956b;border-radius:7px}#dcc-book-ask:focus-visible,#dcc-yardage-open:focus-visible{outline:3px solid #d9b36a;outline-offset:3px}';
+ doc.head.append(compactStyle);
  const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let hole=1,env=null,token=0;
  function draw(){
@@ -53,7 +56,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  }
  btn.addEventListener('click',async()=>{
   const active=readActiveRound(storage);
-  hole=active?.selection?.holeNumber||1; env=null;draw();dlg.showModal();
+  const selectedHole=Number(active?.selection?.holeNumber);hole=Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:1; env=null;draw();dlg.showModal();
   const thisToken=++token;
   if(active){try{const loaded=await getRoundEnvironment({storage});if(thisToken===token&&dlg.open){env=loaded;draw();}}catch{/* Keep honest offline fallback. */}}
  });
@@ -68,7 +71,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const facts=env?.selection?buildCaddyCourseFacts(env,hole):{holeNumber:hole,courseName:active?.selection?.course?.name,teeName:active?.selection?.tee?.name};
   const page=buildYardagePage(facts);
   const context=['Help me play hole '+hole+' at '+(page?.courseName||'this course'),page?.par?'par '+page.par:null,page?.yards?'scorecard yardage '+page.yards+' yards':null,'Give me one club, one target, and one swing cue. Ask my distance and lie if needed; do not assume pin or hazards.'].filter(Boolean).join('. ');
-  input.value=context;input.dispatchEvent(new Event('input',{bubbles:true}));dlg.close();
-  doc.getElementById('tab-play')?.click();input.focus();
+  dlg.close();doc.getElementById('tab-play')?.click();
+  input.value=context;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();
  });
 }
