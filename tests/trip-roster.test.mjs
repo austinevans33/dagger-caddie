@@ -20,3 +20,11 @@ test('does not allow duplicate golfer IDs or invalid group sizes',()=>{
  const trip=createTrip({tripId:'t',name:'Trip',players});
  assert.throws(()=>addTripRound(trip,{id:'r',name:'Round',status:'draft',groups:[{id:'g',playerIds:players.slice(0,5).map(p=>p.id)}]}),/Invalid foursome/);
 });
+
+test('adding a new round preserves completed previous game ledgers',()=>{
+ const trip=createTrip({tripId:'t',name:'Trip',players});
+ const old=addTripRound(trip,{id:'r1',name:'Friday',status:'completed',groups, games:[{id:'skins',status:'completed',netCents:{p1:100,p2:-100,p3:0,p4:0,p5:0,p6:0,p7:0,p8:0}}]});
+ const newer=addTripRound(old,{id:'r2',name:'Saturday',status:'draft',groups});
+ assert.equal(newer.rounds[0].games[0].netCents.p1,100);
+ assert.equal(newer.rounds[0].games[0].netCents.p2,-100);
+});
