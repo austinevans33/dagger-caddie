@@ -1,3 +1,4 @@
+import {classifyYardageCoverage} from './yardage-coverage.js';
 import {readActiveRound} from './starters-desk-session.js';
 import {getRoundEnvironment} from './round-environment.js';
 import {buildCaddyCourseFacts} from './caddy-course-facts.js';
@@ -34,13 +35,16 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let hole=1,env=null,token=0;
  function draw(){
-  const facts=env?.selection?buildCaddyCourseFacts(env,hole):{holeNumber:hole};
+  const active=readActiveRound(storage);
+  const fallback={holeNumber:hole,courseName:active?.selection?.course?.name,teeName:active?.selection?.tee?.name};
+  const facts=env?.selection?buildCaddyCourseFacts(env,hole):fallback;
+  const coverage=classifyYardageCoverage({course:active?.selection?.course||env?.selection?.course,holes:env?.holes});
   const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
   content.innerHTML=`<div class="dcc-book-cover"><div class="dcc-book-overline">THE MEMBER'S FIELD GUIDE</div><div class="dcc-book-hole">HOLE ${String(hole).padStart(2,'0')}</div><div>${safe(page.courseName)} · ${safe(page.teeName)}</div></div>
-   <div class="dcc-book-page"><div class="dcc-book-stat">${page.par?'PAR '+page.par:'PAR UNAVAILABLE'} · ${safe(page.yardageLabel)}</div>
+   <div class="dcc-book-page"><div class="dcc-book-overline" style="text-align:center;opacity:.75;margin-bottom:8px">${safe(coverage.tier.toUpperCase())} EDITION</div><div class="dcc-book-stat">${page.par?'PAR '+page.par:'PAR UNAVAILABLE'} · ${safe(page.yardageLabel)}</div>
    <div class="dcc-book-notes"><div class="dcc-book-overline">THE CADDY'S NOTES</div>${safe(page.strategy)}</div>
    <div class="dcc-book-call"><span class="dcc-book-overline">YOUR CLUB</span><strong>${page.club?safe(page.club):'ASK YOUR CADDY'}</strong></div>
-   <div class="dcc-book-foot">${safe(page.hazards)}<br/>Scorecard yardage is not live distance to the pin. Hole map withheld until verified geometry is available.</div></div>`;
+   <div class="dcc-book-foot">${safe(page.hazards)}<br/>${safe(coverage.notice)}<br/>Scorecard yardage is not live distance to the pin. No hole map without verified geometry.</div></div>`;
  }
  btn.addEventListener('click',async()=>{
   const active=readActiveRound(storage);
