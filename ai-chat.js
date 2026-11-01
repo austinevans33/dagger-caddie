@@ -1,3 +1,4 @@
+import {mountYardageBook} from './yardage-book-ui.js';
 import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
@@ -685,3 +686,5 @@ mountSoloScorecard();
 // Reopening Dagger must restore the existing check-in without another selection.
 if(readActiveRound(localStorage))refreshCaddyRoundEnvironment();
 
+
+mountYardageBook();
