@@ -1,3 +1,4 @@
+import {sketchVerifiedHole} from './yardage-sketch.js';
 import {classifyYardageCoverage} from './yardage-coverage.js';
 import {readActiveRound} from './starters-desk-session.js';
 import {getRoundEnvironment} from './round-environment.js';
@@ -56,8 +57,9 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const facts=env?.selection?buildCaddyCourseFacts(env,hole):fallback;
   const coverage=classifyYardageCoverage({course:active?.selection?.course||env?.selection?.course,holes:env?.holes});
   const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
+  const sketch=sketchVerifiedHole({geometry:env?.geometry||[],holeNumber:hole,course:active?.selection?.course||env?.selection?.course});
   content.innerHTML=`<div class="dcc-book-cover"><div class="dcc-book-overline">THE MEMBER'S FIELD GUIDE</div><div class="dcc-book-hole">HOLE ${String(hole).padStart(2,'0')}</div><div>${safe(page.courseName)} · ${safe(page.teeName)}</div></div>
-   <div class="dcc-book-page"><div class="dcc-book-overline" style="text-align:center;opacity:.75;margin-bottom:8px">${safe(coverage.tier.toUpperCase())} EDITION</div><div class="dcc-book-stat">${page.par?'PAR '+page.par:'PAR UNAVAILABLE'} · ${safe(page.yardageLabel)}</div>
+   <div class="dcc-book-page"><div class="dcc-book-sketch" style="max-width:270px;margin:0 auto 14px">${sketch||\'<div style="padding:32px 10px;text-align:center;border:1px dashed #b4a582;font:italic 15px Georgia,serif">Hole drawing unavailable until its layout is verified.</div>\'}</div><div class="dcc-book-overline" style="text-align:center;opacity:.75;margin-bottom:8px">${safe(coverage.tier.toUpperCase())} EDITION</div><div class="dcc-book-stat">${page.par?'PAR '+page.par:'PAR UNAVAILABLE'} · ${safe(page.yardageLabel)}</div>
    <div class="dcc-book-notes"><div class="dcc-book-overline">THE CADDY'S NOTES · PLAY SMART</div>${safe(page.strategy)}<div style="font:700 13px/1.5 system-ui;margin-top:10px">COURSE MANAGEMENT: Favor a playable miss. Avoid trouble you cannot confidently carry. Choose the next shot, not the heroic one.</div></div>
    <div class="dcc-book-call"><span class="dcc-book-overline">YOUR CLUB</span><strong>${page.club?safe(page.club):'ASK YOUR CADDY'}</strong></div>
    <div class="dcc-book-foot">${safe(page.hazards)}<br/>${safe(coverage.notice)}<br/>Scorecard yardage is not live distance to the pin. No hole map without verified geometry.</div></div>`;
