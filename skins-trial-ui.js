@@ -1,3 +1,4 @@
+import {changeSkinsTrialHole,undoSkinsTrialHole} from './skins-trial-edits.js';
 import {previewSkinsAction} from './skins-action-preview.js';
 // Standalone local Skins score-entry trial. No live Money Room mutations.
 export function mountSkinsTrial({doc=document,storage=localStorage}={}){
@@ -29,10 +30,25 @@ export function mountSkinsTrial({doc=document,storage=localStorage}={}){
    control('Save Hole '+(holes.length+1),()=>{
     const scores=inputs.map(el=>Number(el.value));
     if(inputs.some(el=>!el.value)||scores.some(s=>!Number.isInteger(s)||s<1||s>20)){paragraph('Enter valid strokes from 1 to 20 for all golfers.');return;}
-    const next={...state,holes:[...holes,scores]};storage.setItem(key,JSON.stringify(next));draw();
+    const next=changeSkinsTrialHole(state,holes.length+1,scores);storage.setItem(key,JSON.stringify(next));draw();
    });
   }
-  if(holes.length)control('Undo Last Hole',()=>{storage.setItem(key,JSON.stringify({...state,holes:holes.slice(0,-1)}));draw();});
+  if(holes.length)control('Undo Last Hole',()=>{storage.setItem(key,JSON.stringify(undoSkinsTrialHole(state)));draw();});
+  if(holes.length){
+   const edits=[];
+   paragraph('Correct last saved hole · '+holes.length);
+   for(let i=0;i<4;i++){
+    const label=doc.createElement('label');label.textContent=state.names[i]+' ';
+    const inp=doc.createElement('input');inp.type='number';inp.min='1';inp.max='20';inp.inputMode='numeric';inp.value=String(holes.at(-1)[i]);inp.style.width='65px';
+    label.append(inp);area.append(label);edits.push(inp);
+   }
+   control('Correct Hole '+holes.length,()=>{
+    if(edits.some(e=>e.value==='')){paragraph('Enter all four strokes.');return;}
+    try{const next=changeSkinsTrialHole(state,holes.length,edits.map(e=>Number(e.value)));
+     storage.setItem(key,JSON.stringify(next));draw();
+    }catch(e){paragraph(e.message);}
+   });
+  }
   if(result.canSettle)paragraph('18 holes recorded. Demonstration complete; no actual wagers or payments initiated.');
  }
  button.onclick=()=>{try{draw();dialog.showModal();}catch(e){area.textContent=e.message;dialog.showModal();}};
