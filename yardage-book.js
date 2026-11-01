@@ -9,10 +9,10 @@ export function buildYardagePage(facts,club=null) {
  const verified=yards!==null&&facts.scorecardSource==='opengolfapi-scorecard';
  const name=typeof facts.courseName==='string'?facts.courseName.slice(0,90):'Selected Course';
  const tee=typeof facts.teeName==='string'?facts.teeName.slice(0,60):'Selected Tee';
- let tip='Play the shot in front of you. Aim for a comfortable next distance.';
- if(par===3)tip='Favor the middle of the green. Choose a club for your reliable carry, not your best strike.';
- if(par===4)tip='Pick a tee target you can commit to. Favor an approach distance you hit confidently.';
- if(par===5)tip='Play this hole in stages. Choose the next shot around your reliable carry and lie.';
+ let tip='Find a playable line. Plan the next shot, not the perfect shot.';
+ if(par===3)tip='Middle of the green is good business. Pick the club you normally carry far enough.';
+ if(par===4)tip='Find the wide part. Leave yourself a comfortable number coming in.';
+ if(par===5)tip='Three good decisions beat one miracle. Lay up to a yardage you like.';
  const clubName=typeof club==='string'&&club.trim().length<=32?club.trim():null;
  return Object.freeze({
   holeNumber:hole,courseName:name,teeName:tee,par,yards:verified?yards:null,
