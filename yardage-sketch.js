@@ -6,6 +6,8 @@ export function sketchVerifiedHole({geometry=[],holeNumber,course=null}={}){
  const features=yardageHoleFeatures(coverage,geometry,holeNumber);
  if(!features?.length)return null;
  const all=features.flatMap(f=>f.coordinates);
+ // Bound untrusted provider complexity to keep page flips responsive on phones.
+ if(all.length>6000)return null;
  const xs=all.map(p=>p[0]),ys=all.map(p=>p[1]);
  const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
  if(![minX,maxX,minY,maxY].every(Number.isFinite))return null;
