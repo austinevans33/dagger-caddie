@@ -1,3 +1,4 @@
+import {validateWeekendDraft} from './weekend-draft-validation.js';
 import {twoPlayerAction} from './two-player-action.js';
 import {weekendMatchReport} from './weekend-match-report.js';
 // One-device demo of the weekend game. Multiplayer is NOT enabled here.
@@ -5,8 +6,8 @@ export function mountWeekendMatch({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-weekend-open'))return;
  const key='dcc_weekend_trial_v1';
  const defaults=()=>({names:['You','Buddy'],holes:[],games:[{id:'skins',format:'skins',stakeCents:100},{id:'hole',format:'hole',stakeCents:100}]});
- const read=()=>{try{return JSON.parse(storage.getItem(key))||defaults();}catch{return defaults();}};
- const save=x=>{storage.setItem(key,JSON.stringify(x));draw();};
+ const read=()=>{const raw=storage.getItem(key);return raw?validateWeekendDraft(JSON.parse(raw)):defaults();};
+ const save=x=>{storage.setItem(key,JSON.stringify(validateWeekendDraft(x)));draw();};
  const open=doc.createElement('button');open.id='dcc-weekend-open';open.textContent='⚔ Weekend Match';open.type='button';
  open.style.cssText='background:#153e2f;color:#fff5dd;border:1px solid #b39b6b;padding:12px;border-radius:9px;font-weight:800;margin:8px';
  (doc.getElementById('dcc-starter-open')?.parentElement||doc.body).append(open);
@@ -52,7 +53,7 @@ export function mountWeekendMatch({doc=document,storage=localStorage}={}){
   }
   button('Clubhouse Report',()=>{const r=weekendMatchReport(x);line(r.status+' · '+r.headline);line(r.disclaimer);});
  }
- open.onclick=()=>{draw();dlg.showModal();};
+ open.onclick=()=>{try{draw();}catch(error){area.replaceChildren();line('Saved match needs attention: '+error.message+'. Existing data has not been changed.');}dlg.showModal();};
 }
 +(Math.abs(r.netCents[0])/100).toFixed(2)+' for '+x.names[0]);
   const last=x.holes.at(-1);if(last){const win=last[0]===last[1]?'HALVED':last[0]<last[1]?x.names[0]+' WINS':x.names[1]+' WINS';line('LAST HOLE · '+win);}
