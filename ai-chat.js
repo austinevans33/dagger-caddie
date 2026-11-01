@@ -1,3 +1,4 @@
+import {mountTripDesk} from './trip-desk-ui.js';
 import {mountYardageBook} from './yardage-book-ui.js';
 import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
@@ -688,3 +689,5 @@ if(readActiveRound(localStorage))refreshCaddyRoundEnvironment();
 
 
 mountYardageBook();
+
+mountTripDesk();
