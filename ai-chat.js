@@ -1,3 +1,4 @@
+import {mountWeekendMatch} from './weekend-match-ui.js';
 import {mountSkinsTrial} from './skins-trial-ui.js';
 import {mountTripDesk} from './trip-desk-ui.js';
 import {mountYardageBook} from './yardage-book-ui.js';
@@ -694,3 +695,5 @@ mountYardageBook();
 mountTripDesk();
 
 mountSkinsTrial();
+
+mountWeekendMatch();
