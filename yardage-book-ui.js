@@ -55,7 +55,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const active=readActiveRound(storage);
   const fallback={holeNumber:hole,courseName:active?.selection?.course?.name,teeName:active?.selection?.tee?.name};
   const facts=env?.selection?buildCaddyCourseFacts(env,hole):fallback;
-  const coverage=classifyYardageCoverage({course:active?.selection?.course||env?.selection?.course,holes:env?.holes});
+  const coverage=classifyYardageCoverage({course:active?.selection?.course||env?.selection?.course,holes:env?.holes,geometry:env?.geometry||[]});
   const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
   const sketch=sketchVerifiedHole({geometry:env?.geometry||[],holeNumber:hole,course:active?.selection?.course||env?.selection?.course});
   content.innerHTML=`<div class="dcc-book-cover"><div class="dcc-book-overline">THE MEMBER'S FIELD GUIDE</div><div class="dcc-book-hole">HOLE ${String(hole).padStart(2,'0')}</div><div>${safe(page.courseName)} · ${safe(page.teeName)}</div></div>
