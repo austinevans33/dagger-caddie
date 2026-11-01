@@ -1,3 +1,4 @@
+import {previewWeekendFromRoom} from './weekend-money-room-preview.js';
 import {installBingoMoney} from './bbb-money.js';
 import {installLedgerSettlement} from './ledger-settlement.js';
 installLedgerSettlement(window);
@@ -134,6 +135,17 @@ function render(){
  const x=compute(room);
  renderFinishSummary(room,x);
  $('roomStandings').textContent=room.players.map((name,i)=>`${name}: ${money(x.totals[i])}`).join(' · ')+(room.format==='skins'?` · ${x.carry} skin(s) in next pot`:'')+` · ${x.settled} holes scored`;
+ if(room.players.length===2&&['hole','skins'].includes(room.format)){
+  let side=$('dccWeekendSidePreview');
+  if(!side){side=document.createElement('div');side.id='dccWeekendSidePreview';side.style.cssText='margin:10px 0;padding:12px;border:1px solid #b79c62;border-radius:10px;background:#fbf4e5;color:#193d2d';$('roomStandings').after(side);}
+  try{
+   const other=room.format==='hole'?'skins':'hole';
+   const cents=Math.round(Number(room.stake)*100);
+   const preview=previewWeekendFromRoom({room,games:[{id:'side-'+other,format:other,stakeCents:cents}]});
+   const v=preview.balances[0]/100;
+   side.textContent='WEEKEND SIDE ACTION · '+other.toUpperCase()+' at same stake · '+room.players[0]+': '+money(v)+' · '+room.players[1]+': '+money(-v)+' · '+preview.recordedHoles+'/18 holes · PREVIEW ONLY, NOT IN OFFICIAL LEDGER';
+  }catch(error){side.textContent='Weekend side action unavailable: '+error.message;}
+ }else{$('dccWeekendSidePreview')?.remove();}
  $('roomFormatDisplay').textContent=room.format.toUpperCase();$('roomStakeDisplay').textContent='$'+room.stake;$('roomNextDisplay').textContent=String(pending);
  const lead=x.totals.reduce((a,v,i)=>v>x.totals[a]?i:a,0);
  const leader=room.players[lead], loser=room.players.reduce((a,n,i)=>x.totals[i]<x.totals[a]?i:a,0);
