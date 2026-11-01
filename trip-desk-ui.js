@@ -2,7 +2,7 @@ import {createTrip,addTripRound,tripRosterSummary} from './trip-roster.js';
 import {changeTripRoundStatus} from './trip-round-status.js';
 import {summarizeTrip} from './trip-settlement.js';
 import {buildTripRecap} from './trip-recap.js';
-// Local draft only: do not confuse this UI with live shared Trip Mode.
+// All data stays on this device. Live multiplayer is intentionally not implied.
 export function mountTripDesk({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-trip-open'))return;
  const style=doc.createElement('style');
@@ -10,86 +10,55 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
  doc.head.append(style);
  const open=doc.createElement('button');open.id='dcc-trip-open';open.type='button';open.textContent='Golf Trip Desk';
  (doc.getElementById('dcc-starter-open')?.parentElement||doc.body).append(open);
- const dialog=doc.createElement('dialog');dialog.id='dcc-trip-dialog';
+ const dlg=doc.createElement('dialog');dlg.id='dcc-trip-dialog';
  const title=doc.createElement('h2');title.textContent='DAGGER · Golf Trip Desk';
  const body=doc.createElement('div'),close=doc.createElement('button');
- close.textContent='Close';close.onclick=()=>dialog.close();
- dialog.append(title,body,close);doc.body.append(dialog);
- const key='dcc_trip_preview_v1',makeId=()=>crypto.randomUUID().replace(/-/g,'').slice(0,16);
- const input=placeholder=>{const el=doc.createElement('input');el.placeholder=placeholder;return el;};
- function action(label,fn){const b=doc.createElement('button');b.textContent=label;b.onclick=()=>{try{fn();}catch(e){const p=doc.createElement('p');p.textContent=e.message;body.append(p);}};return b;}
- function read(){try{const raw=storage.getItem(key);if(!raw||raw.length>60000)return null;const v=JSON.parse(raw);return createTrip({tripId:v.id,name:v.name,players:v.players,rounds:v.rounds});}catch{return null;}}
- const addText=text=>{const p=doc.createElement('p');p.textContent=text;body.append(p);};
+ close.textContent='Close';close.onclick=()=>dlg.close();
+ dlg.append(title,body,close);doc.body.append(dlg);
+ const key='dcc_trip_preview_v1',id=()=>crypto.randomUUID().replace(/-/g,'').slice(0,16);
+ const input=placeholder=>{const e=doc.createElement('input');e.placeholder=placeholder;return e;};
+ const para=(parent,text)=>{const e=doc.createElement('p');e.textContent=text;parent.append(e);};
+ const button=(label,fn)=>{const e=doc.createElement('button');e.textContent=label;e.onclick=()=>{try{fn();}catch(err){para(body,err.message);}};return e;};
+ function read(){try{const raw=storage.getItem(key);if(!raw||raw.length>60000)return null;const x=JSON.parse(raw);return createTrip({tripId:x.id,name:x.name,players:x.players,rounds:x.rounds});}catch{return null;}}
+ function save(trip){storage.setItem(key,JSON.stringify(trip));draw();}
  function draw(){
-  body.replaceChildren();
-  addText('PRIVATE LOCAL DRAFT · No shared joining, Firebase sync, or live payouts.');
+  body.replaceChildren();para(body,'PRIVATE LOCAL DRAFT · No guest joining, Firebase sync or live payouts.');
   const trip=read();
   if(!trip){
-   const name=input('Trip name'),names=input('Golfer names, separated by commas');
-   body.append(name,names,action('Create Trip Draft',()=>{
-    const players=names.value.split(',').map(s=>s.trim()).filter(Boolean).map(n=>({id:makeId(),name:n}));
-    storage.setItem(key,JSON.stringify(createTrip({tripId:makeId(),name:name.value,players})));draw();
+   const name=input('Trip name'),people=input('Names separated by commas');
+   body.append(name,people,button('Create Draft',()=>{
+    const players=people.value.split(',').map(x=>x.trim()).filter(Boolean).map(name=>({id:id(),name}));
+    save(createTrip({tripId:id(),name:name.value,players}));
    }));return;
   }
-  const roster=tripRosterSummary(trip);
-  const h=doc.createElement('h3');h.textContent=trip.name+' · '+roster.playerCount+' golfers · '+roster.roundCount+' rounds';body.append(h);
-  addText(trip.players.map(p=>p.name).join(' · '));
+  const info=tripRosterSummary(trip);const heading=doc.createElement('h3');
+  heading.textContent=trip.name+' · '+info.playerCount+' golfers · '+info.roundCount+' rounds';body.append(heading);
+  para(body,trip.players.map(p=>p.name).join(' · '));
   for(const round of trip.rounds){
-   addText(round.name+' · '+round.groups.length+' groups · '+round.status);
-   if(round.status==='draft')body.append(action('Start '+round.name,()=>{
-    storage.setItem(key,JSON.stringify(changeTripRoundStatus(read(),round.id,'active').trip));draw();
-   }));
+   para(body,round.name+' · '+round.groups.length+' groups · '+round.status);
+   if(round.status==='draft')body.append(button('Start '+round.name,()=>save(changeTripRoundStatus(read(),round.id,'active').trip)));
   }
-  const ledger=summarizeTrip(trip);
-  const h2=doc.createElement('h3');h2.textContent='TRIP LEDGER · '+(ledger.provisional?'PROVISIONAL':'FINAL');body.append(h2);
-  addText(ledger.countedGames+' completed games · '+ledger.pendingGames+' pending games · '+ledger.pendingRounds+' unfinished rounds');
-  for(const player of trip.players){const c=ledger.netCents[player.id];addText(player.name+' · '+(c>=0?'+':'−')+'$'+(Math.abs(c)/100).toFixed(2));}
-  if(!ledger.provisional)for(const transfer of ledger.transfers){
-   const who=id=>trip.players.find(p=>p.id===id)?.name||id;
-   addText(who(transfer.from)+' owes '+who(transfer.to)+' $'+(transfer.amountCents/100).toFixed(2));
-  }
-  body.append(action('Open Clubhouse Report',()=>{
-   const report=buildTripRecap(read());
+  const ledger=summarizeTrip(trip);const h=doc.createElement('h3');
+  h.textContent='TRIP LEDGER · '+(ledger.provisional?'PROVISIONAL':'FINAL');body.append(h);
+  para(body,ledger.countedGames+' counted games · '+ledger.pendingGames+' pending games');
+  for(const p of trip.players)para(body,p.name+' · '+String(ledger.netCents[p.id])+' cents net');
+  body.append(button('Open Clubhouse Report',()=>{
    const previous=doc.getElementById('dcc-trip-report');if(previous)previous.remove();
-   const page=doc.createElement('section');page.id='dcc-trip-report';
+   const report=buildTripRecap(read()),page=doc.createElement('section');page.id='dcc-trip-report';
    page.style.cssText='background:#fff7e5;border:2px solid #aa936b;padding:16px;margin:12px 0;color:#224133;font-family:Georgia,serif';
-   const headline=doc.createElement('h3');headline.textContent=report.title;page.append(headline);
-   const status=doc.createElement('p');status.textContent=report.status+' · '+report.completedRounds+' rounds · '+report.countedGames+' counted games';page.append(status);
-   for(const row of report.leaderboard){
-    const p=doc.createElement('p');
-    p.textContent=row.name+' · '+(row.netCents>=0?'+':'−')+'
-  body.append(roundName,action('Add Draft Round',()=>{
-   const groups=[];for(let i=0;i<trip.players.length;i+=4)
-    groups.push({id:makeId(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
-   storage.setItem(key,JSON.stringify(addTripRound(read(),{id:makeId(),name:roundName.value,status:'draft',groups})));draw();
-  }));
- }
- open.onclick=()=>{draw();dialog.showModal();};
-}
-+(Math.abs(row.netCents)/100).toFixed(2);page.append(p);
-   }
-   for(const line of report.headlines){const p=doc.createElement('p');p.textContent=line;page.append(p);}
-   const foot=doc.createElement('p');foot.textContent=report.disclaimer;page.append(foot);
-   if(report.status==='FINAL')for(const x of report.settlements){
-    const p=doc.createElement('p');p.textContent=x.from+' pays '+x.to+' 
-  body.append(roundName,action('Add Draft Round',()=>{
-   const groups=[];for(let i=0;i<trip.players.length;i+=4)
-    groups.push({id:makeId(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
-   storage.setItem(key,JSON.stringify(addTripRound(read(),{id:makeId(),name:roundName.value,status:'draft',groups})));draw();
-  }));
- }
- open.onclick=()=>{draw();dialog.showModal();};
-}
-+(x.amountCents/100).toFixed(2);page.append(p);
-   }
+   const hh=doc.createElement('h3');hh.textContent=report.title;page.append(hh);
+   para(page,report.status+' · '+report.completedRounds+' rounds · '+report.countedGames+' games');
+   for(const row of report.leaderboard)para(page,row.name+' · '+String(row.netCents)+' cents');
+   for(const line of report.headlines)para(page,line);
+   para(page,report.disclaimer);
+   if(report.status==='FINAL')for(const t of report.settlements)para(page,t.from+' pays '+t.to+' '+String(t.amountCents)+' cents');
    body.append(page);
   }));
-  const roundName=input('Next round — Friday');
-  body.append(roundName,action('Add Draft Round',()=>{
-   const groups=[];for(let i=0;i<trip.players.length;i+=4)
-    groups.push({id:makeId(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
-   storage.setItem(key,JSON.stringify(addTripRound(read(),{id:makeId(),name:roundName.value,status:'draft',groups})));draw();
+  const next=input('New round name');
+  body.append(next,button('Add Draft Round',()=>{
+   const groups=[];for(let i=0;i<trip.players.length;i+=4)groups.push({id:id(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
+   save(addTripRound(read(),{id:id(),name:next.value,status:'draft',groups}));
   }));
  }
- open.onclick=()=>{draw();dialog.showModal();};
+ open.onclick=()=>{draw();dlg.showModal();};
 }
