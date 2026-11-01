@@ -29,7 +29,27 @@ function validateRound(round,roster){
     return {id:group.id,playerIds:[...group.playerIds]};
   });
   if(new Set(groups.map(g=>g.id)).size!==groups.length)throw new Error('Duplicate foursome');
-  return {id:round.id,name:round.name.trim(),status:round.status,groups,games:[]};
+  // Preserve already recorded games when adding a later trip round.
+  // Never silently wipe existing wagers or settlement records.
+  const games=round.games??[];
+  if(!Array.isArray(games)||games.length>100)throw new Error('Invalid games');
+  const seenGames=new Set();
+  const copied=games.map(game=>{
+    if(!game||!id(game.id)||seenGames.has(game.id)||
+       !['draft','active','completed'].includes(game.status))
+      throw new Error('Invalid or duplicate game');
+    seenGames.add(game.id);
+    if(game.status!=='completed')return {id:game.id,status:game.status};
+    const net=game.netCents;
+    if(!net||typeof net!=='object'||Array.isArray(net)||
+       Object.keys(net).length!==roster.size||
+       Object.keys(net).some(key=>!roster.has(key))||
+       Object.values(net).some(v=>!Number.isSafeInteger(v)||Math.abs(v)>100000000)||
+       Object.values(net).reduce((a,b)=>a+b,0)!==0)
+      throw new Error('Invalid completed game ledger');
+    return {id:game.id,status:game.status,netCents:{...net}};
+  });
+  return {id:round.id,name:round.name.trim(),status:round.status,groups,games:copied};
 }
 export function addTripRound(trip,round){
   const current=createTrip(trip);
