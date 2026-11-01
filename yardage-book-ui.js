@@ -32,6 +32,14 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  const dlg=doc.createElement('dialog');dlg.id='dcc-yardage-dialog';dlg.setAttribute('aria-label','Dagger Country Club Yardage Book');
  dlg.innerHTML='<div class="dcc-book-controls"><span class="dcc-book-overline">DAGGER COUNTRY CLUB</span><button type="button" id="dcc-book-close">Close ×</button></div><div id="dcc-book-content" aria-live="polite"></div><div class="dcc-book-controls"><button type="button" id="dcc-book-prev">← Previous</button><label for="dcc-book-hole-select">HOLE <select id="dcc-book-hole-select" aria-label="Choose hole"></select></label><button type="button" id="dcc-book-next">Next →</button></div>';
  doc.body.append(dlg);
+ const shot=doc.createElement('div');shot.style.cssText='padding:12px 16px;border-top:1px solid #c5b38b;display:flex;gap:10px;align-items:end;flex-wrap:wrap';
+ const distanceLabel=doc.createElement('label');distanceLabel.textContent='Actual distance (yards) ';distanceLabel.style.cssText='flex:1;min-width:145px;font-size:12px;font-weight:800';
+ const distance=doc.createElement('input');distance.type='number';distance.min='1';distance.max='700';distance.inputMode='numeric';distance.placeholder='e.g. 164';distance.style.cssText='width:100%;min-height:43px;font-size:17px;padding:7px;box-sizing:border-box';distanceLabel.append(distance);
+ const lieLabel=doc.createElement('label');lieLabel.textContent='Lie ';lieLabel.style.cssText='flex:1;min-width:130px;font-size:12px;font-weight:800';
+ const lie=doc.createElement('select');lie.style.cssText='width:100%;min-height:43px;font-size:16px';
+ for(const name of ['Unknown','Tee','Fairway','Rough','Sand','Recovery']){const option=doc.createElement('option');option.value=name;option.textContent=name;lie.append(option);}
+ lieLabel.append(lie);shot.append(distanceLabel,lieLabel);
+ dlg.querySelector('#dcc-book-content').after(shot);
  const ask=doc.createElement('button');ask.type='button';ask.id='dcc-book-ask';ask.textContent='Ask Caddy about this hole';ask.style.cssText='display:block;width:calc(100% - 32px);margin:0 16px 12px;background:#204332;color:#f8efd8;padding:13px;border:1px solid #b79a64;border-radius:9px;font-weight:800';dlg.querySelector('#dcc-book-content').after(ask);
  const content=dlg.querySelector('#dcc-book-content');
  const selector=dlg.querySelector('#dcc-book-hole-select');
@@ -50,7 +58,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
   content.innerHTML=`<div class="dcc-book-cover"><div class="dcc-book-overline">THE MEMBER'S FIELD GUIDE</div><div class="dcc-book-hole">HOLE ${String(hole).padStart(2,'0')}</div><div>${safe(page.courseName)} · ${safe(page.teeName)}</div></div>
    <div class="dcc-book-page"><div class="dcc-book-overline" style="text-align:center;opacity:.75;margin-bottom:8px">${safe(coverage.tier.toUpperCase())} EDITION</div><div class="dcc-book-stat">${page.par?'PAR '+page.par:'PAR UNAVAILABLE'} · ${safe(page.yardageLabel)}</div>
-   <div class="dcc-book-notes"><div class="dcc-book-overline">THE CADDY'S NOTES · PLAY SMART</div>${safe(page.strategy)}<div style="font:700 13px/1.5 system-ui;margin-top:10px">WEEKEND RULE: 80% effort. Pick your target, watch the ball through impact, then hold a balanced finish. Do not swing harder because your buddy is watching.</div></div>
+   <div class="dcc-book-notes"><div class="dcc-book-overline">THE CADDY'S NOTES · PLAY SMART</div>${safe(page.strategy)}<div style="font:700 13px/1.5 system-ui;margin-top:10px">COURSE MANAGEMENT: Favor a playable miss. Avoid trouble you cannot confidently carry. Choose the next shot, not the heroic one.</div></div>
    <div class="dcc-book-call"><span class="dcc-book-overline">YOUR CLUB</span><strong>${page.club?safe(page.club):'ASK YOUR CADDY'}</strong></div>
    <div class="dcc-book-foot">${safe(page.hazards)}<br/>${safe(coverage.notice)}<br/>Scorecard yardage is not live distance to the pin. No hole map without verified geometry.</div></div>`;
  }
@@ -70,7 +78,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const active=readActiveRound(storage);
   const facts=env?.selection?buildCaddyCourseFacts(env,hole):{holeNumber:hole,courseName:active?.selection?.course?.name,teeName:active?.selection?.tee?.name};
   const page=buildYardagePage(facts);
-  const context=['Help me play hole '+hole+' at '+(page?.courseName||'this course'),page?.par?'par '+page.par:null,page?.yards?'scorecard yardage '+page.yards+' yards':null,'Give me one club, one target, and one swing cue. Ask my distance and lie if needed; do not assume pin or hazards.'].filter(Boolean).join('. ');
+  const context=['Help me play hole '+hole+' at '+(page?.courseName||'this course'),page?.par?'par '+page.par:null,page?.yards?'scorecard yardage '+page.yards+' yards':null,Number.isInteger(Number(distance.value))&&Number(distance.value)>0&&Number(distance.value)<=700?'actual distance '+distance.value+' yards':null,lie.value!=='Unknown'?'lie '+lie.value:null,'Recommend a club based on my known distances, a safe target, and the biggest course-management risk. If information is missing say so; never invent pin or hazards. Keep it brief.'].filter(Boolean).join('. ');
   dlg.close();doc.getElementById('tab-play')?.click();
   input.value=context;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();
  });
