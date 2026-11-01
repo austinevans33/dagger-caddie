@@ -1,3 +1,4 @@
+import {parseGolfDistance} from './golf-distance-range.js';
 import {sketchVerifiedHole} from './yardage-sketch.js';
 import {classifyYardageCoverage} from './yardage-coverage.js';
 import {readActiveRound} from './starters-desk-session.js';
@@ -35,7 +36,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  doc.body.append(dlg);
  const shot=doc.createElement('div');shot.style.cssText='padding:12px 16px;border-top:1px solid #c5b38b;display:flex;gap:10px;align-items:end;flex-wrap:wrap';
  const distanceLabel=doc.createElement('label');distanceLabel.textContent='Actual distance (yards) ';distanceLabel.style.cssText='flex:1;min-width:145px;font-size:12px;font-weight:800';
- const distance=doc.createElement('input');distance.type='number';distance.min='1';distance.max='700';distance.inputMode='numeric';distance.placeholder='e.g. 164';distance.style.cssText='width:100%;min-height:43px;font-size:17px;padding:7px;box-sizing:border-box';distanceLabel.append(distance);
+ const distance=doc.createElement('input');distance.type='text';distance.inputMode='text';distance.placeholder='e.g. 165 or 235-240';distance.style.cssText='width:100%;min-height:43px;font-size:17px;padding:7px;box-sizing:border-box';distanceLabel.append(distance);
  const lieLabel=doc.createElement('label');lieLabel.textContent='Lie ';lieLabel.style.cssText='flex:1;min-width:130px;font-size:12px;font-weight:800';
  const lie=doc.createElement('select');lie.style.cssText='width:100%;min-height:43px;font-size:16px';
  for(const name of ['Unknown','Tee','Fairway','Rough','Sand','Recovery']){const option=doc.createElement('option');option.value=name;option.textContent=name;lie.append(option);}
@@ -80,7 +81,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const active=readActiveRound(storage);
   const facts=env?.selection?buildCaddyCourseFacts(env,hole):{holeNumber:hole,courseName:active?.selection?.course?.name,teeName:active?.selection?.tee?.name};
   const page=buildYardagePage(facts);
-  const context=['Help me play hole '+hole+' at '+(page?.courseName||'this course'),page?.par?'par '+page.par:null,page?.yards?'scorecard yardage '+page.yards+' yards':null,Number.isInteger(Number(distance.value))&&Number(distance.value)>0&&Number(distance.value)<=700?'actual distance '+distance.value+' yards':null,lie.value!=='Unknown'?'lie '+lie.value:null,'Recommend a club based on my known distances, a safe target, and the biggest course-management risk. If information is missing say so; never invent pin or hazards. Keep it brief.'].filter(Boolean).join('. ');
+  const context=['Help me play hole '+hole+' at '+(page?.courseName||'this course'),page?.par?'par '+page.par:null,page?.yards?'scorecard yardage '+page.yards+' yards':null,parseGolfDistance(distance.value)?'actual distance '+parseGolfDistance(distance.value).label:null,lie.value!=='Unknown'?'lie '+lie.value:null,'Recommend a club based on my known distances, a safe target, and the biggest course-management risk. If information is missing say so; never invent pin or hazards. Keep it brief.'].filter(Boolean).join('. ');
   dlg.close();doc.getElementById('tab-play')?.click();
   input.value=context;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();
  });
