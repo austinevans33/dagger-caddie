@@ -50,7 +50,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
   content.innerHTML=`<div class="dcc-book-cover"><div class="dcc-book-overline">THE MEMBER'S FIELD GUIDE</div><div class="dcc-book-hole">HOLE ${String(hole).padStart(2,'0')}</div><div>${safe(page.courseName)} · ${safe(page.teeName)}</div></div>
    <div class="dcc-book-page"><div class="dcc-book-overline" style="text-align:center;opacity:.75;margin-bottom:8px">${safe(coverage.tier.toUpperCase())} EDITION</div><div class="dcc-book-stat">${page.par?'PAR '+page.par:'PAR UNAVAILABLE'} · ${safe(page.yardageLabel)}</div>
-   <div class="dcc-book-notes"><div class="dcc-book-overline">THE CADDY'S NOTES · PLAY SMART</div>${safe(page.strategy)}<div style="font:700 13px/1.5 system-ui;margin-top:10px">Pick a target. Trust your normal carry. Favor the safe miss. No hero shot required.</div></div>
+   <div class="dcc-book-notes"><div class="dcc-book-overline">THE CADDY'S NOTES · PLAY SMART</div>${safe(page.strategy)}<div style="font:700 13px/1.5 system-ui;margin-top:10px">WEEKEND RULE: 80% effort. Pick your target, watch the ball through impact, then hold a balanced finish. Do not swing harder because your buddy is watching.</div></div>
    <div class="dcc-book-call"><span class="dcc-book-overline">YOUR CLUB</span><strong>${page.club?safe(page.club):'ASK YOUR CADDY'}</strong></div>
    <div class="dcc-book-foot">${safe(page.hazards)}<br/>${safe(coverage.notice)}<br/>Scorecard yardage is not live distance to the pin. No hole map without verified geometry.</div></div>`;
  }
