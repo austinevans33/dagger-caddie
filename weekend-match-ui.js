@@ -31,7 +31,25 @@ export function mountWeekendMatch({doc=document,storage=localStorage}={}){
     save({...x,holes:[...x.holes,scores]});
    });
   }
-  if(x.holes.length)button('Undo Last Hole',()=>save({...x,holes:x.holes.slice(0,-1)}));
+  if(x.holes.length){
+   const details=doc.createElement('details');const summary=doc.createElement('summary');summary.textContent='Review / correct saved holes';details.append(summary);
+   const picker=doc.createElement('select');picker.setAttribute('aria-label','Hole to correct');
+   for(let i=0;i<x.holes.length;i++){const option=doc.createElement('option');option.value=String(i);option.textContent='Hole '+(i+1);picker.append(option);}
+   details.append(picker);
+   const editInputs=x.names.map(name=>{const label=doc.createElement('label');label.textContent=name+' ';const input=doc.createElement('input');input.type='number';input.min='1';input.max='20';input.inputMode='numeric';input.style.cssText='width:65px;min-height:44px;margin:7px';label.append(input);details.append(label);return input;});
+   const populate=()=>{const scores=x.holes[Number(picker.value)];editInputs.forEach((input,i)=>input.value=String(scores[i]));};
+   picker.onchange=populate;populate();
+   const edit=doc.createElement('button');edit.textContent='Save correction';edit.style.cssText='padding:11px;margin:5px;background:#214b38;color:white;border-radius:8px';
+   edit.onclick=()=>{try{
+    if(editInputs.some(input=>input.value===''))throw Error('Both strokes required');
+    const scores=editInputs.map(input=>Number(input.value));
+    if(scores.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('Scores must be 1–20');
+    const updated=x.holes.map((h,i)=>i===Number(picker.value)?scores:[...h]);
+    save({...x,holes:updated});
+   }catch(err){line(err.message);}};
+   details.append(edit);area.append(details);
+   button('Undo Last Hole',()=>save({...x,holes:x.holes.slice(0,-1)}));
+  }
   button('Clubhouse Report',()=>{const r=weekendMatchReport(x);line(r.status+' · '+r.headline);line(r.disclaimer);});
  }
  open.onclick=()=>{draw();dlg.showModal();};
