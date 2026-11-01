@@ -1,0 +1,55 @@
+import {readActiveRound} from './starters-desk-session.js';
+import {getRoundEnvironment} from './round-environment.js';
+import {buildCaddyCourseFacts} from './caddy-course-facts.js';
+import {buildYardagePage} from './yardage-book.js';
+
+// Standalone, opt-in paper-book overlay. No modifications to Scorecard or Money Room.
+export function mountYardageBook({doc=document,storage=localStorage}={}) {
+ if(doc.getElementById('dcc-yardage-open'))return;
+ const css=doc.createElement('style');
+ css.textContent=`
+ #dcc-yardage-open{border:1px solid #b89d68;background:#183b2d;color:#f8efda;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}
+ #dcc-yardage-dialog{background:#f3eedf;color:#213b2e;border:2px solid #ad956b;border-radius:13px;width:min(92vw,500px);max-height:87vh;overflow:auto;padding:0;box-shadow:0 25px 70px #0008}
+ #dcc-yardage-dialog::backdrop{background:#0c1c17bb}
+ .dcc-book-cover{padding:20px 20px 12px;text-align:center;border-bottom:2px double #ad956b}
+ .dcc-book-overline{font-size:10px;letter-spacing:.19em;font-weight:800}
+ .dcc-book-hole{font-family:Georgia,serif;font-size:37px;font-weight:700;letter-spacing:.04em;margin:12px 0 2px}
+ .dcc-book-page{padding:20px;background:repeating-linear-gradient(0deg,transparent,transparent 28px,#746b4a09 29px)}
+ .dcc-book-stat{font:700 18px Georgia,serif;text-align:center;padding:12px;border-block:1px solid #b9aa89}
+ .dcc-book-notes{border-left:3px solid #b49a67;padding:4px 0 4px 13px;margin:20px 0;font:italic 17px/1.5 Georgia,serif}
+ .dcc-book-call{background:#1b4131;color:#f7ecd4;border-radius:8px;text-align:center;padding:15px;margin-top:14px}
+ .dcc-book-call strong{font:800 clamp(30px,7vw,48px)/1.1 system-ui;display:block}
+ .dcc-book-foot{font-size:11px;line-height:1.4;opacity:.78;margin-top:16px}
+ .dcc-book-controls{display:flex;gap:10px;padding:10px 16px;justify-content:space-between;align-items:center}
+ .dcc-book-controls button{border:1px solid #aa956e;border-radius:7px;padding:9px;background:transparent;color:inherit;font-weight:700}
+ `;
+ doc.head.append(css);
+ const btn=doc.createElement('button');btn.id='dcc-yardage-open';btn.type='button';btn.textContent='▤ Yardage Book';
+ const target=doc.getElementById('dcc-starter-open')?.parentElement || doc.getElementById('tab-play')?.parentElement || doc.body;
+ target.append(btn);
+ const dlg=doc.createElement('dialog');dlg.id='dcc-yardage-dialog';dlg.setAttribute('aria-label','Dagger Country Club Yardage Book');
+ dlg.innerHTML='<div class="dcc-book-controls"><span class="dcc-book-overline">DAGGER COUNTRY CLUB</span><button type="button" id="dcc-book-close">Close ×</button></div><div id="dcc-book-content" aria-live="polite"></div><div class="dcc-book-controls"><button type="button" id="dcc-book-prev">← Previous</button><button type="button" id="dcc-book-next">Next →</button></div>';
+ doc.body.append(dlg);
+ const content=dlg.querySelector('#dcc-book-content');
+ const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ let hole=1,env=null,token=0;
+ function draw(){
+  const facts=env?.selection?buildCaddyCourseFacts(env,hole):{holeNumber:hole};
+  const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
+  content.innerHTML=`<div class="dcc-book-cover"><div class="dcc-book-overline">THE MEMBER'S FIELD GUIDE</div><div class="dcc-book-hole">HOLE ${String(hole).padStart(2,'0')}</div><div>${safe(page.courseName)} · ${safe(page.teeName)}</div></div>
+   <div class="dcc-book-page"><div class="dcc-book-stat">${page.par?'PAR '+page.par:'PAR UNAVAILABLE'} · ${safe(page.yardageLabel)}</div>
+   <div class="dcc-book-notes"><div class="dcc-book-overline">THE CADDY'S NOTES</div>${safe(page.strategy)}</div>
+   <div class="dcc-book-call"><span class="dcc-book-overline">YOUR CLUB</span><strong>${page.club?safe(page.club):'ASK YOUR CADDY'}</strong></div>
+   <div class="dcc-book-foot">${safe(page.hazards)}<br/>Scorecard yardage is not live distance to the pin. Hole map withheld until verified geometry is available.</div></div>`;
+ }
+ btn.addEventListener('click',async()=>{
+  const active=readActiveRound(storage);
+  hole=active?.selection?.holeNumber||1; env=null;draw();dlg.showModal();
+  const thisToken=++token;
+  if(active){try{const loaded=await getRoundEnvironment({storage});if(thisToken===token&&dlg.open){env=loaded;draw();}}catch{/* Keep honest offline fallback. */}}
+ });
+ dlg.querySelector('#dcc-book-close').addEventListener('click',()=>dlg.close());
+ dlg.addEventListener('close',()=>{token++;});
+ dlg.querySelector('#dcc-book-prev').addEventListener('click',()=>{hole=Math.max(1,hole-1);draw();});
+ dlg.querySelector('#dcc-book-next').addEventListener('click',()=>{hole=Math.min(18,hole+1);draw();});
+}
