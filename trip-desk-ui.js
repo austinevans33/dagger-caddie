@@ -1,3 +1,4 @@
+import {summarizeTrip} from './trip-settlement.js';
 import {changeTripRoundStatus} from './trip-round-status.js';
 import {createTrip,addTripRound,tripRosterSummary} from './trip-roster.js';
 // Deliberately local-only preview: do not imply shared, synced, or live trip functionality.
@@ -33,6 +34,34 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
   heading.textContent=trip.name+' · '+summary.playerCount+' golfers · '+summary.roundCount+' rounds';body.append(heading);
   const roster=doc.createElement('p');roster.textContent=trip.players.map(p=>p.name).join(' · ');body.append(roster);
   for(const round of trip.rounds){const p=doc.createElement('p');p.textContent=round.name+' · '+round.groups.length+' foursomes · '+round.status;body.append(p);if(round.status==='draft')body.append(action('Start '+round.name,()=>{storage.setItem(key,JSON.stringify(changeTripRoundStatus(read(),round.id,'active').trip));draw();}));}
+  const ledger=summarizeTrip(trip);
+  const ledgerTitle=doc.createElement('h3');ledgerTitle.textContent='TRIP LEDGER · '+(ledger.provisional?'PROVISIONAL':'FINAL');
+  body.append(ledgerTitle);
+  const explanation=doc.createElement('p');
+  explanation.textContent=ledger.countedGames+' settled games · '+ledger.pendingGames+' pending games · '+ledger.pendingRounds+' unfinished rounds';
+  body.append(explanation);
+  const money=amount=>(amount<0?'−':'')+'
+  body.append(roundName,action('Add draft round',()=>{
+   const groups=[];for(let i=0;i<trip.players.length;i+=4)groups.push({id:makeId(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
+   storage.setItem(key,JSON.stringify(addTripRound(trip,{id:makeId(),name:roundName.value,status:'draft',groups})));draw();
+  }));
+ }
+ button.onclick=()=>{draw();dialog.showModal();};
+}
++(Math.abs(amount)/100).toFixed(2);
+  for(const golfer of trip.players){
+   const line=doc.createElement('p');
+   line.textContent=golfer.name+' · '+(ledger.netCents[golfer.id]>=0?'+':'')+money(ledger.netCents[golfer.id]);
+   body.append(line);
+  }
+  if(!ledger.provisional&&ledger.transfers.length){
+   const settlement=doc.createElement('p');settlement.textContent='FINAL TRANSFERS';body.append(settlement);
+   for(const transfer of ledger.transfers){
+    const from=trip.players.find(p=>p.id===transfer.from)?.name||transfer.from;
+    const to=trip.players.find(p=>p.id===transfer.to)?.name||transfer.to;
+    const line=doc.createElement('p');line.textContent=from+' owes '+to+' '+money(transfer.amountCents);body.append(line);
+   }
+  }
   const roundName=input('New round — Friday');
   body.append(roundName,action('Add draft round',()=>{
    const groups=[];for(let i=0;i<trip.players.length;i+=4)groups.push({id:makeId(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
