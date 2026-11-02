@@ -1,3 +1,5 @@
+import {ghostLedgerSnapshot} from './house-ghost-ledger.js';
+import {readActiveRound} from './starters-desk-session.js';
 import {validateWeekendDraft} from './weekend-draft-validation.js';
 import {twoPlayerAction} from './two-player-action.js';
 import {weekendMatchReport} from './weekend-match-report.js';
@@ -25,6 +27,13 @@ export function mountWeekendMatch({doc=document,storage=localStorage}={}){
    const amount=(Math.abs(r.netCents[0])/100).toFixed(2);
    line((r.format==='hole'?'HOLE-BY-HOLE':r.format.toUpperCase())+' · '+(r.netCents[0]>=0?'+':'-')+'$'+amount+' for '+x.names[0]);
   }
+  // Optional parallel Ghost match: the same saved golfer score feeds this and the shot trail.
+  const selectedRound=readActiveRound(storage);
+  const ghost=ghostLedgerSnapshot({courseName:selectedRound?.selection?.course?.name||'Selected course',
+   playerScores:x.holes.map(pair=>pair[0])});
+  const ghostLast=ghost.ledger[x.holes.length-1];
+  line('HOUSE GHOST · '+ghost.holesPlayed+'/18 scored · '+(ghost.holesPlayed?ghost.lead===0?'ALL SQUARE':Math.abs(ghost.lead)+' '+(ghost.lead>0?'UP':'DOWN'):'NOT STARTED'));
+  if(ghostLast)line('HOLE '+ghostLast.holeNumber+' · '+x.names[0]+' '+ghostLast.player+' / GHOST '+ghostLast.ghost+' · '+ghostLast.shotCount+' simulated Ghost strokes');
   const last=x.holes.at(-1);
   if(last)line('LAST HOLE · '+(last[0]===last[1]?'HALVED':last[0]<last[1]?x.names[0]+' WINS':x.names[1]+' WINS'));
   const book=doc.createElement('button');
