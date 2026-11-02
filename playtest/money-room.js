@@ -133,7 +133,9 @@ function render(){
   $('roomWho').style.padding = '14px';
 
  $('roomHostName').value=room.hostName||'Scorekeeper';
- $('roomHole').innerHTML=Array.from({length:18},(_,i)=>`<option value="${i+1}">Hole ${i+1}</option>`).join('');
+ if(!sameRoom||$('roomHole').options.length!==18){
+  $('roomHole').innerHTML=Array.from({length:18},(_,i)=>`<option value="${i+1}">Hole ${i+1}</option>`).join('');
+ }
  const pending=Array.from({length:18},(_,i)=>i+1).find(i=>!room.holes?.[i])||18;
  $('roomHole').value=String(Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:pending);
  $('roomScoreHead').innerHTML='<tr><th>Player</th><th>Strokes</th></tr>';
