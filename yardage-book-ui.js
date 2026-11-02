@@ -34,6 +34,13 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  if(caddyCard)target.insertBefore(btn,target.firstChild);else target.append(btn);
  const dlg=doc.createElement('dialog');dlg.id='dcc-yardage-dialog';dlg.setAttribute('aria-label','Dagger Country Club Yardage Book');
  dlg.innerHTML='<div class="dcc-book-controls"><span class="dcc-book-overline">DAGGER COUNTRY CLUB</span><button type="button" id="dcc-book-close">Close ×</button></div><div id="dcc-book-content" aria-live="polite"></div><div class="dcc-book-controls"><button type="button" id="dcc-book-prev">← Previous</button><label for="dcc-book-hole-select">HOLE <select id="dcc-book-hole-select" aria-label="Choose hole"></select></label><button type="button" id="dcc-book-next">Next →</button></div>';
+ const backToRound=doc.createElement('button');
+ backToRound.type='button';backToRound.id='dcc-book-back-to-round';
+ backToRound.textContent='← Back to Round';
+ backToRound.setAttribute('aria-label','Close Yardage Book and return to the round');
+ backToRound.style.cssText='position:sticky;bottom:0;z-index:5;width:calc(100% - 32px);margin:8px 16px 12px;min-height:52px;border:1px solid #b79a64;border-radius:9px;background:#204332;color:#f8efd8;font-weight:800;font-size:16px;box-shadow:0 -3px 12px #0002';
+ backToRound.addEventListener('click',()=>dlg.close());
+ dlg.append(backToRound);
  doc.body.append(dlg);
  const shot=doc.createElement('div');shot.style.cssText='padding:12px 16px;border-top:1px solid #c5b38b;display:flex;gap:10px;align-items:end;flex-wrap:wrap';
  const distanceLabel=doc.createElement('label');distanceLabel.textContent='Actual distance (yards) ';distanceLabel.style.cssText='flex:1;min-width:145px;font-size:12px;font-weight:800';
