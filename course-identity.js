@@ -17,7 +17,9 @@ export function normalizeTee(input){
  if(!Number.isInteger(yards)||yards<900||yards>10000)return null;
  return Object.freeze({providerTeeId,name,totalYards:yards});
 }
-export function normalizeCourseSelection({course,tee,holeNumber}={}){
+export function normalizeCourseSelection(input={}){
+ if(!input||typeof input!=='object')return null;
+ const {course,tee,holeNumber}=input;
  const c=normalizeCourse(course),t=normalizeTee(tee);
  if(!c||!t||!Number.isInteger(holeNumber)||holeNumber<1||holeNumber>18)return null;
  return Object.freeze({course:c,tee:t,holeNumber});
