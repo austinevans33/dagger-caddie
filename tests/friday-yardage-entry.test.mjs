@@ -13,4 +13,6 @@ test('Yardage Book supports all 18 holes, previous, next, return and missing cou
  assert.match(preview,/id="prev"/);assert.match(preview,/id="next"/);
  assert.match(preview,/id="return"/);assert.match(preview,/location\.assign\('\.\/'\)/);
  assert.match(preview,/No real course distances are loaded/);
+ assert.match(preview,/sessionStorage\.setItem\('dccFridayYardageHole'/);
+ assert.match(app,/sessionStorage\.getItem\('dccFridayYardageHole'/);
 });
