@@ -10,7 +10,7 @@
 <div class="panel"><div class="eyebrow">THE LEDGER · THE ACTION</div><h2>Settle it on the course.</h2><p class="caption">One hole. Two scores. The running action stays visible.</p><div class="roundline"><div class="mini" id="ledgerHole">HOLE 01 / 18</div><div class="holeButtons"><button class="outline" id="lprev" aria-label="Previous hole">←</button><button class="outline" id="lnext" aria-label="Next hole">→</button></div></div>
 <div class="scores"><label>YOU<input type="number" inputmode="numeric" min="1" max="15" id="scoreA" placeholder="–" aria-label="Your strokes"></label><label>YOUR BUDDY<input type="number" inputmode="numeric" min="1" max="15" id="scoreB" placeholder="–" aria-label="Buddy strokes"></label></div>
 <div class="grid"><div class="tile"><span class="eyebrow">HOLES DECIDED</span><strong id="decided">0 / 18</strong></div><div class="tile"><span class="eyebrow">SKINS COUNT</span><strong id="skins">0 : 0</strong></div></div>
-<div class="rule"></div><div class="grid"><div class="tile"><span class="eyebrow">🎟 THE TICKET WINDOW</span><p class="caption">Odds, bet slips and open tickets belong here in the full Ledger.</p><span class="eyebrow">SIGNATURE ATTRACTION</span></div><div class="tile"><span class="eyebrow">👻 HOUSE GHOST</span><p class="caption">The club’s recurring opponent. Hole-by-hole action now; shot-by-shot when verified shot data is ready.</p><span class="eyebrow">SIGNATURE GAME</span></div></div><div class="tile" style="margin-top:12px"><div class="eyebrow">THE TICKET WINDOW · PRACTICE SLIP</div><p class="caption">Closest-to-pin challenge · no live odds, settlement or real bet placed.</p><label>Pick a side<select id="ticketSide"><option value="me">Me</option><option value="buddy">My buddy</option></select></label><button class="outline" id="ticketPreview" style="width:100%;margin-top:10px">Write a practice ticket</button><p id="ticketReceipt" class="caption" aria-live="polite">The window is open for imaginary tickets.</p></div><div class="rule"></div><p id="result" class="mini" aria-live="polite">Enter both scores to settle the hole.</p><p class="caption">Demo: simple gross-score hole winner only. Ties carry no demo skin; real Skins, presses and settlements stay in the protected Money Room build.</p>
+<div class="rule"></div><div class="grid"><div class="tile"><span class="eyebrow">🎟 THE TICKET WINDOW</span><p class="caption">Odds, bet slips and open tickets belong here in the full Ledger.</p><span class="eyebrow">SIGNATURE ATTRACTION</span></div><div class="tile"><span class="eyebrow">👻 HOUSE GHOST</span><p class="caption">The club’s recurring opponent. Hole-by-hole action now; shot-by-shot when verified shot data is ready.</p><span class="eyebrow">SIGNATURE GAME</span></div></div><div class="tile" style="margin-top:12px"><div class="eyebrow">THE TICKET WINDOW · PRACTICE SLIP</div><p class="caption">Closest-to-pin challenge · no live odds, settlement or real bet placed.</p><label>Pick a side<select id="ticketSide"><option value="me">Me</option><option value="buddy">My buddy</option></select></label><button class="outline" id="ticketPreview" style="width:100%;margin-top:10px">Write a practice ticket</button><p id="ticketReceipt" class="caption" aria-live="polite">The window is open for practice challenges.</p><div id="ticketList" class="caption"></div></div><div class="rule"></div><p id="result" class="mini" aria-live="polite">Enter both scores to settle the hole.</p><p class="caption">Demo: simple gross-score hole winner only. Ties carry no demo skin; real Skins, presses and settlements stay in the protected Money Room build.</p>
 <button class="action" id="goGrounds">Open The Grounds · Yardage Book →</button></div>
 </section>
 <section id="grounds" aria-label="The Grounds" class="hidden">
@@ -30,6 +30,28 @@ function refresh(){const a=scores[hole-1];get('ledgerHole').textContent='HOLE '+
 for(const [id,index] of [['scoreA',0],['scoreB',1]])get(id).addEventListener('input',event=>{const raw=event.target.value;const n=Number(raw);scores[hole-1][index]=raw!==''&&Number.isInteger(n)&&n>=1&&n<=15?n:null;refresh();});
 get('lprev').onclick=()=>{hole=Math.max(1,hole-1);refresh()};get('lnext').onclick=()=>{hole=Math.min(18,hole+1);refresh()};
 get('startDemo').onclick=()=>{const name=get('setupYou').value.trim()||'You',buddy=get('setupBuddy').value.trim()||'Buddy';get('setupStatus').textContent=name+' vs '+buddy+' · '+get('setupCourse').value+' · '+get('setupTees').value+' · '+get('setupMatch').value+' · DEMO ONLY';selected('ledger');};
-get('ticketPreview').onclick=()=>{const chosen=get('ticketSide').value==='me'?(get('setupYou').value.trim()||'You'):(get('setupBuddy').value.trim()||'Buddy');get('ticketReceipt').textContent='PRACTICE TICKET · Hole '+hole+' · '+chosen+' closest to pin · No odds offered · No money staked · Not submitted.';};
+const tickets=[];
+function drawTickets(){
+ const box=get('ticketList');box.replaceChildren();
+ tickets.forEach((t,i)=>{
+  const row=document.createElement('div');row.className='tile';row.style.marginTop='8px';
+  const heading=document.createElement('p');heading.textContent='Hole '+t.hole+' · '+t.chosen+' closest to pin · '+t.status;heading.style.margin='0 0 8px';
+  row.append(heading);
+  if(t.status==='OPEN'){
+   for(const outcome of ['WIN','LOSE','VOID']){
+    const btn=document.createElement('button');btn.className='outline';btn.textContent=outcome;btn.style.margin='0 4px 4px 0';
+    btn.onclick=()=>{t.status=outcome;drawTickets();};
+    row.append(btn);
+   }
+  }
+  box.append(row);
+ });
+}
+get('ticketPreview').onclick=()=>{
+ const chosen=get('ticketSide').value==='me'?(get('setupYou').value.trim()||'You'):(get('setupBuddy').value.trim()||'Buddy');
+ tickets.push({hole,chosen,status:'OPEN'});
+ get('ticketReceipt').textContent='Practice challenge written for Hole '+hole+'. Settle it below when you know who was closer.';
+ drawTickets();
+};
 get('tabLedger').onclick=()=>selected('ledger');get('tabGrounds').onclick=()=>selected('grounds');get('goGrounds').onclick=()=>selected('grounds');get('goLedger').onclick=()=>selected('ledger');refresh();
 </script></body></html>
