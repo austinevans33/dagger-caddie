@@ -9,6 +9,10 @@ on:
       - 'playtest/ghost-preview.html'
       - 'playtest/index.html'
       - 'tests/*ghost*.test.mjs'
+      - 'tests/friday-money-room-guard.test.mjs'
+      - 'money-room.js'
+      - 'invitation-qr.js'
+      - 'room-recovery.js'
       - '.github/workflows/friday-ghost-qa.yml'
   workflow_dispatch:
 permissions:
@@ -28,4 +32,4 @@ jobs:
           node --check house-ghost-round.js
           node --check house-ghost-ledger.js
           node --check house-ghost-playback.js
-          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs
+          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs
