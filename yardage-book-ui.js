@@ -88,6 +88,8 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const validSolo=solo&&solo.identity===identity;
   const standing=validSolo?ghostLedgerSnapshot({courseName:active.selection.course.name,holes:env?.holes||[],playerScores:solo.scores}):null;
   const matched=standing?.ledger[hole-1];
+  // The scorecard can be edited while the Yardage Book is open on iPhone.
+  // Keep the view read-only and offer a safe, explicit score refresh.
   const ghostMatchLine=!standing||standing.holesPlayed===0?'MATCH NOT STARTED':standing.matchStatus==='incomplete'?'SCORE GAP · MATCH PENDING':standing.matchStatus==='golfer-wins'?'MATCH WON':standing.matchStatus==='ghost-wins'?'GHOST WINS MATCH':standing.matchStatus==='halved'?'MATCH HALVED':standing.lead===0?'MATCH ALL SQUARE':Math.abs(standing.lead)+(standing.lead>0?' UP':' DOWN')+' · '+standing.holesPlayed+' HOLES PLAYED';
   const ghostResult=matched?.result!=='pending'&&matched?.player!=null
    ?'YOUR '+matched.player+' · GHOST '+matched.ghost+' · '+(matched.result==='golfer'?'YOU WIN HOLE':matched.result==='ghost'?'GHOST WINS HOLE':'HALVED')
@@ -128,6 +130,12 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  reload.style.cssText='display:block;margin:8px 16px;min-height:44px;padding:8px 12px';
  reload.addEventListener('click',()=>void reloadCurrentCourse());
  dlg.querySelector('#dcc-book-content').after(reload);
+ const refreshScores=doc.createElement('button');
+ refreshScores.type='button';refreshScores.id='dcc-book-refresh-match';
+ refreshScores.textContent='Refresh Ghost Match';
+ refreshScores.style.cssText='display:block;min-height:44px;margin:8px 16px;padding:8px 12px';
+ refreshScores.addEventListener('click',()=>draw());
+ dlg.querySelector('#dcc-book-content').after(refreshScores);
  dlg.querySelector('#dcc-book-close').addEventListener('click',()=>dlg.close());
  dlg.addEventListener('close',()=>{token++;});
  dlg.querySelector('#dcc-book-prev').addEventListener('click',()=>{hole=Math.max(1,hole-1);ghostStep=1;draw();});
