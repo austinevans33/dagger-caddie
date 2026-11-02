@@ -102,12 +102,31 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   content.querySelector('#dcc-ghost-prev')?.addEventListener('click',()=>{ghostStep=Math.max(1,ghostStep-1);draw();});
   content.querySelector('#dcc-ghost-next')?.addEventListener('click',()=>{ghostStep=Math.min(ghost.shots.length,ghostStep+1);draw();});
  }
- btn.addEventListener('click',async()=>{
-  const active=readActiveRound(storage);
-  const selectedHole=Number(active?.selection?.holeNumber);hole=Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:1; env=null;ghostStep=1;draw();dlg.showModal();
+ async function reloadCurrentCourse(){
   const thisToken=++token;
-  if(active){try{const loaded=await getRoundEnvironment({storage});if(thisToken===token&&dlg.open){env=loaded;draw();}}catch{/* Keep honest offline fallback. */}}
+  env=null;draw();
+  const active=readActiveRound(storage);
+  if(!active)return;
+  try{
+   const loaded=await getRoundEnvironment({storage});
+   const latest=readActiveRound(storage);
+   if(thisToken!==token||!dlg.open||!latest)return;
+   if(loaded?.selection?.course?.providerCourseId!==latest.selection.course.providerCourseId||
+      loaded?.selection?.tee?.providerTeeId!==latest.selection.tee.providerTeeId)return;
+   env=loaded;draw();
+  }catch{/* Keep schematic and scorecard fallback when provider fails. */}
+ }
+ btn.addEventListener('click',()=>{
+  const active=readActiveRound(storage);
+  const selectedHole=Number(active?.selection?.holeNumber);
+  hole=Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:1;
+  ghostStep=1;env=null;draw();dlg.showModal();
+  void reloadCurrentCourse();
  });
+ const reload=doc.createElement('button');reload.type='button';reload.textContent='Refresh course data';reload.id='dcc-book-refresh';
+ reload.style.cssText='display:block;margin:8px 16px;min-height:44px;padding:8px 12px';
+ reload.addEventListener('click',()=>void reloadCurrentCourse());
+ dlg.querySelector('#dcc-book-content').after(reload);
  dlg.querySelector('#dcc-book-close').addEventListener('click',()=>dlg.close());
  dlg.addEventListener('close',()=>{token++;});
  dlg.querySelector('#dcc-book-prev').addEventListener('click',()=>{hole=Math.max(1,hole-1);ghostStep=1;draw();});
