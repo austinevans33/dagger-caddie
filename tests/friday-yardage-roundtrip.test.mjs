@@ -8,7 +8,7 @@ test('Yardage Book round-trip preserves a valid selected hole',()=>{
  assert.match(book,/sessionStorage\.setItem\('dccFridayYardageHole',String\(number\)\)/);
  assert.match(app,/sessionStorage\.getItem\('dccFridayYardageHole'\)/);
  assert.match(app,/Number\.isInteger\(n\)&&n>=1&&n<=18/);
- assert.match(app,/yardage-preview\.html\?hole='\+savedHole/);
+ assert.match(app,/yardage-preview\.html\?hole='\+picker\.value/);
 });
 test('Back to Play goes to the same local playtest and never triggers a score write',()=>{
  assert.match(book,/id="backToPlay"/);
