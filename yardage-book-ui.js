@@ -73,6 +73,8 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  function draw(){
   selector.value=String(hole);
   const active=readActiveRound(storage);
+  const matchSelection=!!(active&&env?.selection&&env.selection.course?.providerCourseId===active.selection.course?.providerCourseId&&env.selection.tee?.providerTeeId===active.selection.tee?.providerTeeId);
+  if(env&&!matchSelection)env=null;
   const fallback={holeNumber:hole,courseName:active?.selection?.course?.name,teeName:active?.selection?.tee?.name};
   const facts=env?.selection?buildCaddyCourseFacts(env,hole):fallback;
   const coverage=classifyYardageCoverage({course:active?.selection?.course||env?.selection?.course,holes:env?.holes,geometry:env?.geometry||[]});
