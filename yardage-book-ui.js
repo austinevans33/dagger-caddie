@@ -1,3 +1,4 @@
+import {buildGhostRound} from './house-ghost-round.js';
 import {parseGolfDistance} from './golf-distance-range.js';
 import {sketchVerifiedHole} from './yardage-sketch.js';
 import {classifyYardageCoverage} from './yardage-coverage.js';
@@ -59,7 +60,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  compactStyle.textContent='#dcc-yardage-dialog .dcc-book-controls{position:sticky;bottom:0;background:#f3eedf;z-index:2;border-top:1px solid #c5b38b}#dcc-yardage-dialog select{font-size:16px;background:#fff9eb;color:#213b2e;padding:8px;border:1px solid #ad956b;border-radius:7px}#dcc-book-ask:focus-visible,#dcc-yardage-open:focus-visible{outline:3px solid #d9b36a;outline-offset:3px}';
  doc.head.append(compactStyle);
  const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- let hole=1,env=null,token=0;
+ let hole=1,env=null,token=0,ghostStep=1;
  function draw(){
   selector.value=String(hole);
   const active=readActiveRound(storage);
@@ -68,15 +69,22 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const coverage=classifyYardageCoverage({course:active?.selection?.course||env?.selection?.course,holes:env?.holes,geometry:env?.geometry||[]});
   const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
   const sketch=sketchVerifiedHole({geometry:env?.geometry||[],holeNumber:hole,course:active?.selection?.course||env?.selection?.course});
+  const ghost=buildGhostRound({courseName:page.courseName,holes:env?.holes||[]})[hole-1];
+  ghostStep=Math.max(1,Math.min(ghostStep,ghost.shots.length));
+  const selectedGhostShot=ghost.shots[ghostStep-1];
+  const dots=ghost.shots.slice(0,ghostStep).map((p,i)=>'<circle cx="'+(20+p.x*180).toFixed(1)+'" cy="'+(15+p.y*300).toFixed(1)+'" r="5" fill="#624a6b"/><text x="'+(28+p.x*180).toFixed(1)+'" y="'+(10+p.y*300).toFixed(1)+'" font-size="11">'+(i+1)+'</text>').join('');
+  const ghostPanel='<div style="margin:16px 0;padding:12px;border:1px solid #ad956b"><strong>HOUSE GHOST · SHOT '+ghostStep+'/'+ghost.shots.length+'</strong><svg viewBox="0 0 220 330" style="display:block;width:100%;max-height:240px"><path d="M85 315 Q55 240 89 165 Q119 90 115 25 Q170 15 179 56 Q166 130 145 187 Q160 270 145 315Z" fill="#bdd0aa" stroke="#668367"/>'+dots+'</svg><p>'+safe(selectedGhostShot.club)+' · '+safe(selectedGhostShot.distanceLabel)+' · '+safe(selectedGhostShot.lie)+'</p><button type="button" id="dcc-ghost-prev">Previous shot</button> <button type="button" id="dcc-ghost-next">Next shot</button><p style="font-size:11px">SIMULATED SCHEMATIC · not actual course geometry. Ghost score: '+ghost.score+'</p></div>';
   content.innerHTML=`<div class="dcc-book-cover"><div class="dcc-book-overline">THE MEMBER'S FIELD GUIDE</div><div class="dcc-book-hole">HOLE ${String(hole).padStart(2,'0')}</div><div>${safe(page.courseName)} · ${safe(page.teeName)}</div></div>
    <div class="dcc-book-page"><div class="dcc-book-sketch" style="max-width:270px;margin:0 auto 14px">${sketch||'<div style="padding:32px 10px;text-align:center;border:1px dashed #b4a582;font:italic 15px Georgia,serif">Hole drawing unavailable until its layout is verified.</div>'}</div><div class="dcc-book-overline" style="text-align:center;opacity:.75;margin-bottom:8px">${safe(coverage.tier.toUpperCase())} EDITION</div><div class="dcc-book-stat">${page.par?'PAR '+page.par:'PAR UNAVAILABLE'} · ${safe(page.yardageLabel)}</div>
    <div class="dcc-book-notes"><div class="dcc-book-overline">THE CADDY'S NOTES · PLAY SMART</div>${safe(page.strategy)}<div style="font:700 13px/1.5 system-ui;margin-top:10px">COURSE MANAGEMENT: Favor a playable miss. Avoid trouble you cannot confidently carry. Choose the next shot, not the heroic one.</div></div>
    <div class="dcc-book-call"><span class="dcc-book-overline">YOUR CLUB</span><strong>${page.club?safe(page.club):'ASK YOUR CADDY'}</strong></div>
-   <div class="dcc-book-foot">${safe(page.hazards)}<br/>${safe(coverage.notice)}<br/>Scorecard yardage is not live distance to the pin. No hole map without verified geometry.</div></div>`;
+   ${ghostPanel}<div class="dcc-book-foot">${safe(page.hazards)}<br/>${safe(coverage.notice)}<br/>Scorecard yardage is not live distance to the pin. No hole map without verified geometry.</div></div>`;
+  content.querySelector('#dcc-ghost-prev')?.addEventListener('click',()=>{ghostStep=Math.max(1,ghostStep-1);draw();});
+  content.querySelector('#dcc-ghost-next')?.addEventListener('click',()=>{ghostStep=Math.min(ghost.shots.length,ghostStep+1);draw();});
  }
  btn.addEventListener('click',async()=>{
   const active=readActiveRound(storage);
-  const selectedHole=Number(active?.selection?.holeNumber);hole=Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:1; env=null;draw();dlg.showModal();
+  const selectedHole=Number(active?.selection?.holeNumber);hole=Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:1; env=null;ghostStep=1;draw();dlg.showModal();
   const thisToken=++token;
   if(active){try{const loaded=await getRoundEnvironment({storage});if(thisToken===token&&dlg.open){env=loaded;draw();}}catch{/* Keep honest offline fallback. */}}
  });
