@@ -94,8 +94,12 @@ function compute(model){
  return {totals,carry,settled,ledger,matchDiff:cumulativeMatch};
 }
 function roomLabel(){const me=user?.uid||'';return (me===room?.hostUid?'Scorekeeper':'Read-only member');}
+let lastRenderedRoomId=null;
 function render(){
  if(!room)return;
+ const sameRoom=lastRenderedRoomId===roomId;
+ const selectedHole=sameRoom?Number($('roomHole').value):NaN;
+ lastRenderedRoomId=roomId;
  host=!!(user?.uid===room.hostUid);
  invitationSharing.prepare(roomLink());
  if(user?.uid&&roomId&&invite){
@@ -128,7 +132,7 @@ function render(){
  $('roomHostName').value=room.hostName||'Scorekeeper';
  $('roomHole').innerHTML=Array.from({length:18},(_,i)=>`<option value="${i+1}">Hole ${i+1}</option>`).join('');
  const pending=Array.from({length:18},(_,i)=>i+1).find(i=>!room.holes?.[i])||18;
- $('roomHole').value=String(pending);
+ $('roomHole').value=String(Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:pending);
  $('roomScoreHead').innerHTML='<tr><th>Player</th><th>Strokes</th></tr>';
  const h=Number($('roomHole').value);buildInputs(h);
  const x=compute(room);
