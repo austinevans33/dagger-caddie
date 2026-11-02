@@ -18,6 +18,8 @@ on:
       - 'tests/friday-course-switch.test.mjs'
       - 'course-catalog.js'
       - 'course-identity.js'
+      - 'yardage-book.js'
+      - 'tests/friday-yardage-book.test.mjs'
       - 'money-room.js'
       - 'invitation-qr.js'
       - 'room-recovery.js'
@@ -40,4 +42,4 @@ jobs:
           node --check house-ghost-round.js
           node --check house-ghost-ledger.js
           node --check house-ghost-playback.js
-          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs tests/friday-room-recovery.test.mjs tests/friday-ledger-settlement.test.mjs tests/friday-bbb-settlement.test.mjs tests/friday-course-switch.test.mjs
+          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs tests/friday-room-recovery.test.mjs tests/friday-ledger-settlement.test.mjs tests/friday-bbb-settlement.test.mjs tests/friday-course-switch.test.mjs tests/friday-yardage-book.test.mjs
