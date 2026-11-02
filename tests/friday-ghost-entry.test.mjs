@@ -8,7 +8,7 @@ test('Ghost QA is linked once, from playtest, without wiring live wager APIs',()
  assert.match(app,/link\.href='ghost-preview\.html'/);
  assert.match(app,/Isolated simulated preview/);
  assert.match(preview,/ghostShotPlayback/);
- assert.match(preview,/Does not read or change scores, bets, GPS, Firebase/);
+ assert.match(preview,/does not read or change scores, bets, GPS, Firebase/i);
 });
 test('Ghost preview has clear navigation and fully isolated user-facing controls',()=>{
  assert.match(preview,/href="\.\/"/);
