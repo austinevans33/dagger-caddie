@@ -22,3 +22,18 @@ test('Weekend Ledger consumes canonical Ghost snapshot',()=>{
  assert.match(ledger,/import \{ghostLedgerSnapshot\}/);
  assert.match(ledger,/ghostLedgerSnapshot\(/);
 });
+
+test('Money Room retains host-device QR and automatic guest join',()=>{
+ const room=source('money-room.js');
+ const qr=source('invitation-qr.js');
+ assert.match(room,/drawInvitationQr/);
+ assert.match(room,/incomingInvitation&&!roomId/);
+ assert.match(room,/joinOnce\(\)/);
+ assert.match(qr,/drawInvitationQr/);
+ assert.match(qr,/canvas\.getContext\('2d'\)/);
+});
+test('playtest still includes its Money Room and does not substitute trial for it',()=>{
+ const html=source('playtest/index.html');
+ assert.match(html,/money-room\.js/);
+ assert.match(html,/ai-chat\.js/);
+});
