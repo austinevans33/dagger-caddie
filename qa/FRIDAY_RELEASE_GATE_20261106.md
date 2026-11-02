@@ -1,24 +1,32 @@
-# Friday November 6, 2026 — Release Gate (staging only)
+# DAGGER COUNTRY CLUB — FRIDAY RELEASE FREEZE
+November 2, 2026 · Candidate branch: `release/friday-staging-20261106`
 
-## Evidence verified on November 2
-- Friday Ghost QA workflow run 41461771867: successful; 17/17 Node tests passed.
-- Caddy and course safety workflow run 41461772091: successful.
-- House Ghost trail/round/ledger/playback are deterministic simulated schematics, not course GPS, recorded strokes or proof of a live game integration.
-- Isolated preview: `playtest/ghost-preview.html`; optional Caddy entry is collapsed and does not write game data.
-- Money Room QR and recovery are **separate development candidates**, not merged into this branch. See `development/money-room-recovery` QA evidence. Previous hosted real-staging browser checks passed, but do not prove the current Friday app is joined successfully.
+## Owner decision
+Dagger is a private golf app for friends, not a commercial launch. Freeze new features and visual revisions now. Prioritize a genuinely useful and fun full-round experience. No more optional previews, new games, feature brainstorms, or framework work until the candidate is usable.
 
-## Mandatory blockers before calling Friday playable
-1. Verify selected real course, tees, per-hole par and yardage against source; prevent fallback course estimates from appearing verified.
-2. Start room on host phone, expose QR **on host screen** (not only a shared invite). Scan with second physical phone; join with one name/tap and no account setup; reject wrong invite.
-3. Enter, correct and sync scores on two physical phones; confirm guest cannot edit host scores or access someone else's room.
-4. Verify complete 18-hole round, skins carryovers, Nassau, BBB and Ledger calculations including ties and corrections.
-5. Reload each phone; ensure host/guest room roles and data survive. Archive a throwaway room, confirm read-only behavior.
-6. Confirm AI Caddy gives grounded answers and that weather/course fallback is disclosed; do not assert live GPS/map detail without data.
-7. Verify separate Yardage Book opens, goes back to previous screen, changes holes, and safely resets/changes courses without losing a saved game.
-8. Check narrow iPhone layout, approved original R160 branding and circular seal; no redesign.
-9. Re-run GitHub CI against exact candidate commit and hosted release origin. Confirm proper deployment project and source bytes.
-10. Backup and rollback plan; obtain explicit owner approval before any production promotion.
+## Current verified evidence
+- **Friday Ghost QA: 65/65 passing**, workflow run **41512128247**.
+- **Caddy and course safety: passing**, workflow run **41512128271**.
+- The Friday branch includes host-screen QR, auto-join invitation and recovery code; exact Friday candidate **has not completed a physical two-phone test**.
+- The current Yardage Book preview has 18-hole navigation, a Back to Play control, and a selected-hole picker; **verified provider course/tee distances are not integrated into the playable screen**. Never present inferred distances as real.
+- BBB/Nassau settlement and Ghost calculations have automated coverage, but this is **not proof that every game is fully integrated end to end**.
+- The 19th Hole is an optional **manual** chat receipt, not a live Ledger settlement or a reason to delay the release.
+- House Ghost trails remain simulated schematics, not actual shot-by-shot GPS evidence.
+- Public GitHub Pages `/playtest/` serves the deployed production branch, **not necessarily this release branch**. Do not tell the owner to test Friday code until it is hosted at a verified candidate URL.
+
+## Scope lock: no more feature expansion
+The release experience is: select course/tees → open Yardage Book and return to Play → score an 18-hole round → play BBB/Nassau/skins → see accurate Ledger → join Money Room by scanning host's QR → use existing AI Caddy, with honest fallback when course/weather data is unavailable. Optional recap is nonblocking.
+
+## Finish gates, in order
+1. **Integration:** verify the exact deployed candidate lets one player navigate an entire round without disappearing scores, conflicting course/tee selections, or accidentally settled wagers. Fix only genuine blockers.
+2. **Games & Ledger:** verify BBB, Nassau and skins with tie/carry/correction cases across the actual UI, not only pure-unit tests.
+3. **Yardage Book:** verify navigation and Back button in deployed UI; real yardages only where provider source has been verified. If course data isn't ready, keep it clearly unverified rather than inventing coverage.
+4. **Money Room:** host phone shows QR; second phone joins without a signup; both devices score, refresh and recover, and unauthorized access fails. Owner will perform this when available.
+5. **Final acceptance:** verify AI Caddy fallback, narrow iPhone layout, original frozen R160 seal/design, correct hosted origin, backup/rollback. Re-run checks against the *exact* deployment SHA.
+6. **Ship decision:** ask owner to test one stable candidate and approve promotion only after the gates pass. Do not modify production Firebase rules/data or overwrite main before that.
+
+## Stop rule
+If a new idea is fun but does not fix a blocker, **defer it**. Do not increment the feature count. The aim is to finish changing Dagger so people can start using it.
 
 ## Release decision
-**HOLD** until required end-to-end checks pass. Green module tests do not imply production readiness.
-Production, Firebase rules and existing round data must remain unchanged without explicit approval.
+**HOLD** until the integrated candidate and owner two-phone acceptance pass. Passing 65 tests is encouraging but is not the same as a completed live round.
