@@ -137,10 +137,10 @@ function render(){
  const pending=Array.from({length:18},(_,i)=>i+1).find(i=>!room.holes?.[i])||18;
  $('roomHole').value=String(Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:pending);
  $('roomScoreHead').innerHTML='<tr><th>Player</th><th>Strokes</th></tr>';
- const h=Number($('roomHole').value);buildInputs(h);
- if(draftScores&&host&&!room.archived&&h===selectedHole&&draftScores.length===room.players.length){
-  [...$('roomScoreRows').querySelectorAll('input')].forEach((input,i)=>{input.value=draftScores[i]});
- }
+ const h=Number($('roomHole').value);
+ // Leave the currently focused score input mounted. Rebuilding its DOM would
+ // dismiss the phone keyboard and interrupt the scorekeeper mid-entry.
+ if(!(draftScores&&host&&!room.archived&&h===selectedHole&&draftScores.length===room.players.length))buildInputs(h);
  const x=compute(room);
  renderFinishSummary(room,x);
  $('roomStandings').textContent=room.players.map((name,i)=>`${name}: ${money(x.totals[i])}`).join(' · ')+(room.format==='skins'?` · ${x.carry} skin(s) in next pot`:'')+` · ${x.settled} holes scored`;
