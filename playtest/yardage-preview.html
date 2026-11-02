@@ -14,6 +14,7 @@ import {yardageBookPage} from '../yardage-book.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let number=Number(params.get('hole'))||1;if(!Number.isInteger(number)||number<1||number>18)number=1;
 for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
+function rememberHole(){try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
 function draw(){
  const page=yardageBookPage({holeNumber:number});
  $('hole').value=String(number);$('position').textContent='HOLE '+number+' / 18';
@@ -21,9 +22,9 @@ function draw(){
  $('par').textContent='Par: '+page.displayPar;$('yards').textContent='Yards: '+page.displayYards;
  $('coverage').textContent=page.verified?'Verified hole information':'Hole information not verified';
  $('hazards').replaceChildren();const li=document.createElement('li');li.textContent='No verified hazard notes available';$('hazards').append(li);
- $('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
+ rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
 }
 $('prev').onclick=()=>{number=Math.max(1,number-1);draw()};$('next').onclick=()=>{number=Math.min(18,number+1);draw()};
 $('hole').onchange=()=>{number=Number($('hole').value);draw()};
-$('return').onclick=()=>{location.assign('./')};draw();
+$('return').onclick=()=>{rememberHole();location.assign('./')};draw();
 </script></body></html>
