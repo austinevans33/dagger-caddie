@@ -8482,6 +8482,8 @@ $('wExport').onclick=()=>{const csv=['date,format,players,holes,your_net',...wHi
 const freshGame=()=>({players:[],holes:[],started:Date.now()});
 let activeG=read('dagger_bbb_active',null),gHistory=read('dagger_bbb_history',[]);
 const gStore=()=>{store('dagger_bbb_active',activeG);store('dagger_bbb_history',gHistory);};
+// A Yardage Book page transition must never cost a live local money game.
+window.addEventListener('pagehide',()=>{try{wStore();gStore();}catch(e){console.warn('Round backup on navigation failed',e);}});
 function bbbScore(game){const pts=game.players.map(()=>0);game.holes.forEach(h=>h.forEach(i=>{if(i!==null&&i>=0&&i<pts.length)pts[i]++;}));return pts;}
 
 function renderBBB() {
