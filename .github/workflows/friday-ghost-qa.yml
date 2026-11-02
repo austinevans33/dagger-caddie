@@ -60,3 +60,19 @@ jobs:
           node --check house-ghost-ledger.js
           node --check house-ghost-playback.js
           node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs tests/friday-room-recovery.test.mjs tests/friday-ledger-settlement.test.mjs tests/friday-bbb-settlement.test.mjs tests/friday-course-switch.test.mjs tests/friday-yardage-book.test.mjs tests/friday-yardage-entry.test.mjs tests/friday-yardage-selection.test.mjs tests/friday-round-yardage-transition.test.mjs tests/friday-yardage-roundtrip.test.mjs tests/friday-release-entrypoints.test.mjs tests/friday-round-receipt.test.mjs tests/friday-playable-code-parity.test.mjs tests/friday-game-yardage-roundtrip.test.mjs
+
+      - name: Package tested Friday candidate
+        if: success()
+        run: |
+          mkdir -p candidate
+          cp -R playtest candidate/playtest
+          cp yardage-book.js yardage-selection.js course-weather-context.js course-identity.js round-yardage-transition.js candidate/
+          cp house-ghost-trail.js house-ghost-round.js house-ghost-ledger.js house-ghost-playback.js candidate/
+          printf '%s\\n' "$GITHUB_SHA" > candidate/FRIDAY_CANDIDATE_SHA.txt
+      - name: Upload verified candidate artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dagger-friday-candidate
+          path: candidate/
+          retention-days: 14
