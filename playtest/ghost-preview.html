@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>House Ghost · Friday QA | Dagger Country Club</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f5f0e5;color:#143126;font:16px/1.5 Georgia,serif}
+main{max-width:530px;margin:auto;padding:20px 15px 50px}header{border-bottom:3px solid #b79c62;padding-bottom:14px}h1{margin:6px 0;font-size:29px}
+small,.note{color:#5c645e}.notice{padding:12px;border:1px solid #bdad8a;background:#fff9e9;border-radius:12px;margin:17px 0}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}label{display:block;font-size:13px;font-weight:bold}
+select,button{width:100%;min-height:44px;border-radius:9px;padding:9px;border:1px solid #b6a680;background:#fff;color:#143126;font-size:16px}
+button{background:#143126;color:white;font-weight:700}button:disabled{opacity:.4}
+svg{display:block;width:100%;height:auto;background:#d8dfcf;border:1px solid #97a58a;border-radius:14px}
+article{border:1px solid #cfc2a6;border-radius:13px;background:#fffdf7;padding:13px;margin:12px 0}
+ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
+</style></head><body><main><header><small>DAGGER COUNTRY CLUB · ISOLATED FRIDAY QA</small><h1>House Ghost · Shot Trail</h1><a href="./">← Back to Playtest</a></header>
+<p class="notice"><strong>Simulated schematic only.</strong> This preview does not read or change scores, bets, GPS, Firebase, or real pin positions. Default hole details are illustrative, not verified course facts.</p>
+<div class="controls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
+<article><strong id="headline">Loading…</strong><p id="summary"></p>
+<svg id="trail" viewBox="0 0 320 430" role="img" aria-label="Schematic Ghost shot positions"><path d="M120 390 Q55 220 130 38 L190 38 Q265 225 200 390 Z" fill="#a4bf86" stroke="#6b895b" stroke-width="2"/><ellipse cx="160" cy="37" rx="43" ry="25" fill="#7b9c70"/><circle cx="160" cy="32" r="5" fill="#fff"/><text x="10" y="22" fill="#17372b" font-size="13">SCHEMATIC · NOT GPS</text><g id="markers"></g></svg>
+<div class="controls"><button id="back">← Previous shot</button><button id="next">Reveal next shot →</button></div>
+<p id="progress" role="status"></p></article>
+<article><strong>Revealed strokes</strong><ol id="shots"></ol></article>
+</main><script type="module">
+import {ghostShotPlayback} from '../house-ghost-playback.js';
+const $=id=>document.getElementById(id);let revealed=0;
+for(let n=1;n<=18;n++)$('hole').add(new Option('Hole '+n,n));
+function render(){
+ const count=Number($('length').value),holeNumber=Number($('hole').value);
+ const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:'Unverified practice course',seed:'friday-qa'});
+ revealed=state.shotsRevealed;
+ $('headline').textContent='Hole '+holeNumber+' · Par '+state.par+' · Ghost '+state.score;
+ $('summary').textContent='Practice defaults · '+state.coverage+' · '+state.label;
+ $('markers').replaceChildren();
+ const ns='http://www.w3.org/2000/svg';
+ state.visibleShots.forEach((shot,i)=>{
+  const dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',String(shot.x*320));dot.setAttribute('cy',String(shot.y*430));dot.setAttribute('r','10');dot.setAttribute('fill','#143126');dot.setAttribute('stroke','#fff');dot.setAttribute('stroke-width','2');
+  const label=document.createElementNS(ns,'text');label.setAttribute('x',String(shot.x*320));label.setAttribute('y',String(shot.y*430+4));label.setAttribute('text-anchor','middle');label.setAttribute('font-size','12');label.setAttribute('fill','#fff');label.textContent=String(i+1);
+  $('markers').append(dot,label);
+ });
+ $('shots').replaceChildren();state.visibleShots.forEach(s=>{const li=document.createElement('li');li.textContent=s.number+'. '+s.club+' · '+s.distanceLabel+' · '+s.lie;$('shots').append(li)});
+ $('progress').textContent=revealed+' of '+state.totalShots+' simulated strokes shown';
+ $('back').disabled=!state.canRewind;$('next').disabled=!state.canAdvance;
+}
+$('next').addEventListener('click',()=>{revealed++;render()});$('back').addEventListener('click',()=>{revealed=Math.max(0,revealed-1);render()});
+$('hole').addEventListener('change',()=>{revealed=0;render()});$('length').addEventListener('change',()=>{if(Number($('hole').value)>9)$('hole').value='1';for(const o of $('hole').options)o.disabled=Number(o.value)>Number($('length').value);revealed=0;render()});render();
+</script></body></html>
