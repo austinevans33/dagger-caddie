@@ -4,7 +4,7 @@ import {normalizeCourseSelection} from './course-identity.js';
 import {yardageBookPage} from './yardage-book.js';
 
 export function selectedYardagePage({selection,record}={}) {
- const selected=normalizeCourseSelection(selection);
+ const selected=selection && typeof selection==='object' ? normalizeCourseSelection(selection) : null;
  if(!selected) return null;
  const base={courseName:selected.course.name,teeName:selected.tee.name,holeNumber:selected.holeNumber};
  const verified=record && record.verified===true &&
