@@ -43,6 +43,15 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  lieLabel.append(lie);shot.append(distanceLabel,lieLabel);
  dlg.querySelector('#dcc-book-content').after(shot);
  const ask=doc.createElement('button');ask.type='button';ask.id='dcc-book-ask';ask.textContent='Ask Caddy about this hole';ask.style.cssText='display:block;width:calc(100% - 32px);margin:0 16px 12px;background:#204332;color:#f8efd8;padding:13px;border:1px solid #b79a64;border-radius:9px;font-weight:800';dlg.querySelector('#dcc-book-content').after(ask);
+ const yardageFeedback=doc.createElement('small');
+ yardageFeedback.textContent='Rough numbers welcome: about 165 or 235-240.';
+ yardageFeedback.style.cssText='display:block;margin:4px 0 0;color:#536b58;font:italic 13px Georgia,serif';
+ distanceLabel.append(yardageFeedback);
+ distance.addEventListener('input',()=>{
+  const value=distance.value.trim();
+  const parsed=parseGolfDistance(value);
+  yardageFeedback.textContent=!value?'Rough numbers welcome: about 165 or 235-240.':parsed?'Got it: '+parsed.label+'. No fake precision.':'Try about 165 or 235-240.';
+ });
  const content=dlg.querySelector('#dcc-book-content');
  const selector=dlg.querySelector('#dcc-book-hole-select');
  for(let n=1;n<=18;n++){const opt=doc.createElement('option');opt.value=String(n);opt.textContent=String(n);selector.append(opt);}
