@@ -1,3 +1,5 @@
+import {mountYardageBook} from '../yardage-book-ui.js';
+import {mountWeekendMatch} from '../weekend-match-ui.js';
 import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
@@ -685,3 +687,7 @@ mountSoloScorecard();
 // Reopening Dagger must restore the existing check-in without another selection.
 if(readActiveRound(localStorage))refreshCaddyRoundEnvironment();
 
+
+// Protected-branch staging integration; production main remains unchanged.
+mountYardageBook();
+mountWeekendMatch();

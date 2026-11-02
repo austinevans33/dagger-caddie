@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {ghostLedgerSnapshot} from '../house-ghost-ledger.js';
+test('Ghost Ledger shares scores with shot trail across full round',()=>{const x=ghostLedgerSnapshot({courseName:'Bayonet at Puppy Creek',playerScores:Array(18).fill(4)});assert.equal(x.round.length,18);for(let i=0;i<18;i++){assert.equal(x.ledger[i].ghost,x.round[i].score);assert.equal(x.ledger[i].shotCount,x.round[i].shots.length);}});
+test('gaps block settlement and corrections recalculate',()=>{const a=ghostLedgerSnapshot({playerScores:[4,null,5]});assert.equal(a.holesPlayed,1);assert.equal(a.ledger[2].result,'pending');const b=ghostLedgerSnapshot({playerScores:[4,5,5]});assert.equal(b.holesPlayed,3);assert.notEqual(b.ledger[2].result,'pending');});
+test('same seed and score input yield exact same ledger',()=>{const input={count:9,seed:'test',playerScores:[4,5,4]};assert.deepEqual(ghostLedgerSnapshot(input),ghostLedgerSnapshot(input));});
+
+test('ordinary in-progress match stays active and is not falsely incomplete',()=>{const x=ghostLedgerSnapshot({playerScores:[4,5]});assert.equal(x.holesPlayed,2);assert.equal(x.matchStatus,'active');});
+test('out-of-order score is flagged without settling later holes',()=>{const x=ghostLedgerSnapshot({playerScores:[4,null,4]});assert.equal(x.matchStatus,'incomplete');assert.equal(x.holesPlayed,1);assert.equal(x.ledger[2].result,'pending');});
