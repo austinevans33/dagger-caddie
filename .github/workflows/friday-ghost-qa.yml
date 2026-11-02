@@ -1,0 +1,31 @@
+name: Friday Ghost QA
+on:
+  push:
+    branches:
+      - release/friday-staging-20261106
+  pull_request:
+    paths:
+      - 'house-ghost-*.js'
+      - 'playtest/ghost-preview.html'
+      - 'playtest/index.html'
+      - 'tests/*ghost*.test.mjs'
+      - '.github/workflows/friday-ghost-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ghost-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and deterministic House Ghost test suite
+        run: |
+          node --check house-ghost-trail.js
+          node --check house-ghost-round.js
+          node --check house-ghost-ledger.js
+          node --check house-ghost-playback.js
+          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs
