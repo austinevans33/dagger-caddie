@@ -69,7 +69,7 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const coverage=classifyYardageCoverage({course:active?.selection?.course||env?.selection?.course,holes:env?.holes,geometry:env?.geometry||[]});
   const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
   const sketch=sketchVerifiedHole({geometry:env?.geometry||[],holeNumber:hole,course:active?.selection?.course||env?.selection?.course});
-  const ghost=buildGhostRound({courseName:page.courseName,holes:env?.holes||[]})[hole-1];
+  const ghost=buildGhostRound({courseName:active?.selection?.course?.name||'Selected course',holes:env?.holes||[]})[hole-1];
   ghostStep=Math.max(1,Math.min(ghostStep,ghost.shots.length));
   const selectedGhostShot=ghost.shots[ghostStep-1];
   const dots=ghost.shots.slice(0,ghostStep).map((p,i)=>'<circle cx="'+(20+p.x*180).toFixed(1)+'" cy="'+(15+p.y*300).toFixed(1)+'" r="5" fill="#624a6b"/><text x="'+(28+p.x*180).toFixed(1)+'" y="'+(10+p.y*300).toFixed(1)+'" font-size="11">'+(i+1)+'</text>').join('');
@@ -90,9 +90,9 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
  });
  dlg.querySelector('#dcc-book-close').addEventListener('click',()=>dlg.close());
  dlg.addEventListener('close',()=>{token++;});
- dlg.querySelector('#dcc-book-prev').addEventListener('click',()=>{hole=Math.max(1,hole-1);draw();});
- dlg.querySelector('#dcc-book-next').addEventListener('click',()=>{hole=Math.min(18,hole+1);draw();});
- selector.addEventListener('change',()=>{const next=Number(selector.value);if(Number.isInteger(next)&&next>=1&&next<=18){hole=next;draw();}});
+ dlg.querySelector('#dcc-book-prev').addEventListener('click',()=>{hole=Math.max(1,hole-1);ghostStep=1;draw();});
+ dlg.querySelector('#dcc-book-next').addEventListener('click',()=>{hole=Math.min(18,hole+1);ghostStep=1;draw();});
+ selector.addEventListener('change',()=>{const next=Number(selector.value);if(Number.isInteger(next)&&next>=1&&next<=18){hole=next;ghostStep=1;draw();}});
  ask.addEventListener('click',()=>{
   const input=doc.getElementById('aiInput');if(!input)return;
   const active=readActiveRound(storage);
