@@ -338,7 +338,15 @@ $('roomSaveHole').onclick=singleFlight(async()=>{
  await functions.updateDoc(functions.doc(db,'rooms',savingRoomId),{
   ['holes.'+hole]:scores,lastEditor:room.hostName,lastChange:Date.now()
  });
- if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Hole '+hole+' recorded and sent to connected members.');
+ if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid){
+  // Advance only when the scorekeeper still has the saved hole selected.
+  // Never jump away from a correction or a hole the user switched to mid-save.
+  if(hole<18&&Number($('roomHole').value)===hole){
+   $('roomHole').value=String(hole+1);
+   buildInputs(hole+1);
+  }
+  status('Hole '+hole+' recorded and sent to connected members.');
+ }
  }catch(e){if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Save failed: '+e.message);}
 });
 $('roomUndoHole').onclick=singleFlight(async()=>{
