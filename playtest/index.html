@@ -11673,6 +11673,24 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  else setTimeout(install,850);
 })();
 </script>
+
+<!-- Friday QA: isolated schematic Ghost access, no live score/bet integration. -->
+<script id="dcc-friday-ghost-qa-link">
+(function(){'use strict';
+ function add(){
+  if(document.getElementById('dccFridayGhostQa'))return;
+  const panel=document.querySelector('[data-tab="play"].ai-card') || document.querySelector('section[data-tab="play"]');
+  if(!panel)return;
+  const box=document.createElement('details');box.id='dccFridayGhostQa';
+  box.style.cssText='margin:12px 0;padding:10px 13px;border:1px solid #c8ba9d;border-radius:12px;background:#f8f2e6;color:#143126';
+  const summary=document.createElement('summary');summary.textContent='Friday QA · House Ghost practice trail';
+  const note=document.createElement('p');note.textContent='Isolated simulated preview. Does not affect live scores, games, or wagers.';note.style.cssText='margin:9px 0;font:12px/1.5 system-ui,sans-serif';
+  const link=document.createElement('a');link.href='ghost-preview.html';link.textContent='Open shot-by-shot preview →';link.style.cssText='color:#143126;font-weight:700';
+  box.append(summary,note,link);panel.append(box);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add();
+})();
+</script>
 </body>
 </html>
 
