@@ -11,6 +11,8 @@ on:
       - 'tests/*ghost*.test.mjs'
       - 'tests/friday-money-room-guard.test.mjs'
       - 'tests/friday-room-recovery.test.mjs'
+      - 'tests/friday-ledger-settlement.test.mjs'
+      - 'ledger-settlement.js'
       - 'money-room.js'
       - 'invitation-qr.js'
       - 'room-recovery.js'
@@ -33,4 +35,4 @@ jobs:
           node --check house-ghost-round.js
           node --check house-ghost-ledger.js
           node --check house-ghost-playback.js
-          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs tests/friday-room-recovery.test.mjs
+          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs tests/friday-room-recovery.test.mjs tests/friday-ledger-settlement.test.mjs
