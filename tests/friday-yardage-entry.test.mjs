@@ -5,7 +5,7 @@ const app=readFileSync(new URL('../playtest/index.html',import.meta.url),'utf8')
 const preview=readFileSync(new URL('../playtest/yardage-preview.html',import.meta.url),'utf8');
 test('Caddy provides one isolated Yardage Book QA entry',()=>{
  assert.equal((app.match(/id="dccFridayYardageLink"/g)||[]).length,1);
- assert.match(app,/link\.href='yardage-preview\.html'/);
+ assert.match(app,/link\.href='yardage-preview\.html\?hole='\+savedHole/);
  assert.match(preview,/yardageBookPage/);
 });
 test('Yardage Book supports all 18 holes, previous, next, return and missing course data',()=>{
