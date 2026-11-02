@@ -41,3 +41,5 @@ test('playtest still includes its Money Room and does not substitute trial for i
 test('yardage book rejects previous course or tee environment',()=>{const book=source('yardage-book-ui.js');assert.match(book,/const matchSelection=/);assert.match(book,/if\(env&&!matchSelection\)env=null/);});
 
 test('course refresh rejects stale selection and provides a manual retry',()=>{const src=source('yardage-book-ui.js');assert.match(src,/reloadCurrentCourse/);assert.match(src,/dcc-book-refresh/);assert.match(src,/thisToken!==token/);});
+
+test('Ghost matchup can refresh from saved scorecard without writing scores',()=>{const book=source('yardage-book-ui.js');assert.match(book,/dcc-book-refresh-match/);assert.match(book,/refreshScores\.addEventListener\('click',\(\)=>draw\(\)\)/);assert.match(book,/readSoloCard\(storage\)/);});
