@@ -37,3 +37,5 @@ test('playtest still includes its Money Room and does not substitute trial for i
  assert.match(html,/money-room\.js/);
  assert.match(html,/ai-chat\.js/);
 });
+
+test('yardage book rejects previous course or tee environment',()=>{const book=source('yardage-book-ui.js');assert.match(book,/const matchSelection=/);assert.match(book,/if\(env&&!matchSelection\)env=null/);});
