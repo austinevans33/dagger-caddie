@@ -80,14 +80,15 @@ export function mountYardageBook({doc=document,storage=localStorage}={}) {
   const coverage=classifyYardageCoverage({course:active?.selection?.course||env?.selection?.course,holes:env?.holes,geometry:env?.geometry||[]});
   const page=buildYardagePage(facts)||buildYardagePage({holeNumber:hole});
   const sketch=sketchVerifiedHole({geometry:env?.geometry||[],holeNumber:hole,course:active?.selection?.course||env?.selection?.course});
-  const ghost=buildGhostRound({courseName:active?.selection?.course?.name||'Selected course',holes:env?.holes||[]})[hole-1];
-  ghostStep=Math.max(1,Math.min(ghostStep,ghost.shots.length));
-  const selectedGhostShot=ghost.shots[ghostStep-1];
+  // Compute a single canonical Ghost snapshot after reading current scorecard.
   const solo=readSoloCard(storage);
   const identity=active?.selection?.course?.providerCourseId+'|'+active?.selection?.tee?.providerTeeId+'|'+active?.selectedAt;
   const validSolo=solo&&solo.identity===identity;
-  const standing=validSolo?ghostLedgerSnapshot({courseName:active.selection.course.name,holes:env?.holes||[],playerScores:solo.scores}):null;
-  const matched=standing?.ledger[hole-1];
+  const standing=ghostLedgerSnapshot({courseName:active?.selection?.course?.name||'Selected course',holes:env?.holes||[],playerScores:validSolo?solo.scores:[]});
+  const ghost=standing.round[hole-1];
+  ghostStep=Math.max(1,Math.min(ghostStep,ghost.shots.length));
+  const selectedGhostShot=ghost.shots[ghostStep-1];
+  const matched=validSolo?standing.ledger[hole-1]:null;
   // The scorecard can be edited while the Yardage Book is open on iPhone.
   // Keep the view read-only and offer a safe, explicit score refresh.
   const ghostMatchLine=!standing||standing.holesPlayed===0?'MATCH NOT STARTED':standing.matchStatus==='incomplete'?'SCORE GAP · MATCH PENDING':standing.matchStatus==='golfer-wins'?'MATCH WON':standing.matchStatus==='ghost-wins'?'GHOST WINS MATCH':standing.matchStatus==='halved'?'MATCH HALVED':standing.lead===0?'MATCH ALL SQUARE':Math.abs(standing.lead)+(standing.lead>0?' UP':' DOWN')+' · '+standing.holesPlayed+' HOLES PLAYED';
