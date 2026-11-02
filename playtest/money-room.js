@@ -99,6 +99,9 @@ function render(){
  if(!room)return;
  const sameRoom=lastRenderedRoomId===roomId;
  const selectedHole=sameRoom?Number($('roomHole').value):NaN;
+ // Keep a scorekeeper's unsaved draft intact if a background snapshot arrives.
+ const editingScore=sameRoom&&$('roomScoreRows')?.contains(document.activeElement);
+ const draftScores=editingScore?[...$('roomScoreRows').querySelectorAll('input')].map(input=>input.value):null;
  lastRenderedRoomId=roomId;
  host=!!(user?.uid===room.hostUid);
  invitationSharing.prepare(roomLink());
@@ -135,6 +138,9 @@ function render(){
  $('roomHole').value=String(Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:pending);
  $('roomScoreHead').innerHTML='<tr><th>Player</th><th>Strokes</th></tr>';
  const h=Number($('roomHole').value);buildInputs(h);
+ if(draftScores&&host&&!room.archived&&h===selectedHole&&draftScores.length===room.players.length){
+  [...$('roomScoreRows').querySelectorAll('input')].forEach((input,i)=>{input.value=draftScores[i]});
+ }
  const x=compute(room);
  renderFinishSummary(room,x);
  $('roomStandings').textContent=room.players.map((name,i)=>`${name}: ${money(x.totals[i])}`).join(' · ')+(room.format==='skins'?` · ${x.carry} skin(s) in next pot`:'')+` · ${x.settled} holes scored`;
