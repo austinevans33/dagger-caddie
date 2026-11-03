@@ -31,3 +31,21 @@ test('Caddy roster and AI interface remain in playable app',async({page})=>{
  expect(aiResponse.ok()).toBeTruthy();
  expect(await aiResponse.text()).toContain('createCaddyCourseBriefing');
 });
+
+test('Capture Friday iPhone-sized Play, Games and Ledger views for release review',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#useAustin').click({timeout:5000});
+ await page.locator('#tab-play').click();
+ await expect(page.locator('[data-tab="play"]').first()).toBeVisible();
+ await page.screenshot({path:'candidate-screenshots/01-play-iphone.png',animations:'disabled'});
+ await page.locator('#tab-games').click();
+ await expect(page.locator('#dccGamesYardageAccessLink a')).toBeVisible();
+ await page.screenshot({path:'candidate-screenshots/02-games-iphone.png',animations:'disabled'});
+ await page.locator('#tab-bets').click();
+ await expect(page.locator('[data-tab="bets"]').first()).toBeVisible();
+ await page.screenshot({path:'candidate-screenshots/03-ledger-iphone.png',animations:'disabled'});
+});
