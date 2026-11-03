@@ -76,3 +76,20 @@ jobs:
           name: dagger-friday-candidate
           path: candidate/
           retention-days: 14
+
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium test runner
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Serve Friday candidate locally
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/dagger-http.log 2>&1 &
+      - name: Run real-browser Games and Yardage Book acceptance
+        run: npx playwright test tests/friday-browser.spec.mjs --project=chromium
