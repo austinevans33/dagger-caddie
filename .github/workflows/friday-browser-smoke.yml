@@ -1,0 +1,27 @@
+name: Friday real browser round trip
+on:
+  push:
+    branches:
+      - release/friday-staging-20261106
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test browser
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Serve exact candidate locally
+        run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/dagger-preview-http.log 2>&1 &
+      - name: Verify Games to Yardage Book browser round trip
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+        run: npx playwright test tests/friday-browser.spec.mjs --project=chromium
