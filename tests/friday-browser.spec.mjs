@@ -4,7 +4,7 @@ test('Games bet survives opening the Yardage Book and returning',async({page})=>
  await page.evaluate(()=>{localStorage.setItem('dagger_foursome_active',JSON.stringify({players:['A','B'],format:'skins',stake:5,holes:[[4,5]],started:123}));localStorage.setItem('dagger_bbb_active',JSON.stringify({players:['A','B'],holes:[[0,1,null]],started:123}));});
  await page.reload();
  const before=await page.evaluate(()=>({w:localStorage.getItem('dagger_foursome_active'),b:localStorage.getItem('dagger_bbb_active')}));
- await test.step('complete starter setup',async()=>{await page.locator('#useAustin').click({timeout:5000})});
+ await test.step('dismiss opening Starter Desk and complete starter setup',async()=>{const desk=page.locator('#dcc-starter-dialog');if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}await page.locator('#useAustin').click({timeout:5000})});
  await test.step('open Games',async()=>{await page.locator('#tab-games').click({timeout:5000})});
  await test.step('show Yardage Book link',async()=>{await expect(page.locator('#dccGamesYardageAccessLink a')).toBeVisible({timeout:5000})});
  await test.step('open Yardage Book',async()=>{await page.locator('#dccGamesYardageAccessLink a').click({timeout:5000})});
