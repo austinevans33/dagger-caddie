@@ -36,3 +36,10 @@ If a new idea is fun but does not fix a blocker, **defer it**. Do not increment 
 - The browser test entered via starter setup and Games, opened Yardage Book using the actual link, advanced a hole, returned to Play, and confirmed seeded local wager and BBB storage stayed identical.
 - Caddy and course safety workflow `41552689483` also passed.
 - This **does not** verify a complete 18-hole live Money Room, the two-phone join, real course yardages, or a hosted production-origin session. Those are still release gates.
+
+## Staging Hosting handoff — November 2
+- Exact Friday candidate is available as the `dagger-friday-candidate` GitHub Actions artifact after the full CI gate. Hosting has **not** been deployed.
+- `qa/deploy-friday-preview.sh /absolute/path/to/unzipped/candidate` validates the artifact, verifies SHA files, requires a typed confirmation, then deploys **Hosting only** to expiring preview channel `friday-friends-20261106` in explicit Firebase project `dagger-country-club-staging`. It never deploys functions, rules, Firestore data, or production site files.
+- Script requires an authenticated Firebase CLI session with permission to deploy Hosting to **the staging project**; these credentials are not available through connected GitHub file tools. Do not report hosted preview completion until the command prints a real URL and the page works.
+- Firebase Authentication authorized domains must be checked for the preview channel hostname before two-phone join can be treated as functional. Confirm staging auth and permissions, and test host and guest with two separate devices.
+- Production GitHub Pages URL and existing main branch remain untouched during preview work.
