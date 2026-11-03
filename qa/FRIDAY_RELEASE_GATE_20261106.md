@@ -30,3 +30,9 @@ If a new idea is fun but does not fix a blocker, **defer it**. Do not increment 
 
 ## Release decision
 **HOLD** until the integrated candidate and owner two-phone acceptance pass. Passing 65 tests is encouraging but is not the same as a completed live round.
+
+## Latest automated acceptance — November 2
+- Candidate commit `b0d25d30d9e9125841a17e1d699328301a51e7f0` passed Friday Ghost QA workflow `41552689475` including **2/2 Chromium browser checks**.
+- The browser test entered via starter setup and Games, opened Yardage Book using the actual link, advanced a hole, returned to Play, and confirmed seeded local wager and BBB storage stayed identical.
+- Caddy and course safety workflow `41552689483` also passed.
+- This **does not** verify a complete 18-hole live Money Room, the two-phone join, real course yardages, or a hosted production-origin session. Those are still release gates.
