@@ -73,6 +73,8 @@ jobs:
           printf '%s\n' "${{ github.event.pull_request.head.sha || github.sha }}" > candidate/FRIDAY_BRANCH_SHA.txt
           printf '%s\n' "${{ github.event_name }}" > candidate/FRIDAY_BUILD_EVENT.txt
           printf '%s\n' 'PR builds use a GitHub merge commit; BRANCH_SHA identifies the proposed branch, CHECKED_OUT_SHA identifies exact tested bytes.' > candidate/README_SHA.txt
+      - name: Validate candidate local assets and module imports
+        run: python3 tests/friday-bundle-integrity.py
       - name: Upload verified candidate artifact
         if: success()
         uses: actions/upload-artifact@v4
