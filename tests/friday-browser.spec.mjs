@@ -22,3 +22,12 @@ test('Games has direct Yardage Book entry and stable Ghost and 19th Hole links',
  await expect(page.locator('a[href="ghost-preview.html"]').first()).toHaveCount(1);
  await expect(page.locator('a[href="19th-hole.html"]').first()).toHaveCount(1);
 });
+
+test('Caddy roster and AI interface remain in playable app',async({page})=>{
+ await page.goto('/playtest/');
+ await expect(page.locator('.caddie-roster').first()).toHaveCount(1);
+ await expect(page.locator('script[src*="ai-chat.js"]')).toHaveCount(1);
+ const aiResponse=await page.request.get('/playtest/ai-chat.js');
+ expect(aiResponse.ok()).toBeTruthy();
+ expect(await aiResponse.text()).toContain('createCaddyCourseBriefing');
+});
