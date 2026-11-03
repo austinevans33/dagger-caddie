@@ -68,6 +68,7 @@ jobs:
           cp -R playtest candidate/playtest
           cp yardage-book.js yardage-selection.js course-weather-context.js course-identity.js round-yardage-transition.js candidate/
           cp house-ghost-trail.js house-ghost-round.js house-ghost-ledger.js house-ghost-playback.js candidate/
+          cp round-receipt.js candidate/
           git rev-parse HEAD > candidate/FRIDAY_CHECKED_OUT_SHA.txt
           printf '%s\n' "${{ github.event.pull_request.head.sha || github.sha }}" > candidate/FRIDAY_BRANCH_SHA.txt
           printf '%s\n' "${{ github.event_name }}" > candidate/FRIDAY_BUILD_EVENT.txt
