@@ -20,7 +20,7 @@ for source in root.rglob("*"):
         refs += module_pattern.findall(text)
     for ref in refs:
         path = ref.split("?", 1)[0].split("#", 1)[0]
-        if not path or path.startswith(("http:", "https:", "//", "#", "data:", "blob:", "mailto:", "tel:", "javascript:", "/")):
+        if path in ('.', '..', './', '../') or not path or path.startswith(("http:", "https:", "//", "#", "data:", "blob:", "mailto:", "tel:", "javascript:", "/")):
             continue
         checked += 1
         if not (source.parent / path).resolve().is_file():
