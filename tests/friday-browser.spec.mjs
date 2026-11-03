@@ -4,6 +4,7 @@ test('Games bet survives opening the Yardage Book and returning',async({page})=>
  await page.evaluate(()=>{localStorage.setItem('dagger_foursome_active',JSON.stringify({players:['A','B'],format:'skins',stake:5,holes:[[4,5]],started:123}));localStorage.setItem('dagger_bbb_active',JSON.stringify({players:['A','B'],holes:[[0,1,null]],started:123}));});
  await page.reload();
  const before=await page.evaluate(()=>({w:localStorage.getItem('dagger_foursome_active'),b:localStorage.getItem('dagger_bbb_active')}));
+ await page.locator('#useAustin').click();
  await page.locator('#tab-games').click();
  await expect(page.locator('#dccGamesYardageAccessLink a')).toBeVisible();
  await page.locator('#dccGamesYardageAccessLink a').click();
