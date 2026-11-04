@@ -25,6 +25,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .nav{margin-top:12px}
 .warning{background:#ebe1c9;border-style:dashed}
 @media(prefers-reduced-motion:reduce){.paper .card,.pencil-note,.field-sketch{transform:none}}
+.field-sketch svg{width:100%;height:auto;max-height:280px;display:block}.field-sketch.has-features{display:block;padding:8px;background:#eee7d5}.field-sketch .geometry-label{font:italic 13px Georgia,serif;color:#51604f;margin:5px 0 1px}.field-sketch .geometry-foot{font:11px/1.4 system-ui,sans-serif;color:#687369;margin:5px 0}
 </style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1>Yardage Book</h1><a href="./" id="backToPlay">← Back to The Caddy</a></header>
 <div class="paper"><p class="warning" id="status" role="status">Loading selected course and tee scorecard… No GPS or live pin distances are claimed.</p>
 <div class="bar"><label>Hole<br><select id="hole" style="width:100%"></select></label><label>Tees<br><select id="tees" style="width:100%"><option>Checking selection…</option></select></label></div>
@@ -37,11 +38,12 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 </div></main><script type="module">
 import {loadYardageState,resolveYardageState} from './yardage-live.js';
 import {readYardageCaddy,yardageCaddyNote} from './yardage-caddy-notes.js';
+import {loadCourseFeatures,pencilGeometry} from './course-pencil-geometry.js';
 import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 const requested=params.has('hole')?Number(params.get('hole')):null;
 let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
-let latest=resolveYardageState({holeNumber:number});
+let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();
 for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
 function draw(){
@@ -63,9 +65,30 @@ function draw(){
  else for(const hazard of notes){const li=document.createElement('li');li.textContent=hazard.type+': '+hazard.note;$('hazards').append(li);}
  rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
  $('tees').replaceChildren(new Option(selection?.tee?.name||'No tees selected'));
+ void updateSketch(selection,number);
  $('status').textContent=!hasCourse?'Select a course and tees at the Starter’s Desk first. No distances are invented.':
   coverage.complete?'Complete selected-tee scorecard · '+coverage.verifiedHoles+'/18 holes.':
   coverage.verifiedHoles?coverage.detail:'No provider-verified tee-specific hole data available for this selection. '+(state==='unavailable'?'Check connection or select another course.':'');
+}
+function updateSketch(selection,hole){
+ const gen=++spatialGeneration,box=document.querySelector('.field-sketch');
+ const key=selection?.course?.provider+'|'+selection?.course?.providerCourseId+'|'+hole;
+ function unavailable(){if(gen!==spatialGeneration)return;box.classList.remove('has-features');box.replaceChildren();const p=document.createElement('p');p.textContent='Verified hole geometry not available. No invented fairways, greens or hazards.';box.append(p)}
+ if(!selection?.course||selection.course.provider!=='opengolfapi'){unavailable();return}
+ const load=spatialCache.has(key)?Promise.resolve(spatialCache.get(key)):loadCourseFeatures(selection,hole).then(features=>{spatialCache.set(key,features);return features});
+ load.then(features=>{
+  if(gen!==spatialGeneration)return;
+  const shapes=pencilGeometry(features);
+  if(!shapes.length){unavailable();return}
+  box.classList.add('has-features');box.replaceChildren();
+  const title=document.createElement('p');title.className='geometry-label';title.textContent='Pencil study · available mapped features';box.append(title);
+  const ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 300 220');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schematic arrangement of coarse provider-mapped green, fairway and hazard polygons');
+  const style={green:['#d9e0c1','#455c47'],fairway:['#e2e5cc','#596955'],bunker:['#eee4c5','#8d8265'],water:['#d1dce0','#516d78'],rough:['#e3e1d3','#85816e'],tee:['#e1dec3','#6d725d']};
+  for(const shape of shapes){const p=document.createElementNS(ns,'polygon');p.setAttribute('points',shape.points.map(pt=>pt.join(',')).join(' '));p.setAttribute('fill',style[shape.type]?.[0]||'none');p.setAttribute('stroke',style[shape.type]?.[1]||'#555');p.setAttribute('stroke-width','1.8');p.setAttribute('stroke-dasharray','5 3');p.setAttribute('stroke-linejoin','round');svg.append(p)}
+  box.append(svg);
+  const foot=document.createElement('p');foot.className='geometry-foot';foot.textContent='Coarse OpenStreetMap features via OpenGolfAPI · not surveyed, not a rangefinder, no live pin';box.append(foot);
+ }).catch(unavailable);
 }
 $('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
 $('next').onclick=()=>{number=Math.min(18,number+1);draw()};
