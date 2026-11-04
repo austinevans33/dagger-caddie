@@ -33,6 +33,7 @@ function mount(){
  </div>
  <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
  <button class="dcc-home-caddy" type="button" data-dcc-go="caddy"><span><span aria-hidden="true">◉</span> Ask Your Caddy</span><span aria-hidden="true">›</span></button>
+ <details class="dcc-home-services"><summary>Club Services <span aria-hidden="true">⌄</span></summary><div class="dcc-home-service-links"><button type="button" data-dcc-go="bag">The Equipment Room</button><button type="button" data-dcc-go="settings">The Clubhouse</button></div></details>
  <div class="dcc-home-foot">THE CLUBHOUSE · YOUR ROUND, YOUR GAMES, YOUR ACTION</div>`;
  caddy.parentNode.insertBefore(section,caddy);
  function syncHole(){const hole=selectedHole();const label=document.getElementById('dccHomeHole');const link=document.getElementById('dccHomeYardage');if(label)label.textContent='HOLE '+hole;if(link)link.href='yardage-preview.html?hole='+hole}
@@ -46,7 +47,19 @@ function mount(){
   else if(target==='ticket'){openTab('bets');document.getElementById('dccPropNew')?.click()}
   else if(target==='money'){openTab('bets');document.querySelector('#moneyRoomSection [data-r62-open="roomSetup"]')?.click();document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'})}
   else if(target==='caddy'){caddy.scrollIntoView({block:'start',behavior:'instant'})}
+  else if(target==='bag'||target==='settings'){openTab(target)}
  });
+ // Existing navigation handlers remain intact; these two doors are simply off the bottom bar.
+ for(const tabName of ['bag','settings']){
+  const sections=Array.from(document.querySelectorAll('[data-tab="'+tabName+'"]')).filter(el=>el.tagName==='SECTION');
+  const first=sections[0];
+  if(!first||document.getElementById('dccReturnFrom'+tabName))continue;
+  const button=document.createElement('button');button.type='button';
+  button.id='dccReturnFrom'+tabName;button.className='dcc-home-return';
+  button.textContent='← Back to The Caddy';
+  button.addEventListener('click',()=>openTab('play'));
+  first.insertBefore(button,first.firstChild);
+ }
  section.querySelector('#dccHomeYardage').addEventListener('click',syncHole);
  window.addEventListener('pageshow',syncHole);
 
