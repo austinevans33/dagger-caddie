@@ -1,0 +1,25 @@
+/* Dagger Clubhouse: prominent entry points without replacing game/caddy state. */
+.dcc-home{max-width:860px;margin:10px auto 16px;padding:16px;background:#12382b;border:1px solid #9f8655;border-radius:22px;color:#f6efdf;box-shadow:0 12px 26px rgba(17,39,29,.12);font-family:system-ui,-apple-system,sans-serif}
+.dcc-home *{box-sizing:border-box}
+.dcc-home-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}
+.dcc-home-kicker{font-size:11px;letter-spacing:.14em;font-weight:800;color:#cbb083}
+.dcc-home h2{margin:4px 0 0;font:700 clamp(26px,7vw,34px)/1.12 Georgia,serif;color:#f9f0df}
+.dcc-home-seal{width:72px;height:72px;object-fit:contain;border-radius:50%;flex-shrink:0}
+.dcc-home button,.dcc-home a{font:inherit;cursor:pointer}
+.dcc-home-feature{display:block;width:100%;padding:19px 18px;border-radius:18px;background:#f1e7d2;border:1px solid #b6a075;color:#173a2c;text-align:left;text-decoration:none;box-shadow:none}
+.dcc-home-feature:focus-visible,.dcc-home-tile:focus-visible,.dcc-home-caddy:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
+.dcc-home-line{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12px;font-weight:800;letter-spacing:.075em}
+.dcc-home-hole{padding:5px 10px;border-radius:30px;background:#e5dac5;font-size:12px;letter-spacing:0}
+.dcc-home-feature-title{display:block;margin:15px 0 10px;font:700 clamp(26px,7vw,36px)/1 Georgia,serif}
+.dcc-home-feature-description{display:block;max-width:36em;color:#625f54;font-size:14px;line-height:1.5}
+.dcc-home-view{display:flex;align-items:center;justify-content:space-between;margin-top:20px;font-size:17px;font-weight:800}
+.dcc-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:12px}
+.dcc-home-tile{min-width:0;min-height:127px;padding:16px 13px;text-align:left;background:#214b38;color:#f5eddd;border:1px solid #42664e;border-radius:16px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.dcc-home-tile-icon{color:#d5ba82;font-size:25px;line-height:1}
+.dcc-home-tile-name{margin-top:7px;font:700 18px/1.17 Georgia,serif}
+.dcc-home-tile-caption{font-size:12px;color:#c6d1c8}
+.dcc-home-caddy{margin-top:11px;width:100%;padding:13px 3px;background:transparent;border:0;color:#f5eddd;display:flex;align-items:center;justify-content:space-between;font-size:17px;font-weight:750;text-align:left}
+.dcc-home-caddy span:first-child{color:#e1c589;margin-right:9px}
+.dcc-home-foot{border-top:1px solid rgba(205,182,132,.3);padding-top:11px;color:#b5c7b8;font-size:10px;letter-spacing:.08em;text-align:center}
+@media(min-width:650px){.dcc-home{padding:22px}.dcc-home-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(prefers-reduced-motion:no-preference){.dcc-home button,.dcc-home a{transition:background-color .17s,transform .17s}.dcc-home button:active,.dcc-home a:active{transform:scale(.99)}}
