@@ -49,3 +49,36 @@ test('Capture Friday iPhone-sized Play, Games and Ledger views for release revie
  await expect(page.locator('[data-tab="bets"]').first()).toBeVisible();
  await page.screenshot({path:'candidate-screenshots/03-ledger-iphone.png',animations:'disabled'});
 });
+
+test('Clubhouse is the first Play destination with genuine app navigation',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#useAustin').click({timeout:5000});
+ const home=page.locator('#dccClubhouseHome');
+ await expect(home).toBeVisible();
+ await expect(home.locator('img.dcc-home-seal')).toHaveAttribute('src','dcc-approved-seal.png');
+ await expect(home.locator('#dccHomeYardage')).toHaveAttribute('href',/yardage-preview\.html/);
+ await expect(home.locator('a[href="ghost-preview.html"]')).toHaveCount(1);
+ await home.locator('[data-dcc-go="games"]').click();
+ await expect(page.locator('#gamesMenu')).toBeVisible();
+ await page.locator('#tab-play').click();
+ await home.locator('[data-dcc-go="ledger"]').click();
+ await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ await page.locator('#tab-play').click();
+ await expect(home).toBeVisible();
+ await page.screenshot({path:'candidate-screenshots/04-clubhouse-new-iphone.png',animations:'disabled'});
+});
+test('House Ghost tracer draws animated schematic and watch mode',async({page})=>{
+ await page.goto('/playtest/ghost-preview.html');
+ await expect(page.locator('#traces path')).toHaveCount(0);
+ await page.locator('#next').click();
+ await expect(page.locator('#traces path')).toHaveCount(2);
+ await expect(page.locator('#shots li')).toHaveCount(1);
+ await page.locator('#watch').click();
+ await expect(page.locator('#traces path')).toHaveCount(4);
+ await page.locator('#watch').click();
+ await expect(page.locator('#watch')).toContainText('Watch Ghost');
+});
