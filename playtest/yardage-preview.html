@@ -46,6 +46,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .field-sketch{margin:7px 0 12px}
 .paper .card{margin:11px 0;padding:14px}
 @media(max-width:365px){.hole-glance{gap:5px;padding:10px 8px;font-size:11px}.hole-glance strong{font-size:11px}}
+.yardage-ask{display:block;width:100%;min-height:50px;margin:12px 0;padding:12px 13px;border:1px solid #b79c62;border-radius:12px;background:#183d2f;color:#f8f0da;font:700 16px/1.25 Georgia,serif;text-align:left}.yardage-ask:focus-visible{outline:3px solid #b79c62;outline-offset:2px}
 </style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1>Yardage Book</h1><a href="./" id="backToPlay">← Back to The Caddy</a></header>
 <div class="paper"><p class="warning" id="status" role="status">Loading selected course and tee scorecard… No GPS or live pin distances are claimed.</p>
 <div class="bar"><label>Hole<br><select id="hole" style="width:100%"></select></label><label>Tees<br><select id="tees" style="width:100%"><option>Checking selection…</option></select></label></div>
@@ -53,6 +54,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 <div class="field-sketch" aria-label="Hole map unavailable until verified geometry is sourced"><p>Hole sketch reserved for verified fairway, green and hazard geometry.<br>No invented course layout.</p></div>
 <section class="card"><span id="position" class="hole-pill"></span><p id="name" class="muted"></p><div id="par" class="big"></div><div id="yards" class="big"></div><p id="coverage" class="muted"></p><h3 class="pencil-title">Field notes</h3><ul id="hazards"></ul></section>
 
+<button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask your caddy about this hole →</button>
 <aside class="pencil-note" aria-label="Your selected caddy’s notebook"><span id="caddySignature" class="signature">Keith’s pencil</span><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></aside>
 <div class="nav"><button id="prev">← Previous</button><button id="return" class="primary">Back to Play</button><button id="next">Next →</button></div>
 <p class="muted" id="source">Course par and yards are from a tee-specific scorecard, not the live pin. Missing data stays unverified. This screen does not change your scores or wagers.</p>
@@ -62,6 +64,7 @@ import {loadYardageState,resolveYardageState} from './yardage-live.js';
 import {readYardageCaddy,yardageCaddyNote} from './yardage-caddy-notes.js';
 import {loadCourseFeatures,pencilGeometry} from './course-pencil-geometry.js';
 import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
+import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 const requested=params.has('hole')?Number(params.get('hole')):null;
 let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
@@ -161,6 +164,13 @@ function updateSketch(selection,hole){
 $('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
 $('next').onclick=()=>{number=Math.min(18,number+1);draw()};
 $('hole').onchange=()=>{number=Number($('hole').value);draw()};
+$('askHoleCaddy').onclick=()=>{
+ const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
+ const question=composeHoleQuestion({courseName:latest.selection?.course?.name||'Selected course',teeName:latest.selection?.tee?.name||'Selected tee',holeNumber:number,par:page.hole?.par,yards:page.hole?.yards});
+ if(!question||!saveHoleQuestion(sessionStorage,question)){document.querySelector('#status').textContent='Unable to prepare the caddy question. Your current round is unchanged.';return}
+ rememberHole();
+ location.assign('./');
+};
 $('return').onclick=()=>{rememberHole();location.assign('./')};
 async function load(){
  // Reuse active course provider/cache exactly as AI Caddy does.
