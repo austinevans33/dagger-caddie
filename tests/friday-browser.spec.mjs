@@ -82,3 +82,26 @@ test('House Ghost tracer draws animated schematic and watch mode',async({page})=
  await page.locator('#watch').click();
  await expect(page.locator('#watch')).toContainText('Watch Ghost');
 });
+
+test('Clubhouse preserves original tab names and opens the existing Money Room setup',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#useAustin').click({timeout:5000});
+ await expect(page.locator('#tab-play .dcc-tab-title')).toHaveText('The Caddy');
+ await expect(page.locator('#tab-games .dcc-tab-title')).toHaveText('The Grounds');
+ await expect(page.locator('#tab-bets .dcc-tab-title')).toHaveText('The Ledger');
+ await expect(page.locator('#tab-settings .dcc-tab-title')).toHaveText('The Clubhouse');
+ const home=page.locator('#dccClubhouseHome');
+ await expect(home.locator('[data-dcc-go="money"]')).toBeVisible();
+ await home.locator('[data-dcc-go="money"]').click();
+ await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ await expect(page.locator('#roomSetup')).toHaveAttribute('open','');
+ await page.locator('#tab-play').click();
+ await home.locator('[data-dcc-go="ledger"]').click();
+ await expect(page.locator('#tab-bets')).toHaveAttribute('aria-current','page');
+ await page.locator('#tab-play').click();
+ await expect(home.locator('img.dcc-home-seal')).toHaveAttribute('src','dcc-approved-seal.png');
+});
