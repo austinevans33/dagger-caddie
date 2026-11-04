@@ -13,6 +13,7 @@ test('Games bet survives opening the Yardage Book and returning',async({page})=>
  await expect(page.locator('#position')).toContainText('HOLE 2 / 18');
  await page.locator('#return').click();
  await expect(page).toHaveURL(/\/playtest\/?$/);
+ await expect(page.locator('#tab-games')).toHaveClass(/active/);
  const after=await page.evaluate(()=>({w:localStorage.getItem('dagger_foursome_active'),b:localStorage.getItem('dagger_bbb_active')}));
  expect(after).toEqual(before);
 });
