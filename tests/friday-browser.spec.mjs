@@ -195,6 +195,9 @@ test('Pencil map is readable and tappable with one hand using Green / Trouble fi
  ]})}));
  await page.goto('/playtest/yardage-preview.html?hole=1');
  const map=page.locator('.field-sketch');
+ await expect(page.locator('#mapHole')).toHaveText('HOLE 1');
+ await expect(page.locator('#mapPar')).toContainText('Par');
+ expect(await page.evaluate(()=>{const map=document.querySelector('.field-sketch'),notes=document.querySelector('.paper .card');return !!(map.compareDocumentPosition(notes)&Node.DOCUMENT_POSITION_FOLLOWING)})).toBe(true);
  await expect(map.locator('svg polygon')).toHaveCount(2);
  await expect(map.locator('.map-feature')).toHaveCount(2);
  const trouble=map.getByRole('button',{name:'Trouble'});
@@ -211,6 +214,7 @@ test('Pencil map is readable and tappable with one hand using Green / Trouble fi
  await map.getByRole('button',{name:'All',exact:true}).click();
  await expect(map.locator('.map-feature')).toHaveCount(2);
  await page.locator('#next').click();
+ await expect(page.locator('#mapHole')).toHaveText('HOLE 2');
  await expect(map.locator('svg polygon')).toHaveCount(0);
  await expect(map).toContainText('No invented fairways');
 });
