@@ -132,13 +132,16 @@ test('Three on-course tabs retain both Club Services with a safe return',async({
 });
 
 test('Yardage Book uses actual selected tee/provider scorecard and preserves bets',async({page})=>{
- await page.goto('/playtest/');
- await page.evaluate(()=>{
+ await page.addInitScript(()=>{
+  if(sessionStorage.getItem('dccCourseFixtureSeeded'))return;
+  sessionStorage.setItem('dccCourseFixtureSeeded','1');
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'fixture-yardage',name:'Verified Test Course',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6300},holeNumber:1}}));
   localStorage.setItem('dagger_foursome_active',JSON.stringify({players:['A','B'],format:'skins',stake:5,holes:[[4,5]],started:123}));
  });
- await page.reload(); // Rehydrate the active wager into Dagger's own in-memory game state before navigation.
  await page.route('https://api.opengolfapi.org/v1/courses/fixture-yardage/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[{number:1,par:4,yardages:{white:412,blue:443}},{number:2,par:3,yardages:{white:165,blue:184}}]})}));
+ await page.goto('/playtest/');
+ const initial=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
+ expect(JSON.parse(initial).players).toEqual(['A','B']);
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('#name')).toContainText('Verified Test Course · White');
  await expect(page.locator('#yards')).toContainText('412');
@@ -149,8 +152,7 @@ test('Yardage Book uses actual selected tee/provider scorecard and preserves bet
  await page.locator('#next').click();
  await expect(page.locator('#yards')).toContainText('Not verified');
  await page.locator('#return').click();
- await expect(page).toHaveURL(/\/playtest\/?$/);
- const wager=await page.evaluate(()=>JSON.parse(localStorage.getItem('dagger_foursome_active')));
- expect(wager).toBeTruthy();
- expect(wager.players).toEqual(['A','B']);
+ await expect(page).toHaveURL(/\\/playtest\\/?$/);
+ const after=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
+ expect(after).toBe(initial);
 });
