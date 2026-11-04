@@ -264,3 +264,21 @@ test('Yardage Book asks Caddy about selected verified hole without auto-sending'
  const pending=await page.evaluate(()=>sessionStorage.getItem('dcc_yardage_caddy_handoff_v1'));
  expect(pending).toBeNull();
 });
+
+test('Bayonet photographed club scorecard loads all 18 White tee holes without a provider fetch',async({page})=>{
+ let providerCalls=0;
+ await page.addInitScript(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'bayonet-photo-fixture',name:'Bayonet at Puppy Creek',region:'Raeford, NC'},tee:{providerTeeId:'white',name:'White',totalYards:5752},holeNumber:1}}));
+ });
+ await page.route(url=>url.toString().includes('/v1/courses/bayonet-photo-fixture/holes'),route=>{providerCalls++;return route.abort()});
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('#status')).toContainText('18/18');
+ await expect(page.locator('#yards')).toContainText('433');
+ await expect(page.locator('#par')).toContainText('5');
+ await expect(page.locator('#strokeIndex')).toContainText('Men 7 / Women 1');
+ await expect(page.locator('#source')).toContainText('Bayonet club scorecard');
+ await page.locator('#hole').selectOption('18');
+ await expect(page.locator('#yards')).toContainText('450');
+ await expect(page.locator('#strokeIndex')).toContainText('Men 18 / Women 2');
+ expect(providerCalls).toBe(0);
+});
