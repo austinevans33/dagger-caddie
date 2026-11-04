@@ -11,7 +11,6 @@
 <p class="muted" id="source">Course par and yards are from a tee-specific scorecard, not the live pin. Missing data stays unverified. This screen does not change your scores or wagers.</p>
 </main><script type="module">
 import {loadYardageState,resolveYardageState} from './yardage-live.js';
-import {readActiveRound} from './starters-desk-session.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 let number=Number(params.get('hole'))||1;if(!Number.isInteger(number)||number<1||number>18)number=1;
 let latest=resolveYardageState({holeNumber:number});
@@ -40,11 +39,8 @@ $('next').onclick=()=>{number=Math.min(18,number+1);draw()};
 $('hole').onchange=()=>{number=Number($('hole').value);draw()};
 $('return').onclick=()=>{rememberHole();location.assign('./')};
 async function load(){
- const active=readActiveRound(localStorage);
- // Reuse the same active course provider/cache as the AI Caddy. Never save incomplete output as verified.
+ // Reuse active course provider/cache exactly as AI Caddy does.
  latest=await loadYardageState({storage:localStorage,holeNumber:number});
- latest.holes=(await import('./active-course-context.js')).readCourseScorecard(localStorage,active?.selection)?.holes||[];
- if(latest.state==='ready'&&latest.coverage.verifiedHoles===0)latest.holes=[];
  draw();
 }
 draw();load().catch(()=>{$('status').textContent='Course scorecard could not be loaded. Your scores and wagers are unchanged.'});
