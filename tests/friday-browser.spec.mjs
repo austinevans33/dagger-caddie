@@ -316,5 +316,7 @@ test('Grounds score pulse reflects the paper scorecard without duplicating game 
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:234568,selection:{course:{provider:'opengolfapi',providerCourseId:'another-course',name:'Other Course',region:'NC'},tee:{providerTeeId:'blue',name:'Blue',totalYards:6800},holeNumber:1}}));
   document.dispatchEvent(new CustomEvent('dcc:course-selected'));
  });
- await expect(pulse.locator('#dccScorePulseProgress')).toHaveText('NO ACTIVE SCORECARD');
+ await expect(pulse.locator('#dccScorePulseProgress')).toHaveText('0/18 HOLES SCORED');
+ await expect(pulse.locator('#dccScorePulseSummary')).toContainText('Other Course · Blue · 0 recorded strokes');
+ await expect(pulse.locator('#dccScorePulseRecent')).toHaveText('No scores entered yet.');
 });
