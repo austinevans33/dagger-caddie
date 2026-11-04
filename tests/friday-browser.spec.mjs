@@ -282,3 +282,39 @@ test('Bayonet photographed club scorecard loads all 18 White tee holes without a
  await expect(page.locator('#strokeIndex')).toContainText('Men 18 / Women 2');
  expect(providerCalls).toBe(0);
 });
+
+test('Grounds score pulse reflects the paper scorecard without duplicating game or wager writes',async({page})=>{
+ await page.addInitScript(()=>{
+  if(sessionStorage.getItem('dccPulseFixture'))return;
+  sessionStorage.setItem('dccPulseFixture','1');
+  const selectedAt=234567;
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt,selection:{course:{provider:'opengolfapi',providerCourseId:'pulse-fixture',name:'Pulse Test Course',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6000},holeNumber:1}}));
+  const scores=Array(18).fill(null);scores[0]=5;scores[1]=3;
+  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:'pulse-fixture|white|'+selectedAt,hole:3,length:18,scores}));
+  localStorage.setItem('dagger_foursome_active',JSON.stringify({players:['A','B'],format:'skins',stake:5,holes:[[4,5]],started:123}));
+ });
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close())}
+ await page.locator('#useAustin').click({timeout:5000});
+ await page.locator('#tab-games').click();
+ const pulse=page.locator('#dccScorePulse');
+ await expect(pulse).toBeVisible();
+ await expect(pulse.locator('#dccScorePulseProgress')).toHaveText('2/18 HOLES SCORED');
+ await expect(pulse.locator('#dccScorePulseSummary')).toContainText('Pulse Test Course · White · 8 recorded strokes');
+ const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
+ await pulse.locator('#dccScorePulseOpen').click();
+ await expect(page.locator('#dcc-paper-dialog')).toHaveAttribute('open','');
+ await page.getByRole('button',{name:'Select hole 1, 5 strokes'}).click();
+ await page.getByRole('button',{name:'Pencil 4 strokes for hole 1'}).click();
+ await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
+ await page.locator('#tab-games').click();
+ await expect(pulse.locator('#dccScorePulseSummary')).toContainText('7 recorded strokes');
+ await expect(pulse.locator('#dccScorePulseRecent')).toContainText('H1: 4');
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe(before);
+ await page.evaluate(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:234568,selection:{course:{provider:'opengolfapi',providerCourseId:'another-course',name:'Other Course',region:'NC'},tee:{providerTeeId:'blue',name:'Blue',totalYards:6800},holeNumber:1}}));
+  document.dispatchEvent(new CustomEvent('dcc:course-selected'));
+ });
+ await expect(pulse.locator('#dccScorePulseProgress')).toHaveText('NO ACTIVE SCORECARD');
+});
