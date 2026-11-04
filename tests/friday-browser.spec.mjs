@@ -253,6 +253,8 @@ test('Yardage Book asks Caddy about selected verified hole without auto-sending'
  await page.locator('#askHoleCaddy').click();
  await expect(page).toHaveURL('http://127.0.0.1:8765/playtest/');
  const prompt=page.locator('#aiInput');
+ await expect(page.locator('#dccYardageCaddyArrival')).toBeVisible();
+ await page.locator('#dccYardageCaddyArrival button').click();
  await expect(prompt).toHaveValue(/Pines Test Course, hole 3/);
  await expect(prompt).toHaveValue(/412 yards from the White tee/);
  await expect(prompt).toHaveValue(/NOT my current distance to the pin/);
