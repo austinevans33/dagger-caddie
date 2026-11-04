@@ -262,14 +262,14 @@ test('Yardage Book asks Caddy about selected verified hole without auto-sending'
  expect(pending).toBeNull();
 });
 test('Pending Caddy draft is never overwritten by Yardage Book handoff',async({page})=>{
- await page.addInitScript(()=>{
-  sessionStorage.setItem('dcc_yardage_caddy_handoff_v1',JSON.stringify({version:1,createdAt:Date.now(),question:'I am playing Pines Test Course, hole 3, White tees. Help me plan a safe target and club strategy.'}));
-  document.addEventListener('DOMContentLoaded',()=>{
-   const field=document.getElementById('aiInput');
-   if(field)field.value='My unfinished question';
-  },{once:true});
- });
  await page.goto('/playtest/');
+ await page.locator('#aiInput').fill('My unfinished question');
+ await page.evaluate(()=>{
+  sessionStorage.setItem('dcc_yardage_caddy_handoff_v1',JSON.stringify({version:1,createdAt:Date.now(),question:'I am playing Pines Test Course, hole 3, White tees. Help me plan a safe target and club strategy.'}));
+ });
+ // Re-run the arrival module on an already-initialized page, equivalent to an
+ // asynchronously restored draft arriving before the Yardage Book question.
+ await page.evaluate(async()=>await import('./yardage-caddy-arrival.js?browser-restored-draft'));
  await expect(page.locator('#aiInput')).toHaveValue('My unfinished question');
  await expect(page.locator('#dccYardageCaddyArrival')).toBeVisible();
  await page.locator('#dccYardageCaddyArrival button').click();
