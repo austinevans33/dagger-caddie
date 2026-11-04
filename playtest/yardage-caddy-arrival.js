@@ -30,4 +30,5 @@ function install(){
  if(!field.value.trim())populate();
  else note.scrollIntoView({block:'nearest'});
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+// Wait for the page's existing draft initialization before deciding whether to prefill.
+if(document.readyState==='complete')install();else document.addEventListener('DOMContentLoaded',install,{once:true});
