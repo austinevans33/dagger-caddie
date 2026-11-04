@@ -156,3 +156,15 @@ test('Yardage Book uses actual selected tee/provider scorecard and preserves bet
  const after=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
  expect(after).toBe(initial);
 });
+
+test('Pencil Yardage Book follows selected caddy without inventing hole geometry',async({page})=>{
+ await page.addInitScript(()=>{localStorage.setItem('dagger_selected_caddie',JSON.stringify('vinny'))});
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('.paper')).toBeVisible();
+ await expect(page.locator('#caddySignature')).toContainText('Vinny');
+ await expect(page.locator('#caddyNote')).not.toBeEmpty();
+ await expect(page.locator('.field-sketch')).toContainText('No invented course layout');
+ await expect(page.locator('#yards')).toContainText('Not verified');
+ await page.locator('#next').click();
+ await expect(page.locator('#position')).toContainText('HOLE 2 / 18');
+});
