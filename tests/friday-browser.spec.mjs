@@ -152,7 +152,7 @@ test('Yardage Book uses actual selected tee/provider scorecard and preserves bet
  await page.locator('#next').click();
  await expect(page.locator('#yards')).toContainText('Not verified');
  await page.locator('#return').click();
- await expect(page).toHaveURL(/\\/playtest\\/?$/);
+ await expect(page).toHaveURL('http://127.0.0.1:8765/playtest/');
  const after=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
  expect(after).toBe(initial);
 });
