@@ -9,6 +9,7 @@
 <section class="card"><span id="position" class="hole-pill"></span><p id="name" class="muted"></p><div id="par" class="big"></div><div id="yards" class="big"></div><p id="coverage" class="muted"></p><h3>Hazards and notes</h3><ul id="hazards"></ul></section>
 <div class="nav"><button id="prev">← Previous</button><button id="return" class="primary">Back to Play</button><button id="next">Next →</button></div>
 <p class="muted" id="source">Course par and yards are from a tee-specific scorecard, not the live pin. Missing data stays unverified. This screen does not change your scores or wagers.</p>
+<p class="muted">Course data where available: © OpenStreetMap contributors (ODbL 1.0) via <a href="https://opengolfapi.org/" target="_blank" rel="noopener noreferrer">OpenGolfAPI</a>.</p>
 </main><script type="module">
 import {loadYardageState,resolveYardageState} from './yardage-live.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
