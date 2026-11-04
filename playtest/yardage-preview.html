@@ -26,6 +26,19 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .warning{background:#ebe1c9;border-style:dashed}
 @media(prefers-reduced-motion:reduce){.paper .card,.pencil-note,.field-sketch{transform:none}}
 .field-sketch svg{width:100%;height:auto;max-height:280px;display:block}.field-sketch.has-features{display:block;padding:8px;background:#eee7d5}.field-sketch .geometry-label{font:italic 13px Georgia,serif;color:#51604f;margin:5px 0 1px}.field-sketch .geometry-foot{font:11px/1.4 system-ui,sans-serif;color:#687369;margin:5px 0}
+
+/* One-hand pencil map controls: large touch targets, no pinch-to-zoom needed. */
+.map-tools{display:flex;gap:7px;margin:9px 0;flex-wrap:wrap}
+.map-tools button{flex:1;min-width:74px;min-height:44px;border:1px solid #8a9482;border-radius:10px;background:#e8e1cc;color:#31473a;font:700 13px system-ui,sans-serif;padding:7px}
+.map-tools button[aria-pressed="true"]{background:#264638;border-color:#264638;color:#fff9e9}
+.map-tools button:focus-visible,.map-feature:focus-visible{outline:3px solid #ac8f54;outline-offset:2px}
+.map-feature-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0 4px}
+.map-feature{min-height:44px;border:1px solid #a5a78e;border-radius:9px;background:#f7f0dd;text-align:left;padding:9px 11px;font:700 13px system-ui,sans-serif;color:#354c3d}
+.map-feature[aria-pressed="true"]{border:2px solid #244d39;background:#dfe6d5}
+.map-note{font:12px/1.4 system-ui,sans-serif!important;color:#4f6151;margin:7px 2px!important;text-align:left}
+.field-sketch polygon{transition:opacity .12s ease;stroke-linecap:round}
+.field-sketch polygon.map-selected{stroke:#193c2b;stroke-width:3.7}
+@media(prefers-reduced-motion:reduce){.field-sketch polygon{transition:none}}
 </style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1>Yardage Book</h1><a href="./" id="backToPlay">← Back to The Caddy</a></header>
 <div class="paper"><p class="warning" id="status" role="status">Loading selected course and tee scorecard… No GPS or live pin distances are claimed.</p>
 <div class="bar"><label>Hole<br><select id="hole" style="width:100%"></select></label><label>Tees<br><select id="tees" style="width:100%"><option>Checking selection…</option></select></label></div>
@@ -43,7 +56,7 @@ import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 const requested=params.has('hole')?Number(params.get('hole')):null;
 let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
-let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();
+let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();let mapMode='all';let mapSelected=null;
 for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
 function draw(){
@@ -72,6 +85,7 @@ function draw(){
 }
 function updateSketch(selection,hole){
  const gen=++spatialGeneration,box=document.querySelector('.field-sketch');
+ mapSelected=null;mapMode='all';
  const key=selection?.course?.provider+'|'+selection?.course?.providerCourseId+'|'+hole;
  function unavailable(){if(gen!==spatialGeneration)return;box.classList.remove('has-features');box.replaceChildren();const p=document.createElement('p');p.textContent='Verified hole geometry not available. No invented fairways, greens or hazards.';box.append(p)}
  if(!selection?.course||selection.course.provider!=='opengolfapi'){unavailable();return}
@@ -82,11 +96,41 @@ function updateSketch(selection,hole){
   if(!shapes.length){unavailable();return}
   box.classList.add('has-features');box.replaceChildren();
   const title=document.createElement('p');title.className='geometry-label';title.textContent='Pencil study · available mapped features';box.append(title);
+  const tools=document.createElement('div');tools.className='map-tools';tools.setAttribute('role','group');tools.setAttribute('aria-label','Map feature filters');box.append(tools);
+  const labels={green:'Green',fairway:'Fairway',bunker:'Bunker',water:'Water',rough:'Rough',tee:'Tee'};
+  const count=type=>shapes.filter(f=>f.type===type).length;
+  const modes=[['all','All'],['green','Green'],['trouble','Trouble']];
+  const matches=(shape,mode)=>mode==='all'||mode==='green'&&shape.type==='green'||mode==='trouble'&&['bunker','water'].includes(shape.type);
   const ns='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 300 220');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schematic arrangement of coarse provider-mapped green, fairway and hazard polygons');
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 300 220');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schematic arrangement of coarse provider-mapped features. Map filters also have accessible buttons below.');
   const style={green:['#d9e0c1','#455c47'],fairway:['#e2e5cc','#596955'],bunker:['#eee4c5','#8d8265'],water:['#d1dce0','#516d78'],rough:['#e3e1d3','#85816e'],tee:['#e1dec3','#6d725d']};
-  for(const shape of shapes){const p=document.createElementNS(ns,'polygon');p.setAttribute('points',shape.points.map(pt=>pt.join(',')).join(' '));p.setAttribute('fill',style[shape.type]?.[0]||'none');p.setAttribute('stroke',style[shape.type]?.[1]||'#555');p.setAttribute('stroke-width','1.8');p.setAttribute('stroke-dasharray','5 3');p.setAttribute('stroke-linejoin','round');svg.append(p)}
-  box.append(svg);
+  const polygons=[];
+  shapes.forEach((shape,i)=>{const p=document.createElementNS(ns,'polygon');p.setAttribute('points',shape.points.map(pt=>pt.join(',')).join(' '));p.setAttribute('fill',style[shape.type]?.[0]||'none');p.setAttribute('stroke',style[shape.type]?.[1]||'#555');p.setAttribute('stroke-width','1.8');p.setAttribute('stroke-dasharray','5 3');p.setAttribute('stroke-linejoin','round');p.setAttribute('data-map-feature',String(i));svg.append(p);polygons.push(p)});
+  const list=document.createElement('div');list.className='map-feature-list';list.setAttribute('aria-label','Mapped features');
+  const note=document.createElement('p');note.className='map-note';note.setAttribute('role','status');
+  function updateMode(){
+   tools.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mapMode===mapMode)));
+   list.replaceChildren();
+   let visible=0;
+   shapes.forEach((shape,i)=>{
+    const matchesFilter=matches(shape,mapMode);
+    polygons[i].setAttribute('opacity',matchesFilter?'1':'0.15');
+    polygons[i].classList.toggle('map-selected',mapSelected===i&&matchesFilter);
+    if(!matchesFilter)return;
+    visible++;
+    const b=document.createElement('button');b.type='button';b.className='map-feature';
+    b.textContent=(labels[shape.type]||'Feature')+' '+(count(shape.type)>1?shapes.slice(0,i+1).filter(x=>x.type===shape.type).length:'');
+    b.setAttribute('aria-pressed',String(mapSelected===i));
+    b.onclick=()=>{mapSelected=i;updateMode()};
+    list.append(b);
+   });
+   const selected=shapes[mapSelected];
+   note.textContent=selected&&matches(selected,mapMode)?(labels[selected.type]||'Feature')+' highlighted · provider-mapped outline, not a measured distance':
+    visible+' mapped '+(visible===1?'feature':'features')+' shown · tap a label to highlight';
+  }
+  for(const [id,label] of modes){const button=document.createElement('button');button.type='button';button.dataset.mapMode=id;button.textContent=label;button.setAttribute('aria-pressed',String(id===mapMode));button.onclick=()=>{mapMode=id;mapSelected=null;updateMode()};tools.append(button)}
+  box.append(svg,list,note);
+  updateMode();
   const foot=document.createElement('p');foot.className='geometry-foot';foot.textContent='Coarse OpenStreetMap features via OpenGolfAPI · not surveyed, not a rangefinder, no live pin';box.append(foot);
  }).catch(unavailable);
 }
