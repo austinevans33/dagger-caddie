@@ -11,17 +11,21 @@ button{background:#143126;color:white;font-weight:700}button:disabled{opacity:.4
 svg{display:block;width:100%;height:auto;background:#d8dfcf;border:1px solid #97a58a;border-radius:14px}
 article{border:1px solid #cfc2a6;border-radius:13px;background:#fffdf7;padding:13px;margin:12px 0}
 ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
+.dcc-ghost-tracer{filter:drop-shadow(0 0 4px rgba(255,230,124,.7))}@keyframes dcc-trace-draw{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}.ghost-watch{background:#b79c62;color:#142c22}.ghost-note{font:12px/1.45 system-ui,sans-serif;color:#5c645e}
+@media(prefers-reduced-motion:reduce){.dcc-ghost-tracer{animation:none!important;stroke-dashoffset:0!important}}
 </style></head><body><main><header><small>DAGGER COUNTRY CLUB · ISOLATED FRIDAY QA</small><h1>House Ghost · Shot Trail</h1><a href="./">← Back to Playtest</a></header>
 <p class="notice"><strong>Simulated schematic only.</strong> This preview does not read or change scores, bets, GPS, Firebase, or real pin positions. Default hole details are illustrative, not verified course facts.</p>
 <div class="controls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
 <article><strong id="headline">Loading…</strong><p id="summary"></p>
-<svg id="trail" viewBox="0 0 320 430" role="img" aria-label="Schematic Ghost shot positions"><path d="M120 390 Q55 220 130 38 L190 38 Q265 225 200 390 Z" fill="#a4bf86" stroke="#6b895b" stroke-width="2"/><ellipse cx="160" cy="37" rx="43" ry="25" fill="#7b9c70"/><circle cx="160" cy="32" r="5" fill="#fff"/><text x="10" y="22" fill="#17372b" font-size="13">SCHEMATIC · NOT GPS</text><g id="markers"></g></svg>
-<div class="controls"><button id="back">← Previous shot</button><button id="next">Reveal next shot →</button></div>
+<svg id="trail" viewBox="0 0 320 430" role="img" aria-label="Schematic Ghost shot positions"><path d="M120 390 Q55 220 130 38 L190 38 Q265 225 200 390 Z" fill="#a4bf86" stroke="#6b895b" stroke-width="2"/><ellipse cx="160" cy="37" rx="43" ry="25" fill="#7b9c70"/><circle cx="160" cy="32" r="5" fill="#fff"/><text x="10" y="22" fill="#17372b" font-size="13">SCHEMATIC · NOT GPS</text><g id="traces"></g><g id="markers"></g></svg>
+<div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button><p class="ghost-note">Gold tracer and flying ball are animated representations of simulated strokes, not measured trajectories.</p>
 <p id="progress" role="status"></p></article>
 <article><strong>Revealed strokes</strong><ol id="shots"></ol></article>
 </main><script type="module">
 import {ghostShotPlayback} from '../house-ghost-playback.js';
-const $=id=>document.getElementById(id);let revealed=0;
+import {drawGhostTracer} from './ghost-tracer.js';
+const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
+function stopWatch(){if(watchTimer!==null){clearInterval(watchTimer);watchTimer=null;}$('watch').textContent='▶ Watch Ghost play the hole'}
 for(let n=1;n<=18;n++)$('hole').add(new Option('Hole '+n,n));
 function render(){
  const count=Number($('length').value),holeNumber=Number($('hole').value);
@@ -29,6 +33,7 @@ function render(){
  revealed=state.shotsRevealed;
  $('headline').textContent='Hole '+holeNumber+' · Par '+state.par+' · Ghost '+state.score;
  $('summary').textContent='Practice defaults · '+state.coverage+' · '+state.label;
+ drawGhostTracer($('trail'),state.visibleShots,{animateLast:revealed>lastRendered});lastRendered=revealed;
  $('markers').replaceChildren();
  const ns='http://www.w3.org/2000/svg';
  state.visibleShots.forEach((shot,i)=>{
@@ -39,7 +44,9 @@ function render(){
  $('shots').replaceChildren();state.visibleShots.forEach(s=>{const li=document.createElement('li');li.textContent=s.number+'. '+s.club+' · '+s.distanceLabel+' · '+s.lie;$('shots').append(li)});
  $('progress').textContent=revealed+' of '+state.totalShots+' simulated strokes shown';
  $('back').disabled=!state.canRewind;$('next').disabled=!state.canAdvance;
+ if(state.complete)stopWatch();
 }
-$('next').addEventListener('click',()=>{revealed++;render()});$('back').addEventListener('click',()=>{revealed=Math.max(0,revealed-1);render()});
-$('hole').addEventListener('change',()=>{revealed=0;render()});$('length').addEventListener('change',()=>{if(Number($('hole').value)>9)$('hole').value='1';for(const o of $('hole').options)o.disabled=Number(o.value)>Number($('length').value);revealed=0;render()});render();
+$('next').addEventListener('click',()=>{stopWatch();revealed++;render()});$('back').addEventListener('click',()=>{stopWatch();revealed=Math.max(0,revealed-1);render()});
+$('watch').addEventListener('click',()=>{if(watchTimer!==null){stopWatch();return;}if($('next').disabled){revealed=0;lastRendered=0;render();}revealed++;render();if($('next').disabled)return;$('watch').textContent='Ⅱ Pause Ghost';watchTimer=setInterval(()=>{revealed++;render()},1500)});
+$('hole').addEventListener('change',()=>{stopWatch();revealed=0;lastRendered=0;render()});$('length').addEventListener('change',()=>{stopWatch();if(Number($('hole').value)>9)$('hole').value='1';for(const o of $('hole').options)o.disabled=Number(o.value)>Number($('length').value);revealed=0;render()});render();
 </script></body></html>
