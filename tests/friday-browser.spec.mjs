@@ -130,3 +130,25 @@ test('Three on-course tabs retain both Club Services with a safe return',async({
  await page.locator('#tab-bets').click();
  await expect(page.locator('#moneyRoomSection')).toBeVisible();
 });
+
+test('Yardage Book uses actual selected tee/provider scorecard and preserves bets',async({page})=>{
+ await page.goto('/playtest/');
+ await page.evaluate(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'fixture-yardage',name:'Verified Test Course',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6300},holeNumber:1}}));
+  localStorage.setItem('dagger_foursome_active',JSON.stringify({wager:'never mutate'}));
+ });
+ await page.route('https://api.opengolfapi.org/v1/courses/fixture-yardage/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[{number:1,par:4,yardages:{white:412,blue:443}},{number:2,par:3,yardages:{white:165,blue:184}}]})}));
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('#name')).toContainText('Verified Test Course · White');
+ await expect(page.locator('#yards')).toContainText('412');
+ await expect(page.locator('#par')).toContainText('4');
+ await expect(page.locator('#coverage')).toContainText('2/18');
+ await page.locator('#next').click();
+ await expect(page.locator('#yards')).toContainText('165');
+ await page.locator('#next').click();
+ await expect(page.locator('#yards')).toContainText('Not verified');
+ await page.locator('#return').click();
+ await expect(page).toHaveURL(/\/playtest\/?$/);
+ const wager=await page.evaluate(()=>JSON.parse(localStorage.getItem('dagger_foursome_active')));
+ expect(wager.wager).toBe('never mutate');
+});
