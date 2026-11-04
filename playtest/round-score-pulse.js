@@ -65,7 +65,7 @@ export function mountRoundScorePulse({doc=document,storage=localStorage}={}){
   const synced=projectPaperScoresIntoGame(card,game,{roundIdentity:card.identity,playerIndex:Number(player)});
   if(!synced.holes){result.textContent='The game or scorecard is incompatible. No scores connected.';return;}
   const assigned=synced.holes.filter(row=>row[Number(player)]!==null).length;
-  result.textContent=card.courseName+' · '+card.teeName+'\\n'+assigned+'/18 paper scores available for '+game.players[Number(player)]+'. '+synced.changedHoles.length+' hole(s) differ from the game.\\nPreview only — game and Ledger unchanged.';
+  result.textContent=card.courseName+' · '+card.teeName+'\n'+assigned+'/18 paper scores available for '+game.players[Number(player)]+'. '+synced.changedHoles.length+' hole(s) differ from the game.\\nPreview only — game and Ledger unchanged.';
  });
  games.insertBefore(panel,games.firstChild);
  let last=null;
