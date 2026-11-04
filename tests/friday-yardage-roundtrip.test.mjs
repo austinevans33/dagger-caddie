@@ -18,5 +18,6 @@ test('Back to Play goes to the same local playtest and never triggers a score wr
 test('Book hole changes save navigation state and stay inside 1-18',()=>{
  assert.match(book,/number=Math\.max\(1,number-1\)/);
  assert.match(book,/number=Math\.min\(18,number\+1\)/);
- assert.match(book,/if\(!Number\.isInteger\(number\)\|\|number<1\|\|number>18\)number=1/);
+ assert.match(book,/Number\.isInteger\(requested\)&&requested>=1&&requested<=18/);
+ assert.match(book,/readYardageHole/);
 });
