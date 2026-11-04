@@ -14,7 +14,7 @@ function install(){
  label.textContent='✎ Yardage Book question ready · review before sending';
  const button=document.createElement('button');
  button.type='button';
- button.textContent=field.value.trim()?'Use hole question':'Edit question';
+ button.textContent='Use hole question';
  function populate(){
   field.value=question;
   field.dispatchEvent(new Event('input',{bubbles:true}));
@@ -27,8 +27,8 @@ function install(){
  const anchor=field.closest('.ai-row');
  (anchor?.parentNode||composer).insertBefore(note,anchor||null);
  document.getElementById('tab-play')?.click();
- if(!field.value.trim())populate();
- else note.scrollIntoView({block:'nearest'});
+ // Never replace any draft automatically. A single explicit tap inserts the hole question.
+ note.scrollIntoView({block:'nearest'});
 }
 // Wait for the page's existing draft initialization before deciding whether to prefill.
 if(document.readyState==='complete')install();else document.addEventListener('DOMContentLoaded',install,{once:true});
