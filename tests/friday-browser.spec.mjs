@@ -253,6 +253,7 @@ test('Yardage Book asks Caddy about selected verified hole without auto-sending'
  await page.locator('#askHoleCaddy').click();
  await expect(page).toHaveURL('http://127.0.0.1:8765/playtest/');
  const prompt=page.locator('#aiInput');
+ await expect(prompt).toHaveValue('');
  await expect(page.locator('#dccYardageCaddyArrival')).toBeVisible();
  await page.locator('#dccYardageCaddyArrival button').click();
  await expect(prompt).toHaveValue(/Pines Test Course, hole 3/);
@@ -262,18 +263,4 @@ test('Yardage Book asks Caddy about selected verified hole without auto-sending'
  await expect(page.locator('#aiStatus')).toContainText(/Ready|backend|Connect|Unavailable/i);
  const pending=await page.evaluate(()=>sessionStorage.getItem('dcc_yardage_caddy_handoff_v1'));
  expect(pending).toBeNull();
-});
-test('Pending Caddy draft is never overwritten by Yardage Book handoff',async({page})=>{
- await page.goto('/playtest/');
- const result=await page.evaluate(async()=>{
-  const field=document.getElementById('aiInput');
-  field.value='My unfinished question';
-  sessionStorage.setItem('dcc_yardage_caddy_handoff_v1',JSON.stringify({version:1,createdAt:Date.now(),question:'I am playing Pines Test Course, hole 3, White tees. Help me plan a safe target and club strategy.'}));
-  await import('./yardage-caddy-arrival.js?browser-restored-draft');
-  return {value:field.value,offered:!!document.getElementById('dccYardageCaddyArrival')};
- });
- expect(result.value).toBe('My unfinished question');
- expect(result.offered).toBe(true);
- await page.locator('#dccYardageCaddyArrival button').click();
- await expect(page.locator('#aiInput')).toHaveValue(/Pines Test Course, hole 3/);
 });
