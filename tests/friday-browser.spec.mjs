@@ -184,3 +184,33 @@ test('Verified provider feature polygons appear as a pencil study without sugges
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(0);
  await expect(page.locator('.field-sketch')).toContainText('No invented fairways');
 });
+
+test('Pencil map is readable and tappable with one hand using Green / Trouble filters',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'touch-map-test',name:'Touch Test',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6300},holeNumber:1}})));
+ const coordinates=[[[-79,35],[-78.9999,35],[-78.9999,35.0001],[-79,35]]];
+ await page.route(url=>url.toString().startsWith('https://api.opengolfapi.org/api/v1/features?'),route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:[
+   {type:'Feature',properties:{type:'green',hole:1},geometry:{type:'Polygon',coordinates}},
+   {type:'Feature',properties:{type:'bunker',hole:1},geometry:{type:'Polygon',coordinates}}
+ ]})}));
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ const map=page.locator('.field-sketch');
+ await expect(map.locator('svg polygon')).toHaveCount(2);
+ await expect(map.locator('.map-feature')).toHaveCount(2);
+ const trouble=map.getByRole('button',{name:'Trouble'});
+ const green=map.getByRole('button',{name:'Green',exact:true});
+ expect((await trouble.boundingBox()).height).toBeGreaterThanOrEqual(44);
+ await trouble.click();
+ await expect(trouble).toHaveAttribute('aria-pressed','true');
+ await expect(map.locator('.map-feature')).toHaveCount(1);
+ await expect(map.locator('.map-feature')).toContainText(['Bunker']);
+ await map.locator('.map-feature').click();
+ await expect(map.locator('svg polygon.map-selected')).toHaveCount(1);
+ await green.click();
+ await expect(map.locator('.map-feature')).toContainText(['Green']);
+ await map.getByRole('button',{name:'All',exact:true}).click();
+ await expect(map.locator('.map-feature')).toHaveCount(2);
+ await page.locator('#next').click();
+ await expect(map.locator('svg polygon')).toHaveCount(0);
+ await expect(map).toContainText('No invented fairways');
+});
