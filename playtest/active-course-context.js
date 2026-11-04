@@ -4,8 +4,12 @@ import {readActiveRound} from './starters-desk-session.js';
 import {loadOpenGolfHoles} from './opengolf-holes.js?v=premium-paper-9';
 import {sameCourseSelection} from './course-identity.js';
 import {readCachedCourseScorecard,saveCachedCourseScorecard} from './course-scorecard-cache.js';
+import {bayonetVerifiedScorecard} from './bayonet-verified-scorecard.js';
 const CACHED='dcc_course_scorecard_v1';
 export function readCourseScorecard(storage,selection){
+ // Bundled club source is read-only, does not contaminate the provider cache.
+ const official=bayonetVerifiedScorecard(selection);
+ if(official)return official;
  const multi=readCachedCourseScorecard(storage,selection);
  if(multi)return multi;
  try{
@@ -22,6 +26,8 @@ export async function getActiveCourseContext({storage,fetcher,signal,now=Date.no
  const active=readActiveRound(storage);
  if(!active)return {state:'not-selected',holes:[],livePinDistance:false};
  const selection=active.selection;
+ const official=bayonetVerifiedScorecard(selection);
+ if(official)return official;
  let holes=[];
  try{
   holes=await loadOpenGolfHoles(selection,{fetcher,signal});
