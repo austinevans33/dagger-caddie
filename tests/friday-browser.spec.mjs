@@ -240,3 +240,36 @@ test('Rapid hole changes cancel stale map and cached return does not repeat a fe
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(1);
  expect(holeOneRequests).toBe(1);
 });
+
+test('Yardage Book asks Caddy about selected verified hole without auto-sending',async({page})=>{
+ await page.addInitScript(()=>{
+  if(sessionStorage.getItem('dccHandoffFixture'))return;
+  sessionStorage.setItem('dccHandoffFixture','1');
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'handoff-test',name:'Pines Test Course',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6300},holeNumber:3}}));
+ });
+ await page.route('https://api.opengolfapi.org/v1/courses/handoff-test/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[{number:3,par:4,yardages:{white:412}}]})}));
+ await page.goto('/playtest/yardage-preview.html?hole=3');
+ await expect(page.locator('#yards')).toContainText('412');
+ await page.locator('#askHoleCaddy').click();
+ await expect(page).toHaveURL('http://127.0.0.1:8765/playtest/');
+ const prompt=page.locator('#aiInput');
+ await expect(prompt).toHaveValue(/Pines Test Course, hole 3/);
+ await expect(prompt).toHaveValue(/412 yards from the White tee/);
+ await expect(prompt).toHaveValue(/NOT my current distance to the pin/);
+ await expect(page.locator('#aiSend')).toBeVisible();
+ await expect(page.locator('#aiStatus')).toContainText(/Ready|backend|Connect|Unavailable/i);
+ const pending=await page.evaluate(()=>sessionStorage.getItem('dcc_yardage_caddy_handoff_v1'));
+ expect(pending).toBeNull();
+});
+test('Yardage Book question never overwrites a pending Caddy draft',async({page})=>{
+ await page.addInitScript(()=>{
+  if(sessionStorage.getItem('dccHandoffDraftSeeded'))return;
+  sessionStorage.setItem('dccHandoffDraftSeeded','1');
+  sessionStorage.setItem('dcc_yardage_caddy_handoff_v1',JSON.stringify({version:1,createdAt:Date.now(),question:'I am playing Pines Test Course, hole 3, White tees. Help me plan a safe target and club strategy.'}));
+ });
+ await page.goto('/playtest/');
+ await page.locator('#aiInput').fill('My unfinished question');
+ await page.reload();
+ // The handoff was consumed by the first load: no draft replacement on reload.
+ await expect(page.locator('#aiInput')).not.toHaveValue(/Pines Test Course/);
+});
