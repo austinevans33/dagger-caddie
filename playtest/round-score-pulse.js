@@ -1,6 +1,7 @@
 // Read-only reflection of the existing paper scorecard in The Grounds.
 // NEVER modifies strokes, game formats, bets, Ledger, Money Room or Firebase.
 import {readRoundScoreSnapshot,compareRoundScoreSnapshots} from './round-score-snapshot.js';
+import {projectPaperScoresIntoGame} from './round-game-score-adapter.js';
 const fmt=(snapshot)=>snapshot?String(snapshot.completedCount)+'/18': '0/18';
 export function formatRoundScorePulse(snapshot){
  if(!snapshot)return Object.freeze({ready:false,progress:'NO ACTIVE SCORECARD',summary:'Choose a course and tee at the Starter’s Desk to begin a round.',recent:'',complete:false});
@@ -37,7 +38,35 @@ export function mountRoundScorePulse({doc=document,storage=localStorage}={}){
  const button=doc.createElement('button');button.type='button';button.id='dccScorePulseOpen';button.textContent='Open Scorecard';
  const action=doc.createElement('div');action.className='dcc-pulse-action';action.append(recent,button);
  const boundary=doc.createElement('p');boundary.className='dcc-pulse-boundary';boundary.textContent='Read-only round display · wagers and settlements are managed separately.';
- panel.append(kicker,title,summary,action,boundary);
+ const preview=doc.createElement('details');preview.id='dccGameScorePreview';preview.style.cssText='margin-top:10px;border-top:1px solid #c8ae81;padding-top:9px';
+ const previewTitle=doc.createElement('summary');previewTitle.textContent='Check scorecard against active game (preview only)';
+ const previewBody=doc.createElement('div');previewBody.style.cssText='display:grid;gap:8px;margin-top:9px';
+ const playerSelect=doc.createElement('select');playerSelect.id='dccGameScorePlayer';playerSelect.setAttribute('aria-label','Which player uses this paper scorecard?');playerSelect.style.cssText='min-height:44px;max-width:100%;border:1px solid #b89b68;border-radius:8px;padding:8px;background:#fffaf0;color:#173d2c';
+ const compare=doc.createElement('button');compare.type='button';compare.id='dccGameScoreCompare';compare.textContent='Preview my game scores';
+ const result=doc.createElement('p');result.id='dccGameScoreCompareResult';result.setAttribute('role','status');result.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere';
+ const disclosure=doc.createElement('p');disclosure.textContent='Preview only. No game, money, settlement, or Firebase data changes.';disclosure.style.cssText='font-size:11px';
+ previewBody.append(playerSelect,compare,result,disclosure);preview.append(previewTitle,previewBody);
+ panel.append(kicker,title,summary,action,boundary,preview);
+ const getWager=()=>{try{const game=JSON.parse(storage.getItem('dagger_foursome_active')||'null');return game&&typeof game==='object'?game:null;}catch{return null;}};
+ function refreshPlayers(){
+  const game=getWager(),players=Array.isArray(game?.players)?game.players:[];
+  const previous=playerSelect.value;playerSelect.replaceChildren();
+  const placeholder=doc.createElement('option');placeholder.value='';placeholder.textContent='Choose your name on this game';playerSelect.append(placeholder);
+  players.forEach((name,i)=>{const option=doc.createElement('option');option.value=String(i);option.textContent=String(name);playerSelect.append(option)});
+  if([...playerSelect.options].some(option=>option.value===previous))playerSelect.value=previous;
+  else playerSelect.value='';
+ }
+ preview.addEventListener('toggle',()=>{if(preview.open){refreshPlayers();result.textContent='Choose your name, then preview. Nothing will be saved.'}});
+ compare.addEventListener('click',()=>{
+  const card=readRoundScoreSnapshot(storage),game=getWager(),player=playerSelect.value;
+  if(!card||!game||!['nassau','skins'].includes(game.format)){result.textContent='Open a paper scorecard and an active Nassau or skins game first.';return;}
+  if(player===''||!Number.isInteger(Number(player))){result.textContent='Select your matching player name first.';return;}
+  if(game.roundIdentity&&game.roundIdentity!==card.identity){result.textContent='This wager belongs to a different round. No scores connected.';return;}
+  const synced=projectPaperScoresIntoGame(card,game,{roundIdentity:card.identity,playerIndex:Number(player)});
+  if(!synced.holes){result.textContent='The game or scorecard is incompatible. No scores connected.';return;}
+  const assigned=synced.holes.filter(row=>row[Number(player)]!==null).length;
+  result.textContent=card.courseName+' · '+card.teeName+'\\n'+assigned+'/18 paper scores available for '+game.players[Number(player)]+'. '+synced.changedHoles.length+' hole(s) differ from the game.\\nPreview only — game and Ledger unchanged.';
+ });
  games.insertBefore(panel,games.firstChild);
  let last=null;
  function render(){
