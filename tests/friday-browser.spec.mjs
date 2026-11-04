@@ -218,3 +218,25 @@ test('Pencil map is readable and tappable with one hand using Green / Trouble fi
  await expect(map.locator('svg polygon')).toHaveCount(0);
  await expect(map).toContainText('No invented fairways');
 });
+
+test('Rapid hole changes cancel stale map and cached return does not repeat a fetch',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'rapid-map-test',name:'Rapid Test',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6300},holeNumber:1}})));
+ let holeOneRequests=0;
+ await page.route(url=>url.toString().startsWith('https://api.opengolfapi.org/api/v1/features?'),async route=>{
+  const hole=new URL(route.request().url()).searchParams.get('hole');
+  if(hole==='1')holeOneRequests++;
+  const polygon={type:'Feature',properties:{type:'green',hole:Number(hole)},geometry:{type:'Polygon',coordinates:[[[-79,35],[-78.9999,35],[-78.9999,35.0001],[-79,35]]]}};
+  try{await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:[polygon]})})}catch{}
+ });
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('.field-sketch svg polygon')).toHaveCount(1);
+ expect(holeOneRequests).toBe(1);
+ await page.locator('#next').click();
+ await expect(page.locator('#mapHole')).toHaveText('HOLE 2');
+ await expect(page.locator('.field-sketch svg polygon')).toHaveCount(1);
+ await page.locator('#prev').click();
+ await expect(page.locator('#mapHole')).toHaveText('HOLE 1');
+ await expect(page.locator('.field-sketch svg polygon')).toHaveCount(1);
+ expect(holeOneRequests).toBe(1);
+});
