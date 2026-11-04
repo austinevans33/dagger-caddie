@@ -36,3 +36,14 @@
 .dcc-home-money>span:last-child{font:26px Georgia,serif}
 .dcc-home-money:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
 @media(max-width:420px){.dcc-home{padding:13px}.dcc-home-header{margin-bottom:12px}.dcc-home-seal{width:62px;height:62px}.dcc-home-feature{padding:16px}.dcc-home-feature-title{margin:11px 0 8px}.dcc-home-view{margin-top:13px}.dcc-home-grid{gap:9px;margin-top:10px}.dcc-home-tile{padding:13px 11px;min-height:111px}.dcc-home-tile-name{font-size:17px}.dcc-home-tile-icon{font-size:22px}}
+
+/* On-course cockpit: three primary tabs. Service tabs are still reachable via Club Services. */
+nav.tabbar.dcc-bespoke-nav #tab-bag,nav.tabbar.dcc-bespoke-nav #tab-settings{display:none!important}
+nav.tabbar.dcc-bespoke-nav{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.dcc-home-services{margin:12px 0 2px;border-top:1px solid rgba(205,182,132,.3);border-bottom:1px solid rgba(205,182,132,.3)}
+.dcc-home-services summary{cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:space-between;color:#d8c59d;font:700 13px/1.35 system-ui,sans-serif;list-style:none}
+.dcc-home-services summary::-webkit-details-marker{display:none}
+.dcc-home-service-links{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 12px}
+.dcc-home-service-links button{background:#214b38;color:#f7efdc;border:1px solid #7d916e;border-radius:10px;min-height:45px;padding:9px;font:700 13px system-ui,sans-serif}
+.dcc-home-return{width:100%;min-height:44px;margin-bottom:10px;padding:9px 12px;border:1px solid #b79c62;border-radius:12px;background:#173b2d;color:#f5eddd;font:700 14px system-ui,sans-serif;text-align:left}
+.dcc-home-return:focus-visible,.dcc-home-service-links button:focus-visible{outline:3px solid #d5ba82;outline-offset:2px}
