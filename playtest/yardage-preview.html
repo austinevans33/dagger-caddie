@@ -52,7 +52,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 <div class="bar"><label>Hole<br><select id="hole" style="width:100%"></select></label><label>Tees<br><select id="tees" style="width:100%"><option>Checking selection…</option></select></label></div>
 <div class="hole-glance" aria-label="Hole at a glance"><span id="mapHole">HOLE 1</span><strong id="mapPar">Par —</strong><strong id="mapYards">Tee yards —</strong></div>
 <div class="field-sketch" aria-label="Hole map unavailable until verified geometry is sourced"><p>Hole sketch reserved for verified fairway, green and hazard geometry.<br>No invented course layout.</p></div>
-<section class="card"><span id="position" class="hole-pill"></span><p id="name" class="muted"></p><div id="par" class="big"></div><div id="yards" class="big"></div><p id="coverage" class="muted"></p><h3 class="pencil-title">Field notes</h3><ul id="hazards"></ul></section>
+<section class="card"><span id="position" class="hole-pill"></span><p id="name" class="muted"></p><div id="par" class="big"></div><div id="yards" class="big"></div><p id="coverage" class="muted"></p><p id="strokeIndex" class="muted"></p><h3 class="pencil-title">Field notes</h3><ul id="hazards"></ul></section>
 
 <button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask your caddy about this hole →</button>
 <aside class="pencil-note" aria-label="Your selected caddy’s notebook"><span id="caddySignature" class="signature">Keith’s pencil</span><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></aside>
@@ -88,6 +88,8 @@ function draw(){
  $('mapPar').textContent='Par '+page.displayPar;
  $('mapYards').textContent=page.verified?page.displayYards+' yds':'Yards unverified';
  $('coverage').textContent=coverage.label;
+ const currentFact=(latest.holes||[]).find(h=>h.number===number);
+ $('strokeIndex').textContent=Number.isInteger(currentFact?.handicapMen)&&Number.isInteger(currentFact?.handicapWomen)?'Handicap index · Men '+currentFact.handicapMen+' / Women '+currentFact.handicapWomen:'';
  $('source').textContent=source+' · Tee yardage is not GPS pin distance. No scores or bets are changed here.';
  const notes=page.hazards||[];
  $('hazards').replaceChildren();
