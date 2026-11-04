@@ -1,13 +1,12 @@
 /* Dagger Clubhouse: navigation facade only. Do not own scoring, bets or round state. */
+import {readYardageHole} from './yardage-navigation.js';
 (function(){
 'use strict';
 function openTab(id){
  const tab=document.getElementById('tab-'+id);
  if(tab)tab.click();
 }
-function selectedHole(){
- try{const h=Number(sessionStorage.getItem('dccFridayYardageHole'));return Number.isInteger(h)&&h>=1&&h<=18?h:1}catch{return 1}
-}
+function selectedHole(){return readYardageHole({session:sessionStorage,local:localStorage})}
 function mount(){
  if(document.getElementById('dccClubhouseHome'))return;
  const caddy=document.querySelector('section.caddie-roster[data-tab="play"]');
