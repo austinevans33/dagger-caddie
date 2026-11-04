@@ -164,7 +164,7 @@ test('Pencil Yardage Book follows selected caddy without inventing hole geometry
  await expect(page.locator('.paper')).toBeVisible();
  await expect(page.locator('#caddySignature')).toContainText('Vinny');
  await expect(page.locator('#caddyNote')).not.toBeEmpty();
- await expect(page.locator('.field-sketch')).toContainText('No invented course layout');
+ await expect(page.locator('.field-sketch')).toContainText('No invented fairways');
  await expect(page.locator('#yards')).toContainText('Not verified');
  await page.locator('#next').click();
  await expect(page.locator('#position')).toContainText('HOLE 2 / 18');
