@@ -175,7 +175,7 @@ test('Verified provider feature polygons appear as a pencil study without sugges
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'geometry-test',name:'Geometry Test',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6300},holeNumber:1}}));
  });
  await page.route('https://api.opengolfapi.org/v1/courses/geometry-test/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[{number:1,par:4,yardages:{white:400}}]})}));
- await page.route(/api\\.opengolfapi\\.org\\/api\\/v1\\/features\\?/,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:[{type:'Feature',properties:{type:'green',hole:1},geometry:{type:'Polygon',coordinates:[[[-79,35],[-78.9999,35],[-78.9999,35.0001],[-79,35]]]}}]})}));
+ await page.route(url=>url.toString().startsWith('https://api.opengolfapi.org/api/v1/features?'),route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:[{type:'Feature',properties:{type:'green',hole:1},geometry:{type:'Polygon',coordinates:[[[-79,35],[-78.9999,35],[-78.9999,35.0001],[-79,35]]]}}]})}));
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('#yards')).toContainText('400');
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(1);
