@@ -10,7 +10,7 @@ export function resolveYardageState({active,context,holeNumber=1}={}){
  const page=yardageBookPage({holes,holeNumber,courseName:selection?.course?.name||'No course selected',teeName:selection?.tee?.name||'No tees selected'});
  const coverage=scorecardCoverage(holes);
  const source=holes.length?['offline-cached','cached-no-provider-holes'].includes(context?.state)?'Previously verified scorecard · offline cache':'Provider scorecard · selected tee':'No verified hole data';
- return {page,coverage,source,selection,hasCourse:!!selection,livePinDistance:false,state:context?.state||'not-selected'};
+ return {page,coverage,source,selection,holes,hasCourse:!!selection,livePinDistance:false,state:context?.state||'not-selected'};
 }
 export async function loadYardageState({storage,fetcher,signal,holeNumber=1}={}){
  const active=readActiveRound(storage);
