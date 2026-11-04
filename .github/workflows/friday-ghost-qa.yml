@@ -36,6 +36,8 @@ on:
       - 'tests/friday-round-score-snapshot.test.mjs'
       - 'playtest/bayonet-verified-scorecard.js'
       - 'tests/friday-bayonet-scorecard.test.mjs'
+      - 'playtest/course-scorecard-reconcile.js'
+      - 'tests/friday-course-scorecard-reconcile.test.mjs'
       - 'playtest/yardage-caddy-arrival.js'
       - 'tests/friday-yardage-caddy-handoff.test.mjs'
       - 'tests/friday-release-entrypoints.test.mjs'
@@ -71,7 +73,7 @@ jobs:
           node --check house-ghost-round.js
           node --check house-ghost-ledger.js
           node --check house-ghost-playback.js
-          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs tests/friday-room-recovery.test.mjs tests/friday-ledger-settlement.test.mjs tests/friday-bbb-settlement.test.mjs tests/friday-course-switch.test.mjs tests/friday-yardage-book.test.mjs tests/friday-yardage-entry.test.mjs tests/friday-yardage-selection.test.mjs tests/friday-round-yardage-transition.test.mjs tests/friday-yardage-roundtrip.test.mjs tests/friday-yardage-navigation.test.mjs tests/friday-course-pencil-geometry.test.mjs tests/friday-yardage-caddy-handoff.test.mjs tests/friday-round-score-snapshot.test.mjs tests/friday-bayonet-scorecard.test.mjs tests/friday-release-entrypoints.test.mjs tests/friday-round-receipt.test.mjs tests/friday-playable-code-parity.test.mjs tests/friday-game-yardage-roundtrip.test.mjs
+          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs tests/friday-room-recovery.test.mjs tests/friday-ledger-settlement.test.mjs tests/friday-bbb-settlement.test.mjs tests/friday-course-switch.test.mjs tests/friday-yardage-book.test.mjs tests/friday-yardage-entry.test.mjs tests/friday-yardage-selection.test.mjs tests/friday-round-yardage-transition.test.mjs tests/friday-yardage-roundtrip.test.mjs tests/friday-yardage-navigation.test.mjs tests/friday-course-pencil-geometry.test.mjs tests/friday-yardage-caddy-handoff.test.mjs tests/friday-round-score-snapshot.test.mjs tests/friday-bayonet-scorecard.test.mjs tests/friday-course-scorecard-reconcile.test.mjs tests/friday-release-entrypoints.test.mjs tests/friday-round-receipt.test.mjs tests/friday-playable-code-parity.test.mjs tests/friday-game-yardage-roundtrip.test.mjs
 
       - name: Check staging-only deploy helper syntax
         run: bash -n qa/deploy-friday-preview.sh
