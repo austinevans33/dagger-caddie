@@ -65,7 +65,7 @@ import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 const requested=params.has('hole')?Number(params.get('hole')):null;
 let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
-let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();let mapMode='all';let mapSelected=null;
+let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();let spatialPending=null;let mapMode='all';let mapSelected=null;
 for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
 function draw(){
@@ -97,12 +97,24 @@ function draw(){
 }
 function updateSketch(selection,hole){
  const gen=++spatialGeneration,box=document.querySelector('.field-sketch');
+ if(spatialPending){spatialPending.abort();spatialPending=null}
  mapSelected=null;mapMode='all';
  const key=selection?.course?.provider+'|'+selection?.course?.providerCourseId+'|'+hole;
  function unavailable(){if(gen!==spatialGeneration)return;box.classList.remove('has-features');box.replaceChildren();const p=document.createElement('p');p.textContent='Verified hole geometry not available. No invented fairways, greens or hazards.';box.append(p)}
  if(!selection?.course||selection.course.provider!=='opengolfapi'){unavailable();return}
- const load=spatialCache.has(key)?Promise.resolve(spatialCache.get(key)):loadCourseFeatures(selection,hole).then(features=>{spatialCache.set(key,features);return features});
+ if(!spatialCache.has(key)){box.classList.remove('has-features');box.replaceChildren();const p=document.createElement('p');p.setAttribute('role','status');p.textContent='Checking mapped features for this hole…';box.append(p)}
+ const controller=new AbortController();
+ if(!spatialCache.has(key))spatialPending=controller;
+ const load=spatialCache.has(key)?Promise.resolve(spatialCache.get(key)):loadCourseFeatures(selection,hole,{signal:controller.signal}).then(features=>{
+  if(!controller.signal.aborted){
+   // Keep a short in-memory history; never persist unknown geometry to a live score or bet.
+   if(spatialCache.size>=24)spatialCache.delete(spatialCache.keys().next().value);
+   spatialCache.set(key,features);
+  }
+  return features;
+ });
  load.then(features=>{
+  if(spatialPending===controller)spatialPending=null;
   if(gen!==spatialGeneration)return;
   const shapes=pencilGeometry(features);
   if(!shapes.length){unavailable();return}
@@ -144,7 +156,7 @@ function updateSketch(selection,hole){
   box.append(svg,list,note);
   updateMode();
   const foot=document.createElement('p');foot.className='geometry-foot';foot.textContent='Coarse OpenStreetMap features via OpenGolfAPI · not surveyed, not a rangefinder, no live pin';box.append(foot);
- }).catch(unavailable);
+ }).catch(error=>{if(spatialPending===controller)spatialPending=null;if(!controller.signal.aborted)unavailable()});
 }
 $('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
 $('next').onclick=()=>{number=Math.min(18,number+1);draw()};
