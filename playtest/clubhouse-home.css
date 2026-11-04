@@ -23,3 +23,8 @@
 .dcc-home-foot{border-top:1px solid rgba(205,182,132,.3);padding-top:11px;color:#b5c7b8;font-size:10px;letter-spacing:.08em;text-align:center}
 @media(min-width:650px){.dcc-home{padding:22px}.dcc-home-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(prefers-reduced-motion:no-preference){.dcc-home button,.dcc-home a{transition:background-color .17s,transform .17s}.dcc-home button:active,.dcc-home a:active{transform:scale(.99)}}
+
+/* Preserve button-like tiles over legacy global anchor styles. */
+.dcc-home a.dcc-home-tile,.dcc-home a.dcc-home-tile:visited{color:#f5eddd!important;text-decoration:none!important}
+.dcc-home a.dcc-home-feature,.dcc-home a.dcc-home-feature:visited{color:#173a2c!important;text-decoration:none!important}
+.dcc-home a.dcc-home-tile *, .dcc-home a.dcc-home-feature *{text-decoration:none!important}
