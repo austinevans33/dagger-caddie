@@ -105,3 +105,28 @@ test('Clubhouse preserves original tab names and opens the existing Money Room s
  await page.locator('#tab-play').click();
  await expect(home.locator('img.dcc-home-seal')).toHaveAttribute('src','dcc-approved-seal.png');
 });
+
+test('Three on-course tabs retain both Club Services with a safe return',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#useAustin').click({timeout:5000});
+ for(const tab of ['play','games','bets'])await expect(page.locator('#tab-'+tab)).toBeVisible();
+ for(const tab of ['bag','settings'])await expect(page.locator('#tab-'+tab)).toBeHidden();
+ const services=page.locator('#dccClubhouseHome .dcc-home-services');
+ await services.locator('summary').click();
+ await services.locator('[data-dcc-go="bag"]').click();
+ await expect(page.locator('#dccReturnFrombag')).toBeVisible();
+ await page.locator('#dccReturnFrombag').click();
+ await expect(page.locator('#dccClubhouseHome')).toBeVisible();
+ await services.locator('[data-dcc-go="settings"]').click();
+ await expect(page.locator('#dccReturnFromsettings')).toBeVisible();
+ await page.locator('#dccReturnFromsettings').click();
+ await expect(page.locator('#dccClubhouseHome')).toBeVisible();
+ await page.locator('#tab-games').click();
+ await expect(page.locator('#gamesMenu')).toBeVisible();
+ await page.locator('#tab-bets').click();
+ await expect(page.locator('#moneyRoomSection')).toBeVisible();
+});
