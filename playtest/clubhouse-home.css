@@ -28,3 +28,11 @@
 .dcc-home a.dcc-home-tile,.dcc-home a.dcc-home-tile:visited{color:#f5eddd!important;text-decoration:none!important}
 .dcc-home a.dcc-home-feature,.dcc-home a.dcc-home-feature:visited{color:#173a2c!important;text-decoration:none!important}
 .dcc-home a.dcc-home-tile *, .dcc-home a.dcc-home-feature *{text-decoration:none!important}
+
+/* Clear, single-purpose Money Room route, preserving the original five tab names. */
+.dcc-home-money{display:flex;align-items:center;justify-content:space-between;width:100%;gap:12px;margin-top:12px;padding:13px 15px;min-height:60px;border:1px solid #a88c58;border-radius:14px;background:#f1e7d2;color:#173a2c;text-align:left}
+.dcc-home-money strong{display:block;font:700 16px/1.25 Georgia,serif;color:#173a2c}
+.dcc-home-money small{display:block;margin-top:3px;color:#625f54;font:12px/1.3 system-ui,sans-serif}
+.dcc-home-money>span:last-child{font:26px Georgia,serif}
+.dcc-home-money:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
+@media(max-width:420px){.dcc-home{padding:13px}.dcc-home-header{margin-bottom:12px}.dcc-home-seal{width:62px;height:62px}.dcc-home-feature{padding:16px}.dcc-home-feature-title{margin:11px 0 8px}.dcc-home-view{margin-top:13px}.dcc-home-grid{gap:9px;margin-top:10px}.dcc-home-tile{padding:13px 11px;min-height:111px}.dcc-home-tile-name{font-size:17px}.dcc-home-tile-icon{font-size:22px}}
