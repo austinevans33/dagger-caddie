@@ -297,7 +297,7 @@ async function connect(id){
    const succeed=()=>{if(settled)return;settled=true;resolve();};
    const unsubscribe=onSnapshot(doc(db,'rooms',id),snap=>{
     if(version!==connectionVersion||auth.currentUser?.uid!==uid)return;
-    if(!snap.exists()){fail(Error('Money Room no longer exists or access was denied.'));return;}
+    if(!snap.exists()){if(firstConfirmed)status('Live room disappeared. Stop entering scores and reconnect.');else fail(Error('Money Room no longer exists or access was denied.'));return;}
     // Cache can show an old archived state or unsynced edits. Wait for server.
     if(snap.metadata?.fromCache||snap.metadata?.hasPendingWrites){
      status('Waiting for the live Money Room server…');
@@ -310,7 +310,7 @@ async function connect(id){
     render();
     status('LIVE · Server-confirmed room · '+roomLabel());
     succeed();
-   },fail);
+   },error=>{if(firstConfirmed&&version===connectionVersion)status('Live room disconnected: '+error.message+'. Reconnect before entering scores.');else fail(error);});
    roomUnsub=unsubscribe;
   }));
  }catch(error){
