@@ -320,3 +320,18 @@ test('Grounds score pulse reflects the paper scorecard without duplicating game 
  await expect(pulse.locator('#dccScorePulseSummary')).toContainText('Other Course · Blue · 0 recorded strokes');
  await expect(pulse.locator('#dccScorePulseRecent')).toHaveText('No scores entered yet.');
 });
+
+test('Ghost preview uses the selected course tee scorecard but never changes wager storage',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'ghost-test',name:'Ghost Test Links',region:'NC'},tee:{providerTeeId:'blue',name:'Blue',totalYards:6200},holeNumber:1}}));
+  localStorage.setItem('dagger_foursome_active','{\"protected\":true}');
+ });
+ await page.route('https://api.opengolfapi.org/v1/courses/ghost-test/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[{number:1,par:3,yardages:{blue:165}}]})}));
+ await page.goto('/playtest/ghost-preview.html');
+ await expect(page.locator('#summary')).toContainText('Ghost Test Links · Blue');
+ await expect(page.locator('#summary')).toContainText('selected-tee par & yards verified');
+ await expect(page.locator('#headline')).toContainText('Par 3');
+ await page.locator('#next').click();
+ await expect(page.locator('#traces path')).toHaveCount(2);
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{\"protected\":true}');
+});
