@@ -8493,8 +8493,8 @@ function renderFoursome(){
   $('wInstruction').textContent=g.format==='skins'?'Lowest unique gross score wins the skin; ties carry over.':g.format==='nassau'?'Front 9, back 9 and overall are three separate matches.':'Every hole won or lost changes the balance by the stake.';
  }
  $('wHistory').innerHTML='';let total=0;
- wHistory.forEach((g,archiveIndex)=>{const net=wagerMath(g).score[0];total+=net;const row=document.createElement('tr');row.dataset.archiveIndex=String(archiveIndex);[new Date(g.ended).toLocaleDateString(),g.format,money(net)].forEach(v=>{const cell=document.createElement('td');cell.textContent=v;row.append(cell)});$('wHistory').append(row);});
- $('wLifetime').textContent=wHistory.length+' archived games · lifetime net '+money(total)+'. Saved only on this device; back up your app data.';
+ wHistory.forEach((g,archiveIndex)=>{const result=wagerMath(g),complete=!result.invalid&&(!result.pending||!result.pending.length),net=complete?result.score[0]:null;if(net!==null)total+=net;const row=document.createElement('tr');row.dataset.archiveIndex=String(archiveIndex);[new Date(g.ended).toLocaleDateString(),g.format,net===null?'Incomplete / review':money(net)].forEach(v=>{const cell=document.createElement('td');cell.textContent=v;row.append(cell)});$('wHistory').append(row);});
+ $('wLifetime').textContent=wHistory.length+' archived games · completed-game net '+money(total)+'. Incomplete or invalid games excluded; saved on this device. Back up your app data.';
 }
 $('wStart').onclick=()=>{if(activeW&&!confirm('Replace your current unarchived foursome game?'))return;const names=[$('wMyName').value,$('wP2').value,$('wP3').value,$('wP4').value].map(x=>x.trim()).filter(Boolean),format=$('wFormat').value,stake=Number($('wStake').value);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length||stake<0||!Number.isFinite(stake)){alert('Enter at least two different player names and a valid stake.');return;}const players=format==='skins'?names:names.slice(0,2);// Bind new games to the exact active Starter's Desk round when available.
 let roundIdentity;
@@ -8543,9 +8543,9 @@ $('wSaveHole').onclick=()=>{if(!activeW)return;if(activeW.holes.length>=18){$('w
  refresh();
 })();
 $('wUndoHole').onclick=()=>{if(activeW&&activeW.holes.length){activeW.holes.pop();wStore();renderFoursome();}};
-$('wFinish').onclick=()=>{if(!activeW||!activeW.holes.length)return;if(!confirm('Archive this game and its current results?'))return;activeW.ended=Date.now();wHistory.push(activeW);activeW=null;wStore();renderFoursome();};
+$('wFinish').onclick=()=>{if(!activeW||!activeW.holes.length)return;const result=wagerMath(activeW);if(result.invalid){$('wStatus').textContent='Invalid game scores: review entries before archiving.';return;}if(result.pending.length){$('wStatus').textContent='Nassau still has '+result.pending.length+' unsettled matches. Finish 18 holes before archiving.';return;}if(!confirm('Archive this game and its current results?'))return;activeW.ended=Date.now();wHistory.push(activeW);activeW=null;wStore();renderFoursome();};
 $('wAbandon').onclick=()=>{if(activeW&&confirm('Discard the active game without adding it to lifetime history?')){activeW=null;wStore();renderFoursome();}};
-$('wExport').onclick=()=>{const csv=['date,format,players,holes,your_net',...wHistory.map(g=>[new Date(g.ended).toISOString().slice(0,10),g.format,'"'+g.players.join(' vs ').replaceAll('"','""')+'"',g.holes.length,wagerMath(g).score[0].toFixed(2)].join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='dagger-lifetime-wagers.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);};
+$('wExport').onclick=()=>{const csv=['date,format,players,holes,your_net',...wHistory.map(g=>[new Date(g.ended).toISOString().slice(0,10),g.format,'"'+g.players.join(' vs ').replaceAll('"','""')+'"',g.holes.length,((x)=>x.invalid||x.pending.length?'INCOMPLETE':x.score[0].toFixed(2))(wagerMath(g))].join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='dagger-lifetime-wagers.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);};
 const freshGame=()=>({players:[],holes:[],started:Date.now()});
 let activeG=read('dagger_bbb_active',null),gHistory=read('dagger_bbb_history',[]);
 const gStore=()=>{store('dagger_bbb_active',activeG);store('dagger_bbb_history',gHistory);};
