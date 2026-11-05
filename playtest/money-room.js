@@ -152,7 +152,7 @@ function render(){
  if(!(draftScores&&host&&!room.archived&&h===selectedHole&&draftScores.length===room.players.length))buildInputs(h);
  const x=compute(room);
  renderFinishSummary(room,x);
- $('roomStandings').textContent=room.players.map((name,i)=>`${name}: ${money(x.totals[i])}`).join(' · ')+(room.format==='skins'?` · ${x.carry} skin(s) in next pot`:'')+` · ${x.settled} holes scored`;
+ $('roomStandings').textContent=room.players.map((name,i)=>`${name}: ${money(x.totals[i])}`).join(' · ')+(room.format==='skins'?(x.skinsPending?' · Later skins awaiting missing earlier scores':` · ${x.carry} skin(s) in next pot`):'')+` · ${x.settled} holes scored`;
  $('roomFormatDisplay').textContent=room.format.toUpperCase();$('roomStakeDisplay').textContent='$'+room.stake;$('roomNextDisplay').textContent=String(pending);
  const lead=x.totals.reduce((a,v,i)=>v>x.totals[a]?i:a,0);
  const leader=room.players[lead], loser=room.players.reduce((a,n,i)=>x.totals[i]<x.totals[a]?i:a,0);
