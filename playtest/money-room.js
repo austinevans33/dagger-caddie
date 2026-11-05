@@ -229,7 +229,7 @@ function archiveLocal(){
  }catch(e){status('Match ended, but this phone could not save a local copy: '+e.message);}
 }
 function settlementLabel(model,x){
- const pending=model.format==='skins'&&x.carry>1?' · '+(x.carry-1)+' carried skin(s) unawarded':'';
+ const pending=model.format==='skins'?(x.skinsPending?' · later skins pending earlier hole scores':x.carry>1?' · '+(x.carry-1)+' carried skin(s) unawarded':''):'';
  return x.settled+'/18 holes scored'+pending;
 }
 function renderFinishSummary(model,x){
@@ -388,7 +388,7 @@ $('roomFinish').onclick=singleFlight(async()=>{
  const id=roomId,uid=auth.currentUser.uid,x=compute(room);
  if(room.format==='nassau'&&x.settled<18){status('Nassau is not fully settled. Enter all 18 holes before finishing the Money Room. No results were archived.');return;}
  const incomplete=x.settled<18?' Only '+x.settled+' of 18 holes are scored.':'';
- const carry=room.format==='skins'&&x.carry>1?' '+(x.carry-1)+' carried skin(s) remain unawarded.':'';
+ const carry=room.format==='skins'?(x.skinsPending?' Later skins are pending earlier unscored holes.':x.carry>1?' '+(x.carry-1)+' carried skin(s) remain unawarded.':''):'';
  if(!confirm('Finish and archive this match for everyone?'+incomplete+carry+' Final payouts will be shown. This cannot be undone.'))return;
  try{
   session.assertIdentity(room.hostUid);
