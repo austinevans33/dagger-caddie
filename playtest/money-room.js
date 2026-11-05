@@ -66,16 +66,23 @@ function compute(model){
  const players=model.players||[];const n=players.length,holes=model.holes||{},stake=Number(model.stake)||0;
  const totals=Array(n).fill(0),ledger=[];let carry=1,settled=0;
  let cumulativeMatch=0;
+ // Skins cannot award later holes until every preceding hole is scored.
+ // Otherwise a late score correction can rewrite money already shown as won.
+ let skinsSequenceComplete=true;
  const segs=[{from:1,to:9,finished:false},{from:10,to:18,finished:false},{from:1,to:18,finished:false}];
  for(let hole=1;hole<=18;hole++){
    const scores=holes[hole];const valid=Array.isArray(scores)&&scores.length===n&&scores.every(v=>Number.isInteger(v)&&v>=1&&v<=20);
    let event='—';
+   if(!valid&&model.format==='skins')skinsSequenceComplete=false;
    if(valid){
      settled++;
      if(model.format==='skins'){
-       const low=Math.min(...scores), winners=scores.map((x,i)=>x===low?i:-1).filter(i=>i>=0);
-       if(winners.length===1){const win=winners[0],pot=stake*carry;totals[win]+=(n-1)*pot;for(let i=0;i<n;i++)if(i!==win)totals[i]-=pot;event=players[win]+' · '+carry+' skin'+(carry===1?'':'s');carry=1;}
-       else{event='Tie · carry '+carry+' → '+(carry+1);carry++;}
+       if(!skinsSequenceComplete){event='Pending earlier hole · skins not settled';}
+       else {
+        const low=Math.min(...scores), winners=scores.map((x,i)=>x===low?i:-1).filter(i=>i>=0);
+        if(winners.length===1){const win=winners[0],pot=stake*carry;totals[win]+=(n-1)*pot;for(let i=0;i<n;i++)if(i!==win)totals[i]-=pot;event=players[win]+' · '+carry+' skin'+(carry===1?'':'s');carry=1;}
+        else{event='Tie · carry '+carry+' → '+(carry+1);carry++;}
+       }
      } else if(model.format==='hole'){
        if(scores[0]===scores[1])event='Halved';else{const w=scores[0]<scores[1]?0:1;totals[w]+=stake;totals[1-w]-=stake;cumulativeMatch+=w===0?1:-1;event=players[w]+' wins';}
      } else if(model.format==='vegas'){
@@ -91,7 +98,7 @@ function compute(model){
        if(count===seg.to-seg.from+1){seg.finished=true;if(diff!==0){const w=diff>0?0:1;totals[w]+=stake;totals[1-w]-=stake;event+=' · Nassau segment settled';}}}}
    ledger.push({hole,scores:valid?scores:null,event,totals:[...totals],carry});
  }
- return {totals,carry,settled,ledger,matchDiff:cumulativeMatch};
+ return {totals,carry,settled,ledger,matchDiff:cumulativeMatch,skinsPending:model.format==='skins'&&!skinsSequenceComplete};
 }
 function roomLabel(){const me=user?.uid||'';return (me===room?.hostUid?'Scorekeeper':'Read-only member');}
 let lastRenderedRoomId=null;
