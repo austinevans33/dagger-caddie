@@ -304,6 +304,7 @@ async function connect(id){
      return;
     }
     room=snap.data();
+    if(!firstConfirmed&&room.archived){fail(Error('This Money Room has already finished. Ask the host for a new QR code.'));return;}
     firstConfirmed=true;
     if(room.archived){archiveLocal();forgetRoom(roomStore,uid,id);}
     render();
@@ -361,7 +362,7 @@ async function join(){
   if(!snapshot.exists())throw Error('Room not found. Ask the scorekeeper for a new invitation.');
   if(snapshot.data()?.archived)throw Error('This Money Room is already archived. Ask the host to start a new room.');
   invite=code;roomId=id;room=snapshot.data();
-  await connect(id);assertOperation(attempt,operationUid);status('LIVE · Membership verified and shared scorecard connected.');
+  stage='live-subscription';await connect(id);assertOperation(attempt,operationUid);status('LIVE · Membership verified and shared scorecard connected.');
  }catch(e){
   if(attempt!==actionVersion)return;
   let hint=e.code==='unavailable'?' Connection verification timed out. Check your signal and tap Join again.':'';
