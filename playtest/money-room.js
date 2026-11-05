@@ -281,9 +281,47 @@ function renderMatchHistory(){
 function roomLink(){const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('room',roomId);url.searchParams.set('invite',invite);return url.toString();}
 function parseInvite(input){return invitationFrom(input)||{id:'',code:''};}
 const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('');};
-async function connect(id){if(roomUnsub)roomUnsub();roomId=id;const version=++connectionVersion;
- const {doc,onSnapshot}=functions;
- roomUnsub=onSnapshot(doc(db,'rooms',id),snap=>{if(version!==connectionVersion||auth.currentUser?.uid!==user?.uid)return;if(!snap.exists()){status('Room not found, or access denied.');return;}room=snap.data();if(room.archived&&!snap.metadata?.hasPendingWrites&&!snap.metadata?.fromCache){archiveLocal();forgetRoom(roomStore,user.uid,roomId);}status('LIVE · Updates delivered across connected phones · '+roomLabel());render();},err=>{if(version===connectionVersion)status('Could not subscribe: '+err.message);});
+async function connect(id){
+ if(roomUnsub)roomUnsub();
+ roomUnsub=null;
+ roomId=id;
+ const version=++connectionVersion,uid=auth.currentUser?.uid;
+ // Do not report a room as connected until a non-cached Firebase snapshot
+ // confirms the listener is permitted and the shared document exists.
+ let firstConfirmed=false;
+ try{
+  await readWithDeadline(()=>new Promise((resolve,reject)=>{
+   const {doc,onSnapshot}=functions;
+   let settled=false;
+   const fail=error=>{if(settled)return;settled=true;reject(error);};
+   const succeed=()=>{if(settled)return;settled=true;resolve();};
+   const unsubscribe=onSnapshot(doc(db,'rooms',id),snap=>{
+    if(version!==connectionVersion||auth.currentUser?.uid!==uid)return;
+    if(!snap.exists()){fail(Error('Money Room no longer exists or access was denied.'));return;}
+    // Cache can show an old archived state or unsynced edits. Wait for server.
+    if(snap.metadata?.fromCache||snap.metadata?.hasPendingWrites){
+     status('Waiting for the live Money Room server…');
+     return;
+    }
+    room=snap.data();
+    firstConfirmed=true;
+    if(room.archived){archiveLocal();forgetRoom(roomStore,uid,id);}
+    render();
+    status('LIVE · Server-confirmed room · '+roomLabel());
+    succeed();
+   },fail);
+   roomUnsub=unsubscribe;
+  }));
+ }catch(error){
+  if(version===connectionVersion&&!firstConfirmed){
+   ++connectionVersion;
+   if(roomUnsub){roomUnsub();roomUnsub=null;}
+   if(roomId===id){roomId='';room=null;host=false;}
+   $('roomScoreSection').hidden=true;
+   $('roomEditor').hidden=true;
+  }
+  throw error;
+ }
 }
 async function create(){const attempt=++actionVersion;try{
  await initialization;
@@ -295,7 +333,7 @@ async function create(){const attempt=++actionVersion;try{
  if(needed&&players.length!==needed)throw Error(`${format} requires ${needed} players.`);
  const stake=Number($('roomStake').value);if(!Number.isFinite(stake)||stake<0||stake>10000)throw Error('Invalid stake.');
  const {doc,setDoc}=functions;const id=rand(16),code=rand(8);const model={name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
- await readWithDeadline(()=>setDoc(doc(db,'rooms',id),model));assertOperation(attempt,operationUid);await readWithDeadline(()=>setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()}));assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);status('Money Room created. You are the ONLY scorekeeper. Share the invitation link.');
+ await readWithDeadline(()=>setDoc(doc(db,'rooms',id),model));assertOperation(attempt,operationUid);await readWithDeadline(()=>setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()}));assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);assertOperation(attempt,operationUid);status('Money Room created and LIVE. You are the ONLY scorekeeper. Share the QR invitation.');
  }catch(e){if(attempt===actionVersion)status('Could not confirm room creation: '+e.message+(e.code==='unavailable'?' The network timed out; check your connection before starting another room.':'')+' No new room was confirmed on this phone.');}}
 async function join(){
  const attempt=++actionVersion;
@@ -323,7 +361,7 @@ async function join(){
   if(!snapshot.exists())throw Error('Room not found. Ask the scorekeeper for a new invitation.');
   if(snapshot.data()?.archived)throw Error('This Money Room is already archived. Ask the host to start a new room.');
   invite=code;roomId=id;room=snapshot.data();
-  await connect(id);status('Membership verified. Connecting live updates…');
+  await connect(id);assertOperation(attempt,operationUid);status('LIVE · Membership verified and shared scorecard connected.');
  }catch(e){
   if(attempt!==actionVersion)return;
   let hint=e.code==='unavailable'?' Connection verification timed out. Check your signal and tap Join again.':'';
