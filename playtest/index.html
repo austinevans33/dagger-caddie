@@ -6563,7 +6563,7 @@ $('voiceShot').onclick=()=>{
 const freshWager=()=>({players:[],format:'skins',stake:5,holes:[],started:Date.now()});
 let activeW=read('dagger_foursome_active',null),wHistory=read('dagger_foursome_history',[]);
 const wStore=()=>{store('dagger_foursome_active',activeW);store('dagger_foursome_history',wHistory);};
-const wVal=(n)=>Number.isFinite(+n)&&+n>0?+n:null;
+const wVal=(n)=>n!==''&&Number.isInteger(Number(n))&&Number(n)>=1&&Number(n)<=15?Number(n):null;
 
 // DCC STEP 27A — SHARED COMPETITION RECORD FOUNDATION
 // Schema only: no Firebase writes or wager settlement yet.
@@ -8450,25 +8450,46 @@ dccMpRender();
 dccMpUpdateEditorPermissions();
 
 function wagerMath(game){
- const names=game.players,score=names.map(()=>0),stake=Number(game.stake)||0;
- let carry=1;
+ const names=Array.isArray(game?.players)?game.players:[];
+ const score=names.map(()=>0),stake=Number(game?.stake);
+ if(names.length<2||names.length>4||!Number.isFinite(stake)||stake<0||
+    !Array.isArray(game?.holes)||game.holes.length>18)return {score,carry:1,pending:[],invalid:true};
+ let carry=1;const pending=[];
+ const holes=game.holes;
+ if(holes.some(h=>!Array.isArray(h)||h.length!==names.length||h.some(n=>!Number.isInteger(n)||n<1||n>15)))return {score,carry,pending,invalid:true};
  if(game.format==='skins'){
-  game.holes.forEach(h=>{const vals=h.filter(x=>x!==null);if(vals.length!==names.length)return;const low=Math.min(...vals),winners=h.map((v,i)=>v===low?i:-1).filter(i=>i>=0);if(winners.length===1){const wi=winners[0];score[wi]+=stake*carry*(names.length-1);score.forEach((_,j)=>{if(j!==wi)score[j]-=stake*carry;});carry=1;}else carry++;});
- }else if(game.format==='hole'){
-  game.holes.forEach(h=>{if(h[0]===null||h[1]===null)return;if(h[0]<h[1]){score[0]+=stake;score[1]-=stake;}if(h[0]>h[1]){score[0]-=stake;score[1]+=stake;}});
- }else{
-  for(const [start,end] of [[0,9],[9,18],[0,18]]){
-    let wins=0;game.holes.slice(start,end).forEach(h=>{if(h[0]!==null&&h[1]!==null)wins+=h[0]<h[1]?1:h[0]>h[1]?-1:0;});
-    if(wins){score[0]+=Math.sign(wins)*stake;score[1]-=Math.sign(wins)*stake;}
+  for(const hole of holes){
+   const low=Math.min(...hole),winners=hole.flatMap((n,i)=>n===low?[i]:[]);
+   if(winners.length===1){
+    const winner=winners[0],value=stake*carry;
+    score[winner]+=value*(names.length-1);
+    score.forEach((_,i)=>{if(i!==winner)score[i]-=value});
+    carry=1;
+   }else carry++;
   }
+  return {score,carry,pending};
  }
- return {score,carry};
+ if(names.length!==2||!['hole','nassau'].includes(game.format))return {score,carry,pending,invalid:true};
+ if(game.format==='hole'){
+  holes.forEach(h=>{const winner=h[0]<h[1]?0:h[1]<h[0]?1:-1;
+   if(winner>=0){score[winner]+=stake;score[1-winner]-=stake}
+  });
+  return {score,carry,pending};
+ }
+ for(const [start,end,label] of [[0,9,'Front nine'],[9,18,'Back nine'],[0,18,'Overall']]){
+  const played=Math.max(0,Math.min(holes.length,end)-start);
+  const lead=holes.slice(start,end).reduce((n,h)=>n+(h[0]<h[1]?1:h[0]>h[1]?-1:0),0);
+  if(played<end-start){pending.push({label,played,required:end-start,leader:Math.sign(lead)});continue}
+  if(lead>0){score[0]+=stake;score[1]-=stake}
+  if(lead<0){score[0]-=stake;score[1]+=stake}
+ }
+ return {score,carry,pending};
 }
 function money(v){return(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);}
 function renderFoursome(){
  $('wPlaying').hidden=!activeW;
- if(activeW){const g=activeW,idx=Math.min(g.holes.length,17);$('wHole').textContent=String(idx+1);const result=wagerMath(g);$('wLead').textContent=money(result.score[0])+(g.format==='skins'&&result.carry>1?' · '+result.carry+' skins at stake':'');
-  $('wScoreFields').innerHTML='';g.players.forEach((p,i)=>{const d=document.createElement('div'),l=document.createElement('label'),inpt=document.createElement('input');l.textContent=p+' strokes';inpt.id='ws'+i;inpt.type='number';inpt.min='1';inpt.max='20';inpt.placeholder='Strokes';d.append(l,inpt);$('wScoreFields').append(d);});
+ if(activeW){const g=activeW,idx=Math.min(g.holes.length,17);$('wHole').textContent=String(idx+1);const result=wagerMath(g);$('wLead').textContent=result.invalid?'Invalid historic game scores · review backup':money(result.score[0])+(g.format==='skins'&&result.carry>1?' · '+result.carry+' skins at stake':'')+(g.format==='nassau'&&result.pending.length?' · '+result.pending.length+' matches pending':'');
+  $('wScoreFields').innerHTML='';g.players.forEach((p,i)=>{const d=document.createElement('div'),l=document.createElement('label'),inpt=document.createElement('input');l.textContent=p+' strokes';inpt.id='ws'+i;inpt.type='number';inpt.min='1';inpt.max='15';inpt.step='1';inpt.placeholder='Strokes';d.append(l,inpt);$('wScoreFields').append(d);});
   $('wInstruction').textContent=g.format==='skins'?'Lowest unique gross score wins the skin; ties carry over.':g.format==='nassau'?'Front 9, back 9 and overall are three separate matches.':'Every hole won or lost changes the balance by the stake.';
  }
  $('wHistory').innerHTML='';let total=0;
