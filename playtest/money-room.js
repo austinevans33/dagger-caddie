@@ -68,7 +68,7 @@ function compute(model){
  let cumulativeMatch=0;
  // Skins cannot award later holes until every preceding hole is scored.
  // Otherwise a late score correction can rewrite money already shown as won.
- let skinsSequenceComplete=true;
+ let skinsSequenceComplete=true,skinsBlockedByGap=false;
  const segs=[{from:1,to:9,finished:false},{from:10,to:18,finished:false},{from:1,to:18,finished:false}];
  for(let hole=1;hole<=18;hole++){
    const scores=holes[hole];const valid=Array.isArray(scores)&&scores.length===n&&scores.every(v=>Number.isInteger(v)&&v>=1&&v<=20);
@@ -77,7 +77,7 @@ function compute(model){
    if(valid){
      settled++;
      if(model.format==='skins'){
-       if(!skinsSequenceComplete){event='Pending earlier hole · skins not settled';}
+       if(!skinsSequenceComplete){skinsBlockedByGap=true;event='Pending earlier hole · skins not settled';}
        else {
         const low=Math.min(...scores), winners=scores.map((x,i)=>x===low?i:-1).filter(i=>i>=0);
         if(winners.length===1){const win=winners[0],pot=stake*carry;totals[win]+=(n-1)*pot;for(let i=0;i<n;i++)if(i!==win)totals[i]-=pot;event=players[win]+' · '+carry+' skin'+(carry===1?'':'s');carry=1;}
@@ -98,7 +98,7 @@ function compute(model){
        if(count===seg.to-seg.from+1){seg.finished=true;if(diff!==0){const w=diff>0?0:1;totals[w]+=stake;totals[1-w]-=stake;event+=' · Nassau segment settled';}}}}
    ledger.push({hole,scores:valid?scores:null,event,totals:[...totals],carry});
  }
- return {totals,carry,settled,ledger,matchDiff:cumulativeMatch,skinsPending:model.format==='skins'&&!skinsSequenceComplete};
+ return {totals,carry,settled,ledger,matchDiff:cumulativeMatch,skinsPending:model.format==='skins'&&skinsBlockedByGap};
 }
 function roomLabel(){const me=user?.uid||'';return (me===room?.hostUid?'Scorekeeper':'Read-only member');}
 let lastRenderedRoomId=null;
