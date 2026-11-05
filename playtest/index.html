@@ -8477,6 +8477,42 @@ function renderFoursome(){
 }
 $('wStart').onclick=()=>{if(activeW&&!confirm('Replace your current unarchived foursome game?'))return;const names=[$('wMyName').value,$('wP2').value,$('wP3').value,$('wP4').value].map(x=>x.trim()).filter(Boolean),format=$('wFormat').value,stake=Number($('wStake').value);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length||stake<0||!Number.isFinite(stake)){alert('Enter at least two different player names and a valid stake.');return;}const players=format==='skins'?names:names.slice(0,2);activeW={...freshWager(),players,format,stake};wStore();renderFoursome();};
 $('wSaveHole').onclick=()=>{if(!activeW)return;if(activeW.holes.length>=18){$('wStatus').textContent='18 holes completed. Archive the match.';return;}const h=activeW.players.map((_,i)=>wVal($('ws'+i).value));if(h.some(x=>x===null)){ $('wStatus').textContent='Enter a valid stroke score for every player.';return;}activeW.holes.push(h);wStore();renderFoursome();$('wStatus').textContent='Hole saved. Nice work, accountants.';};
+// Explicit single-player paper-score prefill for the next game hole. No wager write.
+(function mountPaperGamePrefill(){
+ const fields=document.getElementById('wScoreFields');if(!fields||document.getElementById('dccPaperGamePrefill'))return;
+ const area=document.createElement('div');area.id='dccPaperGamePrefill';area.style.cssText='margin:9px 0;padding:10px;border:1px solid #b7a777;border-radius:10px;background:#f2ead8';
+ const select=document.createElement('select');select.id='dccPaperGamePlayer';select.setAttribute('aria-label','Match your paper scorecard to a player');select.style.cssText='max-width:100%;min-height:44px';
+ const button=document.createElement('button');button.type='button';button.id='dccPaperGameUse';button.className='btn-secondary';button.textContent='Use my paper score for this hole';button.style.cssText='margin-top:8px;min-height:44px';
+ const status=document.createElement('p');status.id='dccPaperGameStatus';status.setAttribute('role','status');status.style.cssText='font:12px/1.5 system-ui,sans-serif;margin:7px 0';
+ const label=document.createElement('p');label.textContent='Copy one stroke score from your paper card. Review every player, then Save hole scores as usual.';label.style.cssText='font:12px/1.45 system-ui,sans-serif;margin:0 0 7px';
+ area.append(label,select,button,status);fields.after(area);
+ function refresh(){
+  const saved=select.value;
+  select.replaceChildren(new Option('Choose your player',''));
+  if(activeW?.players)activeW.players.forEach((name,i)=>select.add(new Option(String(name),String(i))));
+  select.value=[...select.options].some(o=>o.value===saved)?saved:'';
+  area.hidden=!activeW||!['skins','nassau','hole'].includes(activeW.format);
+ }
+ button.addEventListener('click',async()=>{
+  const game=activeW,index=select.value;
+  if(!game||index===''){status.textContent='Select your game player first.';return}
+  const holeNumber=game.holes.length+1;
+  try{
+   const [{readRoundScoreSnapshot},{paperStrokeForGameHole}]=await Promise.all([
+    import('./round-score-snapshot.js'),import('./paper-to-game-prefill.js')
+   ]);
+   if(game!==activeW||holeNumber!==game.holes.length+1){status.textContent='Game changed. Please try again.';return}
+   const candidate=paperStrokeForGameHole(readRoundScoreSnapshot(localStorage),game,{playerIndex:Number(index),holeNumber});
+   if(!candidate.ok){status.textContent=candidate.reason;return}
+   const input=document.getElementById('ws'+index);
+   if(!input){status.textContent='Game score fields changed. Please reopen the game.';return}
+   input.value=String(candidate.score);
+   status.textContent='Hole '+holeNumber+': '+candidate.score+' strokes copied for '+game.players[Number(index)]+'. Review and tap Save hole scores to record.';
+  }catch{status.textContent='Paper score unavailable. You can still enter scores manually.'}
+ });
+ const observer=new MutationObserver(refresh);observer.observe(fields,{childList:true});
+ refresh();
+})();
 $('wUndoHole').onclick=()=>{if(activeW&&activeW.holes.length){activeW.holes.pop();wStore();renderFoursome();}};
 $('wFinish').onclick=()=>{if(!activeW||!activeW.holes.length)return;if(!confirm('Archive this game and its current results?'))return;activeW.ended=Date.now();wHistory.push(activeW);activeW=null;wStore();renderFoursome();};
 $('wAbandon').onclick=()=>{if(activeW&&confirm('Discard the active game without adding it to lifetime history?')){activeW=null;wStore();renderFoursome();}};
