@@ -61,7 +61,8 @@ export function mountRoundScorePulse({doc=document,storage=localStorage}={}){
   const card=readRoundScoreSnapshot(storage),game=getWager(),player=playerSelect.value;
   if(!card||!game||!['nassau','skins'].includes(game.format)){result.textContent='Open a paper scorecard and an active Nassau or skins game first.';return;}
   if(player===''||!Number.isInteger(Number(player))){result.textContent='Select your matching player name first.';return;}
-  if(game.roundIdentity&&game.roundIdentity!==card.identity){result.textContent='This wager belongs to a different round. No scores connected.';return;}
+  if(typeof game.roundIdentity!=='string'||!game.roundIdentity){result.textContent='This older game is not linked to a course round. Keep entering game scores manually; no wagers changed.';return;}
+  if(game.roundIdentity!==card.identity){result.textContent='This wager belongs to a different round. No scores connected.';return;}
   const synced=projectPaperScoresIntoGame(card,game,{roundIdentity:card.identity,playerIndex:Number(player)});
   if(!synced.holes){result.textContent='The game or scorecard is incompatible. No scores connected.';return;}
   const assigned=synced.holes.filter(row=>row[Number(player)]!==null).length;
