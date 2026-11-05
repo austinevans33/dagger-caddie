@@ -335,3 +335,21 @@ test('Ghost preview uses the selected course tee scorecard but never changes wag
  await expect(page.locator('#traces path')).toHaveCount(2);
  expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{\"protected\":true}');
 });
+
+test('Playable game scorer copies paper strokes into only selected player field without saving wager',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'test-course',name:'Test Course',region:'NC'},tee:{providerTeeId:'blue',name:'Blue',totalYards:6200},holeNumber:1}}));
+  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:'test-course|blue|123456',hole:2,length:18,scores:[4,...Array(17).fill(null)]}));
+  localStorage.setItem('dagger_foursome_active',JSON.stringify({format:'skins',players:['Golfer','Friend'],stake:5,holes:[],started:123}));
+ });
+ await page.goto('/playtest/');
+ const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
+ await page.locator('#tab-bets').click();
+ await expect(page.locator('#dccPaperGamePrefill')).toBeVisible();
+ await page.locator('#dccPaperGamePlayer').selectOption('0');
+ await page.locator('#dccPaperGameUse').click();
+ await expect(page.locator('#ws0')).toHaveValue('4');
+ await expect(page.locator('#ws1')).toHaveValue('');
+ await expect(page.locator('#dccPaperGameStatus')).toContainText('Review and tap Save hole scores');
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe(before);
+});
