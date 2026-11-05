@@ -340,7 +340,7 @@ test('Playable game scorer copies paper strokes into only selected player field 
  await page.addInitScript(()=>{
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'test-course',name:'Test Course',region:'NC'},tee:{providerTeeId:'blue',name:'Blue',totalYards:6200},holeNumber:1}}));
   localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:'test-course|blue|123456',hole:2,length:18,scores:[4,...Array(17).fill(null)]}));
-  localStorage.setItem('dagger_foursome_active',JSON.stringify({format:'skins',players:['Golfer','Friend'],stake:5,holes:[],started:123}));
+  localStorage.setItem('dagger_foursome_active',JSON.stringify({format:'skins',players:['Golfer','Friend'],roundIdentity:'test-course|blue|123456',stake:5,holes:[],started:123}));
  });
  await page.goto('/playtest/');
  const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
@@ -352,4 +352,19 @@ test('Playable game scorer copies paper strokes into only selected player field 
  await expect(page.locator('#ws1')).toHaveValue('');
  await expect(page.locator('#dccPaperGameStatus')).toContainText('Review and tap Save hole scores');
  expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe(before);
+});
+
+test('New live games bind the active course and tee before paper-score prefill',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:4321,selection:{course:{provider:'opengolfapi',providerCourseId:'binding-test',name:'Binding Test Course',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6100},holeNumber:1}}));
+ });
+ await page.goto('/playtest/');
+ await page.locator('#tab-bets').click();
+ await page.locator('#wMyName').fill('Golfer');
+ await page.locator('#wP2').fill('Friend');
+ await page.locator('#wFormat').selectOption('skins');
+ await page.locator('#wStart').click();
+ const active=await page.evaluate(()=>JSON.parse(localStorage.getItem('dagger_foursome_active')));
+ expect(active.roundIdentity).toBe('binding-test|white|4321');
+ expect(active.holes).toEqual([]);
 });
