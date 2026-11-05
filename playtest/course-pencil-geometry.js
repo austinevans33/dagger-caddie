@@ -21,9 +21,10 @@ export function normalizeCourseFeatures(payload,{holeNumber=1}={}){
   const props=item?.properties||{};
   const kind=String(props.type||props.feature_type||props.golf||'').toLowerCase().replace(/[- ]/g,'_');
   if(!TYPES.has(kind))continue;
-  // A mismatched hole must never be drawn on the selected page.
+  // Hole identity must be explicit. Course-wide OSM features may overlap
+  // multiple holes, so drawing unassigned polygons would mislead golfers.
   const hole=props.hole??props.hole_number;
-  if(hole!=null&&Number(hole)!==holeNumber)continue;
+  if(hole==null||!/^([1-9]|1[0-8])$/.test(String(hole))||Number(hole)!==holeNumber)continue;
   const geometry=item?.geometry;
   const polygons=geometry?.type==='Polygon'?[geometry.coordinates]:
    geometry?.type==='MultiPolygon'?geometry.coordinates:null;
