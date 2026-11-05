@@ -3,7 +3,7 @@ test('Grounds previews paper strokes against Nassau without touching saved game'
  await page.addInitScript(()=>{
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'test-course',name:'Test Course',region:'NC'},tee:{providerTeeId:'blue',name:'Blue',totalYards:6200},holeNumber:1}}));
   localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:'test-course|blue|123456',hole:2,length:18,scores:[4,...Array(17).fill(null)]}));
-  localStorage.setItem('dagger_foursome_active',JSON.stringify({format:'nassau',players:['Golfer','Friend'],stake:10,holes:[[5,4]],started:123}));
+  localStorage.setItem('dagger_foursome_active',JSON.stringify({format:'nassau',players:['Golfer','Friend'],roundIdentity:'test-course|blue|123456',stake:10,holes:[[5,4]],started:123}));
  });
  await page.goto('/playtest/');
  const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
