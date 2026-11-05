@@ -15,3 +15,12 @@ test('candidate publication waits for deterministic tests and real browser check
  assert.match(jobs[1],/test "\$\(git rev-parse HEAD\)" = "\$\(cat candidate\/FRIDAY_CHECKED_OUT_SHA.txt\)"/);
  assert.match(jobs[1],/python3 tests\/friday-bundle-integrity\.py candidate/);
 });
+
+test('browser tests serve the packaged candidate and include both requested suites',()=>{
+ assert.match(workflow,/http\.server 8765 --bind 127\.0\.0\.1 --directory candidate/);
+ const config=readFileSync(new URL('../playwright.config.mjs',import.meta.url),'utf8');
+ assert.match(config,/testMatch:\['friday-browser\.spec\.mjs','friday-game-score-preview\.spec\.mjs'\]/);
+ assert.match(workflow,/npx playwright test tests\/friday-browser\.spec\.mjs tests\/friday-game-score-preview\.spec\.mjs/);
+ const preview=readFileSync(new URL('./friday-game-score-preview.spec.mjs',import.meta.url),'utf8');
+ assert.match(preview,/roundIdentity:'test-course\|blue\|123456'/);
+});
