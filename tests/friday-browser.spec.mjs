@@ -374,3 +374,18 @@ test('New live games bind the active course and tee before paper-score prefill',
  expect(active.roundIdentity).toBe('binding-test|white|4321');
  expect(active.holes).toEqual([]);
 });
+
+test('Games shortcut opens the existing Ticket Window without writing a bet',async({page})=>{
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
+ await page.locator('#useAustin').click({timeout:5000});
+ await page.locator('#tab-games').click({timeout:5000});
+ const before=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>/prop|bet|ledger|foursome/i.test(key))));
+ await page.locator('#dccGamesTicketWindow').click();
+ await expect(page.locator('#tab-bets')).toHaveClass(/active/);
+ await expect(page.locator('#dccPropFormWrap')).toHaveAttribute('open','');
+ await expect(page.locator('#dccPropText')).toBeFocused();
+ const after=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>/prop|bet|ledger|foursome/i.test(key))));
+ expect(after).toEqual(before);
+});
