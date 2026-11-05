@@ -8475,7 +8475,15 @@ function renderFoursome(){
  wHistory.forEach((g,archiveIndex)=>{const net=wagerMath(g).score[0];total+=net;const row=document.createElement('tr');row.dataset.archiveIndex=String(archiveIndex);[new Date(g.ended).toLocaleDateString(),g.format,money(net)].forEach(v=>{const cell=document.createElement('td');cell.textContent=v;row.append(cell)});$('wHistory').append(row);});
  $('wLifetime').textContent=wHistory.length+' archived games · lifetime net '+money(total)+'. Saved only on this device; back up your app data.';
 }
-$('wStart').onclick=()=>{if(activeW&&!confirm('Replace your current unarchived foursome game?'))return;const names=[$('wMyName').value,$('wP2').value,$('wP3').value,$('wP4').value].map(x=>x.trim()).filter(Boolean),format=$('wFormat').value,stake=Number($('wStake').value);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length||stake<0||!Number.isFinite(stake)){alert('Enter at least two different player names and a valid stake.');return;}const players=format==='skins'?names:names.slice(0,2);activeW={...freshWager(),players,format,stake};wStore();renderFoursome();};
+$('wStart').onclick=()=>{if(activeW&&!confirm('Replace your current unarchived foursome game?'))return;const names=[$('wMyName').value,$('wP2').value,$('wP3').value,$('wP4').value].map(x=>x.trim()).filter(Boolean),format=$('wFormat').value,stake=Number($('wStake').value);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length||stake<0||!Number.isFinite(stake)){alert('Enter at least two different player names and a valid stake.');return;}const players=format==='skins'?names:names.slice(0,2);// Bind new games to the exact active Starter's Desk round when available.
+let roundIdentity;
+try{
+ const round=JSON.parse(localStorage.getItem('dcc_active_round_course_v1')||'null');
+ const c=round?.selection?.course?.providerCourseId,t=round?.selection?.tee?.providerTeeId;
+ if(round?.version===1&&typeof c==='string'&&c&&typeof t==='string'&&t&&Number.isSafeInteger(round.selectedAt))
+  roundIdentity=c+'|'+t+'|'+round.selectedAt;
+}catch{}
+activeW={...freshWager(),players,format,stake,...(roundIdentity?{roundIdentity}:{})};wStore();renderFoursome();};
 $('wSaveHole').onclick=()=>{if(!activeW)return;if(activeW.holes.length>=18){$('wStatus').textContent='18 holes completed. Archive the match.';return;}const h=activeW.players.map((_,i)=>wVal($('ws'+i).value));if(h.some(x=>x===null)){ $('wStatus').textContent='Enter a valid stroke score for every player.';return;}activeW.holes.push(h);wStore();renderFoursome();$('wStatus').textContent='Hole saved. Nice work, accountants.';};
 // Explicit single-player paper-score prefill for the next game hole. No wager write.
 (function mountPaperGamePrefill(){
