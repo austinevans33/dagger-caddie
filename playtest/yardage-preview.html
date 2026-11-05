@@ -36,7 +36,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .map-feature{min-height:44px;border:1px solid #a5a78e;border-radius:9px;background:#f7f0dd;text-align:left;padding:9px 11px;font:700 13px system-ui,sans-serif;color:#354c3d}
 .map-feature[aria-pressed="true"]{border:2px solid #244d39;background:#dfe6d5}
 .map-note{font:12px/1.4 system-ui,sans-serif!important;color:#4f6151;margin:7px 2px!important;text-align:left}
-.field-sketch polygon{transition:opacity .12s ease;stroke-linecap:round}
+.field-sketch .orientation-art{width:100%;max-width:330px;margin:auto}.field-sketch .orientation-art svg{min-height:190px}.field-sketch polygon{transition:opacity .12s ease;stroke-linecap:round}
 .field-sketch polygon.map-selected{stroke:#193c2b;stroke-width:3.7}
 @media(prefers-reduced-motion:reduce){.field-sketch polygon{transition:none}}
 
@@ -63,6 +63,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 import {loadYardageState,resolveYardageState} from './yardage-live.js';
 import {readYardageCaddy,yardageCaddyNote} from './yardage-caddy-notes.js';
 import {loadCourseFeatures,pencilGeometry} from './course-pencil-geometry.js';
+import {pencilOrientation} from './yardage-pencil-orientation.js';
 import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
@@ -107,7 +108,18 @@ function updateSketch(selection,hole){
  if(spatialPending){spatialPending.abort();spatialPending=null}
  mapSelected=null;mapMode='all';
  const key=selection?.course?.provider+'|'+selection?.course?.providerCourseId+'|'+hole;
- function unavailable(){if(gen!==spatialGeneration)return;box.classList.remove('has-features');box.replaceChildren();const p=document.createElement('p');p.textContent='Verified hole geometry not available. No invented fairways, greens or hazards.';box.append(p)}
+ function unavailable(){
+  if(gen!==spatialGeneration)return;
+  box.classList.remove('has-features');box.replaceChildren();
+  if(!selection?.course){const p=document.createElement('p');p.textContent='Choose a course to open your notebook.';box.append(p);return}
+  const fact=(latest.holes||[]).find(h=>h.number===hole);
+  const drawing=pencilOrientation({holeNumber:hole,par:fact?.par,yards:fact?.yards});
+  const heading=document.createElement('p');heading.className='geometry-label';heading.textContent='Caddy pencil · general orientation';
+  const art=document.createElement('div');art.className='orientation-art';art.innerHTML=drawing.svg;
+  const legend=document.createElement('p');legend.className='geometry-foot';
+  legend.textContent='No invented fairways or hazards. This is NOT the hole layout: bend, direction and trouble are unknown until mapped data is available.';
+  box.append(heading,art,legend);
+ }
  if(!selection?.course||selection.course.provider!=='opengolfapi'){unavailable();return}
  if(!spatialCache.has(key)){box.classList.remove('has-features');box.replaceChildren();const p=document.createElement('p');p.setAttribute('role','status');p.textContent='Checking mapped features for this hole…';box.append(p)}
  const controller=new AbortController();
