@@ -43,3 +43,11 @@ test('QR joins time out safely and verify active server room instead of cached d
  assert.match(live,/Connection verification timed out/);
  assert.match(live,/const createOnce=singleFlight\(create\),joinOnce=singleFlight\(join\)/);
 });
+
+test('host room creation has bounded server writes and does not falsely report success after timeout',()=>{
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ assert.match(live,/readWithDeadline\(\(\)=>setDoc\(doc\(db,'rooms',id\),model\)\)/);
+ assert.match(live,/readWithDeadline\(\(\)=>setDoc\(doc\(db,'rooms',id,'members',user\.uid\)/);
+ assert.match(live,/Could not confirm room creation/);
+ assert.match(live,/No new room was confirmed on this phone/);
+});
