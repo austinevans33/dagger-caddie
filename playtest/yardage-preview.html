@@ -121,7 +121,7 @@ function updateSketch(selection,hole){
   box.append(heading,art,legend);
  }
  if(!selection?.course||selection.course.provider!=='opengolfapi'){unavailable();return}
- if(!spatialCache.has(key)){box.classList.remove('has-features');box.replaceChildren();const p=document.createElement('p');p.setAttribute('role','status');p.textContent='Checking mapped features for this hole…';box.append(p)}
+ if(!spatialCache.has(key)){unavailable();const p=document.createElement('p');p.setAttribute('role','status');p.className='geometry-foot';p.textContent='Checking for mapped hole-specific outlines…';box.append(p)}
  const controller=new AbortController();
  if(!spatialCache.has(key))spatialPending=controller;
  const load=spatialCache.has(key)?Promise.resolve(spatialCache.get(key)):loadCourseFeatures(selection,hole,{signal:controller.signal}).then(features=>{
