@@ -6,6 +6,9 @@ test('Grounds previews paper strokes against Nassau without touching saved game'
   localStorage.setItem('dagger_foursome_active',JSON.stringify({format:'nassau',players:['Golfer','Friend'],roundIdentity:'test-course|blue|123456',stake:10,holes:[[5,4]],started:123}));
  });
  await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
+ await page.locator('#useAustin').click({timeout:5000});
  const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
  await page.locator('#tab-games').click();
  const preview=page.locator('#dccGameScorePreview');await preview.locator('summary').click();
@@ -29,6 +32,9 @@ test('Grounds refuses preview when active wager belongs to another course round'
   localStorage.setItem('dagger_foursome_active',JSON.stringify({format:'skins',players:['A','B'],stake:5,roundIdentity:'different|tee|123',holes:[[4,5]]}));
  });
  await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
+ await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-games').click();
  await page.locator('#dccGameScorePreview summary').click();
  await page.locator('#dccGameScorePlayer').selectOption('0');
