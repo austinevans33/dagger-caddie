@@ -233,6 +233,7 @@ function renderFinishSummary(model,x){
  $('roomFinalStatus').textContent=x.settled===18?'OFFICIAL FINAL RESULT':'ARCHIVED · PARTIAL MATCH';
  $('roomFinalMeta').textContent=model.format.toUpperCase()+' · '+settlementLabel(model,x)+' · $'+model.stake+' per unit';
  $('roomFinalPayouts').replaceChildren();
+ if(model.format==='nassau'&&x.settled<18){$('roomFinalStatus').textContent='ARCHIVED · INCOMPLETE NASSAU';$('roomFinalMeta').textContent='Not a final settlement · '+settlementLabel(model,x)+' · back-nine/overall may be pending';}
  model.players.forEach((name,i)=>{
   const row=document.createElement('div');row.className='ledger-line';
   const player=document.createElement('span');player.textContent=name;
@@ -378,6 +379,7 @@ $('roomUndoHole').onclick=singleFlight(async()=>{
 $('roomFinish').onclick=singleFlight(async()=>{
  if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;
  const id=roomId,uid=auth.currentUser.uid,x=compute(room);
+ if(room.format==='nassau'&&x.settled<18){status('Nassau is not fully settled. Enter all 18 holes before finishing the Money Room. No results were archived.');return;}
  const incomplete=x.settled<18?' Only '+x.settled+' of 18 holes are scored.':'';
  const carry=room.format==='skins'&&x.carry>1?' '+(x.carry-1)+' carried skin(s) remain unawarded.':'';
  if(!confirm('Finish and archive this match for everyone?'+incomplete+carry+' Final payouts will be shown. This cannot be undone.'))return;
