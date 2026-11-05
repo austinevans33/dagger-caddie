@@ -59,3 +59,14 @@ test('live Nassau cannot archive before 18 holes and old partial archive is not 
  assert.match(live,/ARCHIVED · INCOMPLETE NASSAU/);
  assert.match(live,/Not a final settlement/);
 });
+
+test('Money Room finish rechecks server Nassau completion atomically before archive',()=>{
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const finish=live.slice(live.indexOf("$('roomFinish').onclick"),live.indexOf('async function init()'));
+ assert.match(finish,/functions\.runTransaction\(db,async transaction=>/);
+ assert.match(finish,/const ref=functions\.doc\(db,'rooms',id\),snap=await transaction\.get\(ref\)/);
+ assert.match(finish,/current\.format==='nassau'&&compute\(current\)\.settled!==18/);
+ assert.match(finish,/transaction\.update\(ref,\{archived:true/);
+ assert.doesNotMatch(finish,/await functions\.updateDoc\(/);
+ assert.match(live,/INCOMPLETE NASSAU · NOT FINAL/);
+});
