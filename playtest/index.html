@@ -11788,7 +11788,20 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    if(!ticketForm.open)openTicket.click();
    document.getElementById('dccPropText')?.focus();
   });
-  row.append(link,ticket);panel.append(row);
+  const room=document.createElement('button');room.id='dccGamesMoneyRoom';room.type='button';
+  room.textContent='👥 Join / Open Money Room';room.className='btn-secondary';
+  room.style.cssText='display:block;margin:10px auto 0;min-height:44px';
+  room.addEventListener('click',()=>{
+   const ledgerTab=document.getElementById('tab-bets');
+   const destination=document.getElementById('moneyRoomSection');
+   if(!ledgerTab||!destination)return;
+   ledgerTab.click();
+   // Reuse the active room; do not reset form fields, session, or score data.
+   destination.scrollIntoView({block:'start'});
+   const launch=destination.querySelector('.dcc-r95-open-room');
+   if(launch&&document.getElementById('roomScoreSection')?.hidden)launch.focus();
+  });
+  row.append(link,ticket,room);panel.append(row);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();</script>
