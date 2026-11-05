@@ -256,7 +256,7 @@ function renderMatchHistory(){
   card.append(title);
   const body=document.createElement('div');body.className='ledger-hole';
   const x=compute(record);
-  const note=document.createElement('p');note.className='game-note';note.textContent=settlementLabel(record,x);body.append(note);
+  const note=document.createElement('p');note.className='game-note';note.textContent=(record.format==='nassau'&&x.settled<18?'INCOMPLETE NASSAU · NOT FINAL · ':'')+settlementLabel(record,x);body.append(note);
   record.players.forEach((name,i)=>{const line=document.createElement('div');line.className='ledger-line';const label=document.createElement('span');label.textContent=name;const amount=document.createElement('strong');amount.textContent=money(x.totals[i]);line.append(label,amount);body.append(line);});
   const holes=document.createElement('details');holes.className='ledger-detail';
   const holeTitle=document.createElement('summary');holeTitle.textContent='Review hole-by-hole results';holes.append(holeTitle);
@@ -385,8 +385,18 @@ $('roomFinish').onclick=singleFlight(async()=>{
  if(!confirm('Finish and archive this match for everyone?'+incomplete+carry+' Final payouts will be shown. This cannot be undone.'))return;
  try{
   session.assertIdentity(room.hostUid);
-  await functions.updateDoc(functions.doc(db,'rooms',id),{archived:true,lastChange:Date.now()});
-  if(roomId===id&&auth.currentUser?.uid===uid)status('Match finished. Final settlement is displayed below and saved to match history on this phone.');
+  // Commit only against the current server document. A second tab or stale
+  // snapshot must never finalize a partially scored Nassau.
+  await functions.runTransaction(db,async transaction=>{
+   const ref=functions.doc(db,'rooms',id),snap=await transaction.get(ref);
+   if(!snap.exists())throw Error('Money Room no longer exists.');
+   const current=snap.data();
+   if(current.hostUid!==uid)throw Error('Only the current scorekeeper may finish this match.');
+   if(current.archived)throw Error('This Money Room is already archived.');
+   if(current.format==='nassau'&&compute(current).settled!==18)throw Error('Nassau still has unscored holes. Refresh the room before finishing.');
+   transaction.update(ref,{archived:true,lastChange:Date.now(),lastEditor:current.hostName||'Scorekeeper'});
+  });
+  if(roomId===id&&auth.currentUser?.uid===uid)status('Match archived on the server. Final settlement will appear after the confirmed room update.');
  }catch(e){if(roomId===id)status('Finish failed: '+e.message);}
 });
 async function init(){if(!isConfigured){status('Local mode · Live sync is not configured. See SETUP_FIREBASE.md. Local games and Betting still work.');return;}
