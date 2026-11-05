@@ -46,6 +46,34 @@ export async function loadCourseFeatures(selection,holeNumber,{fetcher=fetch,sig
  if(!response.ok)throw Error('Spatial course features unavailable ('+response.status+')');
  return normalizeCourseFeatures(await response.json(),{holeNumber});
 }
+// Orient only when both a verified tee and green polygon are available.
+// This is an artwork transform, not an invented bearing, pin, or path.
+export function orientPencilTeeToGreen(shapes,{width=300,height=220,padding=16}={}){
+ if(!Array.isArray(shapes)||!shapes.length)return shapes;
+ const tee=shapes.filter(s=>s.type==='tee'),greens=shapes.filter(s=>s.type==='green');
+ if(tee.length!==1||greens.length!==1)return shapes;
+ const center=s=>s.points.reduce((a,p)=>[a[0]+p[0]/s.points.length,a[1]+p[1]/s.points.length],[0,0]);
+ const start=center(tee[0]),end=center(greens[0]);
+ const dx=end[0]-start[0],dy=end[1]-start[1];
+ if(!Number.isFinite(dx)||!Number.isFinite(dy)||Math.hypot(dx,dy)<3)return shapes;
+ const angle=-Math.PI/2-Math.atan2(dy,dx),cos=Math.cos(angle),sin=Math.sin(angle);
+ const projected=shapes.map(shape=>({type:shape.type,points:shape.points.map(([x,y])=>[
+  (x-start[0])*cos-(y-start[1])*sin,
+  (x-start[0])*sin+(y-start[1])*cos
+ ])}));
+ const all=projected.flatMap(shape=>shape.points),xs=all.map(p=>p[0]),ys=all.map(p=>p[1]);
+ const left=Math.min(...xs),right=Math.max(...xs),top=Math.min(...ys),bottom=Math.max(...ys);
+ if(![left,right,top,bottom].every(Number.isFinite))return shapes;
+ const spanX=right-left,spanY=bottom-top;
+ if(spanX<=0||spanY<=0)return shapes;
+ const scale=Math.min((width-padding*2)/spanX,(height-padding*2)/spanY);
+ if(!Number.isFinite(scale)||scale<=0)return shapes;
+ const offX=(width-spanX*scale)/2,offY=(height-spanY*scale)/2;
+ return projected.map(shape=>Object.freeze({type:shape.type,points:Object.freeze(shape.points.map(([x,y])=>Object.freeze([
+  +(offX+(x-left)*scale).toFixed(2),+(offY+(y-top)*scale).toFixed(2)
+ ])))}));
+}
+
 export function pencilGeometry(features,{width=300,height=220,padding=16}={}){
  if(!Array.isArray(features)||!features.length)return [];
  const all=features.flatMap(f=>f.points);
