@@ -7,7 +7,8 @@ export function paperStrokeForGameHole(snapshot,game,{playerIndex,holeNumber}={}
     !Array.isArray(snapshot.scores)||snapshot.scores.length!==18)return fail('No compatible paper scorecard.');
  if(!game||!['skins','nassau','hole'].includes(game.format)||!Array.isArray(game.players)||
     !Number.isInteger(playerIndex)||playerIndex<0||playerIndex>=game.players.length)return fail('Choose your matching game player.');
- if(game.roundIdentity!==undefined&&game.roundIdentity!==snapshot.identity)return fail('This game belongs to another course or round.');
+ if(typeof game.roundIdentity!=='string'||!game.roundIdentity)return fail('This older game is not linked to a course. Enter scores manually to protect existing wagers.');
+ if(game.roundIdentity!==snapshot.identity)return fail('This game belongs to another course or round.');
  if(!Array.isArray(game.holes)||game.holes.length>18||!Number.isInteger(holeNumber)||
     holeNumber!==game.holes.length+1||holeNumber<1||holeNumber>18)return fail('Only the current unscored game hole can be prefilled.');
  const value=snapshot.scores[holeNumber-1];
