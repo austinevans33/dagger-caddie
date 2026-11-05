@@ -11775,7 +11775,20 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const link=document.createElement('a');link.textContent='⛳ Check the Yardage Book';link.style.cssText='font-weight:700;color:inherit;text-decoration:underline';
   link.href='yardage-preview.html';
   link.addEventListener('click',()=>{let hole=1;try{const n=Number(sessionStorage.getItem('dccFridayYardageHole'));if(Number.isInteger(n)&&n>=1&&n<=18)hole=n}catch{}link.href='yardage-preview.html?hole='+hole;});
-  row.append(link);panel.append(row);
+  const ticket=document.createElement('button');ticket.id='dccGamesTicketWindow';ticket.type='button';
+  ticket.textContent='🎟 Open Ticket Window';ticket.className='btn-secondary';
+  ticket.style.cssText='display:block;margin:10px auto 0;min-height:44px';
+  ticket.addEventListener('click',()=>{
+   const ledgerTab=document.getElementById('tab-bets');
+   const openTicket=document.getElementById('dccPropNew');
+   const ticketForm=document.getElementById('dccPropFormWrap');
+   if(!ledgerTab||!openTicket||!ticketForm)return;
+   ledgerTab.click();
+   // Let the Ticket Window's own handler manage form visibility and focus.
+   if(!ticketForm.open)openTicket.click();
+   document.getElementById('dccPropText')?.focus();
+  });
+  row.append(link,ticket);panel.append(row);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();</script>
