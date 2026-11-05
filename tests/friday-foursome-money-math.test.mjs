@@ -36,3 +36,14 @@ test('out-of-range and fractional strokes cannot create settled money',()=>{
  for(const x of cases){assert.equal(foursomeMoney(x),null);assert.equal(live(x).invalid,true)}
  assert.match(app,/const wVal=\(n\)=>n!==''&&Number\.isInteger/);
 });
+
+test('the playable archive excludes incomplete Nassau from lifetime money',()=>{
+ const archived=readFileSync(new URL('../playtest/index.html',import.meta.url),'utf8');
+ assert.match(archived,/net===null\?'Incomplete \/ review':money\(net\)/);
+ assert.match(archived,/completed-game net/);
+ assert.match(archived,/Finish 18 holes before archiving/);
+ assert.match(archived,/INCOMPLETE/);
+ const partial=foursomeMoney(game('nassau',Array(9).fill(hole(3,5))));
+ assert.equal(partial.score[0],5);
+ assert.equal(partial.pending.length,2);
+});
