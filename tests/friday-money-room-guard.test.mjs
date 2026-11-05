@@ -51,3 +51,11 @@ test('host room creation has bounded server writes and does not falsely report s
  assert.match(live,/Could not confirm room creation/);
  assert.match(live,/No new room was confirmed on this phone/);
 });
+
+test('live Nassau cannot archive before 18 holes and old partial archive is not called final',()=>{
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ assert.match(live,/room\.format==='nassau'&&x\.settled<18/);
+ assert.match(live,/Enter all 18 holes before finishing the Money Room/);
+ assert.match(live,/ARCHIVED · INCOMPLETE NASSAU/);
+ assert.match(live,/Not a final settlement/);
+});
