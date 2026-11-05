@@ -237,10 +237,11 @@ function renderFinishSummary(model,x){
  if(!panel)return;
  panel.hidden=!model.archived;
  if(!model.archived)return;
- $('roomFinalStatus').textContent=x.settled===18?'OFFICIAL FINAL RESULT':'ARCHIVED · PARTIAL MATCH';
+ $('roomFinalStatus').textContent=x.skinsPending?'ARCHIVED · INCOMPLETE SKINS':x.settled===18?'OFFICIAL FINAL RESULT':'ARCHIVED · PARTIAL MATCH';
  $('roomFinalMeta').textContent=model.format.toUpperCase()+' · '+settlementLabel(model,x)+' · $'+model.stake+' per unit';
  $('roomFinalPayouts').replaceChildren();
  if(model.format==='nassau'&&x.settled<18){$('roomFinalStatus').textContent='ARCHIVED · INCOMPLETE NASSAU';$('roomFinalMeta').textContent='Not a final settlement · '+settlementLabel(model,x)+' · back-nine/overall may be pending';}
+ if(model.format==='skins'&&x.skinsPending)$('roomFinalMeta').textContent='Not a final settlement · '+settlementLabel(model,x);
  model.players.forEach((name,i)=>{
   const row=document.createElement('div');row.className='ledger-line';
   const player=document.createElement('span');player.textContent=name;
@@ -263,7 +264,7 @@ function renderMatchHistory(){
   card.append(title);
   const body=document.createElement('div');body.className='ledger-hole';
   const x=compute(record);
-  const note=document.createElement('p');note.className='game-note';note.textContent=(record.format==='nassau'&&x.settled<18?'INCOMPLETE NASSAU · NOT FINAL · ':'')+settlementLabel(record,x);body.append(note);
+  const note=document.createElement('p');note.className='game-note';note.textContent=((record.format==='nassau'&&x.settled<18)?'INCOMPLETE NASSAU · NOT FINAL · ':x.skinsPending?'INCOMPLETE SKINS · NOT FINAL · ':'')+settlementLabel(record,x);body.append(note);
   record.players.forEach((name,i)=>{const line=document.createElement('div');line.className='ledger-line';const label=document.createElement('span');label.textContent=name;const amount=document.createElement('strong');amount.textContent=money(x.totals[i]);line.append(label,amount);body.append(line);});
   const holes=document.createElement('details');holes.className='ledger-detail';
   const holeTitle=document.createElement('summary');holeTitle.textContent='Review hole-by-hole results';holes.append(holeTitle);
@@ -387,6 +388,7 @@ $('roomFinish').onclick=singleFlight(async()=>{
  if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;
  const id=roomId,uid=auth.currentUser.uid,x=compute(room);
  if(room.format==='nassau'&&x.settled<18){status('Nassau is not fully settled. Enter all 18 holes before finishing the Money Room. No results were archived.');return;}
+ if(room.format==='skins'&&x.skinsPending){status('Skins cannot finish while a later scored hole is blocked by an earlier missing score. Fill the missing hole first. No results were archived.');return;}
  const incomplete=x.settled<18?' Only '+x.settled+' of 18 holes are scored.':'';
  const carry=room.format==='skins'?(x.skinsPending?' Later skins are pending earlier unscored holes.':x.carry>1?' '+(x.carry-1)+' carried skin(s) remain unawarded.':''):'';
  if(!confirm('Finish and archive this match for everyone?'+incomplete+carry+' Final payouts will be shown. This cannot be undone.'))return;
@@ -401,6 +403,7 @@ $('roomFinish').onclick=singleFlight(async()=>{
    if(current.hostUid!==uid)throw Error('Only the current scorekeeper may finish this match.');
    if(current.archived)throw Error('This Money Room is already archived.');
    if(current.format==='nassau'&&compute(current).settled!==18)throw Error('Nassau still has unscored holes. Refresh the room before finishing.');
+   if(current.format==='skins'&&compute(current).skinsPending)throw Error('Skins has an unscored hole before a later result. Complete the missing hole first.');
    transaction.update(ref,{archived:true,lastChange:Date.now(),lastEditor:current.hostName||'Scorekeeper'});
   });
   if(roomId===id&&auth.currentUser?.uid===uid)status('Match archived on the server. Final settlement will appear after the confirmed room update.');
