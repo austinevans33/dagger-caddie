@@ -286,8 +286,8 @@ async function create(){const attempt=++actionVersion;try{
  if(needed&&players.length!==needed)throw Error(`${format} requires ${needed} players.`);
  const stake=Number($('roomStake').value);if(!Number.isFinite(stake)||stake<0||stake>10000)throw Error('Invalid stake.');
  const {doc,setDoc}=functions;const id=rand(16),code=rand(8);const model={name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
- await setDoc(doc(db,'rooms',id),model);assertOperation(attempt,operationUid);await setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()});assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);status('Money Room created. You are the ONLY scorekeeper. Share the invitation link.');
- }catch(e){if(attempt===actionVersion)status('Could not create room: '+e.message);}}
+ await readWithDeadline(()=>setDoc(doc(db,'rooms',id),model));assertOperation(attempt,operationUid);await readWithDeadline(()=>setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()}));assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);status('Money Room created. You are the ONLY scorekeeper. Share the invitation link.');
+ }catch(e){if(attempt===actionVersion)status('Could not confirm room creation: '+e.message+(e.code==='unavailable'?' The network timed out; check your connection before starting another room.':'')+' No new room was confirmed on this phone.');}}
 async function join(){
  const attempt=++actionVersion;
  let stage='validation';
