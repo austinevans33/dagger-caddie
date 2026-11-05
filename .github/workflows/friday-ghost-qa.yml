@@ -100,15 +100,16 @@ jobs:
           printf '%s\n' 'PR builds use a GitHub merge commit; BRANCH_SHA identifies the proposed branch, CHECKED_OUT_SHA identifies exact tested bytes.' > candidate/README_SHA.txt
       - name: Validate candidate local assets and module imports
         run: python3 tests/friday-bundle-integrity.py
-      - name: Upload verified candidate artifact
+      - name: Upload preflight-only candidate for browser verification
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: dagger-friday-candidate
+          name: dagger-friday-preflight
           path: candidate/
           retention-days: 14
 
   browser-smoke:
+    needs: ghost-qa
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -120,10 +121,27 @@ jobs:
         run: |
           npm install --no-save @playwright/test
           npx playwright install --with-deps chromium
+      - name: Download exactly the preflight candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: dagger-friday-preflight
+          path: candidate
+      - name: Verify browser checkout matches packaged candidate
+        run: |
+          test "$(git rev-parse HEAD)" = "$(cat candidate/FRIDAY_CHECKED_OUT_SHA.txt)"
+          python3 tests/friday-bundle-integrity.py candidate
       - name: Serve Friday candidate locally
         run: python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/dagger-http.log 2>&1 &
       - name: Run real-browser Games and Yardage Book acceptance
         run: npx playwright test tests/friday-browser.spec.mjs tests/friday-game-score-preview.spec.mjs --project=chromium
+
+      - name: Publish verified Friday candidate only after browser smoke passes
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dagger-friday-candidate
+          path: candidate/
+          retention-days: 14
 
       - name: Upload visual smoke snapshots
         if: always()
