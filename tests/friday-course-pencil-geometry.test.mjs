@@ -26,3 +26,14 @@ test('endpoint is hole-scoped and invalid response fails closed',async()=>{
  assert.equal(result.length,1);assert.match(calledUrl,/course=test-101/);assert.match(calledUrl,/hole=1/);
  await assert.rejects(()=>loadCourseFeatures(chosen,1,{fetcher:async()=>({ok:false,status:500})}));
 });
+
+test('course-wide and unassigned features cannot masquerade as a specific hole',()=>{
+ const base=[[-79,35],[-78.9999,35],[-78.9999,35.0001],[-79,35]];
+ const unassigned={type:'Feature',properties:{type:'bunker'},geometry:{type:'Polygon',coordinates:[base]}};
+ const spelled={type:'Feature',properties:{type:'green',hole:'1'},geometry:{type:'Polygon',coordinates:[base]}};
+ const wrong=poly('water',base,2);
+ const actual=normalizeCourseFeatures({features:[unassigned,spelled,wrong]},{holeNumber:1});
+ assert.deepEqual(actual.map(x=>x.type),['green']);
+ const onlyUnassigned=normalizeCourseFeatures({features:[unassigned]},{holeNumber:1});
+ assert.deepEqual(onlyUnassigned,[]);
+});
