@@ -43,3 +43,11 @@ test('skins uses the same safe projection and does not auto-settle',()=>{
  assert.deepEqual(result.holes[0],[4,null]);
  assert.equal(result.maySettleWagers,false);
 });
+
+test('preview refuses to project scores into legacy games without an explicit bound round',()=>{
+ const source=game();delete source.roundIdentity;
+ const result=project(snapshot(),source,{roundIdentity:'course|blue|123',playerIndex:0});
+ assert.equal(result.status,'incompatible');
+ assert.equal(result.holes,null);
+ assert.equal(result.maySettleWagers,false);
+});
