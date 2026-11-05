@@ -115,3 +115,39 @@ test('Money Room guard tests use the deployed playtest module, not the legacy ro
 test('live skins standings mark holes blocked by earlier missing scores as pending',()=>{
  assert.match(room,/x\.skinsPending\?' · Later skins awaiting missing earlier scores'/);
 });
+
+test('QR/create connection waits for server snapshot and rejects stale or failed rooms',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const source=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const start=source.indexOf('async function connect(id){'),end=source.indexOf('\nasync function create(){',start);
+ assert.ok(start>0&&end>start,'live connection function exists');
+ let publish,fail,renderCount=0,lastStatus='',unsubCount=0;
+ const panel={hidden:false};
+ const state={
+  roomUnsub:null,roomId:'',connectionVersion:0,room:null,host:false,
+  auth:{currentUser:{uid:'host-1'}},user:{uid:'host-1'},db:{},
+  functions:{doc:(_,kind,id)=>({kind,id}),onSnapshot:(_,ok,bad)=>{publish=ok;fail=bad;return ()=>{unsubCount++}}},
+  readWithDeadline:fn=>Promise.race([Promise.resolve().then(fn),new Promise((_,reject)=>setTimeout(()=>reject(Error('verification deadline')),80))]),
+  status:value=>{lastStatus=value},render:()=>{renderCount++},archiveLocal:()=>{},forgetRoom:()=>{},roomStore:{},
+  $:id=>panel,roomLabel:()=> 'Scorekeeper'
+ };
+ const connect=runInNewContext(source.slice(start,end)+'\nconnect',state);
+ const first=connect('room-1');await new Promise(resolve=>setTimeout(resolve,0));
+ publish({exists:()=>true,metadata:{fromCache:true,hasPendingWrites:false},data:()=>({hostUid:'host-1',players:['A','B']})});
+ await Promise.resolve();
+ assert.equal(renderCount,0,'cached data cannot authorize LIVE status');
+ assert.doesNotMatch(lastStatus,/^LIVE/);
+ publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:false},data:()=>({hostUid:'host-1',players:['A','B'],archived:false})});
+ await first;
+ assert.equal(renderCount,1);
+ assert.match(lastStatus,/LIVE · Server-confirmed/);
+ const second=connect('room-2');await new Promise(resolve=>setTimeout(resolve,0));
+ fail(Error('permission-denied'));
+ await assert.rejects(second,/permission-denied/);
+ assert.equal(state.roomId,'');
+ assert.ok(unsubCount>=1,'failed listener was cleaned up');
+ const third=connect('room-3');await new Promise(resolve=>setTimeout(resolve,0));
+ publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:false},data:()=>({archived:true,hostUid:'host-1'})});
+ await assert.rejects(third,/already finished/);
+ assert.equal(state.roomId,'');
+});
