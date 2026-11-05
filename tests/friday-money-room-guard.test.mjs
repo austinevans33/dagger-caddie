@@ -34,3 +34,12 @@ test('live playtest still contains Money Room and its host editor',()=>{
  assert.match(page,/id="roomCreate"/);
  assert.match(page,/id="roomJoin"/);
 });
+
+test('QR joins time out safely and verify active server room instead of cached data',()=>{
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ assert.match(live,/readWithDeadline\(\(\)=>setDoc\(memberRef/);
+ assert.match(live,/readWithDeadline\(\(\)=>getDocFromServer\(doc\(db,'rooms',id\)\)\)/);
+ assert.match(live,/snapshot\.data\(\)\?\.archived/);
+ assert.match(live,/Connection verification timed out/);
+ assert.match(live,/const createOnce=singleFlight\(create\),joinOnce=singleFlight\(join\)/);
+});
