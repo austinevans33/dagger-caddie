@@ -11,7 +11,7 @@ export function projectPaperScoresIntoGame(snapshot, game, {roundIdentity, playe
  }
  // Never infer that an unrelated or stale game belongs to the live course.
  if (typeof roundIdentity !== 'string' || !roundIdentity ||
-     (game.roundIdentity !== undefined && game.roundIdentity !== roundIdentity)) {
+     (game.roundIdentity !== roundIdentity)) {
   return Object.freeze({status:'incompatible', holes:null, changedHoles:Object.freeze([]), maySettleWagers:false});
  }
  const count=game.players.length;
