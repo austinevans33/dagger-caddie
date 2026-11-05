@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {invitationFrom} from '../room-session.js';
 import {invitationMatrix} from '../invitation-qr.js';
-const room=readFileSync(new URL('../money-room.js',import.meta.url),'utf8');
+// The published Friday page loads playtest/money-room.js; the root copy is legacy.
+const room=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
 const page=readFileSync(new URL('../playtest/index.html',import.meta.url),'utf8');
 test('host QR is shown on host phone and never requires a share sheet',()=>{
  assert.match(room,/function\s+\w*Qr\w*\s*\(/i);
@@ -102,4 +103,11 @@ test('skipped-hole skins cannot archive using stale host state or server data',a
  const compute=runInNewContext(live.slice(start,end)+'\ncompute');
  assert.equal(compute({format:'skins',players:['A','B'],stake:5,holes:{2:[3,4]}}).skinsPending,true);
  assert.equal(compute({format:'skins',players:['A','B'],stake:5,holes:{1:[4,4],2:[3,4]}}).skinsPending,false);
+});
+
+test('Money Room guard tests use the deployed playtest module, not the legacy root duplicate',()=>{
+ const entry=readFileSync(new URL('../playtest/index.html',import.meta.url),'utf8');
+ assert.match(entry,/money-room\.js/);
+ assert.match(room,/functions\.runTransaction\(db,async transaction=>/);
+ assert.match(room,/current\.format==='skins'&&compute\(current\)\.skinsPending/);
 });
