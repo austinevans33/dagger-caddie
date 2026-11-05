@@ -389,3 +389,17 @@ test('Games shortcut opens the existing Ticket Window without writing a bet',asy
  const after=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>/prop|bet|ledger|foursome/i.test(key))));
  expect(after).toEqual(before);
 });
+
+test('Games Money Room shortcut opens existing live room without resetting stored match',async({page})=>{
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
+ await page.locator('#useAustin').click({timeout:5000});
+ await page.locator('#tab-games').click({timeout:5000});
+ const record='{"protected":"existing-session","holes":{"1":[4,5]}}';
+ await page.evaluate(value=>localStorage.setItem('dagger_active_money_room',value),record);
+ await page.locator('#dccGamesMoneyRoom').click();
+ await expect(page.locator('#tab-bets')).toHaveClass(/active/);
+ await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_active_money_room'))).toBe(record);
+});
