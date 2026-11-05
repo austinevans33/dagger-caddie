@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {paperStrokeForGameHole as pick} from '../playtest/paper-to-game-prefill.js';
 const scores=Array(18).fill(null);scores[0]=4;scores[1]=5;
 const card={version:1,identity:'course|blue|123',source:'solo-scorecard',maySettleWagers:false,scores};
-const game={format:'skins',players:['A','B'],holes:[]};
+const game={format:'skins',players:['A','B'],roundIdentity:card.identity,holes:[]};
 test('paper score prefill returns the current hole for explicitly selected player',()=>{
  const result=pick(card,game,{playerIndex:0,holeNumber:1});
  assert.deepEqual(result,{ok:true,score:4,holeNumber:1,playerIndex:0,roundIdentity:card.identity});
@@ -25,4 +25,12 @@ test('only compatible game formats may copy and no ticket settlement is triggere
  assert.equal(pick(card,{...game,format:'bingo'},{playerIndex:0,holeNumber:1}).ok,false);
  const invalid={...card,maySettleWagers:true};
  assert.equal(pick(invalid,game,{playerIndex:0,holeNumber:1}).ok,false);
+});
+
+test('older unbound games remain playable manually but cannot import paper strokes',()=>{
+ const legacy={format:'nassau',players:['A','B'],holes:[]};
+ const result=pick(card,legacy,{playerIndex:0,holeNumber:1});
+ assert.equal(result.ok,false);
+ assert.match(result.reason,/older game/i);
+ assert.deepEqual(legacy.holes,[]);
 });
