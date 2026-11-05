@@ -70,3 +70,22 @@ test('Money Room finish rechecks server Nassau completion atomically before arch
  assert.doesNotMatch(finish,/await functions\.updateDoc\(/);
  assert.match(live,/INCOMPLETE NASSAU · NOT FINAL/);
 });
+
+test('live skins never award later holes until preceding scores are known',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const start=live.indexOf('function compute(model){'),end=live.indexOf('\nfunction roomLabel()',start);
+ assert.ok(start>=0&&end>start);
+ const compute=runInNewContext(live.slice(start,end)+'\ncompute');
+ const base={format:'skins',players:['A','B'],stake:5,holes:{2:[3,5]}};
+ const pending=compute(base);
+ assert.deepEqual(Array.from(pending.totals),[0,0]);
+ assert.equal(pending.skinsPending,true);
+ assert.match(pending.ledger[1].event,/Pending earlier hole/);
+ const settled=compute({...base,holes:{1:[4,4],2:[3,5]}});
+ assert.deepEqual(Array.from(settled.totals),[10,-10]);
+ assert.equal(settled.skinsPending,false);
+ const changed=compute({...base,holes:{1:[3,5],2:[3,5]}});
+ assert.deepEqual(Array.from(changed.totals),[10,-10]);
+ assert.match(live,/later skins pending earlier hole scores/);
+});
