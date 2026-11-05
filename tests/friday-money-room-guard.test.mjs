@@ -89,3 +89,17 @@ test('live skins never award later holes until preceding scores are known',async
  assert.deepEqual(Array.from(changed.totals),[10,-10]);
  assert.match(live,/later skins pending earlier hole scores/);
 });
+
+test('skipped-hole skins cannot archive using stale host state or server data',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const finish=live.slice(live.indexOf("$('roomFinish').onclick"),live.indexOf('async function init()'));
+ assert.match(finish,/room\.format==='skins'&&x\.skinsPending/);
+ assert.match(finish,/current\.format==='skins'&&compute\(current\)\.skinsPending/);
+ assert.match(live,/ARCHIVED · INCOMPLETE SKINS/);
+ assert.match(live,/INCOMPLETE SKINS · NOT FINAL/);
+ const start=live.indexOf('function compute(model){'),end=live.indexOf('\nfunction roomLabel()',start);
+ const compute=runInNewContext(live.slice(start,end)+'\ncompute');
+ assert.equal(compute({format:'skins',players:['A','B'],stake:5,holes:{2:[3,4]}}).skinsPending,true);
+ assert.equal(compute({format:'skins',players:['A','B'],stake:5,holes:{1:[4,4],2:[3,4]}}).skinsPending,false);
+});
