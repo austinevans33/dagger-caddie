@@ -111,3 +111,7 @@ test('Money Room guard tests use the deployed playtest module, not the legacy ro
  assert.match(room,/functions\.runTransaction\(db,async transaction=>/);
  assert.match(room,/current\.format==='skins'&&compute\(current\)\.skinsPending/);
 });
+
+test('live skins standings mark holes blocked by earlier missing scores as pending',()=>{
+ assert.match(room,/x\.skinsPending\?' · Later skins awaiting missing earlier scores'/);
+});
