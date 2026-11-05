@@ -304,19 +304,20 @@ async function join(){
   const name=$('roomMe').value.trim()||'Guest';if(name.length>24)throw Error('Name is too long.');
   if(!user?.uid)throw Error('Anonymous authentication did not finish. Reload the app.');
   stage='member-registration';status('Verifying invitation and registering your membership…');
-  const {doc,setDoc,getDoc}=functions;
+  const {doc,setDoc,getDocFromServer}=functions;
   const memberRef=doc(db,'rooms',id,'members',user.uid);
-  await setDoc(memberRef,{uid:operationUid,name,invite:code,joined:Date.now()});
+  await readWithDeadline(()=>setDoc(memberRef,{uid:operationUid,name,invite:code,joined:Date.now()}));
   assertOperation(attempt,operationUid);
-  stage='room-access';status('Membership accepted. Opening the live scorecard…');
-  const snapshot=await getDoc(doc(db,'rooms',id));
+  stage='room-access';status('Membership accepted. Verifying the live scorecard…');
+  const snapshot=await readWithDeadline(()=>getDocFromServer(doc(db,'rooms',id)));
   assertOperation(attempt,operationUid);
   if(!snapshot.exists())throw Error('Room not found. Ask the scorekeeper for a new invitation.');
+  if(snapshot.data()?.archived)throw Error('This Money Room is already archived. Ask the host to start a new room.');
   invite=code;roomId=id;room=snapshot.data();
   await connect(id);status('Membership verified. Connecting live updates…');
  }catch(e){
   if(attempt!==actionVersion)return;
-  let hint='';
+  let hint=e.code==='unavailable'?' Connection verification timed out. Check your signal and tap Join again.':'';
   if(e.code==='permission-denied'||/permissions/i.test(e.message)){
    hint=stage==='member-registration'?' The invite may be old or the member security rules may need updating. Confirm that your host sent the link for the currently active room.':' The membership was accepted, but the room read was denied. Check the published Firestore rules.';
   }
