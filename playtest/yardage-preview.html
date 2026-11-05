@@ -62,7 +62,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 </div></main><script type="module">
 import {loadYardageState,resolveYardageState} from './yardage-live.js';
 import {readYardageCaddy,yardageCaddyNote} from './yardage-caddy-notes.js';
-import {loadCourseFeatures,pencilGeometry} from './course-pencil-geometry.js';
+import {loadCourseFeatures,pencilGeometry,orientPencilTeeToGreen} from './course-pencil-geometry.js';
 import {pencilOrientation} from './yardage-pencil-orientation.js';
 import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js';
@@ -135,7 +135,7 @@ function updateSketch(selection,hole){
  load.then(features=>{
   if(spatialPending===controller)spatialPending=null;
   if(gen!==spatialGeneration)return;
-  const shapes=pencilGeometry(features);
+  const shapes=orientPencilTeeToGreen(pencilGeometry(features));
   if(!shapes.length){unavailable();return}
   box.classList.add('has-features');box.replaceChildren();
   const title=document.createElement('p');title.className='geometry-label';title.textContent='Pencil study · available mapped features';box.append(title);
