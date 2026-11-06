@@ -284,7 +284,15 @@ const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);retur
 async function connect(id){
  if(roomUnsub)roomUnsub();
  roomUnsub=null;
+ // A previous room's controls must never survive the gap while connecting
+ // to a different room, even before Firestore sends its first snapshot.
  roomServerFresh=false;
+ $('roomEditor').hidden=true;
+ $('roomSaveHole').disabled=true;
+ $('roomUndoHole').disabled=true;
+ $('roomFinish').disabled=true;
+ $('roomHole').disabled=true;
+ $('roomHostQr')?.remove();displayedQrLink='';
  roomId=id;
  const version=++connectionVersion,uid=auth.currentUser?.uid;
  // Do not report a room as connected until a non-cached Firebase snapshot
