@@ -51,6 +51,13 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .paper .card{margin:11px 0;padding:14px}
 @media(max-width:365px){.hole-glance{gap:5px;padding:10px 8px;font-size:11px}.hole-glance strong{font-size:11px}}
 .yardage-ask{display:block;width:100%;min-height:50px;margin:12px 0;padding:12px 13px;border:1px solid #b79c62;border-radius:12px;background:#183d2f;color:#f8f0da;font:700 16px/1.25 Georgia,serif;text-align:left}.yardage-ask:focus-visible{outline:3px solid #b79c62;outline-offset:2px}.yardage-ask:disabled{opacity:.6;cursor:not-allowed}
+/* Release review: a tour book should not repeat a giant scorecard below the map. */
+.paper .card #position,.paper .card #name,.paper .card #par,.paper .card #yards,.paper .card #coverage{display:none}
+.paper .card{padding:11px 14px;margin:9px 0}
+.paper .card .pencil-title{font-size:19px;margin:5px 0}
+.field-sketch.no-map{min-height:110px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:15px;background:#eee7d4}
+.field-sketch.no-map .geometry-label{font:700 16px/1.4 Georgia,serif;color:#465743;margin:0 0 5px}
+.field-sketch.no-map .geometry-foot{background:transparent;max-width:none;padding:0;font:13px/1.45 system-ui,sans-serif;margin:0}
 </style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1>Yardage Book</h1><a href="./" id="backToPlay">← Back to The Clubhouse</a></header>
 <div class="paper"><p class="warning" id="status" role="status">Loading selected course and tee scorecard… No GPS or live pin distances are claimed.</p>
 <div class="bar"><label>Hole<br><select id="hole" style="width:100%"></select></label><label>Tees<br><select id="tees" style="width:100%"><option>Checking selection…</option></select></label></div>
@@ -138,13 +145,16 @@ function updateSketch(selection,hole){
   if(gen!==spatialGeneration)return;
   box.classList.remove('has-features');box.replaceChildren();
   if(!selection?.course){const p=document.createElement('p');p.textContent='Choose a course to open your notebook.';box.append(p);return}
-  const fact=(latest.holes||[]).find(h=>h.number===hole);
-  const drawing=pencilOrientation({holeNumber:hole,par:fact?.par,yards:fact?.yards});
-  const heading=document.createElement('p');heading.className='geometry-label';heading.textContent='Caddy pencil · general orientation';
-  const art=document.createElement('div');art.className='orientation-art';art.innerHTML=drawing.svg;
-  const legend=document.createElement('p');legend.className='geometry-foot';
-  legend.textContent='No invented fairways or hazards. This is NOT the hole layout: bend, direction and trouble are unknown until mapped data is available.';
-  box.append(heading,art,legend);
+  // Never fill this prominent stage with a tiny fictional course sketch.
+  // A scorecard provides par/yardage, not a mapped fairway or green.
+  box.classList.add('no-map');
+  const heading=document.createElement('strong');heading.className='geometry-label';
+  heading.textContent='Hole '+hole+' · precise pencil layout unavailable';
+  const message=document.createElement('p');message.className='geometry-foot';
+  message.textContent=bayonetOsmTrouble(selection,hole)?
+   'OSM survey has hole-specific trouble notes below. An accurate fairway and green outline is still needed for this drawing.':
+   'No hole-assigned mapped outlines available. We will not invent doglegs, landing zones, or hazards.';
+  box.append(heading,message);
  }
  if(!selection?.course||selection.course.provider!=='opengolfapi'){unavailable();return}
  if(!spatialCache.has(key)){unavailable();const p=document.createElement('p');p.setAttribute('role','status');p.className='geometry-foot';p.textContent='Checking for mapped hole-specific outlines…';box.append(p)}
@@ -165,7 +175,7 @@ function updateSketch(selection,hole){
   const annotations=pencilBookAnnotations(shapes);
   renderAttack(features,annotations);
   if(!shapes.length){unavailable();return}
-  box.classList.add('has-features');box.replaceChildren();
+  box.classList.remove('no-map');box.classList.add('has-features');box.replaceChildren();
   const title=document.createElement('p');title.className='geometry-label';title.textContent='Pencil study · available mapped features';box.append(title);
   const tools=document.createElement('div');tools.className='map-tools';tools.setAttribute('role','group');tools.setAttribute('aria-label','Map feature filters');box.append(tools);
   const labels={green:'Green',fairway:'Fairway',bunker:'Bunker',water:'Water',rough:'Rough',tee:'Tee'};
