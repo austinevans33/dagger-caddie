@@ -47,3 +47,24 @@ nav.tabbar.dcc-bespoke-nav{grid-template-columns:repeat(3,minmax(0,1fr))!importa
 .dcc-home-service-links button{background:#214b38;color:#f7efdc;border:1px solid #7d916e;border-radius:10px;min-height:45px;padding:9px;font:700 13px system-ui,sans-serif}
 .dcc-home-return{width:100%;min-height:44px;margin-bottom:10px;padding:9px 12px;border:1px solid #b79c62;border-radius:12px;background:#173b2d;color:#f5eddd;font:700 14px system-ui,sans-serif;text-align:left}
 .dcc-home-return:focus-visible,.dcc-home-service-links button:focus-visible{outline:3px solid #d5ba82;outline-offset:2px}
+
+
+/* Post-staging review: preserve approved top banner; home ends at Money Room. */
+body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!important}
+#dccClubhouseHome .dcc-home-money{margin-bottom:0}
+#dccClubhouseHome{margin-bottom:18px}
+#dccGroundsDoors{max-width:860px;margin:10px auto 18px;background:transparent;border:0;padding:0}
+#dccGroundsDoors .dcc-grounds-door-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#dccGroundsDoors .dcc-grounds-door{
+ min-width:0;aspect-ratio:1/0.78;border:1px solid #bba477;border-radius:17px;
+ padding:16px 10px;display:flex;align-items:center;justify-content:center;flex-direction:column;
+ gap:12px;background:#f0e5ce;color:#183c2d;text-decoration:none!important;text-align:center;
+ font:700 18px/1.15 Georgia,serif;cursor:pointer;box-shadow:0 3px 0 #917d5644
+}
+#dccGroundsDoors .dcc-grounds-door span{font:29px/1 Georgia,serif;color:#a58a55}
+#dccGroundsDoors .dcc-grounds-door strong{font:700 clamp(14px,4vw,19px)/1.2 Georgia,serif}
+#dccGroundsDoors .dcc-grounds-door:focus-visible{outline:3px solid #e3bd70;outline-offset:3px}
+/* The score pulse and former longhand links are still available to the game's
+   JavaScript, but the requested four shortcuts are the visible entry points. */
+#dccScorePulse,#dccGamesYardageAccessLink{display:none!important}
+@media(min-width:650px){#dccGroundsDoors .dcc-grounds-door-grid{max-width:600px;margin-inline:auto}}
