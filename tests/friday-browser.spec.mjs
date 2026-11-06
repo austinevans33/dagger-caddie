@@ -6,8 +6,8 @@ test('Games bet survives opening the Yardage Book and returning',async({page})=>
  const before=await page.evaluate(()=>({w:localStorage.getItem('dagger_foursome_active'),b:localStorage.getItem('dagger_bbb_active')}));
  await test.step('dismiss opening Starter Desk and complete starter setup',async()=>{const desk=page.locator('#dcc-starter-dialog');if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}await page.locator('#useAustin').click({timeout:5000})});
  await test.step('open Games',async()=>{await page.locator('#tab-games').click({timeout:5000})});
- await test.step('show Yardage Book link',async()=>{await expect(page.locator('#dccGamesYardageAccessLink a')).toBeVisible({timeout:5000})});
- await test.step('open Yardage Book',async()=>{await page.locator('#dccGamesYardageAccessLink a').click({timeout:5000})});
+ await test.step('show Yardage Book link',async()=>{await expect(page.locator('#dccGroundsBook')).toBeVisible({timeout:5000})});
+ await test.step('open Yardage Book',async()=>{await page.locator('#dccGroundsBook').click({timeout:5000})});
  await expect(page.locator('#position')).toContainText('HOLE 1 / 18');
  await page.locator('#next').click();
  await expect(page.locator('#position')).toContainText('HOLE 2 / 18');
@@ -19,7 +19,7 @@ test('Games bet survives opening the Yardage Book and returning',async({page})=>
 });
 test('Games has direct Yardage Book entry and stable Ghost and 19th Hole links',async({page})=>{
  await page.goto('/playtest/');
- await expect(page.locator('#dccGamesYardageAccessLink a')).toHaveAttribute('href',/yardage-preview\.html/);
+ await expect(page.locator('#dccGroundsBook')).toHaveAttribute('href',/yardage-preview\.html/);
  await expect(page.locator('a[href="ghost-preview.html"]').first()).toHaveCount(1);
  await expect(page.locator('a[href="19th-hole.html"]').first()).toHaveCount(1);
 });
@@ -41,10 +41,10 @@ test('Capture Friday iPhone-sized Play, Games and Ledger views for release revie
  if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-play').click();
- await expect(page.locator('[data-tab="play"]').first()).toBeVisible();
+ await expect(page.locator('#dccClubhouseHome')).toBeVisible();
  await page.screenshot({path:'candidate-screenshots/01-play-iphone.png',animations:'disabled'});
  await page.locator('#tab-games').click();
- await expect(page.locator('#dccGamesYardageAccessLink a')).toBeVisible();
+ await expect(page.locator('#dccGroundsBook')).toBeVisible();
  await page.screenshot({path:'candidate-screenshots/02-games-iphone.png',animations:'disabled'});
  await page.locator('#tab-bets').click();
  await expect(page.locator('[data-tab="bets"]').first()).toBeVisible();
@@ -490,8 +490,8 @@ test('Live Games reaches Money Room setup without exposing retired wager form or
   game:localStorage.getItem('dagger_foursome_active')
  }));
  await page.locator('#tab-games').click({timeout:5000});
- await expect(page.locator('#dccGamesMoneyRoom')).toBeVisible();
- await page.locator('#dccGamesMoneyRoom').click();
+ await expect(page.locator('#dccGroundsDoors [data-dcc-door="money"]')).toBeVisible();
+ await page.locator('#dccGroundsDoors [data-dcc-door="money"]').click();
  await expect(page.locator('#moneyRoomSection')).toBeVisible();
  await expect(page.locator('#tab-bets')).toHaveClass(/active/);
  await expect(page.locator('details.dcc-r60-legacy-ticket')).toBeHidden();
@@ -512,7 +512,7 @@ test('Selected course and tee survive opening the visible Money Room',async({pag
  await page.locator('#useAustin').click({timeout:5000});
  const original=await page.evaluate(()=>localStorage.getItem('dcc_active_round_course_v1'));
  await page.locator('#tab-games').click({timeout:5000});
- await page.locator('#dccGamesMoneyRoom').click();
+ await page.locator('#dccGroundsDoors [data-dcc-door="money"]').click();
  await expect(page.locator('#moneyRoomSection')).toBeVisible();
  const current=await page.evaluate(()=>localStorage.getItem('dcc_active_round_course_v1'));
  expect(current).toBe(original);
@@ -526,7 +526,7 @@ test('Games shortcut opens the existing Ticket Window without writing a bet',asy
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-games').click({timeout:5000});
  const before=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>/prop|bet|ledger|foursome/i.test(key))));
- await page.locator('#dccGamesTicketWindow').click();
+ await page.locator('#dccGroundsDoors [data-dcc-door="ticket"]').click();
  await expect(page.locator('#tab-bets')).toHaveClass(/active/);
  await expect(page.locator('#dccPropFormWrap')).toHaveAttribute('open','');
  await expect(page.locator('#dccPropText')).toBeFocused();
@@ -542,7 +542,7 @@ test('Games Money Room shortcut opens existing live room without resetting store
  await page.locator('#tab-games').click({timeout:5000});
  const record='{"protected":"existing-session","holes":{"1":[4,5]}}';
  await page.evaluate(value=>localStorage.setItem('dagger_active_money_room',value),record);
- await page.locator('#dccGamesMoneyRoom').click();
+ await page.locator('#dccGroundsDoors [data-dcc-door="money"]').click();
  await expect(page.locator('#tab-bets')).toHaveClass(/active/);
  await expect(page.locator('#moneyRoomSection')).toBeVisible();
  expect(await page.evaluate(()=>localStorage.getItem('dagger_active_money_room'))).toBe(record);
