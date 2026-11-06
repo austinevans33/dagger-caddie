@@ -142,6 +142,15 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  await first;
  assert.equal(renderCount,1);
  assert.match(lastStatus,/LIVE · Server-confirmed/);
+ assert.equal(state.roomServerFresh,true);
+ // Firebase can quietly fall back to cache without raising an error.
+ publish({exists:()=>true,metadata:{fromCache:true,hasPendingWrites:false},data:()=>({archived:false})});
+ assert.equal(state.roomServerFresh,false);
+ assert.equal(panel.hidden,true);
+ assert.match(lastStatus,/Scoring is locked until reconnected/);
+ publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:false},data:()=>({hostUid:'host-1',players:['A','B'],archived:false})});
+ assert.equal(state.roomServerFresh,true);
+ assert.equal(renderCount,2);
  // A real-time listener can die after the initial server confirmation.
  // The app must hide the editor rather than leave a stale LIVE room usable.
  fail(Error('transport closed'));
@@ -158,4 +167,14 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:false},data:()=>({archived:true,hostUid:'host-1'})});
  await assert.rejects(third,/already finished/);
  assert.equal(state.roomId,'');
+});
+
+test('Money Room editor and writes require fresh server data',()=>{
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ assert.match(live,/roomServerFresh=false/);
+ assert.match(live,/roomServerFresh=true/);
+ assert.match(live,/roomEditor'\)\.hidden=!host\|\|!!room\.archived\|\|!roomServerFresh/);
+ assert.match(live,/if\(!host\|\|!room\|\|room\.archived\|\|!roomServerFresh\)throw Error\('Scoring requires a fresh server connection/);
+ assert.match(live,/roomSaveHole'\)\.disabled=!host\|\|room\.archived\|\|!roomServerFresh/);
+ assert.match(live,/roomFinish'\)\.disabled=!host\|\|room\.archived\|\|!roomServerFresh/);
 });
