@@ -121,16 +121,16 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  const source=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
  const start=source.indexOf('async function connect(id){'),end=source.indexOf('\nasync function create(){',start);
  assert.ok(start>0&&end>start,'live connection function exists');
- let publish,fail,renderCount=0,lastStatus='',unsubCount=0,qrRemoved=0;
- const panel={hidden:false,disabled:false,remove(){qrRemoved++}};
+ let publish,fail,renderCount=0,lastStatus='',unsubCount=0,qrRemoved=0,qrVisible=false;
+ const panel={hidden:false,disabled:false,remove(){qrVisible=false;qrRemoved++}};
  const state={
   roomUnsub:null,roomId:'',connectionVersion:0,room:null,host:false,roomServerFresh:false,
   auth:{currentUser:{uid:'host-1'}},user:{uid:'host-1'},db:{},
   functions:{doc:(_,kind,id)=>({kind,id}),onSnapshot:(_,options,ok,bad)=>{assert.equal(options.includeMetadataChanges,true,'offline state must deliver metadata-only changes');publish=ok;fail=bad;return ()=>{unsubCount++}}},
   // The handshake is tested by controlled snapshot delivery, never a wall-clock race.
   readWithDeadline:fn=>Promise.resolve().then(fn),
-  status:value=>{lastStatus=value},render:()=>{renderCount++},archiveLocal:()=>{},forgetRoom:()=>{},roomStore:{},
-  $:id=>panel,roomLabel:()=> 'Scorekeeper'
+  status:value=>{lastStatus=value},render:()=>{renderCount++;qrVisible=true},archiveLocal:()=>{},forgetRoom:()=>{},roomStore:{},
+  $:id=>id==='roomHostQr'?(qrVisible?panel:null):panel,roomLabel:()=> 'Scorekeeper'
  };
  const connect=runInNewContext(source.slice(start,end)+'\nconnect',state);
  const first=connect('room-1');await new Promise(resolve=>setTimeout(resolve,0));
