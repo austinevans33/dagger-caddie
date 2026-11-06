@@ -31,10 +31,46 @@ function mount(){
   <button class="dcc-home-tile" type="button" data-dcc-go="ledger"><span class="dcc-home-tile-icon" aria-hidden="true">▤</span><span class="dcc-home-tile-name">Ledger</span><span class="dcc-home-tile-caption">Balances &amp; statements</span></button>
  </div>
  <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
- <button class="dcc-home-caddy" type="button" data-dcc-go="caddy"><span><span aria-hidden="true">◉</span> Ask Your Caddy</span><span aria-hidden="true">›</span></button>
- <details class="dcc-home-services"><summary>Club Services <span aria-hidden="true">⌄</span></summary><div class="dcc-home-service-links"><button type="button" data-dcc-go="bag">The Equipment Room</button><button type="button" data-dcc-go="settings">The Clubhouse</button></div></details>
- <div class="dcc-home-foot">THE CLUBHOUSE · YOUR ROUND, YOUR GAMES, YOUR ACTION</div>`;
+`;
  caddy.parentNode.insertBefore(section,caddy);
+ // Retain the entire original header, saved state, and caddy infrastructure.
+ // Expose only the approved Clubhouse doors in the home tab.
+ document.body.classList.add('dcc-clubhouse-focus');
+ const nav=document.getElementById('tab-play');
+ if(nav){
+  nav.setAttribute('aria-label','The Clubhouse');
+  nav.title='The Clubhouse';
+  const title=nav.querySelector('.dcc-tab-title');
+  if(title)title.textContent='The Clubhouse';
+  nav.addEventListener('click',()=>document.body.classList.add('dcc-clubhouse-focus'));
+ }
+ const groundsHeader=document.querySelector('section.dcc-competition-portal[data-tab="games"]');
+ if(groundsHeader&&!document.getElementById('dccGroundsDoors')){
+  const doors=document.createElement('section');
+  doors.id='dccGroundsDoors';doors.dataset.tab='games';
+  doors.setAttribute('aria-label','Grounds shortcuts');
+  doors.innerHTML='<div class="dcc-grounds-door-grid">'+
+   '<a href="yardage-preview.html" id="dccGroundsBook" class="dcc-grounds-door"><span aria-hidden="true">▤</span><strong>Yardage Book</strong></a>'+
+   '<button type="button" class="dcc-grounds-door" data-dcc-door="ticket"><span aria-hidden="true">▣</span><strong>Ticket Window</strong></button>'+
+   '<button type="button" class="dcc-grounds-door" data-dcc-door="money"><span aria-hidden="true">♟</span><strong>Money Room</strong></button>'+
+   '<button type="button" class="dcc-grounds-door" data-dcc-door="score"><span aria-hidden="true">□</span><strong>Scorecard</strong></button>'+
+   '</div>';
+  groundsHeader.after(doors);
+  doors.addEventListener('click',e=>{
+   const action=e.target.closest('[data-dcc-door]')?.dataset.dccDoor;
+   if(action==='ticket'){openTab('bets');document.getElementById('dccPropBets')?.scrollIntoView({block:'start'})}
+   if(action==='money'){openTab('bets');document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'})}
+   if(action==='score'){
+    // The paper scorecard's existing launcher lives in the original play tab.
+    document.body.classList.remove('dcc-clubhouse-focus');
+    const launch=document.getElementById('dccScorePulseOpen');
+    if(launch)launch.click();else openTab('play');
+   }
+  });
+  doors.querySelector('#dccGroundsBook').addEventListener('click',e=>{
+   e.currentTarget.href='yardage-preview.html?hole='+selectedHole();
+  });
+ }
  function syncHole(){const hole=selectedHole();const label=document.getElementById('dccHomeHole');const link=document.getElementById('dccHomeYardage');if(label)label.textContent='HOLE '+hole;if(link)link.href='yardage-preview.html?hole='+hole}
  syncHole();
  section.addEventListener('click',function(e){
@@ -55,7 +91,7 @@ function mount(){
   if(!first||document.getElementById('dccReturnFrom'+tabName))continue;
   const button=document.createElement('button');button.type='button';
   button.id='dccReturnFrom'+tabName;button.className='dcc-home-return';
-  button.textContent='← Back to The Caddy';
+  button.textContent='← Back to The Clubhouse';
   button.addEventListener('click',()=>openTab('play'));
   first.insertBefore(button,first.firstChild);
  }
