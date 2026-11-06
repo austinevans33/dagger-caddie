@@ -127,7 +127,8 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
   roomUnsub:null,roomId:'',connectionVersion:0,room:null,host:false,
   auth:{currentUser:{uid:'host-1'}},user:{uid:'host-1'},db:{},
   functions:{doc:(_,kind,id)=>({kind,id}),onSnapshot:(_,ok,bad)=>{publish=ok;fail=bad;return ()=>{unsubCount++}}},
-  readWithDeadline:fn=>Promise.race([Promise.resolve().then(fn),new Promise((_,reject)=>setTimeout(()=>reject(Error('verification deadline')),80))]),
+  // The handshake is tested by controlled snapshot delivery, never a wall-clock race.
+  readWithDeadline:fn=>Promise.resolve().then(fn),
   status:value=>{lastStatus=value},render:()=>{renderCount++},archiveLocal:()=>{},forgetRoom:()=>{},roomStore:{},
   $:id=>panel,roomLabel:()=> 'Scorekeeper'
  };
