@@ -62,6 +62,10 @@ on:
       - 'playtest/invitation-qr.js'
       - 'tests/friday-yardage-selection.test.mjs'
       - 'money-room.js'
+      - 'playtest/money-room.js'
+      - 'playtest/room-session.js'
+      - 'tests/friday-game-score-preview.spec.mjs'
+      - 'tests/friday-browser.spec.mjs'
       - 'invitation-qr.js'
       - 'room-recovery.js'
       - '.github/workflows/friday-ghost-qa.yml'
@@ -133,6 +137,25 @@ jobs:
           python3 tests/friday-bundle-integrity.py candidate
       - name: Serve Friday candidate locally
         run: python3 -m http.server 8765 --bind 127.0.0.1 --directory candidate > /tmp/dagger-http.log 2>&1 &
+      - name: Verify packaged candidate HTTP server is ready
+        run: |
+          python3 - <<'PY'
+          import time
+          import urllib.request
+          url = 'http://127.0.0.1:8765/playtest/'
+          for attempt in range(30):
+              try:
+                  with urllib.request.urlopen(url, timeout=1) as response:
+                      body = response.read()
+                      if response.status == 200 and b'Dagger' in body:
+                          print('Friday candidate served successfully')
+                          break
+              except Exception:
+                  pass
+              time.sleep(0.25)
+          else:
+              raise SystemExit('Friday candidate HTTP server did not become ready')
+          PY
       - name: Run real-browser Games and Yardage Book acceptance
         run: npx playwright test tests/friday-browser.spec.mjs tests/friday-game-score-preview.spec.mjs --project=chromium
 
