@@ -3,6 +3,7 @@ import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
 import {getRoundEnvironment} from './round-environment.js?v=location-shapes-23';
 import {readActiveRound} from './starters-desk-session.js';
+import {takeHoleQuestion} from './yardage-caddy-handoff.js';
 import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js?v=weather-cache-22';
 import {buildCaddyCourseFacts} from './caddy-course-facts.js?v=weather-cache-22';
@@ -312,6 +313,16 @@ const ui={
   speak:$('aiSpeak'),
   saveMemory:$('aiSaveMemory')
 };
+
+// One-time, local-only Yardage Book handoff. Prefill a draft; never send it,
+// silently assert a live pin yardage, or disturb a golfer-confirmed target.
+const yardageQuestion=takeHoleQuestion(sessionStorage);
+if(yardageQuestion&&ui.field){
+ const existing=ui.field.value.trim();
+ ui.field.value=existing?existing+'\n\n'+yardageQuestion:yardageQuestion;
+ ui.status.textContent='Yardage Book question ready · Review and tap Send';
+}
+
 
 // DCC 5.2 — Autofill explicit target yardage from golfer messages.
 
