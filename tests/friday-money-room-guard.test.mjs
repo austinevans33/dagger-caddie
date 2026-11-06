@@ -143,6 +143,12 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  assert.equal(renderCount,1);
  assert.match(lastStatus,/LIVE · Server-confirmed/);
  assert.equal(state.roomServerFresh,true);
+ // A normal local write is pending, but the server remains connected.
+ publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:true},data:()=>({archived:false})});
+ assert.equal(state.roomServerFresh,true);
+ assert.equal(qrRemoved,0,'a normal score save must not make the host QR flash');
+ assert.equal(panel.hidden,false,'a pending local write must not hide the scorekeeper');
+ assert.match(lastStatus,/Saving to the connected Money Room/);
  // Firebase can quietly fall back to cache without raising an error.
  publish({exists:()=>true,metadata:{fromCache:true,hasPendingWrites:false},data:()=>({archived:false})});
  assert.equal(state.roomServerFresh,false);
@@ -203,5 +209,15 @@ test('live Money Room listener requests metadata-only Firestore updates',()=>{
  const code=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
  const listener=code.slice(code.indexOf('async function connect(id){'),code.indexOf('\nasync function create(){'));
  assert.match(listener,/onSnapshot\(doc\(db,'rooms',id\),\{includeMetadataChanges:true\},snap=>/);
- assert.match(listener,/if\(snap\.metadata\?\.fromCache\|\|snap\.metadata\?\.hasPendingWrites\)/);
+ assert.match(listener,/if\(snap\.metadata\?\.fromCache\)/);
+ assert.match(listener,/if\(snap\.metadata\?\.hasPendingWrites\)/);
+});
+
+test('a pending score write does not demote an already confirmed live Money Room',()=>{
+ const code=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const listener=code.slice(code.indexOf('async function connect(id){'),code.indexOf('\nasync function create(){'));
+ const cached=listener.indexOf('if(snap.metadata?.fromCache)');
+ const pending=listener.indexOf('if(snap.metadata?.hasPendingWrites)');
+ assert.ok(cached>=0&&pending>cached,'cache-only lockout is separate from normal writes');
+ assert.match(listener,/status\(roomServerFresh\?'Saving to the connected Money Room/);
 });
