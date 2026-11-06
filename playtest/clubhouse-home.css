@@ -68,3 +68,16 @@ body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!i
    JavaScript, but the requested four shortcuts are the visible entry points. */
 #dccScorePulse,#dccGamesYardageAccessLink{display:none!important}
 @media(min-width:650px){#dccGroundsDoors .dcc-grounds-door-grid{max-width:600px;margin-inline:auto}}
+
+/* Ticket Window: original buttons still own saving, resolving and paying.
+   Only presentation changes; archived records and payment states are untouched. */
+#dccPropBets.dcc-ticket-simplified .dcc-r66-stats>div:nth-child(2){display:none!important}
+#dccPropBets.dcc-ticket-simplified .dcc-r66-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#dccVisibleTickets{border:1px solid #aa9166;border-radius:16px;padding:13px;margin:12px 0;background:#f2e8d5;color:#16392b}
+#dccVisibleTickets h3{font:700 22px/1.2 Georgia,serif;margin:2px 0 14px;color:#16392b}
+#dccVisibleTickets .dcc-r66-slip{margin-bottom:10px}
+#dccVisibleTickets .dcc-r66-actions button{min-height:44px}
+#dccPropHistoryWrap[hidden]{display:none!important}
+#dcc19thHole.dcc-nineteenth-door{max-width:860px;margin:15px auto!important;text-align:left!important}
+#dcc19thHole.dcc-nineteenth-door a{display:block;padding:17px 18px;min-height:60px;border:1px solid #ae9867;border-radius:16px;background:#f0e5ce;color:#173d2b!important;text-decoration:none!important;font:700 18px/1.3 Georgia,serif!important}
+#dcc19thHole.dcc-nineteenth-door a:focus-visible{outline:3px solid #dbb875;outline-offset:3px}
