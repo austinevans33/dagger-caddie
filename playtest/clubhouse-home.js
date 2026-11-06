@@ -36,13 +36,14 @@ function mount(){
  // Retain the entire original header, saved state, and caddy infrastructure.
  // Expose only the approved Clubhouse doors in the home tab.
  document.body.classList.add('dcc-clubhouse-focus');
+ let openingScorecard=false;
  const nav=document.getElementById('tab-play');
  if(nav){
   nav.setAttribute('aria-label','The Clubhouse');
   nav.title='The Clubhouse';
   const title=nav.querySelector('.dcc-tab-title');
   if(title)title.textContent='The Clubhouse';
-  nav.addEventListener('click',()=>document.body.classList.add('dcc-clubhouse-focus'));
+  nav.addEventListener('click',()=>{if(openingScorecard){openingScorecard=false;return}document.body.classList.add('dcc-clubhouse-focus')});
  }
  const groundsHeader=document.querySelector('section.dcc-competition-portal[data-tab="games"]');
  if(groundsHeader&&!document.getElementById('dccGroundsDoors')){
@@ -62,6 +63,7 @@ function mount(){
    if(action==='money'){openTab('bets');document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'})}
    if(action==='score'){
     // The paper scorecard's existing launcher lives in the original play tab.
+    openingScorecard=true;
     document.body.classList.remove('dcc-clubhouse-focus');
     const launch=document.getElementById('dccScorePulseOpen');
     if(launch)launch.click();else openTab('play');
