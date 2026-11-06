@@ -121,8 +121,8 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  const source=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
  const start=source.indexOf('async function connect(id){'),end=source.indexOf('\nasync function create(){',start);
  assert.ok(start>0&&end>start,'live connection function exists');
- let publish,fail,renderCount=0,lastStatus='',unsubCount=0;
- const panel={hidden:false};
+ let publish,fail,renderCount=0,lastStatus='',unsubCount=0,qrRemoved=0;
+ const panel={hidden:false,disabled:false,remove(){qrRemoved++}};
  const state={
   roomUnsub:null,roomId:'',connectionVersion:0,room:null,host:false,
   auth:{currentUser:{uid:'host-1'}},user:{uid:'host-1'},db:{},
@@ -147,6 +147,8 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  publish({exists:()=>true,metadata:{fromCache:true,hasPendingWrites:false},data:()=>({archived:false})});
  assert.equal(state.roomServerFresh,false);
  assert.equal(panel.hidden,true);
+ assert.equal(panel.disabled,true);
+ assert.equal(qrRemoved,1,'host QR is hidden as soon as a cached snapshot replaces the live server');
  assert.match(lastStatus,/Scoring is locked until reconnected/);
  publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:false},data:()=>({hostUid:'host-1',players:['A','B'],archived:false})});
  assert.equal(state.roomServerFresh,true);
@@ -154,6 +156,7 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  // A real-time listener can die after the initial server confirmation.
  // The app must hide the editor rather than leave a stale LIVE room usable.
  fail(Error('transport closed'));
+ assert.equal(qrRemoved,2,'a dead listener also clears the host QR');
  assert.equal(state.roomId,'');
  assert.equal(panel.hidden,true);
  assert.match(lastStatus,/Scoring has stopped/);
@@ -177,4 +180,13 @@ test('Money Room editor and writes require fresh server data',()=>{
  assert.match(live,/if\(!host\|\|!room\|\|room\.archived\|\|!roomServerFresh\)throw Error\('Scoring requires a fresh server connection/);
  assert.match(live,/roomSaveHole'\)\.disabled=!host\|\|room\.archived\|\|!roomServerFresh/);
  assert.match(live,/roomFinish'\)\.disabled=!host\|\|room\.archived\|\|!roomServerFresh/);
+});
+
+test('offline Money Room cannot keep a visible host QR or enabled score actions',()=>{
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const connect=live.slice(live.indexOf('async function connect(id){'),live.indexOf('\nasync function create(){'));
+ assert.match(connect,/roomHostQr'\)\?\.remove\(\);displayedQrLink=''/);
+ assert.match(connect,/roomSaveHole'\)\.disabled=true/);
+ assert.match(connect,/roomUndoHole'\)\.disabled=true/);
+ assert.match(connect,/roomFinish'\)\.disabled=true/);
 });
