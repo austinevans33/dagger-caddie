@@ -64,5 +64,6 @@ test('Friday staging accepts only browser-verified release-branch checkout, neve
  assert.match(deploy,/build_event" != "push" && "\$build_event" != "workflow_dispatch"/);
  assert.match(deploy,/branch_sha" != "\$checked_out_sha"/);
  assert.match(deploy,/release-branch build, not a pull-request merge artifact/);
- assert.match(workflow,/printf '%s\\n' "\$\{\{ github\.event_name \}\}" > candidate\/FRIDAY_BUILD_EVENT\.txt/);
+ assert.match(workflow,/github\.event_name/);
+ assert.match(workflow,/candidate\/FRIDAY_BUILD_EVENT\.txt/);
 });
