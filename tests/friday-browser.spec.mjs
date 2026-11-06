@@ -354,6 +354,10 @@ test('Playable game scorer copies paper strokes into only selected player field 
  if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-bets').click({timeout:5000});
+ // The historic foursome scorer is intentionally nested under Optional Legacy Wagering.
+ // Open the real parent disclosure before its Group Wagering child.
+ const legacy=page.locator('details.dcc-r60-legacy-ticket');
+ if(await legacy.getAttribute('open')===null)await legacy.locator(':scope > summary').click();
  if(await page.locator('#newWagers').getAttribute('open')===null)await page.locator('#newWagers > summary').click();
  await expect(page.locator('#dccPaperGamePrefill')).toBeVisible();
  await page.locator('#dccPaperGamePlayer').selectOption('0');
@@ -373,6 +377,10 @@ test('New live games bind the active course and tee before paper-score prefill',
  if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-bets').click({timeout:5000});
+ // The historic foursome scorer is intentionally nested under Optional Legacy Wagering.
+ // Open the real parent disclosure before its Group Wagering child.
+ const legacy=page.locator('details.dcc-r60-legacy-ticket');
+ if(await legacy.getAttribute('open')===null)await legacy.locator(':scope > summary').click();
  if(await page.locator('#newWagers').getAttribute('open')===null)await page.locator('#newWagers > summary').click();
  await page.locator('#wMyName').fill('Golfer');
  await page.locator('#wP2').fill('Friend');
