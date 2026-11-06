@@ -57,7 +57,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 <button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask your caddy about this hole →</button>
 <aside class="pencil-note" aria-label="Your selected caddy’s notebook"><span id="caddySignature" class="signature">Keith’s pencil</span><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></aside>
 <div class="nav"><button id="prev">← Previous</button><button id="return" class="primary">Back to Play</button><button id="next">Next →</button></div>
-<p id="officialHoleGuideWrap" class="muted" hidden><a id="officialHoleGuide" href="https://www.bayonetgolf.com/course-tour/" target="_blank" rel="noopener noreferrer">See Bayonet's official illustrated 18-hole course guide ↗</a><span> · Opens the club's own hole diagrams; not a GPS rangefinder.</span></p>
+<p id="officialHoleGuideWrap" class="muted" hidden><a id="officialHoleGuide" href="https://www.bayonetgolf.com/course-tour/" target="_blank" rel="noopener noreferrer">Watch Bayonet's official hole guide ↗</a><span> · Club video walkthrough, not GPS or surveyed map geometry.</span></p>
 <p class="muted" id="source">Course par and yards are from a tee-specific scorecard, not the live pin. Missing data stays unverified. This screen does not change your scores or wagers.</p>
 <p class="muted">Course data where available: © OpenStreetMap contributors (ODbL 1.0) via <a href="https://opengolfapi.org/" target="_blank" rel="noopener noreferrer">OpenGolfAPI</a>.</p>
 </div></main><script type="module">
@@ -70,6 +70,9 @@ import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 const requested=params.has('hole')?Number(params.get('hole')):null;
 let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
+// Bayonet's official Course Tour links to an individual club video for every hole.
+// These are video walkthroughs, not surveyed geometry or measured shot distances.
+const BAYONET_HOLE_VIDEOS=Object.freeze(["CV_NGClDOxY","-MW9cowLIMA","RpOybElG3IQ","1wp4PLRzriU","ZTQdha2h6f8","wDI_42Rsy5Q","WBsxHWL8M68","SCpQjtJkNlI","YJxIGGXGu_0","FhI5lzOiomE","uhjRt_4pH08","SdUmegy5MOA","UO0TJLURtnQ","e5itGAvEq6g","4GYbSQvx628","nTtGH4qp5C4","_Zb-wSs_LGI","680T1sKYHtY"]);
 let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();let spatialPending=null;let mapMode='all';let mapSelected=null;
 for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
@@ -95,7 +98,12 @@ function draw(){
  $('source').textContent=source+' · Tee yardage is not GPS pin distance. No scores or bets are changed here.';
  // Show the club's real illustrations when the bundled verified Bayonet scorecard is active.
  // Do not present generic orientation art as an actual mapped hole.
- $('officialHoleGuideWrap').hidden=source!=='Bayonet club scorecard · cross-checked hole yardages';
+ const hasBayonetGuide=source==='Bayonet club scorecard · cross-checked hole yardages';
+ $('officialHoleGuideWrap').hidden=!hasBayonetGuide;
+ if(hasBayonetGuide){
+  $('officialHoleGuide').href='https://www.youtube.com/watch?v='+BAYONET_HOLE_VIDEOS[number-1];
+  $('officialHoleGuide').textContent='Watch Bayonet’s official hole '+number+' course guide ↗';
+ }
  const notes=page.hazards||[];
  $('hazards').replaceChildren();
  if(!notes.length){const li=document.createElement('li');li.textContent='No verified hazard notes available';$('hazards').append(li);}
