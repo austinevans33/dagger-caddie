@@ -72,6 +72,22 @@ test('Clubhouse is the first Play destination with genuine app navigation',async
  await expect(home).toBeVisible();
  await page.screenshot({path:'candidate-screenshots/04-clubhouse-new-iphone.png',animations:'disabled'});
 });
+test('Ticket Window keeps original resolved-ticket controls visible and 19th Hole follows Money Room',async({page})=>{
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#useAustin').click({timeout:5000});
+ await page.locator('#tab-bets').click();
+ await expect(page.locator('#dccVisibleTickets')).toBeVisible();
+ await expect(page.locator('#dccVisibleTickets #dccPropList')).toHaveCount(1);
+ await expect(page.locator('#dccPropHistoryWrap')).toBeHidden();
+ await expect(page.locator('#dccPropNew')).toBeVisible();
+ const follows=await page.evaluate(()=>document.querySelector('#moneyRoomSection')?.nextElementSibling?.id);
+ expect(follows).toBe('dcc19thHole');
+ await expect(page.locator('#dcc19thHole a')).toContainText('The 19th Hole');
+});
+
 test('House Ghost reuses mapped pencil sketch without treating simulated strokes as GPS',async({page})=>{
  await page.addInitScript(()=>{
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'ghost-sketch-test',name:'Ghost Sketch Links',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6000},holeNumber:1}}));
