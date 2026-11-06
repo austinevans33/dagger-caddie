@@ -110,14 +110,14 @@ test('House Ghost tracer draws animated schematic and watch mode',async({page})=
  await expect(page.locator('#watch')).toContainText('Watch Ghost');
 });
 
-test('Clubhouse preserves original tab names and opens the existing Money Room setup',async({page})=>{
+test('Clubhouse displays clean tab labels and opens existing Money Room setup',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.goto('/playtest/');
  const desk=page.locator('#dcc-starter-dialog');
  if(await desk.isVisible())await page.keyboard.press('Escape');
  if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
  await page.locator('#useAustin').click({timeout:5000});
- await expect(page.locator('#tab-play .dcc-tab-title')).toHaveText('The Caddy');
+ await expect(page.locator('#tab-play .dcc-tab-title')).toHaveText('The Clubhouse');
  await expect(page.locator('#tab-games .dcc-tab-title')).toHaveText('The Grounds');
  await expect(page.locator('#tab-bets .dcc-tab-title')).toHaveText('The Ledger');
  await expect(page.locator('#tab-settings .dcc-tab-title')).toHaveText('The Clubhouse');
@@ -133,31 +133,29 @@ test('Clubhouse preserves original tab names and opens the existing Money Room s
  await expect(home.locator('img.dcc-home-seal')).toHaveAttribute('src','dcc-approved-seal.png');
 });
 
-test('Three on-course tabs retain both Club Services with a safe return',async({page})=>{
+test('Clubhouse ends with Money Room and Grounds presents four one-tap doors',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.goto('/playtest/');
  const desk=page.locator('#dcc-starter-dialog');
  if(await desk.isVisible())await page.keyboard.press('Escape');
  if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
  await page.locator('#useAustin').click({timeout:5000});
- for(const tab of ['play','games','bets'])await expect(page.locator('#tab-'+tab)).toBeVisible();
- for(const tab of ['bag','settings'])await expect(page.locator('#tab-'+tab)).toBeHidden();
- const services=page.locator('#dccClubhouseHome .dcc-home-services');
- await services.locator('summary').click();
- await services.locator('[data-dcc-go="bag"]').click();
- await expect(page.locator('#dccReturnFrombag')).toBeVisible();
- await page.locator('#dccReturnFrombag').click();
- await expect(page.locator('#dccClubhouseHome')).toBeVisible();
- await services.locator('[data-dcc-go="settings"]').click();
- await expect(page.locator('#dccReturnFromsettings')).toBeVisible();
- await page.locator('#dccReturnFromsettings').click();
- await expect(page.locator('#dccClubhouseHome')).toBeVisible();
+ const home=page.locator('#dccClubhouseHome');
+ await expect(home).toBeVisible();
+ await expect(home.locator('[data-dcc-go="money"]')).toBeVisible();
+ await expect(home.locator('.dcc-home-services')).toHaveCount(0);
+ await expect(home.locator('.dcc-home-caddy')).toHaveCount(0);
+ await expect(page.locator('section.caddie-roster[data-tab="play"]')).toBeHidden();
  await page.locator('#tab-games').click();
- await expect(page.locator('#gamesMenu')).toBeVisible();
- await page.locator('#tab-bets').click();
- await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ const doors=page.locator('#dccGroundsDoors .dcc-grounds-door');
+ await expect(doors).toHaveCount(4);
+ await expect(doors.nth(0)).toContainText('Yardage Book');
+ await expect(doors.nth(1)).toContainText('Ticket Window');
+ await expect(doors.nth(2)).toContainText('Money Room');
+ await expect(doors.nth(3)).toContainText('Scorecard');
+ await doors.nth(1).click();
+ await expect(page.locator('#dccPropBets')).toBeVisible();
 });
-
 test('Yardage Book uses actual selected tee/provider scorecard and preserves bets',async({page})=>{
  await page.addInitScript(()=>{
   if(sessionStorage.getItem('dccCourseFixtureSeeded'))return;
@@ -270,7 +268,7 @@ test('Pencil Yardage Book follows selected caddy without inventing hole geometry
  await expect(page.locator('.paper')).toBeVisible();
  await expect(page.locator('#caddySignature')).toContainText('Vinny');
  await expect(page.locator('#caddyNote')).not.toBeEmpty();
- await expect(page.locator('.field-sketch')).toContainText('No invented fairways');
+ await expect(page.locator('.field-sketch')).toContainText('No hole-assigned mapped outlines');
  await expect(page.locator('#yards')).toContainText('Not verified');
  await page.locator('#next').click();
  await expect(page.locator('#position')).toContainText('HOLE 2 / 18');
@@ -288,7 +286,7 @@ test('Verified provider feature polygons appear as a pencil study without sugges
  await expect(page.locator('.geometry-foot')).toContainText('No invented fairway');
  await page.locator('#next').click();
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(0);
- await expect(page.locator('.field-sketch')).toContainText('No invented fairways');
+ await expect(page.locator('.field-sketch')).toContainText('No hole-assigned mapped outlines');
 });
 
 test('Pencil map is readable and tappable with one hand using Green / Trouble filters',async({page})=>{
@@ -322,7 +320,7 @@ test('Pencil map is readable and tappable with one hand using Green / Trouble fi
  await page.locator('#next').click();
  await expect(page.locator('#mapHole')).toHaveText('HOLE 2');
  await expect(map.locator('svg polygon')).toHaveCount(0);
- await expect(map).toContainText('No invented fairways');
+ await expect(map).toContainText('No hole-assigned mapped outlines');
 });
 
 test('Rapid hole changes cancel stale map and cached return does not repeat a fetch',async({page})=>{
@@ -405,11 +403,11 @@ test('Grounds score pulse reflects the paper scorecard without duplicating game 
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-games').click();
  const pulse=page.locator('#dccScorePulse');
- await expect(pulse).toBeVisible();
+ await expect(pulse).toBeHidden();
  await expect(pulse.locator('#dccScorePulseProgress')).toHaveText('2/18 HOLES SCORED');
  await expect(pulse.locator('#dccScorePulseSummary')).toContainText('Pulse Test Course · White · 8 recorded strokes');
  const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
- await pulse.locator('#dccScorePulseOpen').click();
+ await page.locator('#dccGroundsDoors [data-dcc-door="score"]').click();
  await expect(page.locator('#dcc-paper-dialog')).toHaveAttribute('open','');
  await page.getByRole('button',{name:'Select hole 1, 5 strokes'}).click();
  await page.getByRole('button',{name:'Pencil 4 strokes for hole 1'}).click();
