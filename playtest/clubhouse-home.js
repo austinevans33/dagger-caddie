@@ -73,6 +73,30 @@ function mount(){
    e.currentTarget.href='yardage-preview.html?hole='+selectedHole();
   });
  }
+ // Ticket Window remains the original wager engine: expose its already-working
+ // Mark paid / Undo paid controls without duplicating storage or settlements.
+ const ticket=document.getElementById('dccPropBets');
+ const slips=document.getElementById('dccPropList');
+ const archive=document.getElementById('dccPropHistoryWrap');
+ if(ticket&&slips&&archive&&!document.getElementById('dccVisibleTickets')){
+  const visible=document.createElement('section');visible.id='dccVisibleTickets';
+  visible.setAttribute('aria-label','Your open and resolved tickets');
+  const title=document.createElement('h3');title.textContent='Your Tickets';
+  visible.append(title,slips);
+  archive.before(visible);
+  archive.hidden=true;
+  ticket.classList.add('dcc-ticket-simplified');
+  const total=ticket.querySelector('#dccPropTotal')?.previousElementSibling;
+  if(total)total.textContent='ALL-TIME PAID NET';
+ }
+ const money=document.getElementById('moneyRoomSection');
+ const nineteenth=document.getElementById('dcc19thHole');
+ if(money&&nineteenth){
+  money.after(nineteenth);
+  nineteenth.classList.add('dcc-nineteenth-door');
+  const link=nineteenth.querySelector('a');
+  if(link)link.textContent='The 19th Hole · Round recap & bragging rights';
+ }
  function syncHole(){const hole=selectedHole();const label=document.getElementById('dccHomeHole');const link=document.getElementById('dccHomeYardage');if(label)label.textContent='HOLE '+hole;if(link)link.href='yardage-preview.html?hole='+hole}
  syncHole();
  section.addEventListener('click',function(e){
