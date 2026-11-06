@@ -31,7 +31,7 @@ function syncHostQr() {
  const anchor = $('roomShareCurrent')?.closest('.action-room-utilities');
  if (!anchor) return;
  let panel = $('roomHostQr');
- if (!host || !roomId || !invite || room?.archived) {
+ if (!host || !roomServerFresh || !roomId || !invite || room?.archived) {
   if (panel) panel.remove();
   displayedQrLink = '';
   return;
