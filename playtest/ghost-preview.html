@@ -13,7 +13,8 @@ article{border:1px solid #cfc2a6;border-radius:13px;background:#fffdf7;padding:1
 ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
 .dcc-ghost-tracer{filter:drop-shadow(0 0 4px rgba(255,230,124,.7))}@keyframes dcc-trace-draw{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}.ghost-watch{background:#b79c62;color:#142c22}.ghost-note{font:12px/1.45 system-ui,sans-serif;color:#5c645e}
 .ghost-hole-paper{background:#f4ecd5;border:1px solid #b6aa88;border-radius:12px;padding:12px;margin:12px 0}
-.ghost-hole-paper svg{background:#f4ecd5;border:1px dashed #a8a084;border-radius:6px;max-height:290px}
+.ghost-hole-paper #trail{background:#f4ecd5;border:1px dashed #a8a084;border-radius:6px;max-height:none}
+.ghost-hole-paper #ghostHoleSketch{border:0;background:transparent;border-radius:0;max-height:none}
 .ghost-hole-paper small{display:block;margin:6px 0;color:#455548;font:12px/1.4 system-ui,sans-serif}
 
 @media(prefers-reduced-motion:reduce){.dcc-ghost-tracer{animation:none!important;stroke-dashoffset:0!important}}
@@ -21,8 +22,12 @@ ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
 <p class="notice"><strong>Simulated schematic only.</strong> This preview does not read or change scores, bets, GPS, Firebase, or real pin positions. It reads your selected course and tees when available; Ghost shots remain simulated.</p>
 <div class="controls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
 <article><strong id="headline">Loading…</strong><p id="summary"></p>
-<div class="ghost-hole-paper" aria-label="Shared caddy-book course sketch"><strong>✎ Caddy book · selected hole</strong><svg id="ghostHoleSketch" viewBox="0 0 300 220" role="img" aria-label="Provider-mapped hole features, when available"></svg><small id="ghostMapStatus">Select a mapped course for a verified pencil sketch. This does not locate simulated Ghost shots.</small></div>
-<svg id="trail" viewBox="0 0 320 430" role="img" aria-label="Schematic Ghost shot positions"><path d="M120 390 Q55 220 130 38 L190 38 Q265 225 200 390 Z" fill="#a4bf86" stroke="#6b895b" stroke-width="2"/><ellipse cx="160" cy="37" rx="43" ry="25" fill="#7b9c70"/><circle cx="160" cy="32" r="5" fill="#fff"/><text x="10" y="22" fill="#17372b" font-size="13">SCHEMATIC · NOT GPS</text><g id="traces"></g><g id="markers"></g></svg>
+<div class="ghost-hole-paper" aria-label="Shared caddy-book sketch with illustrative Ghost flight"><strong>✎ Caddy book · Ghost on the hole</strong>
+<svg id="trail" viewBox="0 0 300 220" role="img" aria-label="One pencil hole sketch with simulated Ghost shot trails, not GPS">
+ <svg id="ghostHoleSketch" x="0" y="0" width="300" height="220" viewBox="0 0 300 220" aria-label="Mapped hole features, when available"></svg>
+ <g id="traces" transform="scale(0.9375 0.51162790698)"></g>
+ <g id="markers" transform="scale(0.9375 0.51162790698)"></g>
+</svg><small id="ghostMapStatus">Ghost shots are illustrative overlays, not measured GPS positions.</small></div>
 <div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button><p class="ghost-note">Gold tracer and flying ball are animated representations of simulated strokes, not measured trajectories.</p>
 <p id="progress" role="status"></p></article>
 <article><strong>Revealed strokes</strong><ol id="shots"></ol></article>
@@ -33,17 +38,26 @@ import {drawGhostTracer} from './ghost-tracer.js';
 import {loadCourseFeatures,pencilGeometry,orientPencilTeeToGreen} from './course-pencil-geometry.js';
 import {pencilBookAnnotations} from './pencil-book-annotations.js';
 import {renderSharedHoleSketch} from './shared-hole-sketch.js';
+import {pencilOrientation} from './yardage-pencil-orientation.js';
 const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
 let selectedCourse=null;let verifiedHoles=[];let courseIdentity='friday-qa';
 let activeCourseSelection=null,sketchGeneration=0;
 const sketchCache=new Map();
+function showUnmappedPencil(holeNumber){
+ const svg=$('ghostHoleSketch');
+ const facts=verifiedHoles.find(h=>h.number===holeNumber);
+ // This is deliberately the same clearly labeled orientation fallback used by
+ // the Yardage Book, never a fictional map of the selected golf course.
+ svg.innerHTML=pencilOrientation({holeNumber,par:facts?.par,yards:facts?.yards}).svg;
+}
 async function updateGhostHoleSketch(){
  const generation=++sketchGeneration;
  const holeNumber=Number($('hole').value);
  const svg=$('ghostHoleSketch'),status=$('ghostMapStatus');
  svg.replaceChildren();
  if(!activeCourseSelection){
-  status.textContent='No mapped hole selected. Ghost strokes are simulated on a separate schematic.';
+  showUnmappedPencil(holeNumber);
+  status.textContent='Illustrative pencil orientation · hole geography unverified. Ghost flights are simulated on this same drawing.';
   return;
  }
  status.textContent='Checking provider-mapped fairway, green and hazards for hole '+holeNumber+'…';
@@ -58,12 +72,12 @@ async function updateGhostHoleSketch(){
   if(generation!==sketchGeneration)return;
   const shapes=orientPencilTeeToGreen(pencilGeometry(features));
   const annotations=pencilBookAnnotations(shapes);
-  if(!shapes.length){status.textContent='No mapped hole outlines available. No hazards or doglegs invented.';return;}
+  if(!shapes.length){showUnmappedPencil(holeNumber);status.textContent='No mapped hole outlines available. Illustrative pencil orientation and Ghost flights only.';return;}
   renderSharedHoleSketch(svg,shapes,annotations);
-  status.textContent=annotations.route?'Same mapped pencil sketch as Yardage Book · Ghost shot dots below are simulated, NOT positioned on this map.':
-   'Partial mapped outlines · tee-to-green route unavailable; Ghost strokes below are simulated.';
+  status.textContent=annotations.route?'Same mapped pencil drawing as Yardage Book. Gold flights are illustrative, not real shot positions.':
+   'Partial mapped outlines · illustrative Ghost flights over the same pencil drawing.';
  }catch{
-  if(generation===sketchGeneration)status.textContent='Hole geometry unavailable. Simulated Ghost strokes remain separate.';
+  if(generation===sketchGeneration){showUnmappedPencil(holeNumber);status.textContent='Hole geography unavailable · illustrative pencil orientation with simulated Ghost flights.';}
  }
 }
 
@@ -90,7 +104,7 @@ function render(){
 }
 $('next').addEventListener('click',()=>{stopWatch();revealed++;render()});$('back').addEventListener('click',()=>{stopWatch();revealed=Math.max(0,revealed-1);render()});
 $('watch').addEventListener('click',()=>{if(watchTimer!==null){stopWatch();return;}if($('next').disabled){revealed=0;lastRendered=0;render();}revealed++;render();if($('next').disabled)return;$('watch').textContent='Ⅱ Pause Ghost';watchTimer=setInterval(()=>{revealed++;render()},1500)});
-$('hole').addEventListener('change',()=>{stopWatch();revealed=0;lastRendered=0;render();void updateGhostHoleSketch()});$('length').addEventListener('change',()=>{stopWatch();if(Number($('hole').value)>9)$('hole').value='1';for(const o of $('hole').options)o.disabled=Number(o.value)>Number($('length').value);revealed=0;render()});render();
+$('hole').addEventListener('change',()=>{stopWatch();revealed=0;lastRendered=0;render();void updateGhostHoleSketch()});$('length').addEventListener('change',()=>{stopWatch();if(Number($('hole').value)>9)$('hole').value='1';for(const o of $('hole').options)o.disabled=Number(o.value)>Number($('length').value);revealed=0;render();void updateGhostHoleSketch()});render();void updateGhostHoleSketch();
 // Read only the Starter's Desk course selection and validated hole facts; no wager or score writes.
 loadYardageState({storage:localStorage,holeNumber:1}).then(context=>{
  if(!context?.hasCourse)return;
