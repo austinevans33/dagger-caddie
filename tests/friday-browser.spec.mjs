@@ -72,6 +72,32 @@ test('Clubhouse is the first Play destination with genuine app navigation',async
  await expect(home).toBeVisible();
  await page.screenshot({path:'candidate-screenshots/04-clubhouse-new-iphone.png',animations:'disabled'});
 });
+test('House Ghost reuses mapped pencil sketch without treating simulated strokes as GPS',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'ghost-sketch-test',name:'Ghost Sketch Links',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6000},holeNumber:1}}));
+  localStorage.setItem('dagger_foursome_active','{"protected":"untouched"}');
+ });
+ await page.route('https://api.opengolfapi.org/v1/courses/ghost-sketch-test/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[{number:1,par:4,yardages:{white:405}},{number:2,par:3,yardages:{white:165}}]})}));
+ const polygon=(type,hole,x)=>({type:'Feature',properties:{type,hole},geometry:{type:'Polygon',coordinates:[[[x,35],[x+.00005,35],[x+.00005,35.00005],[x,35]]]}});
+ await page.route(url=>url.toString().startsWith('https://api.opengolfapi.org/api/v1/features?'),route=>{
+  const n=Number(new URL(route.request().url()).searchParams.get('hole'));
+  route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:n===1?[
+   polygon('tee',1,-79),polygon('green',1,-79.002),polygon('bunker',1,-79.001)
+  ]:[]})});
+ });
+ await page.goto('/playtest/ghost-preview.html');
+ await expect(page.locator('#ghostHoleSketch polygon')).toHaveCount(3);
+ await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveCount(1);
+ await expect(page.locator('#ghostMapStatus')).toContainText('same mapped pencil sketch', {ignoreCase:true});
+ await expect(page.locator('#traces path')).toHaveCount(0);
+ await page.locator('#next').click();
+ await expect(page.locator('#traces path')).toHaveCount(2);
+ await page.locator('#hole').selectOption('2');
+ await expect(page.locator('#ghostMapStatus')).toContainText('No mapped hole outlines');
+ await expect(page.locator('#ghostHoleSketch polygon')).toHaveCount(0);
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":"untouched"}');
+});
+
 test('House Ghost tracer draws animated schematic and watch mode',async({page})=>{
  await page.goto('/playtest/ghost-preview.html');
  await expect(page.locator('#traces path')).toHaveCount(0);
