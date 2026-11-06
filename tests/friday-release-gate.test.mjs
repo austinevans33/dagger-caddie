@@ -35,3 +35,16 @@ test('Friday browser smoke waits for packaged server readiness and tracks live M
  assert.match(workflow,/'playtest\/money-room\.js'/);
  assert.match(workflow,/'playtest\/room-session\.js'/);
 });
+
+test('staging deployment refuses a preflight-only artifact or mismatched browser provenance',()=>{
+ const deploy=readFileSync(new URL('../qa/deploy-friday-preview.sh',import.meta.url),'utf8');
+ const browser=workflow.split('\n  browser-smoke:')[1];
+ const smoke=browser.indexOf('npx playwright test');
+ const stamp=browser.indexOf('name: Stamp browser-verified provenance');
+ const publish=browser.indexOf('name: Publish verified Friday candidate');
+ assert.ok(smoke>=0&&stamp>smoke&&publish>stamp,'verification stamp is created only after browser acceptance');
+ assert.match(browser,/candidate\/FRIDAY_BROWSER_VERIFIED_SHA\.txt/);
+ assert.match(deploy,/if \[\[ ! -f "\$BUILD\/FRIDAY_BROWSER_VERIFIED_SHA\.txt" \]\]/);
+ assert.match(deploy,/verified_sha" != "\$checked_out_sha"/);
+ assert.match(deploy,/Download dagger-friday-candidate only after both CI jobs pass/);
+});
