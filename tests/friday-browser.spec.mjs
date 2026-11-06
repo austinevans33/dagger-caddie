@@ -183,6 +183,10 @@ test('Real Bayonet White Yardage Book covers all 18 holes with official guide an
  await page.screenshot({path:'candidate-screenshots/05-bayonet-yardage-iphone.png',animations:'disabled'});
  await page.locator('#askHoleCaddy').click();
  await expect(page).toHaveURL(/\/playtest\/?$/);
+ await expect(page.locator('#aiInput')).toContainText('Bayonet at Puppy Creek');
+ await expect(page.locator('#aiInput')).toContainText('hole 1');
+ await expect(page.locator('#aiInput')).toContainText('433 yards');
+ await expect(page.locator('#aiStatus')).toContainText('Review and tap Send');
  const stored=await page.evaluate(()=>({
   handoff:JSON.parse(sessionStorage.getItem('dcc_yardage_caddy_handoff_v1')||'null'),
   wager:localStorage.getItem('dagger_foursome_active')
