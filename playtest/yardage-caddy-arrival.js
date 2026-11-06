@@ -3,6 +3,9 @@ import {takeHoleQuestion} from './yardage-caddy-handoff.js';
 function install(){
  const question=takeHoleQuestion(sessionStorage);
  if(!question)return;
+ // The Clubhouse is normally intentionally minimal. A golfer who explicitly
+ // taps Ask Caddy in the Yardage Book may open the editor without losing it.
+ document.body.classList.remove('dcc-clubhouse-focus');
  const field=document.getElementById('aiInput');
  if(!field)return;
  const composer=field.closest('.ai-card')||field.parentElement;
