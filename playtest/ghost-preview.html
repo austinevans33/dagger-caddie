@@ -40,6 +40,11 @@ import {pencilBookAnnotations} from './pencil-book-annotations.js';
 import {renderSharedHoleSketch} from './shared-hole-sketch.js';
 import {pencilOrientation} from './yardage-pencil-orientation.js';
 const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
+const TIER_NAMES=Object.freeze({scratch:'The Undertaker',fiveTen:'The Sandbagger',tenFifteen:'The Weekend Menace',fifteenTwenty:'The Liability'});
+const requestedTier=new URLSearchParams(location.search).get('tier');
+let savedTier=null;try{savedTier=sessionStorage.getItem('dccGhostPreviewTier')}catch{}
+const ghostTier=Object.hasOwn(TIER_NAMES,requestedTier)?requestedTier:
+ Object.hasOwn(TIER_NAMES,savedTier)?savedTier:'tenFifteen';
 let selectedCourse=null;let verifiedHoles=[];let courseIdentity='friday-qa';
 let activeCourseSelection=null,sketchGeneration=0;
 const sketchCache=new Map();
@@ -85,9 +90,9 @@ function stopWatch(){if(watchTimer!==null){clearInterval(watchTimer);watchTimer=
 for(let n=1;n<=18;n++)$('hole').add(new Option('Hole '+n,n));
 function render(){
  const count=Number($('length').value),holeNumber=Number($('hole').value);
- const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity});
+ const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity,tier:ghostTier});
  revealed=state.shotsRevealed;
- $('headline').textContent='Hole '+holeNumber+' · Par '+state.par+' · Ghost '+state.score;
+ $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par+' · Ghost '+state.score;
  $('summary').textContent=(selectedCourse?selectedCourse+' · ':'Practice defaults · ')+(state.coverage==='scorecard'?'selected-tee par & yards verified · ':'unverified hole facts · ')+state.label;
  drawGhostTracer($('trail'),state.visibleShots,{animateLast:revealed>lastRendered});lastRendered=revealed;
  $('markers').replaceChildren();
