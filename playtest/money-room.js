@@ -303,6 +303,10 @@ async function connect(id){
     roomId='';room=null;host=false;roomServerFresh=false;
     $('roomScoreSection').hidden=true;
     $('roomEditor').hidden=true;
+    $('roomSaveHole').disabled=true;
+    $('roomUndoHole').disabled=true;
+    $('roomFinish').disabled=true;
+    $('roomHostQr')?.remove();displayedQrLink='';
     status(message+' Open the invitation again or reload to reconnect.');
    };
    const unsubscribe=onSnapshot(doc(db,'rooms',id),snap=>{
@@ -312,6 +316,10 @@ async function connect(id){
     if(snap.metadata?.fromCache||snap.metadata?.hasPendingWrites){
      roomServerFresh=false;
      $('roomEditor').hidden=true;
+     $('roomSaveHole').disabled=true;
+     $('roomUndoHole').disabled=true;
+     $('roomFinish').disabled=true;
+     $('roomHostQr')?.remove();displayedQrLink='';
      status('Waiting for the live Money Room server… Scoring is locked until reconnected.');
      return;
     }
