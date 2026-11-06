@@ -129,7 +129,7 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
   functions:{doc:(_,kind,id)=>({kind,id}),onSnapshot:(_,options,ok,bad)=>{assert.equal(options.includeMetadataChanges,true,'offline state must deliver metadata-only changes');publish=ok;fail=bad;return ()=>{unsubCount++}}},
   // The handshake is tested by controlled snapshot delivery, never a wall-clock race.
   readWithDeadline:fn=>Promise.resolve().then(fn),
-  status:value=>{lastStatus=value},render:()=>{renderCount++;qrVisible=true},archiveLocal:()=>{},forgetRoom:()=>{},roomStore:{},
+  status:value=>{lastStatus=value},render:()=>{renderCount++;qrVisible=true;panel.hidden=false;panel.disabled=false},archiveLocal:()=>{},forgetRoom:()=>{},roomStore:{},
   $:id=>id==='roomHostQr'?(qrVisible?panel:null):panel,roomLabel:()=> 'Scorekeeper'
  };
  const connect=runInNewContext(source.slice(start,end)+'\nconnect',state);
