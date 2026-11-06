@@ -29,6 +29,22 @@ if [[ ! "$checked_out_sha" =~ ^[0-9a-f]{40}$ || "$verified_sha" != "$checked_out
   echo "STOP: Browser verification provenance does not match the packaged checkout." >&2
   exit 2
 fi
+# PR checks run against synthetic merge commits. Only an exact release-branch
+# build (push or manual dispatch) may become the friends' staging preview.
+if [[ ! -f "$BUILD/FRIDAY_BUILD_EVENT.txt" ]]; then
+  echo "STOP: Missing build event provenance." >&2
+  exit 2
+fi
+build_event="$(tr -d '\r\n' < "$BUILD/FRIDAY_BUILD_EVENT.txt")"
+branch_sha="$(tr -d '\r\n' < "$BUILD/FRIDAY_BRANCH_SHA.txt")"
+if [[ "$build_event" != "push" && "$build_event" != "workflow_dispatch" ]]; then
+  echo "STOP: Staging requires a release-branch build, not a pull-request merge artifact." >&2
+  exit 2
+fi
+if [[ ! "$branch_sha" =~ ^[0-9a-f]{40}$ || "$branch_sha" != "$checked_out_sha" ]]; then
+  echo "STOP: Packaged branch commit is not the exact tested checkout." >&2
+  exit 2
+fi
 python3 "$ROOT/tests/friday-bundle-integrity.py" "$BUILD"
 if ! command -v firebase >/dev/null; then
   echo "STOP: Firebase CLI is not installed." >&2
