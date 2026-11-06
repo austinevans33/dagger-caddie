@@ -24,3 +24,14 @@ test('browser tests serve the packaged candidate and include both requested suit
  const preview=readFileSync(new URL('./friday-game-score-preview.spec.mjs',import.meta.url),'utf8');
  assert.match(preview,/roundIdentity:'test-course\|blue\|123456'/);
 });
+
+test('Friday browser smoke waits for packaged server readiness and tracks live Money Room changes',()=>{
+ assert.match(workflow,/name: Verify packaged candidate HTTP server is ready/);
+ assert.match(workflow,/urllib\.request\.urlopen\(url, timeout=1\)/);
+ assert.match(workflow,/Friday candidate HTTP server did not become ready/);
+ const ready=workflow.indexOf('name: Verify packaged candidate HTTP server is ready');
+ const browser=workflow.indexOf('name: Run real-browser Games and Yardage Book acceptance');
+ assert.ok(ready>=0&&browser>ready,'browser tests only run after successful HTTP readiness check');
+ assert.match(workflow,/'playtest\/money-room\.js'/);
+ assert.match(workflow,/'playtest\/room-session\.js'/);
+});
