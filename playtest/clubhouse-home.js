@@ -94,21 +94,20 @@ function mount(){
   const total=ticket.querySelector('#dccPropTotal')?.previousElementSibling;
   if(total)total.textContent='ALL-TIME PAID NET';
  }
- const money=document.getElementById('moneyRoomSection');
- const nineteenth=document.getElementById('dcc19thHole');
- if(money&&nineteenth){
-  const place=()=>{if(money.nextElementSibling!==nineteenth)money.after(nineteenth)};
-  place();
-  // Legacy Ledger scripts can reorder the DOM during setup. Keep this
-  // navigation-only button just after Money Room without touching its state.
-  if(money.parentNode&&typeof MutationObserver!=='undefined'){
-   const observer=new MutationObserver(place);
-   observer.observe(money.parentNode,{childList:true});
-  }
-  nineteenth.classList.add('dcc-nineteenth-door');
-  const link=nineteenth.querySelector('a');
+ // The 19th Hole is mounted by a later legacy DOMContentLoaded handler.
+ // Reposition its existing link after both handlers finish, not before it exists.
+ function placeNineteenth(){
+  const room=document.getElementById('moneyRoomSection');
+  const recap=document.getElementById('dcc19thHole');
+  if(!room||!recap)return;
+  if(room.nextElementSibling!==recap)room.after(recap);
+  recap.classList.add('dcc-nineteenth-door');
+  const link=recap.querySelector('a');
   if(link)link.textContent='The 19th Hole · Round recap & bragging rights';
  }
+ placeNineteenth();
+ window.addEventListener('load',placeNineteenth,{once:true});
+ document.getElementById('tab-bets')?.addEventListener('click',placeNineteenth);
  function syncHole(){const hole=selectedHole();const label=document.getElementById('dccHomeHole');const link=document.getElementById('dccHomeYardage');if(label)label.textContent='HOLE '+hole;if(link)link.href='yardage-preview.html?hole='+hole}
  syncHole();
  section.addEventListener('click',function(e){
