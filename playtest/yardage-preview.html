@@ -72,14 +72,27 @@ let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:re
 let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();let spatialPending=null;let mapMode='all';let mapSelected=null;
 for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
-function draw(){
- const {selection,coverage,source,state,hasCourse}=latest;
- const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
- const caddy=yardageCaddyNote({caddy:readYardageCaddy(localStorage),hole:page.hole});
+function renderAttack(features=[]){
+ const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
+ const caddy=yardageCaddyNote({caddy:readYardageCaddy(localStorage),hole:page.hole,features});
  $('caddySignature').textContent=caddy.name+'’s pencil';
  $('caddyNote').textContent=caddy.advice;
  $('caddySecond').textContent=caddy.second;
  $('caddyDisclaimer').textContent=caddy.label+' · '+caddy.disclaimer;
+ const notes=$('hazards');
+ notes.replaceChildren();
+ if(caddy.trouble.length){
+  for(const label of caddy.trouble){const li=document.createElement('li');li.textContent=label+' · hole-assigned mapped outline; check position on sketch';notes.append(li)}
+ }else{
+  const li=document.createElement('li');
+  li.textContent=features.length?'Mapped data is partial; no confirmed water or bunker outlines for this hole.':'Hazard locations not verified for this hole';
+  notes.append(li);
+ }
+}
+function draw(){
+ const {selection,coverage,source,state,hasCourse}=latest;
+ const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
+ renderAttack();
  $('askHoleCaddy').disabled=!selection?.course||!selection?.tee;
  $('askHoleCaddy').title=selection?.course&&selection?.tee?'Prepare an editable question for your caddy':'Select a course and tee at the Starter’s Desk first';
  $('hole').value=String(number);$('position').textContent='HOLE '+number+' / 18';
@@ -92,10 +105,7 @@ function draw(){
  const currentFact=(latest.holes||[]).find(h=>h.number===number);
  $('strokeIndex').textContent=Number.isInteger(currentFact?.handicapMen)&&Number.isInteger(currentFact?.handicapWomen)?'Handicap index · Men '+currentFact.handicapMen+' / Women '+currentFact.handicapWomen:'';
  $('source').textContent=source+' · Tee yardage is not GPS pin distance. No scores or bets are changed here.';
- const notes=page.hazards||[];
- $('hazards').replaceChildren();
- if(!notes.length){const li=document.createElement('li');li.textContent='No verified hazard notes available';$('hazards').append(li);}
- else for(const hazard of notes){const li=document.createElement('li');li.textContent=hazard.type+': '+hazard.note;$('hazards').append(li);}
+
  rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
  $('tees').replaceChildren(new Option(selection?.tee?.name||'No tees selected'));
  void updateSketch(selection,number);
@@ -135,6 +145,7 @@ function updateSketch(selection,hole){
  load.then(features=>{
   if(spatialPending===controller)spatialPending=null;
   if(gen!==spatialGeneration)return;
+  renderAttack(features);
   const shapes=orientPencilTeeToGreen(pencilGeometry(features));
   if(!shapes.length){unavailable();return}
   box.classList.add('has-features');box.replaceChildren();
