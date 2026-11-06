@@ -158,7 +158,7 @@ test('Yardage Book uses actual selected tee/provider scorecard and preserves bet
  expect(after).toBe(initial);
 });
 
-test('Real Bayonet White Yardage Book covers all 18 holes with official guide and safe caddy handoff',async({page})=>{
+test('Real Bayonet White Yardage Book covers all 18 holes and safe caddy handoff',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>{
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'bayonet-release-test',name:'Bayonet at Puppy Creek',region:'NC'},tee:{providerTeeId:'white',name:'Regular / White',totalYards:5752},holeNumber:1}}));
@@ -177,12 +177,7 @@ test('Real Bayonet White Yardage Book covers all 18 holes with official guide an
   await expect(page.locator('#par')).toContainText('Par: '+par[hole-1]);
   await expect(page.locator('#yards')).toContainText('Tee yards: '+yards[hole-1]);
  }
- await expect(page.locator('#officialHoleGuideWrap')).toBeVisible();
- await expect(page.locator('#officialHoleGuide')).toHaveAttribute('href','https://www.youtube.com/watch?v=680T1sKYHtY');
- await expect(page.locator('#officialHoleGuide')).toContainText('hole 18');
  await page.locator('#hole').selectOption('1');
- await expect(page.locator('#officialHoleGuide')).toHaveAttribute('href','https://www.youtube.com/watch?v=CV_NGClDOxY');
- await expect(page.locator('#officialHoleGuide')).toContainText('hole 1');
  await page.screenshot({path:'candidate-screenshots/05-bayonet-yardage-iphone.png',animations:'disabled'});
  await page.locator('#askHoleCaddy').click();
  await expect(page).toHaveURL(/\/playtest\/?$/);
@@ -196,6 +191,27 @@ test('Real Bayonet White Yardage Book covers all 18 holes with official guide an
  }));
  // The composer may consume the one-time handoff immediately on returning.
  expect(JSON.parse(stored.wager)).toEqual({players:['Golfer','Friend'],format:'skins',stake:5,holes:[[4,5]],started:123});
+});
+
+test('Pencil sketch labels mapped water and bunkers and gives cautious caddy attack guidance',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'mapped-trouble-test',name:'Trouble Test Links',region:'NC'},tee:{providerTeeId:'blue',name:'Blue',totalYards:6100},holeNumber:1}}));
+ });
+ await page.route('https://api.opengolfapi.org/v1/courses/mapped-trouble-test/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[{number:1,par:4,yardages:{blue:420}},{number:2,par:3,yardages:{blue:160}}]})}));
+ const polygon=(type,hole)=>({type:'Feature',properties:{type,hole},geometry:{type:'Polygon',coordinates:[[[-79,35],[-78.9999,35],[-78.9999,35.0001],[-79,35]]]}});
+ await page.route(url=>url.toString().startsWith('https://api.opengolfapi.org/api/v1/features?'),route=>{
+  const hole=Number(new URL(route.request().url()).searchParams.get('hole'));
+  route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:hole===1?[polygon('water',1),polygon('bunker',1),polygon('green',1)]:[]})});
+ });
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('.field-sketch svg polygon')).toHaveCount(3);
+ await expect(page.locator('#caddyNote')).toContainText('Mapped trouble');
+ await expect(page.locator('#caddyNote')).toContainText('water');
+ await expect(page.locator('#hazards')).toContainText('mapped bunker');
+ await page.locator('#next').click();
+ await expect(page.locator('#position')).toContainText('HOLE 2 / 18');
+ await expect(page.locator('#caddyNote')).not.toContainText('Mapped trouble');
+ await expect(page.locator('#hazards')).toContainText('not verified');
 });
 
 test('Pencil Yardage Book follows selected caddy without inventing hole geometry',async({page})=>{
