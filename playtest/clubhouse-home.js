@@ -127,6 +127,21 @@ function mount(){
   first.insertBefore(button,first.firstChild);
  }
  section.querySelector('#dccHomeYardage').addEventListener('click',syncHole);
+ // Keep the House Ghost's real character picker in The Grounds as the source
+ // of truth for the cinematic preview. Never modify a wager or match score.
+ const ghostTier=document.getElementById('dccGhostTier');
+ if(ghostTier){
+  const saveGhostTier=()=>{try{sessionStorage.setItem('dccGhostPreviewTier',ghostTier.value)}catch{}};
+  saveGhostTier();
+  ghostTier.addEventListener('change',saveGhostTier);
+ }
+ for(const link of document.querySelectorAll('a[href="ghost-preview.html"]')){
+  link.addEventListener('click',()=>{
+   const tier=ghostTier?.value||'tenFifteen';
+   if(['scratch','fiveTen','tenFifteen','fifteenTwenty'].includes(tier))
+    link.href='ghost-preview.html?tier='+encodeURIComponent(tier);
+  });
+ }
  window.addEventListener('pageshow',syncHole);
 
 }
