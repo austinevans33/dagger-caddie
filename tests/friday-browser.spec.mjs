@@ -178,8 +178,11 @@ test('Real Bayonet White Yardage Book covers all 18 holes with official guide an
   await expect(page.locator('#yards')).toContainText('Tee yards: '+yards[hole-1]);
  }
  await expect(page.locator('#officialHoleGuideWrap')).toBeVisible();
- await expect(page.locator('#officialHoleGuide')).toHaveAttribute('href','https://www.bayonetgolf.com/course-tour/');
+ await expect(page.locator('#officialHoleGuide')).toHaveAttribute('href','https://www.youtube.com/watch?v=680T1sKYHtY');
+ await expect(page.locator('#officialHoleGuide')).toContainText('hole 18');
  await page.locator('#hole').selectOption('1');
+ await expect(page.locator('#officialHoleGuide')).toHaveAttribute('href','https://www.youtube.com/watch?v=CV_NGClDOxY');
+ await expect(page.locator('#officialHoleGuide')).toContainText('hole 1');
  await page.screenshot({path:'candidate-screenshots/05-bayonet-yardage-iphone.png',animations:'disabled'});
  await page.locator('#askHoleCaddy').click();
  await expect(page).toHaveURL(/\/playtest\/?$/);
