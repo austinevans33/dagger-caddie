@@ -1,9 +1,29 @@
 // House Ghost practice trail: reproducible, explicitly simulated strokes on a schematic.
 // Not a physical ball flight, real mapped position, live pin location, or recorded shot.
 function hash(seed){let h=2166136261;for(const c of String(seed)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
-export function simulateGhostHole({holeNumber,par=4,teeYards=390,seed='house-ghost'}={}){
+// Match the existing House Ghost four-tier gameplay weights; preview-only.
+// Deterministic seed ensures replay/rewind never changes the result.
+const SKILL=Object.freeze({
+ scratch:{outcomes:[-2,-1,0,1,2],weights:[2,19,59,16,4]},
+ fiveTen:{outcomes:[-1,0,1,2,3],weights:[8,44,35,11,2]},
+ tenFifteen:{outcomes:[-1,0,1,2,3],weights:[5,32,40,19,4]},
+ fifteenTwenty:{outcomes:[-1,0,1,2,3],weights:[3,24,40,25,8]}
+});
+function skillResult(seed,hole,tier){
+ const profile=SKILL[tier];if(!profile)return null;
+ const roll=hash(seed+':tier:'+hole)%100;
+ let threshold=0;
+ for(let i=0;i<profile.weights.length;i++){
+  threshold+=profile.weights[i];
+  if(roll<threshold)return profile.outcomes[i];
+ }
+ return 0;
+}
+export function simulateGhostHole({holeNumber,par=4,teeYards=390,seed='house-ghost',tier=null}={}){
  if(!Number.isInteger(holeNumber)||holeNumber<1||holeNumber>18||![3,4,5].includes(par)||!Number.isFinite(teeYards)||teeYards<80||teeYards>750)throw Error('Invalid ghost hole');
- const luck=hash(seed+':'+holeNumber)%7;const score=Math.max(2,Math.min(8,par+(luck===0?-1:luck>=5?1:0)));
+ const luck=hash(seed+':'+holeNumber)%7;
+ const delta=skillResult(seed,holeNumber,tier);
+ const score=Math.max(2,Math.min(8,par+(delta===null?(luck===0?-1:luck>=5?1:0):delta)));
  const putts=score<=2?1:(luck%3===0?1:2);const approachCount=Math.max(1,score-putts);
  const shots=[];let remaining=teeYards;
  for(let n=0;n<approachCount;n++){
