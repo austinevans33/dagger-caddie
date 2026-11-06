@@ -57,6 +57,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 <button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask your caddy about this hole →</button>
 <aside class="pencil-note" aria-label="Your selected caddy’s notebook"><span id="caddySignature" class="signature">Keith’s pencil</span><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></aside>
 <div class="nav"><button id="prev">← Previous</button><button id="return" class="primary">Back to Play</button><button id="next">Next →</button></div>
+<p id="officialHoleGuideWrap" class="muted" hidden><a id="officialHoleGuide" href="https://www.bayonetgolf.com/course-tour/" target="_blank" rel="noopener noreferrer">See Bayonet's official illustrated 18-hole course guide ↗</a><span> · Opens the club's own hole diagrams; not a GPS rangefinder.</span></p>
 <p class="muted" id="source">Course par and yards are from a tee-specific scorecard, not the live pin. Missing data stays unverified. This screen does not change your scores or wagers.</p>
 <p class="muted">Course data where available: © OpenStreetMap contributors (ODbL 1.0) via <a href="https://opengolfapi.org/" target="_blank" rel="noopener noreferrer">OpenGolfAPI</a>.</p>
 </div></main><script type="module">
@@ -92,6 +93,9 @@ function draw(){
  const currentFact=(latest.holes||[]).find(h=>h.number===number);
  $('strokeIndex').textContent=Number.isInteger(currentFact?.handicapMen)&&Number.isInteger(currentFact?.handicapWomen)?'Handicap index · Men '+currentFact.handicapMen+' / Women '+currentFact.handicapWomen:'';
  $('source').textContent=source+' · Tee yardage is not GPS pin distance. No scores or bets are changed here.';
+ // Show the club's real illustrations when the bundled verified Bayonet scorecard is active.
+ // Do not present generic orientation art as an actual mapped hole.
+ $('officialHoleGuideWrap').hidden=source!=='Bayonet club scorecard · cross-checked hole yardages';
  const notes=page.hazards||[];
  $('hazards').replaceChildren();
  if(!notes.length){const li=document.createElement('li');li.textContent='No verified hazard notes available';$('hazards').append(li);}
