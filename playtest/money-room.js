@@ -15,7 +15,7 @@ const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const money=v=>(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);
 const isConfigured=firebaseConfig&&firebaseConfig.apiKey&&firebaseConfig.projectId;
 let db=null,auth=null,functions=null,room=null,roomId='',invite='',roomUnsub=null,user=null,host=false,session=null;
-let connectionVersion=0,actionVersion=0,navigationVersion=0,authInitialized=false;
+let connectionVersion=0,actionVersion=0,navigationVersion=0,authInitialized=false,roomServerFresh=false;
 document.addEventListener('click',event=>{
  if(!event.isTrusted)return;
  if(event.target.closest?.('[id^="tab-"]'))navigationVersion++;
@@ -116,7 +116,7 @@ function render(){
   if(!room.archived&&!rememberRoom(roomStore,{uid:user.uid,id:roomId,invite,name:($('roomMe').value.trim()||room.hostName||'Guest').slice(0,24)}))status('Live room connected. Save your invitation link; this browser cannot remember the room.');
  }
  $('roomScoreSection').hidden=false;
- $('roomEditor').hidden=!host||!!room.archived; $('roomSpectator').hidden=host;
+ $('roomEditor').hidden=!host||!!room.archived||!roomServerFresh; $('roomSpectator').hidden=host;
  syncHostQr();
  $('roomInvitationBanner').hidden=true;
  $('roomSetup').open=false;
@@ -209,13 +209,13 @@ function render(){
     ledgerRoot.prepend(emptyMessage);
   }
  $('roomAudit').textContent=room.lastChange?`Last updated ${new Date(room.lastChange).toLocaleString()} by ${room.lastEditor||'scorekeeper'}. Score history includes the current official value for each hole.`:'';
- $('roomSaveHole').disabled=!host||room.archived;
- $('roomUndoHole').disabled=!host||room.archived||!x.settled;
- $('roomFinish').disabled=!host||room.archived;
- $('roomHole').disabled=!host||room.archived;
+ $('roomSaveHole').disabled=!host||room.archived||!roomServerFresh;
+ $('roomUndoHole').disabled=!host||room.archived||!x.settled||!roomServerFresh;
+ $('roomFinish').disabled=!host||room.archived||!roomServerFresh;
+ $('roomHole').disabled=!host||room.archived||!roomServerFresh;
  }
-function buildInputs(h){const scores=room?.holes?.[h]||[];$('roomScoreRows').innerHTML='';(room?.players||[]).forEach((name,i)=>{const tr=document.createElement('tr'),first=document.createElement('td'),td=document.createElement('td'),input=document.createElement('input'),wrap=document.createElement('div');first.textContent=name;input.type='number';input.min='1';input.max='20';input.inputMode='numeric';input.dataset.player=String(i);input.value=scores[i]||'';input.disabled=!host||room.archived;wrap.className='room-score-step';
-const step=(sign)=>{const b=document.createElement('button');b.type='button';b.textContent=sign===1?'+':'−';b.disabled=!host||room.archived;b.setAttribute('aria-label',(sign===1?'Increase ':'Decrease ')+name+' score');b.onclick=()=>{input.value=String(Math.max(1,Math.min(20,(Number(input.value)||4)+sign)));};return b;};wrap.append(step(-1),input,step(1));td.append(wrap);tr.append(first,td);$('roomScoreRows').append(tr);});}
+function buildInputs(h){const scores=room?.holes?.[h]||[];$('roomScoreRows').innerHTML='';(room?.players||[]).forEach((name,i)=>{const tr=document.createElement('tr'),first=document.createElement('td'),td=document.createElement('td'),input=document.createElement('input'),wrap=document.createElement('div');first.textContent=name;input.type='number';input.min='1';input.max='20';input.inputMode='numeric';input.dataset.player=String(i);input.value=scores[i]||'';input.disabled=!host||room.archived||!roomServerFresh;wrap.className='room-score-step';
+const step=(sign)=>{const b=document.createElement('button');b.type='button';b.textContent=sign===1?'+':'−';b.disabled=!host||room.archived||!roomServerFresh;b.setAttribute('aria-label',(sign===1?'Increase ':'Decrease ')+name+' score');b.onclick=()=>{input.value=String(Math.max(1,Math.min(20,(Number(input.value)||4)+sign)));};return b;};wrap.append(step(-1),input,step(1));td.append(wrap);tr.append(first,td);$('roomScoreRows').append(tr);});}
 $('roomHole').onchange=()=>{if(room)buildInputs(Number($('roomHole').value));};
 function archiveLocal(){
  if(!room||!roomId)return;
@@ -284,6 +284,7 @@ const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);retur
 async function connect(id){
  if(roomUnsub)roomUnsub();
  roomUnsub=null;
+ roomServerFresh=false;
  roomId=id;
  const version=++connectionVersion,uid=auth.currentUser?.uid;
  // Do not report a room as connected until a non-cached Firebase snapshot
@@ -299,7 +300,7 @@ async function connect(id){
     if(version!==connectionVersion)return;
     ++connectionVersion;
     if(roomUnsub){roomUnsub();roomUnsub=null;}
-    roomId='';room=null;host=false;
+    roomId='';room=null;host=false;roomServerFresh=false;
     $('roomScoreSection').hidden=true;
     $('roomEditor').hidden=true;
     status(message+' Open the invitation again or reload to reconnect.');
@@ -309,9 +310,12 @@ async function connect(id){
     if(!snap.exists()){if(firstConfirmed)disconnect('Live room disappeared. Scoring has stopped.');else fail(Error('Money Room no longer exists or access was denied.'));return;}
     // Cache can show an old archived state or unsynced edits. Wait for server.
     if(snap.metadata?.fromCache||snap.metadata?.hasPendingWrites){
-     status('Waiting for the live Money Room server…');
+     roomServerFresh=false;
+     $('roomEditor').hidden=true;
+     status('Waiting for the live Money Room server… Scoring is locked until reconnected.');
      return;
     }
+    roomServerFresh=true;
     room=snap.data();
     if(!firstConfirmed&&room.archived){fail(Error('This Money Room has already finished. Ask the host for a new QR code.'));return;}
     firstConfirmed=true;
@@ -326,7 +330,7 @@ async function connect(id){
   if(version===connectionVersion&&!firstConfirmed){
    ++connectionVersion;
    if(roomUnsub){roomUnsub();roomUnsub=null;}
-   if(roomId===id){roomId='';room=null;host=false;}
+   if(roomId===id){roomId='';room=null;host=false;roomServerFresh=false;}
    $('roomScoreSection').hidden=true;
    $('roomEditor').hidden=true;
   }
@@ -399,7 +403,7 @@ renderMatchHistory();
 $('roomSaveHole').onclick=singleFlight(async()=>{
  const savingRoomId=roomId,scorekeeperUid=auth?.currentUser?.uid;
  try{
- if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');
+ if(!host||!room||room.archived||!roomServerFresh)throw Error('Scoring requires a fresh server connection and the active scorekeeper.');
  session.assertIdentity(room.hostUid);
  const hole=Number($('roomHole').value);
  if(!Number.isInteger(hole)||hole<1||hole>18)throw Error('Choose a hole from 1 to 18.');
@@ -421,7 +425,7 @@ $('roomSaveHole').onclick=singleFlight(async()=>{
 });
 $('roomUndoHole').onclick=singleFlight(async()=>{
  const id=roomId,uid=auth?.currentUser?.uid;
- if(!host||!room||room.archived||uid!==room.hostUid)return;
+ if(!host||!room||room.archived||!roomServerFresh||uid!==room.hostUid)return;
  const recorded=Object.keys(room.holes||{}).map(Number).filter(h=>Number.isInteger(h)&&h>=1&&h<=18&&Array.isArray(room.holes[h]));
  const last=Math.max(0,...recorded);
  if(!last)return;
@@ -433,7 +437,7 @@ $('roomUndoHole').onclick=singleFlight(async()=>{
  }catch(e){if(roomId===id)status('Undo failed: '+e.message);}
 });
 $('roomFinish').onclick=singleFlight(async()=>{
- if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;
+ if(!host||!room||room.archived||!roomServerFresh||auth.currentUser?.uid!==room.hostUid)return;
  const id=roomId,uid=auth.currentUser.uid,x=compute(room);
  if(room.format==='nassau'&&x.settled<18){status('Nassau is not fully settled. Enter all 18 holes before finishing the Money Room. No results were archived.');return;}
  if(room.format==='skins'&&x.skinsPending){status('Skins cannot finish while a later scored hole is blocked by an earlier missing score. Fill the missing hole first. No results were archived.');return;}
@@ -468,7 +472,7 @@ async function init(){if(!isConfigured){status('Local mode · Live sync is not c
    if(user?.uid!==next?.uid){
      if(user?.uid){++actionVersion;forgetRoom(roomStore,user.uid);}
      ++connectionVersion;if(roomUnsub)roomUnsub();roomUnsub=null;
-     room=null;roomId='';invite='';host=false;invitationSharing.clear();
+     room=null;roomId='';invite='';host=false;roomServerFresh=false;invitationSharing.clear();
      $('roomHostQr')?.remove(); displayedQrLink='';
      $('roomScoreSection').hidden=true;
      $('roomEditor').hidden=true;
