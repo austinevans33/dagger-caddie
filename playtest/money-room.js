@@ -314,8 +314,8 @@ async function connect(id){
    const unsubscribe=onSnapshot(doc(db,'rooms',id),{includeMetadataChanges:true},snap=>{
     if(version!==connectionVersion||auth.currentUser?.uid!==uid)return;
     if(!snap.exists()){if(firstConfirmed)disconnect('Live room disappeared. Scoring has stopped.');else fail(Error('Money Room no longer exists or access was denied.'));return;}
-    // Cache can show an old archived state or unsynced edits. Wait for server.
-    if(snap.metadata?.fromCache||snap.metadata?.hasPendingWrites){
+    // Cache-only snapshots mean the server is unverified: lock scoring and QR.
+    if(snap.metadata?.fromCache){
      roomServerFresh=false;
      $('roomEditor').hidden=true;
      $('roomSaveHole').disabled=true;
@@ -323,6 +323,13 @@ async function connect(id){
      $('roomFinish').disabled=true;
      $('roomHostQr')?.remove();displayedQrLink='';
      status('Waiting for the live Money Room server… Scoring is locked until reconnected.');
+     return;
+    }
+    // A local score write may temporarily have pendingWrites even with an
+    // established live server connection. Do not flash the host QR or editor
+    // off for a normal save; also never promote an unconfirmed room to LIVE.
+    if(snap.metadata?.hasPendingWrites){
+     status(roomServerFresh?'Saving to the connected Money Room…':'Waiting for the live Money Room server…');
      return;
     }
     roomServerFresh=true;
