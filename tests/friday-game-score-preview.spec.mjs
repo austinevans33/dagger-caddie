@@ -11,6 +11,10 @@ test('Grounds previews paper strokes against Nassau without touching saved game'
  await page.locator('#useAustin').click({timeout:5000});
  const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
  await page.locator('#tab-games').click();
+ // This reconciliation utility is deliberately hidden from the simplified
+ // Grounds UI; expose it only in QA to preserve regression coverage.
+ await page.addStyleTag({content:'#dccScorePulse{display:block!important}'});
+
  const preview=page.locator('#dccGameScorePreview');await preview.locator('summary').click();
  await page.locator('#dccGameScorePlayer').selectOption('0');
  await page.locator('#dccGameScoreCompare').click();
@@ -36,6 +40,10 @@ test('Grounds refuses preview when active wager belongs to another course round'
  if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-games').click();
+ // This reconciliation utility is deliberately hidden from the simplified
+ // Grounds UI; expose it only in QA to preserve regression coverage.
+ await page.addStyleTag({content:'#dccScorePulse{display:block!important}'});
+
  await page.locator('#dccGameScorePreview summary').click();
  await page.locator('#dccGameScorePlayer').selectOption('0');
  await page.locator('#dccGameScoreCompare').click();
@@ -54,6 +62,10 @@ test('Grounds safely explains an older unbound game without touching wager histo
  await page.locator('#useAustin').click({timeout:5000});
  const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
  await page.locator('#tab-games').click();
+ // This reconciliation utility is deliberately hidden from the simplified
+ // Grounds UI; expose it only in QA to preserve regression coverage.
+ await page.addStyleTag({content:'#dccScorePulse{display:block!important}'});
+
  await page.locator('#dccGameScorePreview summary').click();
  await page.locator('#dccGameScorePlayer').selectOption('0');
  await page.locator('#dccGameScoreCompare').click();
