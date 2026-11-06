@@ -79,7 +79,7 @@ for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
 function renderAttack(features=[],annotations=null){
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
- const caddy=yardageCaddyNote({caddy:readYardageCaddy(localStorage),hole:page.hole,features});
+ const caddy=yardageCaddyNote({caddy:readYardageCaddy(localStorage),hole:page.hole,features,annotations});
  $('caddySignature').textContent=caddy.name+'’s pencil';
  $('caddyNote').textContent=caddy.advice;
  $('caddySecond').textContent=caddy.second;
