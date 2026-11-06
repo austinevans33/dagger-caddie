@@ -165,9 +165,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dagger-friday-browser-failure
-          path: |
-            test-results/
-            /tmp/dagger-http.log
+          path: test-results/
           if-no-files-found: ignore
           retention-days: 14
 
