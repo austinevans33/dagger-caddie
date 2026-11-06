@@ -190,3 +190,11 @@ test('offline Money Room cannot keep a visible host QR or enabled score actions'
  assert.match(connect,/roomUndoHole'\)\.disabled=true/);
  assert.match(connect,/roomFinish'\)\.disabled=true/);
 });
+
+test('host QR cannot reappear during a cached-only connection or after disconnect',()=>{
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const qr=live.slice(live.indexOf('function syncHostQr() {'),live.indexOf('\nfunction compute(model)',live.indexOf('function syncHostQr() {')));
+ assert.match(qr,/if \(!host \|\| !roomServerFresh \|\| !roomId \|\| !invite \|\| room\?\.archived\)/);
+ assert.match(qr,/if \(panel\) panel\.remove\(\)/);
+ assert.match(qr,/drawInvitationQr/);
+});
