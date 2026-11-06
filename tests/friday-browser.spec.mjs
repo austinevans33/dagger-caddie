@@ -403,3 +403,37 @@ test('Games Money Room shortcut opens existing live room without resetting store
  await expect(page.locator('#moneyRoomSection')).toBeVisible();
  expect(await page.evaluate(()=>localStorage.getItem('dagger_active_money_room'))).toBe(record);
 });
+
+test('Host QR uses secure room invitation and renders a scannable black-and-white canvas',async({page})=>{
+ await page.goto('/playtest/');
+ const result=await page.evaluate(async()=>{
+  const {invitationFrom}=await import('./room-session.js');
+  const {invitationMatrix,drawInvitationQr}=await import('./invitation-qr.js');
+  const id='0123456789abcdef0123456789abcdef',code='0123456789abcdef';
+  const url=new URL(window.location.href);
+  url.searchParams.set('room',id);url.searchParams.set('invite',code);
+  const canvas=document.createElement('canvas');
+  const drawn=drawInvitationQr(canvas,url.href);
+  const matrix=invitationMatrix(url.href);
+  const ctx=canvas.getContext('2d');
+  const corner=ctx.getImageData(0,0,1,1).data;
+  let rejected=false;
+  try{invitationMatrix('https://example.com/playtest/?room='+id+'&invite=INVALID');}catch{rejected=true;}
+  return {
+   parsed:invitationFrom(drawn.url),
+   size:drawn.side,
+   matrixSize:matrix.size,
+   quietZoneWhite:corner[0]===255&&corner[1]===255&&corner[2]===255,
+   rejectsInvalid:rejected,
+   renderedWidth:canvas.width,
+   renderedHeight:canvas.height
+  };
+ });
+ expect(result.parsed).toEqual({id:'0123456789abcdef0123456789abcdef',code:'0123456789abcdef'});
+ expect(result.matrixSize).toBeGreaterThan(20);
+ expect(result.size).toBeGreaterThan(result.matrixSize);
+ expect(result.renderedWidth).toBe(result.size);
+ expect(result.renderedHeight).toBe(result.size);
+ expect(result.quietZoneWhite).toBe(true);
+ expect(result.rejectsInvalid).toBe(true);
+});
