@@ -124,7 +124,7 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  let publish,fail,renderCount=0,lastStatus='',unsubCount=0,qrRemoved=0;
  const panel={hidden:false,disabled:false,remove(){qrRemoved++}};
  const state={
-  roomUnsub:null,roomId:'',connectionVersion:0,room:null,host:false,
+  roomUnsub:null,roomId:'',connectionVersion:0,room:null,host:false,roomServerFresh:false,
   auth:{currentUser:{uid:'host-1'}},user:{uid:'host-1'},db:{},
   functions:{doc:(_,kind,id)=>({kind,id}),onSnapshot:(_,options,ok,bad)=>{assert.equal(options.includeMetadataChanges,true,'offline state must deliver metadata-only changes');publish=ok;fail=bad;return ()=>{unsubCount++}}},
   // The handshake is tested by controlled snapshot delivery, never a wall-clock race.
