@@ -141,6 +141,13 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  await first;
  assert.equal(renderCount,1);
  assert.match(lastStatus,/LIVE · Server-confirmed/);
+ // A real-time listener can die after the initial server confirmation.
+ // The app must hide the editor rather than leave a stale LIVE room usable.
+ fail(Error('transport closed'));
+ assert.equal(state.roomId,'');
+ assert.equal(panel.hidden,true);
+ assert.match(lastStatus,/Scoring has stopped/);
+ assert.match(lastStatus,/reconnect/);
  const second=connect('room-2');await new Promise(resolve=>setTimeout(resolve,0));
  fail(Error('permission-denied'));
  await assert.rejects(second,/permission-denied/);
