@@ -27,6 +27,10 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 @media(prefers-reduced-motion:reduce){.paper .card,.pencil-note,.field-sketch{transform:none}}
 .field-sketch svg{width:100%;height:auto;max-height:280px;display:block}.field-sketch.has-features{display:block;padding:8px;background:#eee7d5}.field-sketch .geometry-label{font:italic 13px Georgia,serif;color:#51604f;margin:5px 0 1px}.field-sketch .geometry-foot{font:11px/1.4 system-ui,sans-serif;color:#687369;margin:5px 0}
 
+.field-sketch .route-mark{fill:none;stroke:#42584a;stroke-width:1.8;stroke-dasharray:7 5;opacity:.8}
+.field-sketch .route-target{fill:#f7f0dd;stroke:#42584a;stroke-width:1.7}
+.field-sketch .pencil-map-label{fill:#304a3a;font:italic 10px Georgia,serif;paint-order:stroke;stroke:#f7f0dd;stroke-width:3px}
+.field-sketch .hazard-tag{font:700 10px system-ui,sans-serif;fill:#4a483c;paint-order:stroke;stroke:#f7f0dd;stroke-width:3px}
 /* One-hand pencil map controls: large touch targets, no pinch-to-zoom needed. */
 .map-tools{display:flex;gap:7px;margin:9px 0;flex-wrap:wrap}
 .map-tools button{flex:1;min-width:74px;min-height:44px;border:1px solid #8a9482;border-radius:10px;background:#e8e1cc;color:#31473a;font:700 13px system-ui,sans-serif;padding:7px}
@@ -64,6 +68,7 @@ import {loadYardageState,resolveYardageState} from './yardage-live.js';
 import {readYardageCaddy,yardageCaddyNote} from './yardage-caddy-notes.js';
 import {loadCourseFeatures,pencilGeometry,orientPencilTeeToGreen} from './course-pencil-geometry.js';
 import {pencilOrientation} from './yardage-pencil-orientation.js';
+import {pencilBookAnnotations} from './pencil-book-annotations.js';
 import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
@@ -72,7 +77,7 @@ let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:re
 let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();let spatialPending=null;let mapMode='all';let mapSelected=null;
 for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
-function renderAttack(features=[]){
+function renderAttack(features=[],annotations=null){
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
  const caddy=yardageCaddyNote({caddy:readYardageCaddy(localStorage),hole:page.hole,features});
  $('caddySignature').textContent=caddy.name+'’s pencil';
@@ -81,8 +86,14 @@ function renderAttack(features=[]){
  $('caddyDisclaimer').textContent=caddy.label+' · '+caddy.disclaimer;
  const notes=$('hazards');
  notes.replaceChildren();
- if(caddy.trouble.length){
-  for(const label of caddy.trouble){const li=document.createElement('li');li.textContent=label+' · hole-assigned mapped outline; check position on sketch';notes.append(li)}
+ if(annotations?.labels?.length){
+  for(const feature of annotations.labels){
+   const li=document.createElement('li');
+   li.textContent=(feature.type==='water'?'Water':'Bunker')+' · '+feature.side+' · '+feature.stage+' (mapped outline, approximate position)';
+   notes.append(li);
+  }
+ }else if(caddy.trouble.length){
+  for(const label of caddy.trouble){const li=document.createElement('li');li.textContent=label+' · hole-assigned mapped outline; route orientation unverified';notes.append(li)}
  }else{
   const li=document.createElement('li');
   li.textContent=features.length?'Mapped data is partial; no confirmed water or bunker outlines for this hole.':'Hazard locations not verified for this hole';
@@ -145,8 +156,9 @@ function updateSketch(selection,hole){
  load.then(features=>{
   if(spatialPending===controller)spatialPending=null;
   if(gen!==spatialGeneration)return;
-  renderAttack(features);
   const shapes=orientPencilTeeToGreen(pencilGeometry(features));
+  const annotations=pencilBookAnnotations(shapes);
+  renderAttack(features,annotations);
   if(!shapes.length){unavailable();return}
   box.classList.add('has-features');box.replaceChildren();
   const title=document.createElement('p');title.className='geometry-label';title.textContent='Pencil study · available mapped features';box.append(title);
@@ -159,6 +171,24 @@ function updateSketch(selection,hole){
   const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 300 220');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schematic arrangement of coarse provider-mapped features. Map filters also have accessible buttons below.');
   const style={green:['#d9e0c1','#455c47'],fairway:['#e2e5cc','#596955'],bunker:['#eee4c5','#8d8265'],water:['#d1dce0','#516d78'],rough:['#e3e1d3','#85816e'],tee:['#e1dec3','#6d725d']};
   const polygons=[];
+  // Route and hazard labels appear only when actual hole-specific tee/green shapes exist.
+  // Without those two anchors, retain the feature polygons but never draw a fake hole corridor.
+  const svgItem=(tag,attributes,textValue)=>{
+   const node=document.createElementNS(ns,tag);
+   for(const [name,value] of Object.entries(attributes))node.setAttribute(name,String(value));
+   if(textValue!==undefined)node.textContent=textValue;
+   return node;
+  };
+  if(annotations.route){
+   const {tee,green}=annotations.route;
+   svg.append(svgItem('path',{d:'M '+tee.join(' ')+' L '+green.join(' '),class:'route-mark'}));
+   svg.append(svgItem('circle',{cx:tee[0],cy:tee[1],r:5,class:'route-target'}));
+   svg.append(svgItem('text',{x:Math.min(tee[0]+8,254),y:Math.min(tee[1]+4,216),class:'pencil-map-label'},'TEE'));
+   svg.append(svgItem('text',{x:Math.min(green[0]+8,244),y:Math.max(green[1]-7,12),class:'pencil-map-label'},'GREEN'));
+  }
+  for(const hazard of annotations.labels){
+   svg.append(svgItem('text',{x:Math.max(4,Math.min(hazard.point[0]+6,260)),y:Math.max(12,Math.min(hazard.point[1]-5,210)),class:'hazard-tag'},hazard.type==='water'?'WATER':'BKR'));
+  }
   shapes.forEach((shape,i)=>{const p=document.createElementNS(ns,'polygon');p.setAttribute('points',shape.points.map(pt=>pt.join(',')).join(' '));p.setAttribute('fill',style[shape.type]?.[0]||'none');p.setAttribute('stroke',style[shape.type]?.[1]||'#555');p.setAttribute('stroke-width','1.8');p.setAttribute('stroke-dasharray','5 3');p.setAttribute('stroke-linejoin','round');p.setAttribute('data-map-feature',String(i));svg.append(p);polygons.push(p)});
   const list=document.createElement('div');list.className='map-feature-list';list.setAttribute('aria-label','Mapped features');
   const note=document.createElement('p');note.className='map-note';note.setAttribute('role','status');
@@ -185,7 +215,9 @@ function updateSketch(selection,hole){
   for(const [id,label] of modes){const button=document.createElement('button');button.type='button';button.dataset.mapMode=id;button.textContent=label;button.setAttribute('aria-pressed',String(id===mapMode));button.onclick=()=>{mapMode=id;mapSelected=null;updateMode()};tools.append(button)}
   box.append(svg,list,note);
   updateMode();
-  const foot=document.createElement('p');foot.className='geometry-foot';foot.textContent='Coarse OpenStreetMap features via OpenGolfAPI · not surveyed, not a rangefinder, no live pin';box.append(foot);
+  const foot=document.createElement('p');foot.className='geometry-foot';foot.textContent=annotations.route?
+   'Pencil route connects mapped tee and green (not a verified playing line). Trouble positions are approximate · no carry distances or live pin.':
+   'Partial mapped shapes: tee-to-green route unverified. No invented fairway, dogleg, carry distance or pin.';box.append(foot);
  }).catch(error=>{if(spatialPending===controller)spatialPending=null;if(!controller.signal.aborted)unavailable()});
 }
 $('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
