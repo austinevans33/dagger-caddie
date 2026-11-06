@@ -163,7 +163,7 @@ test('Real Bayonet White Yardage Book covers all 18 holes with official guide an
  await page.addInitScript(()=>{
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'bayonet-release-test',name:'Bayonet at Puppy Creek',region:'NC'},tee:{providerTeeId:'white',name:'Regular / White',totalYards:5752},holeNumber:1}}));
   localStorage.setItem('dagger_selected_caddie',JSON.stringify('vinny'));
-  localStorage.setItem('dagger_foursome_active','{"protected":"existing-wager"}');
+  localStorage.setItem('dagger_foursome_active',JSON.stringify({players:['Golfer','Friend'],format:'skins',stake:5,holes:[[4,5]],started:123}));
  });
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('#coverage')).toContainText('18/18');
@@ -188,7 +188,7 @@ test('Real Bayonet White Yardage Book covers all 18 holes with official guide an
   wager:localStorage.getItem('dagger_foursome_active')
  }));
  // The composer may consume the one-time handoff immediately on returning.
- expect(stored.wager).toBe('{"protected":"existing-wager"}');
+ expect(JSON.parse(stored.wager)).toEqual({players:['Golfer','Friend'],format:'skins',stake:5,holes:[[4,5]],started:123});
 });
 
 test('Pencil Yardage Book follows selected caddy without inventing hole geometry',async({page})=>{
