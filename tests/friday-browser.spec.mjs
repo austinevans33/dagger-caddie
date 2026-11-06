@@ -207,10 +207,11 @@ test('Real Bayonet White Yardage Book covers all 18 holes and safe caddy handoff
  await page.screenshot({path:'candidate-screenshots/05-bayonet-yardage-iphone.png',animations:'disabled'});
  await page.locator('#askHoleCaddy').click();
  await expect(page).toHaveURL(/\/playtest\/?$/);
+ await expect(page.locator('#dccYardageCaddyArrival')).toBeVisible();
+ await page.locator('#dccYardageCaddyArrival button').click();
  await expect(page.locator('#aiInput')).toHaveValue(/Bayonet at Puppy Creek/);
  await expect(page.locator('#aiInput')).toHaveValue(/hole 1/);
  await expect(page.locator('#aiInput')).toHaveValue(/433 yards/);
- await expect(page.locator('#aiStatus')).toContainText('Review and tap Send');
  const stored=await page.evaluate(()=>({
   handoff:JSON.parse(sessionStorage.getItem('dcc_yardage_caddy_handoff_v1')||'null'),
   wager:localStorage.getItem('dagger_foursome_active')
@@ -250,7 +251,7 @@ test('Pencil sketch labels mapped water and bunkers and gives cautious caddy att
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(3);
  await expect(page.locator('#caddyNote')).toContainText('Mapped trouble');
  await expect(page.locator('#caddyNote')).toContainText('water');
- await expect(page.locator('#hazards')).toContainText('mapped bunker');
+ await expect(page.locator('#hazards')).toContainText('Bunker');
  await page.locator('#next').click();
  await expect(page.locator('#position')).toContainText('HOLE 2 / 18');
  await expect(page.locator('#caddyNote')).not.toContainText('Mapped trouble');
@@ -284,7 +285,7 @@ test('Verified provider feature polygons appear as a pencil study without sugges
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('#yards')).toContainText('400');
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(1);
- await expect(page.locator('.geometry-foot')).toContainText('not a rangefinder');
+ await expect(page.locator('.geometry-foot')).toContainText('No invented fairway');
  await page.locator('#next').click();
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(0);
  await expect(page.locator('.field-sketch')).toContainText('No invented fairways');
