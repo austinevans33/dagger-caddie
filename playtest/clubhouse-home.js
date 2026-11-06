@@ -97,7 +97,14 @@ function mount(){
  const money=document.getElementById('moneyRoomSection');
  const nineteenth=document.getElementById('dcc19thHole');
  if(money&&nineteenth){
-  money.after(nineteenth);
+  const place=()=>{if(money.nextElementSibling!==nineteenth)money.after(nineteenth)};
+  place();
+  // Legacy Ledger scripts can reorder the DOM during setup. Keep this
+  // navigation-only button just after Money Room without touching its state.
+  if(money.parentNode&&typeof MutationObserver!=='undefined'){
+   const observer=new MutationObserver(place);
+   observer.observe(money.parentNode,{childList:true});
+  }
   nineteenth.classList.add('dcc-nineteenth-door');
   const link=nineteenth.querySelector('a');
   if(link)link.textContent='The 19th Hole · Round recap & bragging rights';
