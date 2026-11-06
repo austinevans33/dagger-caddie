@@ -126,7 +126,7 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  const state={
   roomUnsub:null,roomId:'',connectionVersion:0,room:null,host:false,
   auth:{currentUser:{uid:'host-1'}},user:{uid:'host-1'},db:{},
-  functions:{doc:(_,kind,id)=>({kind,id}),onSnapshot:(_,ok,bad)=>{publish=ok;fail=bad;return ()=>{unsubCount++}}},
+  functions:{doc:(_,kind,id)=>({kind,id}),onSnapshot:(_,options,ok,bad)=>{assert.equal(options.includeMetadataChanges,true,'offline state must deliver metadata-only changes');publish=ok;fail=bad;return ()=>{unsubCount++}}},
   // The handshake is tested by controlled snapshot delivery, never a wall-clock race.
   readWithDeadline:fn=>Promise.resolve().then(fn),
   status:value=>{lastStatus=value},render:()=>{renderCount++},archiveLocal:()=>{},forgetRoom:()=>{},roomStore:{},
@@ -197,4 +197,11 @@ test('host QR cannot reappear during a cached-only connection or after disconnec
  assert.match(qr,/if \(!host \|\| !roomServerFresh \|\| !roomId \|\| !invite \|\| room\?\.archived\)/);
  assert.match(qr,/if \(panel\) panel\.remove\(\)/);
  assert.match(qr,/drawInvitationQr/);
+});
+
+test('live Money Room listener requests metadata-only Firestore updates',()=>{
+ const code=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const listener=code.slice(code.indexOf('async function connect(id){'),code.indexOf('\nasync function create(){'));
+ assert.match(listener,/onSnapshot\(doc\(db,'rooms',id\),\{includeMetadataChanges:true\},snap=>/);
+ assert.match(listener,/if\(snap\.metadata\?\.fromCache\|\|snap\.metadata\?\.hasPendingWrites\)/);
 });
