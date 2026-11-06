@@ -12,7 +12,7 @@ export function readYardageCaddy(storage){
 }
 // Provider-assigned mapped outlines can inform a conservative plan; generic artwork cannot.
 // Never infer hazard distance, forced carry, layup yardage or safe side from an outline alone.
-export function yardageCaddyNote({caddy='keith',hole=null,features=[],annotations=null}={}){
+export function yardageCaddyNote({caddy='keith',hole=null,features=[],annotations=null,survey=null}={}){
  const id=Object.hasOwn(names,caddy)?caddy:'keith';
  const par=Number(hole?.par),yards=Number(hole?.yards);
  const verified=Number.isInteger(par)&&par>=3&&par<=6&&Number.isInteger(yards)&&yards>=50&&yards<=800;
@@ -49,13 +49,22 @@ export function yardageCaddyNote({caddy='keith',hole=null,features=[],annotation
   suggestion+=' Mapped trouble: '+trouble.join(' and ')+'.';
   second=water?'Identify the water’s true carry and safe side from the sketch or on course before committing.':
    'Check the bunker placement on the sketch before selecting an aggressive line.';
+ }else if(survey&&(survey.left||survey.right)){
+  const sides=survey.left&&survey.right?'both sides':survey.left?'left':'right';
+  suggestion=(verified?'Par '+par+' · '+yards+' tee yards. ':'')+
+   'OSM course survey flags trouble on '+sides+' of the playing route.';
+  second=survey.left&&survey.right?
+   'TEE: Favor control over maximum distance; check the actual fairway width and hazard carries before choosing a line.':
+   survey.left?'TEE: Check right-side clearance before favoring that side to avoid the mapped left-side trouble.':
+   'TEE: Check left-side clearance before favoring that side to avoid the mapped right-side trouble.';
  }else if(fairway||green){
   second='The pencil marks show '+(fairway&&green?'fairway and green':'partial mapped golf features')+
    '; missing hazards are NOT evidence the route is clear.';
  }
  return Object.freeze({name:names[id],caddy:id,advice:suggestion,second,
   trouble:Object.freeze(trouble),mappedFeatureCount:mapped.length,
-  label:located.length?'CADDY ATTACK PLAN · APPROXIMATE MAPPED TROUBLE':trouble.length?'CADDY ATTACK PLAN · MAPPED TROUBLE':verified?'CADDY ATTACK PLAN · VERIFIED TEE YARDAGE':'GENERAL CADDY NOTE · COURSE FACTS UNAVAILABLE',
+  label:located.length?'CADDY ATTACK PLAN · APPROXIMATE MAPPED TROUBLE':trouble.length?'CADDY ATTACK PLAN · MAPPED TROUBLE':survey?'CADDY PLAN · OSM SURVEY HINTS':verified?'CADDY ATTACK PLAN · VERIFIED TEE YARDAGE':'GENERAL CADDY NOTE · COURSE FACTS UNAVAILABLE',
   disclaimer:trouble.length?'Hazard outlines from hole-assigned provider data. Positions and distances require on-course confirmation.':
+   survey?'OSM survey route is not measured from your selected tees. Check carry distances on course; obstacle types and exact positions remain unverified.':
    'No unverified hazards, precise landing areas or live pin distances assumed.'});
 }
