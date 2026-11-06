@@ -36,6 +36,11 @@ function mount(){
  // Retain the entire original header, saved state, and caddy infrastructure.
  // Expose only the approved Clubhouse doors in the home tab.
  document.body.classList.add('dcc-clubhouse-focus');
+ // An explicit Ask Your Caddy action from the Yardage Book may reveal its
+ // existing editable composer; never let a hidden question appear "lost".
+ if(document.getElementById('dccYardageCaddyArrival')){
+  document.body.classList.remove('dcc-clubhouse-focus');
+ }
  let openingScorecard=false;
  const nav=document.getElementById('tab-play');
  if(nav){
