@@ -321,7 +321,8 @@ async function connect(id){
    // Without this option the offline lockout can miss a lost connection.
    const unsubscribe=onSnapshot(doc(db,'rooms',id),{includeMetadataChanges:true},snap=>{
     if(version!==connectionVersion||auth.currentUser?.uid!==uid)return;
-    if(!snap.exists()){if(firstConfirmed)disconnect('Live room disappeared. Scoring has stopped.');else fail(Error('Money Room no longer exists or access was denied.'));return;}
+    // Firebase can initially report an empty local cache before the server
+    // confirms a perfectly valid room. Never reject an invite from cache alone.
     // Cache-only snapshots mean the server is unverified: lock scoring and QR.
     if(snap.metadata?.fromCache){
      roomServerFresh=false;
@@ -331,6 +332,11 @@ async function connect(id){
      $('roomFinish').disabled=true;
      $('roomHostQr')?.remove();displayedQrLink='';
      status('Waiting for the live Money Room server… Scoring is locked until reconnected.');
+     return;
+    }
+    if(!snap.exists()){
+     if(firstConfirmed)disconnect('Live room disappeared. Scoring has stopped.');
+     else fail(Error('Money Room no longer exists or access was denied.'));
      return;
     }
     // A local score write may temporarily have pendingWrites even with an
