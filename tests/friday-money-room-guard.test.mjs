@@ -134,6 +134,10 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  };
  const connect=runInNewContext(source.slice(start,end)+'\nconnect',state);
  const first=connect('room-1');await new Promise(resolve=>setTimeout(resolve,0));
+ // An empty first-time cache is not proof the invited room is missing.
+ publish({exists:()=>false,metadata:{fromCache:true,hasPendingWrites:false}});
+ assert.equal(state.roomId,'room-1','uncached join must keep waiting for the server');
+ assert.match(lastStatus,/Waiting for the live Money Room server/);
  publish({exists:()=>true,metadata:{fromCache:true,hasPendingWrites:false},data:()=>({hostUid:'host-1',players:['A','B']})});
  await Promise.resolve();
  assert.equal(renderCount,0,'cached data cannot authorize LIVE status');
@@ -175,6 +179,12 @@ test('QR/create connection waits for server snapshot and rejects stale or failed
  const third=connect('room-3');await new Promise(resolve=>setTimeout(resolve,0));
  publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:false},data:()=>({archived:true,hostUid:'host-1'})});
  await assert.rejects(third,/already finished/);
+ assert.equal(state.roomId,'');
+ const missing=connect('room-4');await new Promise(resolve=>setTimeout(resolve,0));
+ publish({exists:()=>false,metadata:{fromCache:true,hasPendingWrites:false}});
+ assert.equal(state.roomId,'room-4','empty cache still cannot reject the invite');
+ publish({exists:()=>false,metadata:{fromCache:false,hasPendingWrites:false}});
+ await assert.rejects(missing,/no longer exists or access was denied/);
  assert.equal(state.roomId,'');
 });
 
@@ -250,4 +260,12 @@ test('switching Money Rooms locks the previous host editor before Firebase respo
  publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:false},data:()=>({archived:false,hostUid:'host'})});
  await pending;
  assert.equal(state.roomServerFresh,true);
+});
+
+test('a locally missing QR room does not fail before the authoritative server result',()=>{
+ const code=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const listener=code.slice(code.indexOf('async function connect(id){'),code.indexOf('\nasync function create(){'));
+ const cache=listener.indexOf('if(snap.metadata?.fromCache)');
+ const missing=listener.indexOf('if(!snap.exists())');
+ assert.ok(cache>=0&&missing>cache,'ignore absent cached rooms until a server snapshot arrives');
 });
