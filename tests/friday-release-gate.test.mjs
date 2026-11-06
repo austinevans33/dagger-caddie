@@ -48,3 +48,12 @@ test('staging deployment refuses a preflight-only artifact or mismatched browser
  assert.match(deploy,/verified_sha" != "\$checked_out_sha"/);
  assert.match(deploy,/Download dagger-friday-candidate only after both CI jobs pass/);
 });
+
+test('Friday browser acceptance exercises real local QR render and secure invite parsing',()=>{
+ const browser=readFileSync(new URL('./friday-browser.spec.mjs',import.meta.url),'utf8');
+ assert.match(browser,/Host QR uses secure room invitation and renders a scannable black-and-white canvas/);
+ assert.match(browser,/drawInvitationQr\(canvas,url\.href\)/);
+ assert.match(browser,/invitationFrom\(drawn\.url\)/);
+ assert.match(browser,/quietZoneWhite/);
+ assert.match(workflow,/npx playwright test tests\/friday-browser\.spec\.mjs/);
+});
