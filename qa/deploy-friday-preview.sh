@@ -18,6 +18,17 @@ if [[ ! -f "$BUILD/playtest/index.html" || ! -f "$BUILD/round-receipt.js" ]]; th
   echo "STOP: Candidate is incomplete." >&2
   exit 2
 fi
+# Preflight artifacts have not passed browser tests and must never be deployed.
+if [[ ! -f "$BUILD/FRIDAY_BROWSER_VERIFIED_SHA.txt" ]]; then
+  echo "STOP: This is not a browser-verified Friday candidate. Download dagger-friday-candidate only after both CI jobs pass." >&2
+  exit 2
+fi
+checked_out_sha="$(tr -d '\r\n' < "$BUILD/FRIDAY_CHECKED_OUT_SHA.txt")"
+verified_sha="$(tr -d '\r\n' < "$BUILD/FRIDAY_BROWSER_VERIFIED_SHA.txt")"
+if [[ ! "$checked_out_sha" =~ ^[0-9a-f]{40}$ || "$verified_sha" != "$checked_out_sha" ]]; then
+  echo "STOP: Browser verification provenance does not match the packaged checkout." >&2
+  exit 2
+fi
 python3 "$ROOT/tests/friday-bundle-integrity.py" "$BUILD"
 if ! command -v firebase >/dev/null; then
   echo "STOP: Firebase CLI is not installed." >&2
