@@ -114,6 +114,25 @@ test('House Ghost reuses mapped pencil sketch without treating simulated strokes
  expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":"untouched"}');
 });
 
+test('Selected House Ghost personality follows user into cinematic pencil playback',async({page})=>{
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#useAustin').click({timeout:5000});
+ await page.locator('#tab-games').click();
+ await page.locator('#dccGhostTier').selectOption('scratch');
+ const link=page.locator('#dccClubhouseHome a[href^="ghost-preview.html"]');
+ await page.locator('#tab-play').click();
+ await link.click();
+ await expect(page).toHaveURL(/ghost-preview\.html\?tier=scratch/);
+ await expect(page.locator('#headline')).toContainText('The Undertaker');
+ await expect(page.locator('#trail')).toBeVisible();
+ await expect(page.locator('#trail #ghostHoleSketch')).toHaveCount(1);
+ await page.locator('#next').click();
+ await expect(page.locator('#trail #traces path')).toHaveCount(2);
+});
+
 test('House Ghost tracer draws animated schematic and watch mode',async({page})=>{
  await page.goto('/playtest/ghost-preview.html');
  await expect(page.locator('#traces path')).toHaveCount(0);
