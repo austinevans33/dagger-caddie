@@ -67,3 +67,16 @@ test('Friday staging accepts only browser-verified release-branch checkout, neve
  assert.match(workflow,/github\.event_name/);
  assert.match(workflow,/candidate\/FRIDAY_BUILD_EVENT\.txt/);
 });
+
+test('browser smoke timeout is bounded by individual install/test steps with failure traces',()=>{
+ const browser=workflow.split('\n  browser-smoke:')[1];
+ assert.match(browser,/timeout-minutes: 25/);
+ assert.match(browser,/name: Install Chromium test runner\n        timeout-minutes: 12/);
+ assert.match(browser,/name: Run real-browser Games and Yardage Book acceptance\n        timeout-minutes: 12/);
+ assert.match(browser,/--workers=2 --reporter=line --trace=retain-on-failure/);
+ assert.match(browser,/name: dagger-friday-browser-failure/);
+ assert.match(browser,/path: test-results\//);
+ const browserTest=browser.indexOf('name: Run real-browser Games and Yardage Book acceptance');
+ const verified=browser.indexOf('name: Stamp browser-verified provenance');
+ assert.ok(browserTest>=0&&verified>browserTest,'verified stamp remains gated by actual browser acceptance');
+});
