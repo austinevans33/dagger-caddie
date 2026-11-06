@@ -158,6 +158,39 @@ test('Yardage Book uses actual selected tee/provider scorecard and preserves bet
  expect(after).toBe(initial);
 });
 
+test('Real Bayonet White Yardage Book covers all 18 holes with official guide and safe caddy handoff',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'bayonet-release-test',name:'Bayonet at Puppy Creek',region:'NC'},tee:{providerTeeId:'white',name:'Regular / White',totalYards:5752},holeNumber:1}}));
+  localStorage.setItem('dagger_selected_caddie',JSON.stringify('vinny'));
+  localStorage.setItem('dagger_foursome_active','{"protected":"existing-wager"}');
+ });
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('#coverage')).toContainText('18/18');
+ await expect(page.locator('#name')).toContainText('Bayonet at Puppy Creek · Regular / White');
+ await expect(page.locator('#caddySignature')).toContainText('Vinny');
+ const par=[5,4,3,4,5,4,4,4,3,4,4,4,4,3,5,3,4,5];
+ const yards=[433,370,134,366,440,326,345,378,142,292,308,317,346,140,415,148,402,450];
+ for(let hole=1;hole<=18;hole++){
+  await page.locator('#hole').selectOption(String(hole));
+  await expect(page.locator('#position')).toContainText('HOLE '+hole+' / 18');
+  await expect(page.locator('#par')).toContainText('Par: '+par[hole-1]);
+  await expect(page.locator('#yards')).toContainText('Tee yards: '+yards[hole-1]);
+ }
+ await expect(page.locator('#officialHoleGuideWrap')).toBeVisible();
+ await expect(page.locator('#officialHoleGuide')).toHaveAttribute('href','https://www.bayonetgolf.com/course-tour/');
+ await page.locator('#hole').selectOption('1');
+ await page.screenshot({path:'candidate-screenshots/05-bayonet-yardage-iphone.png',animations:'disabled'});
+ await page.locator('#askHoleCaddy').click();
+ await expect(page).toHaveURL(/\/playtest\/?$/);
+ const stored=await page.evaluate(()=>({
+  handoff:JSON.parse(sessionStorage.getItem('dcc_yardage_caddy_handoff_v1')||'null'),
+  wager:localStorage.getItem('dagger_foursome_active')
+ }));
+ // The composer may consume the one-time handoff immediately on returning.
+ expect(stored.wager).toBe('{"protected":"existing-wager"}');
+});
+
 test('Pencil Yardage Book follows selected caddy without inventing hole geometry',async({page})=>{
  await page.addInitScript(()=>{
   localStorage.setItem('dagger_selected_caddie',JSON.stringify('vinny'));
