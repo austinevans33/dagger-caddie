@@ -159,6 +159,12 @@ jobs:
       - name: Run real-browser Games and Yardage Book acceptance
         run: npx playwright test tests/friday-browser.spec.mjs tests/friday-game-score-preview.spec.mjs --project=chromium
 
+      - name: Stamp browser-verified provenance on this exact candidate
+        if: success()
+        run: |
+          test "$(git rev-parse HEAD)" = "$(cat candidate/FRIDAY_CHECKED_OUT_SHA.txt)"
+          cp candidate/FRIDAY_CHECKED_OUT_SHA.txt candidate/FRIDAY_BROWSER_VERIFIED_SHA.txt
+
       - name: Publish verified Friday candidate only after browser smoke passes
         if: success()
         uses: actions/upload-artifact@v4
