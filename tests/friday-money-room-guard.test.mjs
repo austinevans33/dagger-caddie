@@ -221,3 +221,33 @@ test('a pending score write does not demote an already confirmed live Money Room
  assert.ok(cached>=0&&pending>cached,'cache-only lockout is separate from normal writes');
  assert.match(listener,/status\(roomServerFresh\?'Saving to the connected Money Room/);
 });
+
+test('switching Money Rooms locks the previous host editor before Firebase responds',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const live=readFileSync(new URL('../playtest/money-room.js',import.meta.url),'utf8');
+ const start=live.indexOf('async function connect(id){'),end=live.indexOf('\nasync function create(){',start);
+ assert.ok(start>=0&&end>start);
+ const controls=Object.fromEntries(['roomEditor','roomSaveHole','roomUndoHole','roomFinish','roomHole'].map(key=>[key,{hidden:false,disabled:false}]));
+ let removed=0,publish;
+ controls.roomHostQr={remove(){removed++}};
+ const state={
+  roomUnsub:()=>{},roomServerFresh:true,roomId:'old-room',room:{archived:false},host:true,connectionVersion:1,
+  auth:{currentUser:{uid:'host'}},user:{uid:'host'},db:{},
+  functions:{doc:()=>({}),onSnapshot:(_,options,listener)=>{assert.equal(options.includeMetadataChanges,true);publish=listener;return ()=>{}}},
+  readWithDeadline:fn=>Promise.resolve().then(fn),
+  status:()=>{},render:()=>{},archiveLocal:()=>{},forgetRoom:()=>{},roomStore:{},
+  $:id=>controls[id],roomLabel:()=> 'Host',displayedQrLink:'old-qr'
+ };
+ const connect=runInNewContext(live.slice(start,end)+'\nconnect',state);
+ const pending=connect('new-room');
+ assert.equal(state.roomServerFresh,false);
+ assert.equal(state.roomId,'new-room');
+ assert.equal(controls.roomEditor.hidden,true);
+ for(const id of ['roomSaveHole','roomUndoHole','roomFinish','roomHole'])assert.equal(controls[id].disabled,true,id+' must lock immediately');
+ assert.equal(removed,1);
+ assert.equal(state.displayedQrLink,'');
+ await Promise.resolve();await Promise.resolve();
+ publish({exists:()=>true,metadata:{fromCache:false,hasPendingWrites:false},data:()=>({archived:false,hostUid:'host'})});
+ await pending;
+ assert.equal(state.roomServerFresh,true);
+});
