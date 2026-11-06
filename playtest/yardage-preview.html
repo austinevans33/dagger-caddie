@@ -69,6 +69,7 @@ import {readYardageCaddy,yardageCaddyNote} from './yardage-caddy-notes.js';
 import {loadCourseFeatures,pencilGeometry,orientPencilTeeToGreen} from './course-pencil-geometry.js';
 import {pencilOrientation} from './yardage-pencil-orientation.js';
 import {pencilBookAnnotations} from './pencil-book-annotations.js';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js';
 import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
@@ -169,27 +170,7 @@ function updateSketch(selection,hole){
   const matches=(shape,mode)=>mode==='all'||mode==='green'&&shape.type==='green'||mode==='trouble'&&['bunker','water'].includes(shape.type);
   const ns='http://www.w3.org/2000/svg';
   const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 300 220');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schematic arrangement of coarse provider-mapped features. Map filters also have accessible buttons below.');
-  const style={green:['#d9e0c1','#455c47'],fairway:['#e2e5cc','#596955'],bunker:['#eee4c5','#8d8265'],water:['#d1dce0','#516d78'],rough:['#e3e1d3','#85816e'],tee:['#e1dec3','#6d725d']};
-  const polygons=[];
-  // Route and hazard labels appear only when actual hole-specific tee/green shapes exist.
-  // Without those two anchors, retain the feature polygons but never draw a fake hole corridor.
-  const svgItem=(tag,attributes,textValue)=>{
-   const node=document.createElementNS(ns,tag);
-   for(const [name,value] of Object.entries(attributes))node.setAttribute(name,String(value));
-   if(textValue!==undefined)node.textContent=textValue;
-   return node;
-  };
-  if(annotations.route){
-   const {tee,green}=annotations.route;
-   svg.append(svgItem('path',{d:'M '+tee.join(' ')+' L '+green.join(' '),class:'route-mark'}));
-   svg.append(svgItem('circle',{cx:tee[0],cy:tee[1],r:5,class:'route-target'}));
-   svg.append(svgItem('text',{x:Math.min(tee[0]+8,254),y:Math.min(tee[1]+4,216),class:'pencil-map-label'},'TEE'));
-   svg.append(svgItem('text',{x:Math.min(green[0]+8,244),y:Math.max(green[1]-7,12),class:'pencil-map-label'},'GREEN'));
-  }
-  for(const hazard of annotations.labels){
-   svg.append(svgItem('text',{x:Math.max(4,Math.min(hazard.point[0]+6,260)),y:Math.max(12,Math.min(hazard.point[1]-5,210)),class:'hazard-tag'},hazard.type==='water'?'WATER':'BKR'));
-  }
-  shapes.forEach((shape,i)=>{const p=document.createElementNS(ns,'polygon');p.setAttribute('points',shape.points.map(pt=>pt.join(',')).join(' '));p.setAttribute('fill',style[shape.type]?.[0]||'none');p.setAttribute('stroke',style[shape.type]?.[1]||'#555');p.setAttribute('stroke-width','1.8');p.setAttribute('stroke-dasharray','5 3');p.setAttribute('stroke-linejoin','round');p.setAttribute('data-map-feature',String(i));svg.append(p);polygons.push(p)});
+  const polygons=renderSharedHoleSketch(svg,shapes,annotations);
   const list=document.createElement('div');list.className='map-feature-list';list.setAttribute('aria-label','Mapped features');
   const note=document.createElement('p');note.className='map-note';note.setAttribute('role','status');
   function updateMode(){
