@@ -309,7 +309,9 @@ async function connect(id){
     $('roomHostQr')?.remove();displayedQrLink='';
     status(message+' Open the invitation again or reload to reconnect.');
    };
-   const unsubscribe=onSnapshot(doc(db,'rooms',id),snap=>{
+   // Firestore must emit metadata-only cache/server transitions, not just score changes.
+   // Without this option the offline lockout can miss a lost connection.
+   const unsubscribe=onSnapshot(doc(db,'rooms',id),{includeMetadataChanges:true},snap=>{
     if(version!==connectionVersion||auth.currentUser?.uid!==uid)return;
     if(!snap.exists()){if(firstConfirmed)disconnect('Live room disappeared. Scoring has stopped.');else fail(Error('Money Room no longer exists or access was denied.'));return;}
     // Cache can show an old archived state or unsynced edits. Wait for server.
