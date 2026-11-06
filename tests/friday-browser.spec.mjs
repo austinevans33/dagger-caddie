@@ -342,33 +342,34 @@ test('Ghost preview uses the selected course tee scorecard but never changes wag
  expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{\"protected\":true}');
 });
 
-test('Playable game scorer copies paper strokes into only selected player field without saving wager',async({page})=>{
+test('Live Games reaches Money Room setup without exposing retired wager form or rewriting paper strokes',async({page})=>{
  await page.addInitScript(()=>{
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'test-course',name:'Test Course',region:'NC'},tee:{providerTeeId:'blue',name:'Blue',totalYards:6200},holeNumber:1}}));
   localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:'test-course|blue|123456',hole:2,length:18,scores:[4,...Array(17).fill(null)]}));
   localStorage.setItem('dagger_foursome_active',JSON.stringify({format:'skins',players:['Golfer','Friend'],roundIdentity:'test-course|blue|123456',stake:5,holes:[],started:123}));
  });
  await page.goto('/playtest/');
- const before=await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'));
  const desk=page.locator('#dcc-starter-dialog');
  if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
  await page.locator('#useAustin').click({timeout:5000});
- await page.locator('#tab-bets').click({timeout:5000});
- // The historic foursome scorer is intentionally nested under Optional Legacy Wagering.
- // Open the real parent disclosure before its Group Wagering child.
- const legacy=page.locator('details.dcc-r60-legacy-ticket');
- if(await legacy.getAttribute('open')===null)await legacy.locator(':scope > summary').click();
- if(await page.locator('#newWagers').getAttribute('open')===null)await page.locator('#newWagers > summary').click();
- await expect(page.locator('#dccPaperGamePrefill')).toBeVisible();
- await page.locator('#dccPaperGamePlayer').selectOption('0');
- await page.locator('#dccPaperGameUse').click();
- await expect(page.locator('#ws0')).toHaveValue('4');
- await expect(page.locator('#ws1')).toHaveValue('');
- await expect(page.locator('#dccPaperGameStatus')).toContainText('Review and tap Save hole scores');
- expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe(before);
+ const before=await page.evaluate(()=>({
+  paper:localStorage.getItem('dcc_solo_scorecard_v1'),
+  game:localStorage.getItem('dagger_foursome_active')
+ }));
+ await page.locator('#tab-games').click({timeout:5000});
+ await expect(page.locator('#dccGamesMoneyRoom')).toBeVisible();
+ await page.locator('#dccGamesMoneyRoom').click();
+ await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ await expect(page.locator('#tab-bets')).toHaveClass(/active/);
+ await expect(page.locator('details.dcc-r60-legacy-ticket')).toBeHidden();
+ const after=await page.evaluate(()=>({
+  paper:localStorage.getItem('dcc_solo_scorecard_v1'),
+  game:localStorage.getItem('dagger_foursome_active')
+ }));
+ expect(after).toEqual(before);
 });
 
-test('New live games bind the active course and tee before paper-score prefill',async({page})=>{
+test('Selected course and tee survive opening the visible Money Room',async({page})=>{
  await page.addInitScript(()=>{
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:4321,selection:{course:{provider:'opengolfapi',providerCourseId:'binding-test',name:'Binding Test Course',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6100},holeNumber:1}}));
  });
@@ -376,19 +377,13 @@ test('New live games bind the active course and tee before paper-score prefill',
  const desk=page.locator('#dcc-starter-dialog');
  if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
  await page.locator('#useAustin').click({timeout:5000});
- await page.locator('#tab-bets').click({timeout:5000});
- // The historic foursome scorer is intentionally nested under Optional Legacy Wagering.
- // Open the real parent disclosure before its Group Wagering child.
- const legacy=page.locator('details.dcc-r60-legacy-ticket');
- if(await legacy.getAttribute('open')===null)await legacy.locator(':scope > summary').click();
- if(await page.locator('#newWagers').getAttribute('open')===null)await page.locator('#newWagers > summary').click();
- await page.locator('#wMyName').fill('Golfer');
- await page.locator('#wP2').fill('Friend');
- await page.locator('#wFormat').selectOption('skins');
- await page.locator('#wStart').click();
- const active=await page.evaluate(()=>JSON.parse(localStorage.getItem('dagger_foursome_active')));
- expect(active.roundIdentity).toBe('binding-test|white|4321');
- expect(active.holes).toEqual([]);
+ const original=await page.evaluate(()=>localStorage.getItem('dcc_active_round_course_v1'));
+ await page.locator('#tab-games').click({timeout:5000});
+ await page.locator('#dccGamesMoneyRoom').click();
+ await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ const current=await page.evaluate(()=>localStorage.getItem('dcc_active_round_course_v1'));
+ expect(current).toBe(original);
+ expect(JSON.parse(current).selection.tee.providerTeeId).toBe('white');
 });
 
 test('Games shortcut opens the existing Ticket Window without writing a bet',async({page})=>{
