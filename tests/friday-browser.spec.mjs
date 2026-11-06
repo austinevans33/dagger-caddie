@@ -104,7 +104,7 @@ test('House Ghost reuses mapped pencil sketch without treating simulated strokes
  await page.goto('/playtest/ghost-preview.html');
  await expect(page.locator('#ghostHoleSketch polygon')).toHaveCount(3);
  await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveCount(1);
- await expect(page.locator('#ghostMapStatus')).toContainText('same mapped pencil sketch', {ignoreCase:true});
+ await expect(page.locator('#ghostMapStatus')).toContainText('Same mapped pencil drawing');
  await expect(page.locator('#traces path')).toHaveCount(0);
  await page.locator('#next').click();
  await expect(page.locator('#traces path')).toHaveCount(2);
