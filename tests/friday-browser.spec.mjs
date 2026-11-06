@@ -198,7 +198,7 @@ test('Mapped tee-to-green pencil route labels both sides and informs caddy game 
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:111,selection:{course:{provider:'opengolfapi',providerCourseId:'route-book-test',name:'Route Book Links',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:5800},holeNumber:1}}));
  });
  await page.route('https://api.opengolfapi.org/v1/courses/route-book-test/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[{number:1,par:4,yardages:{white:410}}]})}));
- const polygon=(type,x)=>({type:'Feature',properties:{type,hole:1},geometry:{type:'Polygon',coordinates:[[[x-.00004,35],[x+.00004,35],[x+.00004,35.00004],[x-.00004,35]]]}}});
+ const polygon=(type,x)=>({type:'Feature',properties:{type,hole:1},geometry:{type:'Polygon',coordinates:[[[x-.00004,35],[x+.00004,35],[x+.00004,35.00004],[x-.00004,35]]]}});
  await page.route(url=>url.toString().startsWith('https://api.opengolfapi.org/api/v1/features?'),route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:[
   polygon('tee',-79),polygon('green',-79.002),
   polygon('bunker',-79.001),polygon('water',-79.0012)
