@@ -159,7 +159,13 @@ test('Yardage Book uses actual selected tee/provider scorecard and preserves bet
 });
 
 test('Pencil Yardage Book follows selected caddy without inventing hole geometry',async({page})=>{
- await page.addInitScript(()=>{localStorage.setItem('dagger_selected_caddie',JSON.stringify('vinny'))});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_selected_caddie',JSON.stringify('vinny'));
+  // A selected course without mapped geometry must show a non-fictional pencil study.
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'pencil-no-geometry',name:'Pencil Test Course',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:6000},holeNumber:1}}));
+ });
+ await page.route('https://api.opengolfapi.org/v1/courses/pencil-no-geometry/holes',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({holes:[]})}));
+ await page.route(url=>url.toString().startsWith('https://api.opengolfapi.org/api/v1/features?'),route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:[]})}));
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('.paper')).toBeVisible();
  await expect(page.locator('#caddySignature')).toContainText('Vinny');
@@ -347,7 +353,8 @@ test('Playable game scorer copies paper strokes into only selected player field 
  const desk=page.locator('#dcc-starter-dialog');
  if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
  await page.locator('#useAustin').click({timeout:5000});
- await page.locator('#tab-games').click({timeout:5000});
+ await page.locator('#tab-bets').click({timeout:5000});
+ if(await page.locator('#newWagers').getAttribute('open')===null)await page.locator('#newWagers > summary').click();
  await expect(page.locator('#dccPaperGamePrefill')).toBeVisible();
  await page.locator('#dccPaperGamePlayer').selectOption('0');
  await page.locator('#dccPaperGameUse').click();
@@ -365,7 +372,8 @@ test('New live games bind the active course and tee before paper-score prefill',
  const desk=page.locator('#dcc-starter-dialog');
  if(await desk.isVisible()){await page.keyboard.press('Escape');if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());}
  await page.locator('#useAustin').click({timeout:5000});
- await page.locator('#tab-games').click({timeout:5000});
+ await page.locator('#tab-bets').click({timeout:5000});
+ if(await page.locator('#newWagers').getAttribute('open')===null)await page.locator('#newWagers > summary').click();
  await page.locator('#wMyName').fill('Golfer');
  await page.locator('#wP2').fill('Friend');
  await page.locator('#wFormat').selectOption('skins');
