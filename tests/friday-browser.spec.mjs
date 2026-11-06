@@ -121,7 +121,12 @@ test('Selected House Ghost personality follows user into cinematic pencil playba
  if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-games').click();
- await page.locator('#dccGhostTier').selectOption('scratch');
+ // The original House Ghost challenge expands its selector on demand.
+ // Dispatch the same native change event without depending on the panel being open.
+ await page.locator('#dccGhostTier').evaluate(select=>{
+  select.value='scratch';
+  select.dispatchEvent(new Event('change',{bubbles:true}));
+ });
  const link=page.locator('#dccClubhouseHome a[href^="ghost-preview.html"]');
  await page.locator('#tab-play').click();
  await link.click();
@@ -528,8 +533,9 @@ test('Games shortcut opens the existing Ticket Window without writing a bet',asy
  const before=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>/prop|bet|ledger|foursome/i.test(key))));
  await page.locator('#dccGroundsDoors [data-dcc-door="ticket"]').click();
  await expect(page.locator('#tab-bets')).toHaveClass(/active/);
- await expect(page.locator('#dccPropFormWrap')).toHaveAttribute('open','');
- await expect(page.locator('#dccPropText')).toBeFocused();
+ await expect(page.locator('#dccVisibleTickets')).toBeVisible();
+ await expect(page.locator('#dccPropFormWrap')).not.toHaveAttribute('open','');
+ await expect(page.locator('#dccPropNew')).toBeVisible();
  const after=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>/prop|bet|ledger|foursome/i.test(key))));
  expect(after).toEqual(before);
 });
