@@ -57,3 +57,12 @@ test('Friday browser acceptance exercises real local QR render and secure invite
  assert.match(browser,/quietZoneWhite/);
  assert.match(workflow,/npx playwright test tests\/friday-browser\.spec\.mjs/);
 });
+
+test('Friday staging accepts only browser-verified release-branch checkout, never PR merges',()=>{
+ const deploy=readFileSync(new URL('../qa/deploy-friday-preview.sh',import.meta.url),'utf8');
+ assert.match(deploy,/FRIDAY_BUILD_EVENT\.txt/);
+ assert.match(deploy,/build_event" != "push" && "\$build_event" != "workflow_dispatch"/);
+ assert.match(deploy,/branch_sha" != "\$checked_out_sha"/);
+ assert.match(deploy,/release-branch build, not a pull-request merge artifact/);
+ assert.match(workflow,/printf '%s\\n' "\$\{\{ github\.event_name \}\}" > candidate\/FRIDAY_BUILD_EVENT\.txt/);
+});
