@@ -27,9 +27,9 @@ test('Founder check-in loads all tees and all eighteen holes entirely offline',a
   }
  }
 });
-test('The Ocean Course keeps its scorecard without requesting incomplete artwork',async()=>{
- const course=find('Ocean Course');
- const tee=(await loadOpenGolfTees(course))[0].tees.find(tee=>tee.providerTeeId==='black');
+test('Pinehurst No. 3 keeps its scorecard without requesting incomplete artwork',async()=>{
+ const course=find('Pinehurst No. 3');
+ const tee=(await loadOpenGolfTees(course))[0].tees.find(tee=>tee.providerTeeId==='white');
  let requests=0;
  const art=await loadHoleSketch({course,tee},16,{fetcher:async()=>{requests++;throw Error('Unexpected artwork fetch')}});
  assert.equal(art.coverage,'scorecard');

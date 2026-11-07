@@ -292,7 +292,9 @@
     },
     {
       "route": "945833950",
-      "tee": [],
+      "tee": [
+        "w884552401"
+      ],
       "green": [
         "w884552403"
       ],
@@ -302,6 +304,13 @@
       "bunker": [
         "w773889323",
         "w945874158"
+      ],
+      "tee_alignment": {
+        "source": "https://kiawahresort.com/wp-content/uploads/2018/09/Kiawah_Ocean_16.jpg",
+        "method": "Club diagram confirms the back tee between the prior green complex and the pond on the No. 16 line. Align only the route start to its mapped tee outline."
+      },
+      "water": [
+        "w807405363"
       ]
     },
     {
@@ -316,6 +325,9 @@
       "bunker": [
         "w884552405",
         "w884552406"
+      ],
+      "water": [
+        "r12742435"
       ]
     },
     {

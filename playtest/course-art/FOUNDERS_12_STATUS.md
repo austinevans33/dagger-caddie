@@ -16,7 +16,7 @@ A complete book requires an identified course, validated par + hole yards for ea
 | 9 | Sassamon Trace Golf Course | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
 | 10 | The Golf Club at Quail Ridge, Sanford NC | Black 6,783 yards, par 72, USGA total cross-check. Existing White, Gold and Red are source-listed legacy cards | 18 matched routes, tees, greens and fairways bundled from OSM | Passes Bayonet parity on Black; current White, Gold and Red hole cards still need confirmation |
 | 11 | Pinehurst No. 3 | Official course card: all 18 holes across White/Green/Red/Yellow | 18 candidate routes and greens, 10 tees, no validated fairways | Scorecard ready; separate No. 3 boundary and missing shapes require source review |
-| 12 | The Ocean Course, Kiawah Island SC | Six complete published 18-hole tee rows; Carolina excluded for conflicting total | 18 routes and greens, 17 matched tees, 17 fairway holes in QA | Scorecard ready; No. 16 tee assignment remains unresolved |
+| 12 | The Ocean Course, Kiawah Island SC | Six complete published 18-hole tee rows; Carolina excluded for conflicting total | 18 matched routes, tees and greens; 17 fairway holes bundled | Passes Bayonet parity on the club Black card. The club diagram corroborates No. 16’s tee |
 
 ## Source and audit guardrails
 - King's Grant scorecard: https://kingsgrantgolfcc.com/course-details/ — par 71, six sets, all 18 holes.
@@ -32,7 +32,7 @@ A complete book requires an identified course, validated par + hole yards for ea
 - Hyland published card: https://zommagolf.com/courses/nc/hyland-golf-club — White/Gold/Red rows sum properly. Source Blue/Black aggregate totals disagree with hole values; those rows remain withheld.
 
 - Pinehurst No. 3 official four-tee par-68 scorecard: https://www.pinehurst.com/golf/courses/no-3/ — 18 holes and tee-specific stroke index.
-- Ocean Course Kiawah 18-hole card and OSM mapping: https://zommagolf.com/courses/sc/kiawah-island-golf-resort-the-ocean-course — Black/Gold/Silver/Red club-checked yardages, plus Dye/Kiawah reported. Carolina total disagrees with row sum and is withheld.
+- Ocean Course Kiawah official card: https://kiawahresort.com/wp-content/uploads/2025/03/Ocean-Course-SC25.pdf — Black/Gold/Silver/Red club-checked yardages, plus Dye/Kiawah reported. Carolina total disagrees with row sum and is withheld.
 
 - Chimneys Winder Georgia 18-hole scorecard: https://maps.golf/courses/the-chimneys-golf-course — Gold, Blue, White and Green rows, summed from 18 documented holes. Secondary aggregate claims conflict, so only per-hole sums used.
 - Pine Hills Winder Georgia full three-tee course card: https://zommagolf.com/courses/ga/pine-hills-golf-club — 18 holes with mapped outlines; Red tee 18th is a published par 5, unlike Blue and White par 4.

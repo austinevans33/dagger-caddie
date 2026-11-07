@@ -10,19 +10,19 @@
     "name": "Black",
     "totalYards": 7385
   },
-  "scorecard": "https://zommagolf.com/courses/sc/kiawah-island-golf-resort-the-ocean-course",
+  "scorecard": "https://kiawahresort.com/wp-content/uploads/2025/03/Ocean-Course-SC25.pdf",
   "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-80.052,32.598,-79.987,32.629",
   "sourceSha256": "eb7bf4ee7e9f0fac582c4dd92ddbfeaddcbd2aa10efc9f627b137bd16408c0a7",
   "license": "https://opendatacommons.org/licenses/odbl/1-0/",
   "boundary": "17647608",
-  "pass": false,
+  "pass": true,
   "referenceReady": false,
   "referenceTees": [],
-  "reason": "incomplete-hole-art",
+  "reason": "structural-parity",
   "ratioErrors": [],
-  "mappedHoles": 17,
+  "mappedHoles": 18,
   "fairwayHoles": 17,
-  "teeHoles": 17,
+  "teeHoles": 18,
   "greenHoles": 18,
   "routes": 18,
   "holes": [
@@ -196,11 +196,11 @@
       "scorecard": true,
       "route": true,
       "green": true,
-      "tee": false,
+      "tee": true,
       "fairway": true,
       "par": 5,
       "cardYards": 577,
-      "routeYards": 600
+      "routeYards": 575
     },
     {
       "number": 17,

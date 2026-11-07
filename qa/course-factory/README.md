@@ -7,7 +7,7 @@
 | Sanford Tobacco Road | 18 / 16 / 18 / 14 | Blocked | Ripper comparison passes the distance sanity check. Geometry is QA-only. |
 | The Chimneys, Winder | 18 / 18 / 18 / 17 | Pass | Bundled for Yardage Book and House Ghost. Gold is the reference card. |
 | Pine Hills, Winder | 18 / 18 / 18 / 17 | Pass | Bundled for Yardage Book and House Ghost. Blue is the reference card. |
-| Kiawah Ocean Course | 18 / 17 / 18 / 17 | Blocked | No. 16 tee outline does not cover the route start. |
+| Kiawah Ocean Course | 18 / 18 / 18 / 17 | Pass | Bundled for Yardage Book and House Ghost. Black is the reference card. |
 | Pinehurst No. 3 | 18 / 10 / 18 / 0 in the source preflight | Blocked | Numbered lines match the scorecard sequence. No separately identified No. 3 boundary in this extract. |
 
 ## Review and reproducibility
@@ -78,10 +78,10 @@ node scripts/audit-founder-bundle.mjs "Pine Hills" playtest/course-art/pine-hill
 
 The [matched OSM course relation](https://www.openstreetmap.org/relation/17647608) has two closed, disjoint boundary parts. The importer validates the parts and rejects invalid or overlapping boundaries. It checks the reviewed routes against the identified Ocean Course boundary, excluding neighboring Osprey Point.
 
-The QA bundle retains all 18 routes and greens, 17 tee outlines, 17 fairway holes, 59 bunker polygons, and seven water polygons. No. 6 had two overlapping tee traces. The retained outline contains the smaller trace and the route start. No. 16’s closest tee outline is about 18 m from the mapped start. That assignment remains withheld. No. 17 retains its tee, line and green with no fairway assigned. Every line passes the Black card distance check. The artwork remains gated off until the tee association is verified.
+The bundle retains all 18 routes, greens and tee outlines, 17 fairway holes, 59 bunker polygons and nine water polygons. No. 6 had two overlapping tee traces. The retained outline contains the smaller trace and the route start. On No. 16 the [club’s diagram](https://kiawahresort.com/wp-content/uploads/2018/09/Kiawah_Ocean_16.jpg) confirms the mapped tee between the previous green and the pond. The importer moves only the route start approximately 25 m to a point inside that tee polygon, retaining the rest of the OSM line. No. 17 retains its tee, line and green with no fairway assigned. Its mapped pond remains visible. All 18 lines pass the [club Black card](https://kiawahresort.com/wp-content/uploads/2025/03/Ocean-Course-SC25.pdf) distance check. The club’s Black, Gold, Silver and Red per-hole yardages agree with the existing Dagger rows.
 
 ```sh
 python3 scripts/import-founder-osm.py qa/course-factory/kiawah-osm-review.json kiawah.osm /tmp/kiawah.json
-cmp /tmp/kiawah.json qa/course-factory/kiawah-audit-only.json
-node scripts/audit-founder-bundle.mjs "Ocean Course" qa/course-factory/kiawah-audit-only.json black
+cmp /tmp/kiawah.json playtest/course-art/kiawah-ocean-course-sc.json
+node scripts/audit-founder-bundle.mjs "Ocean Course" playtest/course-art/kiawah-ocean-course-sc.json black
 ```

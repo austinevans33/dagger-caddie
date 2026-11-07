@@ -153,7 +153,8 @@ test('reviewed Tobacco Road geometry cannot ship before tee and fairway coverage
 
 for(const entry of [
  {query:'The Chimneys',file:'chimneys-winder-ga.json',teeId:'gold',boundaryKey:'osm_relation',boundary:'143005',parThree:11},
- {query:'Pine Hills',file:'pine-hills-winder-ga.json',teeId:'blue',boundaryKey:'osm_way',boundary:'34772934',parThree:16}
+ {query:'Pine Hills',file:'pine-hills-winder-ga.json',teeId:'blue',boundaryKey:'osm_way',boundary:'34772934',parThree:16},
+ {query:'Ocean Course',file:'kiawah-ocean-course-sc.json',teeId:'black',boundaryKey:'osm_relation',boundary:'17647608',parThree:17}
 ]){
  test(`${entry.query} meets Bayonet mapping parity against its reference tee`,async()=>{
   const {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard,founderMapRecord}=await import('../playtest/founders-verified-scorecards.js');
@@ -170,5 +171,11 @@ for(const entry of [
   assert.equal(audit.quality.mappedHoles,18);
   assert.deepEqual(audit.quality.checks.filter(hole=>!hole.fairway).map(hole=>hole.number),[entry.parThree]);
   assert.deepEqual(audit.ratioErrors,[]);
+  if(entry.query==='Ocean Course'){
+   const route=features.find(feature=>feature.properties.layer==='hole'&&feature.properties.holes.includes(16));
+   assert.ok(route.properties.tee_alignment.source.startsWith('https://kiawahresort.com/'));
+   assert.equal(holes[15].yards,577);
+   assert.ok(features.some(feature=>feature.properties.osm==='r12742435'&&feature.properties.holes.includes(17)));
+  }
  });
 }

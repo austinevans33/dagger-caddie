@@ -943,8 +943,9 @@ test('Sanford Quail Ridge uses all eighteen local drawings and shares hole fourt
 });
 
 for(const course of [
- {query:'The Chimneys',tee:'Gold',hole:11,yards:216,par:3},
- {query:'Pine Hills',tee:'Red',hole:18,yards:360,par:5},
+ {query:'The Chimneys',region:'Winder, GA',tee:'Gold',hole:11,yards:216,par:3},
+ {query:'Pine Hills',region:'Winder, GA',tee:'Red',hole:18,yards:360,par:5},
+ {query:'Ocean Course',region:'Kiawah Island, SC',tee:'Black',hole:16,yards:577,par:5},
 ]){
  test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
   await page.setViewportSize({width:390,height:844});
@@ -954,7 +955,7 @@ for(const course of [
   await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
   await page.locator('#dcc-starter-query').fill(course.query);
   await page.locator('#dcc-starter-search').click();
-  await expect(page.locator('#dcc-starter-results')).toContainText('Winder, GA');
+  await expect(page.locator('#dcc-starter-results')).toContainText(course.region);
   await page.locator('#dcc-starter-results button').first().click();
   const options=page.locator('#dcc-starter-tees');
   const selected=options.locator('option').filter({hasText:new RegExp('^'+course.tee+' ·')});
