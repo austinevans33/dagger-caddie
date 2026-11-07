@@ -18,8 +18,11 @@ ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
 .ghost-hole-paper small{display:block;margin:6px 0;color:#455548;font:12px/1.4 system-ui,sans-serif}
 
 @media(prefers-reduced-motion:reduce){.dcc-ghost-tracer{animation:none!important;stroke-dashoffset:0!important}}
+.ghost-info{margin:5px 0 13px;font:12px/1.4 system-ui,sans-serif;color:#647268}
+.ghost-info>summary{cursor:pointer;display:inline-block;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.ghost-info p{font-size:12px;margin:7px 0 0;padding:9px 10px;background:#f9f4e8;border-left:2px solid #b79c62;border-radius:4px}
 </style></head><body><main><header><small>DAGGER COUNTRY CLUB · HOUSE GHOST</small><h1>House Ghost · Shot Trail</h1><a id="ghostBack" href="./">← Back to The Clubhouse</a></header>
-<p class="notice"><strong>Simulated schematic only.</strong> This preview does not read or change scores, bets, GPS, Firebase, or real pin positions. It reads your selected course and tees when available; Ghost shots remain simulated.</p>
+<details class="ghost-info"><summary>About Ghost play</summary><p>Ghost shots are simulated, not measured ball flights. This playback does not change scores, games, or wagers.</p></details>
 <div class="controls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
 <article><strong id="headline">Loading…</strong><p id="summary"></p>
 <div class="ghost-hole-paper" aria-label="Shared caddy-book sketch with illustrative Ghost flight"><strong>✎ Caddy book · Ghost on the hole</strong>
