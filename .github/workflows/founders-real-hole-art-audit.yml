@@ -1,0 +1,28 @@
+name: Founders Real Hole-Art Audit
+on:
+  push:
+    branches:
+      - feature/founders-remote-art-audit-20261107
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-mapped-founder-holes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run geometry and scorecard identity tests
+        run: node --test tests/friday-founder-geometry-audit.test.mjs
+      - name: Check exact remote Founders map data, without deploying it
+        run: node scripts/audit-founder-remote-art.mjs
+      - name: Save source snapshots and audit report for visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: founders-hole-geometry-audit
+          path: artifacts/founders-map-audit
+          if-no-files-found: error
+          retention-days: 14
