@@ -242,8 +242,8 @@ jobs:
           print(found.group())
           PYTHON
           )"
-          curl --fail --retry 4 --max-time 20 "$preview_url/FRIDAY_BROWSER_VERIFIED_SHA.txt" -o "$RUNNER_TEMP/hosted-sha.txt"
+          curl --fail --retry-all-errors --retry 8 --retry-delay 2 --max-time 20 "$preview_url/FRIDAY_BROWSER_VERIFIED_SHA.txt" -o "$RUNNER_TEMP/hosted-sha.txt"
           cmp candidate/FRIDAY_BROWSER_VERIFIED_SHA.txt "$RUNNER_TEMP/hosted-sha.txt"
-          curl --fail --max-time 20 "$preview_url/playtest/hole-sketch.js" -o "$RUNNER_TEMP/hosted-sketch.js"
+          curl --fail --retry-all-errors --retry 8 --retry-delay 2 --max-time 20 "$preview_url/playtest/hole-sketch.js" -o "$RUNNER_TEMP/hosted-sketch.js"
           cmp candidate/playtest/hole-sketch.js "$RUNNER_TEMP/hosted-sketch.js"
           printf 'Verified staging preview %s/playtest/ for %s\n' "$preview_url" "$GITHUB_SHA" | tee -a "$GITHUB_STEP_SUMMARY"
