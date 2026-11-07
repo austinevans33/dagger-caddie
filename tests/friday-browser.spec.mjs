@@ -726,6 +726,17 @@ test('House Ghost rival starts a match with automatic shared-hole playback and r
  const pending=(await draft()).pending;
  await expect(frame.locator('#shots li')).toHaveCount(pending.ghost,{timeout:15000});
  await expect(frame.locator('#headline')).toContainText('Ghost '+pending.ghost);
+ // Regression: a vertical swipe over the finished animation must move the
+ // surrounding page, rather than trapping the iPhone inside its iframe.
+ await page.evaluate(()=>window.scrollTo(0,0));
+ await frame.locator('body').evaluate(body=>{
+  const touch=(y)=>new Touch({identifier:1,target:body,clientX:160,clientY:y});
+  const start=touch(480),move=touch(370);
+  body.dispatchEvent(new TouchEvent('touchstart',{touches:[start],targetTouches:[start],changedTouches:[start],bubbles:true}));
+  body.dispatchEvent(new TouchEvent('touchmove',{touches:[move],targetTouches:[move],changedTouches:[move],cancelable:true,bubbles:true}));
+  body.dispatchEvent(new TouchEvent('touchend',{touches:[],targetTouches:[],changedTouches:[move],bubbles:true}));
+ });
+ await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBeGreaterThan(0);
  await page.locator('#dccGhostPlayback').scrollIntoViewIfNeeded();
  await page.screenshot({path:'candidate-screenshots/06-ghost-match-iphone.png',animations:'disabled'});
  await page.reload();
