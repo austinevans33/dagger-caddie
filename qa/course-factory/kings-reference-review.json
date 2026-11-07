@@ -1,0 +1,245 @@
+{
+  "course_ref": "nc/kings-grant-golf-and-country-club",
+  "boundary": "6446970",
+  "identity": {
+    "leisure": "golf_course",
+    "addr:city": "Fayetteville",
+    "addr:housenumber": "347",
+    "name": "King's Grant Golf and Country Club"
+  },
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-78.909,35.126,-78.872,35.160",
+  "sha256": "83aa2e038308c36fe764c2ffc89846d7032e4bac08d7ba8cb18676e56d589927",
+  "holes": [
+    {
+      "route": "1116545132",
+      "tee": [
+        "w1116545126"
+      ],
+      "green": [
+        "w1116545129"
+      ],
+      "fairway": [
+        "w1116545131"
+      ]
+    },
+    {
+      "route": "1116545139",
+      "tee": [
+        "w1116545134"
+      ],
+      "green": [
+        "w1116545137"
+      ],
+      "fairway": [
+        "r19186498"
+      ]
+    },
+    {
+      "route": "1116545146",
+      "tee": [
+        "w1116545141"
+      ],
+      "green": [
+        "w1116545144"
+      ],
+      "fairway": [
+        "r19186505"
+      ]
+    },
+    {
+      "route": "1116545152",
+      "tee": [
+        "w1116545147"
+      ],
+      "green": [
+        "w1116545150"
+      ],
+      "fairway": [
+        "r19186504"
+      ]
+    },
+    {
+      "route": "1116545159",
+      "tee": [
+        "w1116545154"
+      ],
+      "green": [
+        "w1116545157"
+      ],
+      "fairway": [
+        "r19186503"
+      ]
+    },
+    {
+      "route": "1116545165",
+      "tee": [
+        "w1116545160"
+      ],
+      "green": [
+        "w1116545163"
+      ],
+      "fairway": [
+        "r19186501"
+      ]
+    },
+    {
+      "route": "1116545170",
+      "tee": [
+        "w1116545166"
+      ],
+      "green": [
+        "w1116545168"
+      ],
+      "fairway": [
+        "r19186497"
+      ]
+    },
+    {
+      "route": "1116545176",
+      "tee": [
+        "w1116545172"
+      ],
+      "green": [
+        "w1116545174"
+      ],
+      "fairway": [
+        "r19186500"
+      ]
+    },
+    {
+      "route": "717654786",
+      "tee": [],
+      "green": [
+        "w717654779"
+      ],
+      "fairway": [
+        "w717654782"
+      ],
+      "bunker": [
+        "w717654780",
+        "w717654781"
+      ],
+      "reference_tee": {
+        "source": "Owner-supplied No. 9 wide and zoomed views; NC OneMap orthophoto",
+        "method": "Use existing numbered OSM line start; visible tee marker and housing/green landmarks corroborate the corridor. Footprint withheld."
+      }
+    },
+    {
+      "route": "1116549374",
+      "tee": [
+        "w1116549369"
+      ],
+      "green": [
+        "w1116549372"
+      ],
+      "fairway": [
+        "r19186509"
+      ]
+    },
+    {
+      "route": "1116549380",
+      "tee": [
+        "w1116549375"
+      ],
+      "green": [
+        "w1116549378"
+      ],
+      "fairway": [
+        "r19186507"
+      ]
+    },
+    {
+      "route": "1116549388",
+      "tee": [
+        "w1116549382"
+      ],
+      "green": [
+        "w1116549384"
+      ],
+      "fairway": [
+        "w1116549386",
+        "w1116549387"
+      ]
+    },
+    {
+      "route": "1116549394",
+      "tee": [],
+      "green": [
+        "w1116549392"
+      ],
+      "fairway": [
+        "r19186508"
+      ],
+      "reference_tee": {
+        "source": "Owner-supplied No. 13 view; NC OneMap orthophoto",
+        "method": "Approximate image marker via green, pool and court center alignment; keep mapped OSM green endpoint and verified short corridor.",
+        "start": [
+          -78.88046,
+          35.14466
+        ]
+      }
+    },
+    {
+      "route": "1116549402",
+      "tee": [
+        "w1116549395"
+      ],
+      "green": [
+        "w1116549398"
+      ],
+      "fairway": [
+        "w1116549400"
+      ]
+    },
+    {
+      "route": "1116549409",
+      "tee": [
+        "w1116549404"
+      ],
+      "green": [
+        "w1116549406"
+      ],
+      "fairway": [
+        "r19186502",
+        "w1116549408"
+      ]
+    },
+    {
+      "route": "1116549415",
+      "tee": [
+        "w1116549410"
+      ],
+      "green": [
+        "w1116549413"
+      ],
+      "fairway": [
+        "r19186506"
+      ]
+    },
+    {
+      "route": "1116549420",
+      "tee": [
+        "w1116549416"
+      ],
+      "green": [
+        "w1116549418"
+      ],
+      "fairway": [
+        "r19186496"
+      ]
+    },
+    {
+      "route": "1116549427",
+      "tee": [
+        "w1116549422"
+      ],
+      "green": [
+        "w1116549424"
+      ],
+      "fairway": [
+        "w1116549426",
+        "r19186499"
+      ]
+    }
+  ]
+}

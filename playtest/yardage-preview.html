@@ -106,9 +106,9 @@ import {pocketCaddyNotes} from './pocket-caddy-notes.js';
 import {readActiveRound,ACTIVE_ROUND_KEY} from './starters-desk-session.js';
 import {readCourseScorecard} from './active-course-context.js';
 import {readYardageCaddy,describeSketchTrouble} from './yardage-caddy-notes.js?v=friday-book-1';
-import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-osm-1';
+import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-reference-2';
 import {bayonetOsmTrouble} from './bayonet-osm-trouble.js';
-import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=founders-osm-1';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=founders-reference-2';
 import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
@@ -232,7 +232,7 @@ function updateSketch(selection,hole){
   const foot=document.createElement('p');foot.className='geometry-foot';
   foot.textContent=annotations.route?'Illustrative layout · approximate tee area and trouble. Confirm carries on course. ':'Partial mapped shapes · No invented fairway or hazard outlines. ';
   if(sketch.source){const credit=document.createElement('a');credit.href=sketch.source;credit.textContent=sketch.credit;foot.append(credit)}
-  if(annotations.reference)foot.append(' · * Club booklet reference');
+  if(annotations.reference)foot.append(annotations.approximateTee?' · * Aerial reference':' · * Club booklet reference');
   box.append(foot);
  }).catch(error=>{if(spatialPending===controller)spatialPending=null;if(!controller.signal.aborted)unavailable()});
 }

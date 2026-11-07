@@ -62,7 +62,7 @@ export function buildHoleSketch(features, provenance = {}) {
     ? {...mapped, reference: {...reference, point: referencePoint}}
     : mapped;
   return {
-    ...provenance, shapes, annotations,
+    ...provenance, shapes, annotations: provenance.approximateTee ? {...annotations, approximateTee: true} : annotations,
     coverage: annotations.route && shapes.some(shape => shape.type === 'fairway')
       ? 'layout' : (shapes.length || annotations.route) ? 'partial' : 'scorecard'
   };
@@ -88,6 +88,7 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
     try {
       const records = await readCourseArt(entry, fetcher);
       signal?.throwIfAborted();
+      let approximateTee = false;
       if(mappedFounder){
         if(!founderVerifiedScorecard(selection))return buildHoleSketch([]);
         // The artwork represents the route, not every selected tee position.
@@ -100,13 +101,15 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
         const {auditFounderGeometry}=await import('./founder-geometry-audit.js');
         const audit=bundledAudits.get(records) || auditFounderGeometry({
           records,holes:official.holes,
-          metadata:{course_ref:entry.ref},expectedRef:entry.ref
+          metadata:{course_ref:entry.ref},expectedRef:entry.ref,referenceTees:bundled?mappedFounder.referenceTees:undefined
         });
         if(bundled)bundledAudits.set(records,audit);
-        if(!audit.pass)return buildHoleSketch([]);
+        if(!audit.pass&&!audit.referenceReady)return buildHoleSketch([]);
+        approximateTee = audit.referenceTees.includes(holeNumber);
       }
       const features = courseArtFeatures(records, holeNumber);
-      if (features.length) return buildHoleSketch(features, {credit: entry.credit, source: entry.source, referenceNote: entry.referenceNotes?.[holeNumber]});
+      if (features.length) return buildHoleSketch(features, {credit: entry.credit, source: entry.source,
+        approximateTee, referenceNote: (mappedFounder?.referenceNotes ?? entry.referenceNotes)?.[holeNumber]});
     } catch (error) {
       if (signal?.aborted) throw error;
     }
