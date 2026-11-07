@@ -107,6 +107,7 @@ import {readActiveRound,ACTIVE_ROUND_KEY} from './starters-desk-session.js';
 import {readCourseScorecard} from './active-course-context.js';
 import {readYardageCaddy,describeSketchTrouble} from './yardage-caddy-notes.js?v=friday-book-1';
 import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=friday-book-1';
+import {bayonetOsmTrouble} from './bayonet-osm-trouble.js';
 import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=friday-book-1';
 import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
@@ -172,7 +173,7 @@ function updateSketch(selection,hole){
   heading.textContent='Hole '+hole+' · Scorecard notes';
   const message=document.createElement('p');message.className='geometry-foot';
   message.textContent=bayonetOsmTrouble(selection,hole)?
-   'See the Game Plan and field notes for the available information on this hole.':
+   'Open the caddy conversation for a plan based on this hole.':
    'No hole-assigned mapped outlines available. We will not invent doglegs, landing zones, or hazards.';
   box.append(heading,message);
  }
