@@ -9,7 +9,7 @@ A complete book requires an identified course, validated par + hole yards for ea
 | 2 | Ryder Golf Course, Fort Bragg NC | Three published tee sets with 18 hole values | No hole-specific OSM outlines | Scorecard functional; actual hole maps need survey or other verified source |
 | 3 | King's Grant Golf & Country Club, Fayetteville NC | Six tee sets from club source | Mapped remote art adapter, cross-origin and hole labels require live QA | Scorecard ready; mapping QA pending |
 | 4 | The Chimneys Golf Course, Winder GA | Four 18-hole tee cards with published par and stroke index | Provider geometry only; no bundled 18-hole art yet | Scorecard available; full map QA pending |
-| 5 | Pelican Pointe Golf and Country Club | Provider fallback only | Provider fallback only | Resolve three nine-hole loops before assigning 18 holes |
+| 5 | Pelican Pointe Golf and Country Club, Venice FL | Three selectable 18-hole routings: Meadows / Preserve; Preserve / Hatchett; Hatchett / Meadows, Blue/White tee cards | Mapped drawings not curated per named loop | Full routing scorecards ready; loop-mapped art QA pending |
 | 6 | Hyland Golf Club | White/Gold/Red all 18 holes; Black/Blue totals conflict with source row sums | No hole-specific OSM outlines | Scorecard functional for three tees; map sourcing and remaining tee audit needed |
 | 7 | Tobacco Road Golf Course | Five verified-sum published tee rows covering all 18 | Source has 18 OSM mapped holes; remote-art check pending | Scorecard functional; mapping QA pending |
 | 8 | Pine Hills Golf Club, Winder GA | Blue/White 18-hole par 72; Red 18-hole par 73, all published hole yards | 18 mapped OSM holes available, hole-assignment QA pending | Scorecard ready; map QA pending |
@@ -36,3 +36,5 @@ A complete book requires an identified course, validated par + hole yards for ea
 
 - Chimneys Winder Georgia 18-hole scorecard: https://maps.golf/courses/the-chimneys-golf-course — Gold, Blue, White and Green rows, summed from 18 documented holes. Secondary aggregate claims conflict, so only per-hole sums used.
 - Pine Hills Winder Georgia full three-tee course card: https://zommagolf.com/courses/ga/pine-hills-golf-club — 18 holes with mapped outlines; Red tee 18th is a published par 5, unlike Blue and White par 4.
+
+- Pelican Pointe official three-loop routing: https://www.pelicanpointeclub.com/-course-layout and published combo cards https://offcourse.co/courses/scorecard/pelican-pointe-golf-country-club/ — separate exact IDs for all 3 pairings so score data cannot be swapped between different layouts; Blue and White full 18-hole cards per pairing. No unverified hole art.
