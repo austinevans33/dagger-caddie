@@ -4,6 +4,7 @@ import {BAYONET_TEES,isBayonetCourse} from './bayonet-verified-scorecard.js';
 import {normalizeCatalog} from './course-catalog.js';
 const BASE='https://api.opengolfapi.org/v1/courses';
 const provider='opengolfapi';
+const SEARCH_LIMIT=40; // Provider-backed results, never synthetic courses.
 const validId=x=>typeof x==='string'||typeof x==='number'?String(x).trim().slice(0,80):'';
 function courseOf(x){
  const providerCourseId=validId(x?.id);
@@ -20,7 +21,7 @@ function teesOf(detail){
 }
 export function searchResultCourses(body){
  const rows=Array.isArray(body?.courses)?body.courses:[];
- return rows.slice(0,12).map(courseOf).filter(Boolean).filter(x=>x.name&&x.region);
+ return rows.slice(0,SEARCH_LIMIT).map(courseOf).filter(Boolean).filter(x=>x.name&&x.region);
 }
 export function courseDetailToCatalog(course,detail){
  if(!course||!detail)return [];
@@ -35,7 +36,7 @@ async function getJSON(url,fetcher){
 export async function searchOpenGolfCourses(query,{fetcher=fetch,signal}={}){
  const q=String(query||'').trim();
  if(q.length<2||q.length>100)return [];
- const url=BASE+'/search?q='+encodeURIComponent(q)+'&limit=12';
+ const url=BASE+'/search?q='+encodeURIComponent(q)+'&limit='+SEARCH_LIMIT;
  const response=await fetcher(url,{headers:{Accept:'application/json'},signal});
  if(!response.ok)throw Error('Course search unavailable ('+response.status+').');
  return searchResultCourses(await response.json());
