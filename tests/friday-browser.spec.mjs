@@ -784,9 +784,15 @@ test('Growing Games catalog stays compact until requested and works when opened'
  await page.locator('#tab-games').click();
  await expect(page.locator('#gamesMenu')).toHaveAttribute('data-dcc-collapsed','true');
  await expect(page.locator('#dccGameChoices')).toBeHidden();
+ await expect(page.locator('#dccGameLibraryCurrent')).toBeHidden();
+ await expect(page.locator('#dccGameLibraryToggle')).toHaveText(/Browse 7 Games/);
+ await expect(page.locator('#dccSavedGamesPanel > summary')).toBeVisible();
  await page.locator('#dccGameLibraryToggle').click();
  await expect(page.locator('#dccGameChoices')).toBeVisible();
  await expect(page.locator('#dccGameSearch')).toBeVisible();
+ await page.locator('#dccGameChoices [data-game="wolf"]').click();
+ await expect(page.locator('#dccGameLibraryCurrent')).toContainText('Wolf');
+ await expect(page.locator('#dccGameLibraryCurrent')).not.toContainText('Selected:');
  await page.locator('#dccGameLibraryToggle').click();
  await expect(page.locator('#dccGameChoices')).toBeHidden();
 });

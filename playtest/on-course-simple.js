@@ -30,26 +30,35 @@ function mountGamePicker(){
  if(!heading||!choices)return;
  const count=choices.querySelectorAll('button.game-pick').length;
  const state=document.createElement('p');state.id='dccGameLibraryCurrent';
- state.className='dcc-game-library-current';
+ state.className='dcc-game-library-current';state.hidden=true;
  const toggle=document.createElement('button');toggle.id='dccGameLibraryToggle';
  toggle.type='button';toggle.className='dcc-game-library-toggle';
- toggle.textContent='Choose a game · '+count;
  toggle.setAttribute('aria-controls','dccGameChoices');
  toggle.setAttribute('aria-expanded','false');
- heading.append(state,toggle);
+ const title=heading.querySelector('h2');if(title)title.textContent='Choose a Game';
+ heading.append(toggle,state);
+ let pickedByGolfer=false;
  function syncSelected(){
   const selected=choices.querySelector('.game-pick.selected');
   const name=selected?.querySelector('strong')?.textContent?.trim();
-  state.textContent=name?'Selected: '+name.replace(/^[^\\p{L}\\p{N}]+/u,''):'Choose a format when you’re ready';
+  const clean=typeof name==='string'?name.replace(/^[^\\p{L}\\p{N}]+/u,'').trim():'';
+  state.hidden=!pickedByGolfer||!clean;
+  if(!state.hidden)state.textContent='Your pick · '+clean;
  }
- syncSelected();
+ // The original markup preselects Bingo for its internal scorer. That does
+ // not mean the golfer has chosen it; never show a misleading "Selected:" line.
+ choices.addEventListener('click',event=>{
+  if(!event.target.closest('button.game-pick'))return;
+  pickedByGolfer=true;
+  queueMicrotask(syncSelected);
+ });
  new MutationObserver(syncSelected).observe(choices,{subtree:true,attributes:true,attributeFilter:['class']});
  let open=false;
  function setOpen(value){
   open=!!value;
   section.dataset.dccCollapsed=open?'false':'true';
   toggle.setAttribute('aria-expanded',String(open));
-  toggle.textContent=open?'Close game list':'Choose a game · '+count;
+  toggle.textContent=open?'Close Games':'Browse '+count+' Games';
  }
  setOpen(false);
  toggle.addEventListener('click',()=>{
