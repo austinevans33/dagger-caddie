@@ -44,6 +44,12 @@ const paperCSS=`
 #dcc-solo-scorecard #dcc-paper-progress{font-size:12px;text-align:center;white-space:nowrap}
 #dcc-solo-scorecard .dcc-paper-scorebuttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
 #dcc-solo-scorecard .dcc-paper-scorebuttons button.selected{background:#d6bb82}
+#dcc-solo-scorecard .dcc-paper-scorebuttons button{min-height:52px!important;font:700 18px Georgia,serif!important;border:1px solid #bda77a!important;border-radius:9px!important;touch-action:manipulation}
+#dcc-solo-scorecard .dcc-paper-scorebuttons button:focus-visible{outline:3px solid #2b5d40;outline-offset:2px}
+#dcc-solo-scorecard .dcc-paper-scorebuttons{gap:7px!important;margin-top:11px}
+#dcc-solo-scorecard .dcc-paper-navigation{padding:9px 0}
+#dcc-solo-scorecard #dcc-paper-progress{font:700 13px/1.25 system-ui;color:#173729}
+#dcc-paper-dialog .dcc-paper-dialog-bar{padding-top:max(10px,env(safe-area-inset-top));}
 #dcc-solo-scorecard .dcc-paper-pencil{font:italic 16px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#625f56}
 #dcc-solo-scorecard .dcc-paper-actions{display:flex;justify-content:flex-end;gap:7px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid #c9b994}
 #dcc-solo-scorecard .dcc-paper-actions button{border:1px solid #a98b56;border-radius:5px;background:#fffaed;color:#234333;padding:10px 12px;min-height:40px;font:700 10px system-ui;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
@@ -70,7 +76,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  dialog.setAttribute('aria-label','Dagger Country Club scorecard');
  const bar=doc.createElement('div');bar.className='dcc-paper-dialog-bar';
  const barTitle=doc.createElement('span');barTitle.textContent='THE OFFICIAL SCORECARD';
- const close=doc.createElement('button');close.type='button';close.className='dcc-paper-close';close.textContent='← BACK TO CADDY';
+ const close=doc.createElement('button');close.type='button';close.className='dcc-paper-close';close.textContent='← BACK TO CLUBHOUSE';
  bar.append(barTitle,close);dialog.append(bar,card);doc.body.append(dialog);
  const launch=doc.createElement('button');launch.type='button';launch.id='dcc-paper-launch';
  launch.textContent='OPEN SCORECARD';launch.hidden=true;
