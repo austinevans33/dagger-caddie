@@ -80,7 +80,7 @@ export function founderVerifiedScorecard(selection){
  const holes=holeRange.map(number=>Object.freeze({
   number,par:f.par[number-1],yards:tee.yards[number-1],
   handicapMen:f.handicapMen[number-1],
-  ...(f.handicapWomen.length?{handicapWomen:f.handicapWomen[number-1]}:{}),
+  ...(f.handicapWomen?.length?{handicapWomen:f.handicapWomen[number-1]}:{}),
   hazards:Object.freeze([])
  }));
  return Object.freeze({version:1,selection,holes:Object.freeze(holes),source:f.source,
