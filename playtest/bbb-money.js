@@ -51,15 +51,14 @@ export function installBingoMoney(){
  renderVisibleReceipts();
  }
  function renderVisibleReceipts(){
-  // The legacy wager ticket is deliberately retired. Show read-only results
-  // inside the *existing* approved Ledger archive, without moving or unhiding it.
-  const archive=$('dccPropHistoryWrap');if(!archive)return;
-  let section=$('dccBbbArchiveReceipts');
-  if(!section){section=document.createElement('div');section.id='dccBbbArchiveReceipts';section.className='dcc-r66-list';section.setAttribute('aria-label','Bingo Bango Bongo archived results');section.setAttribute('aria-live','polite');archive.append(section);}
+  // Keep the recorded financial receipt in the Ledger while match history lives on The Grounds.
+  const archive=$('dccRecordedSettlements');
+  const section=$('dccBbbArchiveReceipts');
+  if(!archive||!section)return;
   section.replaceChildren();
   const records=bingoArchiveReceipts(wHistory);
-  if(!records.length){section.hidden=true;return;}
-  section.hidden=false;
+  archive.hidden=!records.length;
+  if(!records.length)return;
   const heading=document.createElement('p');heading.className='dcc-r66-small';heading.textContent='BINGO BANGO BONGO · RECORDED RESULTS (NOT PAYMENTS)';section.append(heading);
   for(const receipt of records.slice().reverse()){
    const card=document.createElement('article');card.className='dcc-r66-slip';card.dataset.bingoId=receipt.id;

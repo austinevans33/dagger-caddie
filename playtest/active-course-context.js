@@ -4,8 +4,14 @@ import {readActiveRound} from './starters-desk-session.js';
 import {loadOpenGolfHoles} from './opengolf-holes.js?v=premium-paper-9';
 import {sameCourseSelection} from './course-identity.js';
 import {readCachedCourseScorecard,saveCachedCourseScorecard} from './course-scorecard-cache.js';
+import {bayonetVerifiedScorecard} from './bayonet-verified-scorecard.js';
+import {founderVerifiedScorecard} from './founders-verified-scorecards.js';
+import {reconcileProviderScorecard} from './course-scorecard-reconcile.js';
 const CACHED='dcc_course_scorecard_v1';
 export function readCourseScorecard(storage,selection){
+ // Bundled club source is read-only, does not contaminate the provider cache.
+ const official=bayonetVerifiedScorecard(selection)||founderVerifiedScorecard(selection);
+ if(official)return official;
  const multi=readCachedCourseScorecard(storage,selection);
  if(multi)return multi;
  try{
@@ -22,6 +28,8 @@ export async function getActiveCourseContext({storage,fetcher,signal,now=Date.no
  const active=readActiveRound(storage);
  if(!active)return {state:'not-selected',holes:[],livePinDistance:false};
  const selection=active.selection;
+ const official=bayonetVerifiedScorecard(selection)||founderVerifiedScorecard(selection);
+ if(official)return official;
  let holes=[];
  try{
   holes=await loadOpenGolfHoles(selection,{fetcher,signal});
@@ -35,12 +43,17 @@ export async function getActiveCourseContext({storage,fetcher,signal,now=Date.no
    if(cached)return {state:'cached-no-provider-holes',selection,...cached};
    return {state:'no-verified-holes',selection,holes:[],livePinDistance:false};
   }
+  // A transient, partial provider response must not silently erase a complete
+  // previously verified scorecard for this SAME exact course/tee.
+  const cached=readCourseScorecard(storage,selection);
+  const reconciled=reconcileProviderScorecard(holes,cached?.holes||[]);
+  holes=reconciled.holes;
   const result={version:1,selection,holes,loadedAt:now};
   // Retain the legacy single-course cache for existing installations, while
   // keeping a bounded per-course/tee history for returning players.
   saveCachedCourseScorecard(storage,selection,holes,now);
   try{storage.setItem(CACHED,JSON.stringify(result));}catch{/* Memory-only success. */}
-  const context={state:'ready',selection,holes,source:'opengolfapi-scorecard',livePinDistance:false,loadedAt:now};
+  const context={state:reconciled.preserved?'ready-merged':'ready',selection,holes,source:reconciled.preserved?'opengolfapi-scorecard-and-verified-cache':'opengolfapi-scorecard',reconciliation:reconciled.mode,livePinDistance:false,loadedAt:now};
   if(typeof notify==='function')notify(context);
   return context;
  }catch(error){

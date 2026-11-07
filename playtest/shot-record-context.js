@@ -26,3 +26,19 @@ export function createShotRecordContext(active,holeNumber,environment,fetchedAt,
  }
  return result;
 }
+
+// Count only the golfer's explicitly recorded directional outcomes.
+export function recordedMissNotes(records, clubNames = []) {
+ if (!Array.isArray(records) || !Array.isArray(clubNames)) return [];
+ const byClub = new Map();
+ for (const shot of records.slice(-30)) {
+  if (!clubNames.includes(shot?.club)) continue;
+  const counts = byClub.get(shot.club) || {total: 0, left: 0, right: 0};
+  counts.total++;
+  if (shot.horizontal === 'Left') counts.left++;
+  if (shot.horizontal === 'Right') counts.right++;
+  byClub.set(shot.club, counts);
+ }
+ return [...byClub].filter(([, counts]) => counts.total >= 3 && counts.left + counts.right > 0)
+  .map(([club, counts]) => club + ' (' + counts.total + ' logged: ' + counts.left + ' left, ' + counts.right + ' right)');
+}

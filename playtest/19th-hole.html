@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The 19th Hole · Dagger Country Club</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f0e7;color:#17352a;font:16px system-ui,sans-serif}
+main{max-width:540px;margin:auto;padding:20px 16px 50px}h1{font:700 32px Georgia,serif;margin:8px 0}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.17em;color:#75623e}
+.panel{background:#fffdf7;border:1px solid #c9bea2;border-radius:16px;padding:17px;margin:16px 0}
+button{min-height:44px;border:0;border-radius:9px;background:#17352a;color:white;padding:12px;cursor:pointer;font:750 14px system-ui}
+pre{white-space:pre-wrap;font:16px/1.6 system-ui;overflow-wrap:anywhere;margin:0 0 16px}
+nav a{color:#17352a}.status{font-size:13px}
+</style></head><body><main>
+<nav><a href="./?view=ledger">← Back to The Ledger</a></nav>
+<p class="eyebrow">DAGGER COUNTRY CLUB</p><h1>The 19th Hole</h1>
+<section class="panel" aria-label="Round recap">
+<pre id="result"></pre>
+<button id="copy" type="button" hidden>Copy recap</button>
+<p id="status" class="status" role="status"></p>
+</section>
+</main><script type="module">
+import {readRoundRecap} from './round-recap.js?v=1';
+const result = document.getElementById('result');
+const copy = document.getElementById('copy');
+const status = document.getElementById('status');
+let recap = '';
+function render() {
+ recap = readRoundRecap(localStorage);
+ result.textContent = recap || 'The bartender is ready. The scorecard is still blank.\nRecord a score or finish a game to get your recap.';
+ copy.hidden = !recap;
+ status.textContent = '';
+}
+copy.addEventListener('click', async () => {
+ try {
+  await navigator.clipboard.writeText('DAGGER COUNTRY CLUB · THE 19TH HOLE\n\n' + recap);
+  status.textContent = 'Copied. The group chat awaits.';
+ } catch {
+  status.textContent = 'Select and copy the recap above.';
+ }
+});
+window.addEventListener('pageshow', render);
+render();
+</script></body></html>

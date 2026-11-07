@@ -1,0 +1,34 @@
+name: Friday Friends Edition candidate bundle
+on:
+  push:
+    branches:
+      - release/friday-staging-20261106
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify Friday release modules
+        run: |
+          node --test tests/friday-game-yardage-roundtrip.test.mjs tests/friday-playable-code-parity.test.mjs tests/friday-release-entrypoints.test.mjs
+          node --check playtest/money-room.js
+      - name: Prepare exact candidate bytes
+        run: |
+          mkdir -p candidate
+          cp -R playtest candidate/playtest
+          cp yardage-book.js yardage-selection.js course-weather-context.js course-identity.js round-yardage-transition.js candidate/
+          cp house-ghost-trail.js house-ghost-round.js house-ghost-ledger.js house-ghost-playback.js candidate/
+          printf '%s\n' "$GITHUB_SHA" > candidate/FRIDAY_CANDIDATE_SHA.txt
+          printf '%s\n' 'Preview-only. Not an approved deployment. Do not upload over the current live site without acceptance.' > candidate/README_RELEASE.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dagger-friends-edition-candidate
+          path: candidate/
+          retention-days: 14
