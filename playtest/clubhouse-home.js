@@ -36,12 +36,9 @@ function mount(){
  </a>
  <button class="dcc-home-score" id="dccHomeScorecard" type="button" data-dcc-go="score"><span class="dcc-home-score-icon" aria-hidden="true">✎</span><span class="dcc-home-score-copy"><strong>Scorecard</strong><small id="dccHomeScoreStatus">Your round, one score at a time</small></span><span class="dcc-home-score-arrow" aria-hidden="true">›</span></button>
  <div class="dcc-home-grid">
-  <button class="dcc-home-tile" type="button" data-dcc-go="games"><span class="dcc-home-tile-icon" aria-hidden="true">♜</span><span class="dcc-home-tile-name">Games</span><span class="dcc-home-tile-caption">Your matches</span></button>
-  <button class="dcc-home-tile" type="button" data-dcc-go="ghost"><span class="dcc-home-tile-icon" aria-hidden="true">♧</span><span class="dcc-home-tile-name">House Ghost</span><span class="dcc-home-tile-caption">Play the house</span></button>
-  <button class="dcc-home-tile" type="button" data-dcc-go="ticket"><span class="dcc-home-tile-icon" aria-hidden="true">▣</span><span class="dcc-home-tile-name">Ticket Window</span><span class="dcc-home-tile-caption">Open wagers</span></button>
-  <button class="dcc-home-tile" type="button" data-dcc-go="ledger"><span class="dcc-home-tile-icon" aria-hidden="true">▤</span><span class="dcc-home-tile-name">Ledger</span><span class="dcc-home-tile-caption">Balances &amp; statements</span></button>
- </div>
- <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
+  <button class="dcc-home-tile" type="button" data-dcc-go="games"><span class="dcc-home-tile-icon" aria-hidden="true">♜</span><span class="dcc-home-tile-name">Games</span></button>
+  <button class="dcc-home-tile" type="button" data-dcc-go="ghost"><span class="dcc-home-tile-icon" aria-hidden="true">♧</span><span class="dcc-home-tile-name">House Ghost</span></button> </div>
+ <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Money Room</strong><small>Start or join a round</small></span><span aria-hidden="true">›</span></button>
 `;
  caddy.parentNode.insertBefore(section,caddy);
  // Retain the entire original header, saved state, and caddy infrastructure.
