@@ -152,7 +152,8 @@ const founders=Object.freeze([
    url:'https://maps.golf/courses/the-chimneys-golf-course',checked:'2026-11-07',
    geography:'Winder, Georgia',teeYardageIsNotPinDistance:true,
    audit:'Published course aggregate totals conflict on a secondary source. Tee totals here are sums of each explicitly documented hole yardage.'},
-  map:{status:'not-curated'}
+  map:{file:'chimneys-winder-ga.json',source:'https://www.openstreetmap.org/relation/143005',
+   ref:'ga/the-chimneys-golf-course',status:'bundled-reviewed-osm',auditTee:'gold'}
  },
  {
   id:'pine-hills-winder-ga',name:'Pine Hills Golf Club',region:'Winder, GA',
@@ -169,8 +170,8 @@ const founders=Object.freeze([
    url:'https://zommagolf.com/courses/ga/pine-hills-golf-club',checked:'2026-11-07',
    geography:'Winder, Georgia',teeYardageIsNotPinDistance:true,
    audit:'Red tees published as par 73 with 18th hole a par 5; Blue and White play to par 72.'},
-  map:{source:'https://zommagolf.com/courses/ga/pine-hills-golf-club/geo.json',
-   ref:'ga/pine-hills-golf-club',status:'external-unverified-hole-assignment'}
+  map:{file:'pine-hills-winder-ga.json',source:'https://www.openstreetmap.org/way/34772934',
+   ref:'ga/pine-hills-golf-club',status:'bundled-reviewed-osm',auditTee:'blue'}
  }
 
 ]);

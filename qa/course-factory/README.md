@@ -1,15 +1,17 @@
-# Founders course factory, first North Carolina batch
+# Founders course factory, North Carolina and Winder
 
 | Course | Route/tee/green/fairway holes | Bayonet parity | Scope |
 | --- | --- | --- | --- |
 | Sanford Quail Ridge | 18 / 18 / 18 / 18 | Pass | Shared Yardage Book and Ghost bundle. Black is the reference card. |
 | Fayetteville King’s Grant | 18 / 17 / 18 / 18 | Blocked | Existing club scorecard remains available. Geometry is QA-only. |
 | Sanford Tobacco Road | 18 / 16 / 18 / 14 | Blocked | Ripper comparison passes the distance sanity check. Geometry is QA-only. |
+| The Chimneys, Winder | 18 / 18 / 18 / 17 | Pass | Bundled for Yardage Book and House Ghost. Gold is the reference card. |
+| Pine Hills, Winder | 18 / 18 / 18 / 17 | Pass | Bundled for Yardage Book and House Ghost. Blue is the reference card. |
 | Pinehurst No. 3 | 18 / 10 / 18 / 0 in the source preflight | Blocked | Numbered lines match the scorecard sequence. No separately identified No. 3 boundary in this extract. |
 
 ## Review and reproducibility
 
-The two OSM course relations match the club names, cities and street numbers. Each reviewed route stays within its course boundary. The route start and end fall within the assigned tee and green polygon when those polygons exist. Fairway matches follow the source playing lines. Bunkers and water with ambiguous proximity to multiple holes were withheld. Interior fairway cutouts preserve existing bunker/water geometry.
+The original two OSM course relations match the club names, cities and street numbers. Each reviewed route stays within its course boundary. The route start and end fall within the assigned tee and green polygon when those polygons exist. Fairway matches follow the source playing lines. Bunkers and water with ambiguous proximity to multiple holes were withheld. Interior fairway cutouts preserve existing bunker/water geometry.
 
 Use the exact source URLs and SHA-256 values in the `*-osm-review.json` manifests. The original XML is an input to the importer and can contain contributor metadata. The repository distributes only the reviewed machine-readable golf features. The map endpoint is a live data source. If the pinned bytes are no longer available, review a fresh extract and update the checksum and assignments before rebuilding.
 
@@ -46,3 +48,18 @@ The [Pinehurst parent resort](https://www.openstreetmap.org/relation/13969631) i
 Quail Ridge No. 14 is a published par 5 on the Sanford Black card, at 496 yards. The OSM route measures approximately 505 yards and its green and tee match the numbered line. Its OSM par 4 tag is stale relative to the card. The listed Black card sums to 6,783 yards and agrees with the current USGA rating database. White, Gold and Red retain their prior individual-hole listings and saved tee IDs. Their current per-hole yardages still need a club or GHIN card. Blue needs a verified hole-by-hole source.
 
 All derived OSM geometry in this batch is © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). The [King’s Grant boundary](https://www.openstreetmap.org/relation/6446970) and [Quail Ridge boundary](https://www.openstreetmap.org/relation/6400453) identify the underlying sources. The QA-only GeoJSON retains the same license and provenance.
+
+### Winder, Georgia
+
+[The Chimneys OSM relation](https://www.openstreetmap.org/relation/143005) matches the municipal facility at 338 Monroe Highway. [Pine Hills OSM way](https://www.openstreetmap.org/way/34772934) matches the club at 661 Hog Mountain Road. The reviewed extracts both contain boundary data for the neighboring club. Assignments are scoped to the matched boundary and checked against the exact numbered routes.
+
+The Chimneys bundle has 20 fairway polygons covering 17 holes and 30 assigned bunkers. The Pine Hills bundle has 18 fairway polygons covering 17 holes, one assigned bunker and six water polygons. Other source hazards were withheld where assignment was ambiguous or their proximity fell outside review limits. The two maps retain the original tee/green outlines, playing lines and fairway cutouts. The Chimneys No. 11 and Pine Hills No. 16 are par 3s with an independently mapped tee, line and green, and no validated fairway. The selected tee controls scorecard par and yardage. The drawing depicts the mapped playing corridor, which can differ from the selected tee's shot line.
+
+```sh
+python3 scripts/import-founder-osm.py qa/course-factory/chimneys-osm-review.json chimneys.osm /tmp/chimneys.json
+cmp /tmp/chimneys.json playtest/course-art/chimneys-winder-ga.json
+node scripts/audit-founder-bundle.mjs "The Chimneys" playtest/course-art/chimneys-winder-ga.json gold
+python3 scripts/import-founder-osm.py qa/course-factory/pinehills-osm-review.json pinehills.osm /tmp/pinehills.json
+cmp /tmp/pinehills.json playtest/course-art/pine-hills-winder-ga.json
+node scripts/audit-founder-bundle.mjs "Pine Hills" playtest/course-art/pine-hills-winder-ga.json blue
+```

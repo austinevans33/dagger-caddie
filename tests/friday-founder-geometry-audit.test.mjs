@@ -123,3 +123,25 @@ test('reviewed Tobacco Road geometry cannot ship before tee and fairway coverage
  assert.equal(sketch.coverage,'scorecard');
  assert.equal(requests,0);
 });
+
+for(const entry of [
+ {query:'The Chimneys',file:'chimneys-winder-ga.json',teeId:'gold',boundaryKey:'osm_relation',boundary:'143005',parThree:11},
+ {query:'Pine Hills',file:'pine-hills-winder-ga.json',teeId:'blue',boundaryKey:'osm_way',boundary:'34772934',parThree:16}
+]){
+ test(`${entry.query} meets Bayonet mapping parity against its reference tee`,async()=>{
+  const {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard,founderMapRecord}=await import('../playtest/founders-verified-scorecards.js');
+  const course=founderCatalogRecords(entry.query)[0];
+  const map=founderMapRecord(course);
+  const tee=founderTeesForCourse(course).find(record=>record.providerTeeId===entry.teeId);
+  const {holes}=founderVerifiedScorecard({course,tee});
+  const {features,metadata}=JSON.parse(readFileSync(new URL('../playtest/course-art/'+entry.file,import.meta.url)));
+  assert.equal(map.file,entry.file);
+  assert.equal(map.auditTee,entry.teeId);
+  assert.equal(metadata[entry.boundaryKey],entry.boundary);
+  const audit=auditFounderGeometry({records:features,holes,metadata,expectedRef:map.ref});
+  assert.equal(audit.pass,true);
+  assert.equal(audit.quality.mappedHoles,18);
+  assert.deepEqual(audit.quality.checks.filter(hole=>!hole.fairway).map(hole=>hole.number),[entry.parThree]);
+  assert.deepEqual(audit.ratioErrors,[]);
+ });
+}
