@@ -28,3 +28,16 @@ test('incomplete geometry never gains a fictional route',()=>{
  assert.equal(svg.children.filter(x=>x.name==='path').length,0);
  assert.equal(svg.children.filter(x=>x.name==='polygon').length,2);
 });
+
+test('portrait yardage map scales across courses without altering Ghost dimensions',()=>{
+ const features=[shape('tee',150,390),shape('green',150,40),shape('fairway',150,210),shape('water',110,320)];
+ const map=mockSvg(),ghost=mockSvg();
+ const notes=pencilBookAnnotations(features);
+ renderSharedHoleSketch(map,features,notes,{height:440});
+ renderSharedHoleSketch(ghost,features,notes);
+ assert.equal(map.attrs.viewBox,'0 0 300 440');
+ assert.equal(ghost.attrs.viewBox,'0 0 300 220');
+ assert.equal(map.children.filter(x=>x.name==='polygon').length,4);
+ assert.equal(map.children.filter(x=>x.name==='text'&&x.text==='WATER').length,1);
+ assert.equal(map.children.filter(x=>x.name==='path').length,1);
+});
