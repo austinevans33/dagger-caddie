@@ -25,7 +25,7 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .nav{margin-top:12px}
 .warning{background:#ebe1c9;border-style:dashed}
 @media(prefers-reduced-motion:reduce){.paper .card,.pencil-note,.field-sketch{transform:none}}
-.field-sketch svg{width:100%;height:auto;max-height:280px;display:block}.field-sketch.has-features{display:block;padding:8px;background:#eee7d5}.field-sketch .geometry-label{font:italic 13px Georgia,serif;color:#51604f;margin:5px 0 1px}.field-sketch .geometry-foot{font:11px/1.4 system-ui,sans-serif;color:#687369;margin:5px 0}
+.field-sketch svg{width:100%;height:auto;max-height:540px;display:block}.field-sketch.has-features{display:block;padding:8px;background:#eee7d5}.field-sketch .geometry-label{font:italic 13px Georgia,serif;color:#51604f;margin:5px 0 1px}.field-sketch .geometry-foot{font:11px/1.4 system-ui,sans-serif;color:#687369;margin:5px 0}
 
 .field-sketch .route-mark{fill:none;stroke:#42584a;stroke-width:1.8;stroke-dasharray:7 5;opacity:.8}
 .field-sketch .route-target{fill:#f7f0dd;stroke:#42584a;stroke-width:1.7}
@@ -171,20 +171,23 @@ function updateSketch(selection,hole){
  load.then(features=>{
   if(spatialPending===controller)spatialPending=null;
   if(gen!==spatialGeneration)return;
-  const shapes=orientPencilTeeToGreen(pencilGeometry(features));
+  // Render an actual portrait yardage-book page from the selected course geometry.
+  // Ghost keeps its existing landscape 300x220 playback, sharing the same polygons.
+  const artHeight=440;
+  const shapes=orientPencilTeeToGreen(pencilGeometry(features,{width:300,height:artHeight,padding:22}),{width:300,height:artHeight,padding:22});
   const annotations=pencilBookAnnotations(shapes);
   renderAttack(features,annotations);
   if(!shapes.length){unavailable();return}
   box.classList.remove('no-map');box.classList.add('has-features');box.replaceChildren();
-  const title=document.createElement('p');title.className='geometry-label';title.textContent='Pencil study · available mapped features';box.append(title);
+  const title=document.createElement('p');title.className='geometry-label';title.textContent='Hole '+hole+' · mapped caddy-book drawing';box.append(title);
   const tools=document.createElement('div');tools.className='map-tools';tools.setAttribute('role','group');tools.setAttribute('aria-label','Map feature filters');box.append(tools);
   const labels={green:'Green',fairway:'Fairway',bunker:'Bunker',water:'Water',rough:'Rough',tee:'Tee'};
   const count=type=>shapes.filter(f=>f.type===type).length;
   const modes=[['all','All'],['green','Green'],['trouble','Trouble']];
   const matches=(shape,mode)=>mode==='all'||mode==='green'&&shape.type==='green'||mode==='trouble'&&['bunker','water'].includes(shape.type);
   const ns='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 300 220');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schematic arrangement of coarse provider-mapped features. Map filters also have accessible buttons below.');
-  const polygons=renderSharedHoleSketch(svg,shapes,annotations);
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 300 440');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schematic arrangement of coarse provider-mapped features. Map filters also have accessible buttons below.');
+  const polygons=renderSharedHoleSketch(svg,shapes,annotations,{height:artHeight});
   const list=document.createElement('div');list.className='map-feature-list';list.setAttribute('aria-label','Mapped features');
   const note=document.createElement('p');note.className='map-note';note.setAttribute('role','status');
   function updateMode(){
