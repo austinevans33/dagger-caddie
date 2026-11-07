@@ -41,7 +41,7 @@ function mountGamePicker(){
  function syncSelected(){
   const selected=choices.querySelector('.game-pick.selected');
   const name=selected?.querySelector('strong')?.textContent?.trim();
-  const clean=typeof name==='string'?name.replace(/^[^\\p{L}\\p{N}]+/u,'').trim():'';
+  const clean=typeof name==='string'?name.replace(/^[^A-Za-z0-9]+/,'').trim():'';
   state.hidden=!pickedByGolfer||!clean;
   if(!state.hidden)state.textContent='Your pick · '+clean;
  }
