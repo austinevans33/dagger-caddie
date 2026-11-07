@@ -27,11 +27,13 @@ test('Founder check-in loads all tees and all eighteen holes entirely offline',a
   }
  }
 });
-test('Kings Grant keeps its scorecard without requesting blocked artwork',async()=>{
- const course=find('Kings Grant');
+test('Pinehurst No. 3 keeps its scorecard without requesting incomplete artwork',async()=>{
+ const course=find('Pinehurst No. 3');
  const tee=(await loadOpenGolfTees(course))[0].tees.find(tee=>tee.providerTeeId==='white');
- const art=await loadHoleSketch({course,tee},9,{fetcher:()=>assert.fail('Blocked artwork must not be fetched')});
+ let requests=0;
+ const art=await loadHoleSketch({course,tee},16,{fetcher:async()=>{requests++;throw Error('Unexpected artwork fetch')}});
  assert.equal(art.coverage,'scorecard');
+ assert.equal(requests,0);
 });
 test('Quail Ridge rejects a mismatched bundled course identity before using geometry',async()=>{
  const course=find('Quail Ridge');

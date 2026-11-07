@@ -1,0 +1,228 @@
+{
+  "course": {
+    "provider": "dagger-founder",
+    "providerCourseId": "ocean-course-kiawah-sc",
+    "name": "The Ocean Course at Kiawah Island",
+    "region": "Kiawah Island, SC"
+  },
+  "tee": {
+    "providerTeeId": "black",
+    "name": "Black",
+    "totalYards": 7385
+  },
+  "scorecard": "https://kiawahresort.com/wp-content/uploads/2025/03/Ocean-Course-SC25.pdf",
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-80.052,32.598,-79.987,32.629",
+  "sourceSha256": "eb7bf4ee7e9f0fac582c4dd92ddbfeaddcbd2aa10efc9f627b137bd16408c0a7",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "boundary": "17647608",
+  "pass": true,
+  "referenceReady": false,
+  "referenceTees": [],
+  "reason": "structural-parity",
+  "ratioErrors": [],
+  "mappedHoles": 18,
+  "fairwayHoles": 17,
+  "teeHoles": 18,
+  "greenHoles": 18,
+  "routes": 18,
+  "holes": [
+    {
+      "number": 1,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 396,
+      "routeYards": 396
+    },
+    {
+      "number": 2,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 543,
+      "routeYards": 551
+    },
+    {
+      "number": 3,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 384,
+      "routeYards": 382
+    },
+    {
+      "number": 4,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 451,
+      "routeYards": 475
+    },
+    {
+      "number": 5,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 207,
+      "routeYards": 204
+    },
+    {
+      "number": 6,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 455,
+      "routeYards": 466
+    },
+    {
+      "number": 7,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 527,
+      "routeYards": 563
+    },
+    {
+      "number": 8,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 198,
+      "routeYards": 194
+    },
+    {
+      "number": 9,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 464,
+      "routeYards": 487
+    },
+    {
+      "number": 10,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 439,
+      "routeYards": 436
+    },
+    {
+      "number": 11,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 562,
+      "routeYards": 573
+    },
+    {
+      "number": 12,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 466,
+      "routeYards": 477
+    },
+    {
+      "number": 13,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 399,
+      "routeYards": 480
+    },
+    {
+      "number": 14,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 194,
+      "routeYards": 236
+    },
+    {
+      "number": 15,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 416,
+      "routeYards": 466
+    },
+    {
+      "number": 16,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 577,
+      "routeYards": 575
+    },
+    {
+      "number": 17,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": false,
+      "par": 3,
+      "cardYards": 223,
+      "routeYards": 227
+    },
+    {
+      "number": 18,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 484,
+      "routeYards": 506
+    }
+  ]
+}

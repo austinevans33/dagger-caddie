@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-from shapely.geometry import LineString, Point, Polygon
+from shapely.geometry import LineString, MultiPolygon, Point, Polygon
 from shapely.ops import substring
 
 LAYERS = {"water_hazard": "water", "lateral_water_hazard": "water"}
@@ -55,8 +55,14 @@ def build_bundle(review, osm):
                                         for m in members), "Review requires one resolved outer ring per relation")
         return [coordinates(ways[m.attrib["ref"]]) for m in outers + [m for m in members if m.get("role") == "inner"]]
 
-    boundary_rings = rings(course)
-    center = Polygon(boundary_rings[0]).centroid
+    outers = course.findall("member[@role='outer']")
+    if len(outers) > 1:
+        require(all(m.get("type") == "way" and m.get("role") == "outer" for m in course.findall("member")),
+                "Multi-part boundary requires separate closed outer ways")
+        boundary_parts = [[coordinates(ways[m.attrib["ref"]])] for m in outers]
+    else:
+        boundary_parts = [rings(course)]
+    center = Polygon(boundary_parts[0][0]).centroid
     scale = 111195 * math.cos(math.radians(center.y))
 
     def local(points):
@@ -69,7 +75,9 @@ def build_bundle(review, osm):
         require(shape.is_valid and shape.area > 0, "Invalid polygon in reviewed source")
         return shape
 
-    boundary = polygon(boundary_rings)
+    polygons = [polygon(part) for part in boundary_parts]
+    boundary = polygons[0] if len(polygons) == 1 else MultiPolygon(polygons)
+    require(boundary.is_valid, "Overlapping or invalid course boundary parts")
     require(len(review["holes"]) == 18, "Expected all 18 hole entries in course review")
     output = []
     used = {}
@@ -93,10 +101,38 @@ def build_bundle(review, osm):
         coords = coordinates(way)
         require(tags(way).get("golf") == "hole" and tags(way).get("ref") == str(number),
                 f"Route {route_id} does not identify hole {number}")
+        reference = hole.get("reference_tee")
+        tee_alignment = hole.get("tee_alignment")
+        if tee_alignment is not None:
+            require(reference is None and len(hole.get("tee", [])) == 1 and tee_alignment.get("source"),
+                    f"Hole {number} tee alignment requires one mapped tee and independent evidence")
+            ref = hole["tee"][0]
+            require(ref.startswith("w"), f"Hole {number} tee alignment requires a mapped tee way")
+            tee_rings = rings(ways[ref[1:]])
+            tee_shape = polygon(tee_rings)
+            start = Polygon(tee_rings[0], tee_rings[1:]).representative_point().coords[0]
+            require(tee_shape.distance(Point(local(coords)[0])) <= 25 and
+                    Point(local(coords)[0]).distance(Point(local([start])[0])) <= 30,
+                    f"Hole {number} tee alignment moves the route start too far")
+            coords = [start, *coords[1:]]
+        if reference is not None:
+            require(not hole.get("tee") and reference.get("source") and reference.get("method"),
+                    f"Hole {number} reference tee requires provenance and no conflicting tee outline")
+            if "start" in reference:
+                start = reference["start"]
+                require(isinstance(start, list) and len(start) == 2 and all(math.isfinite(v) for v in start),
+                        f"Hole {number} reference tee coordinate is invalid")
+                require(tags(way).get("par") == "3",
+                        f"Hole {number} shortened reference line is only supported for mapped par threes")
+                coords = [start, coords[-1]]
         route = LineString(local(coords))
         require(route.is_valid and route.length > 0 and boundary.buffer(3).covers(route),
                 f"Hole {number} route lies outside the matched course")
         add_feature("hole", "w" + route_id, number, "LineString", coords)
+        if reference is not None:
+            output[-1]["properties"]["reference_tee"] = reference
+        if tee_alignment is not None:
+            output[-1]["properties"]["tee_alignment"] = tee_alignment
         middle = substring(route, 0.12, 0.9, normalized=True)
         for kind in ("tee", "green", "fairway", "bunker", "water"):
             for ref in hole.get(kind, []):

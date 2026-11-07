@@ -93,8 +93,35 @@ test('Kings Grant original mapped shapes remain audit-only while holes 9 and 13 
  assert.deepEqual(audit.ratioErrors,[13]);
  assert.equal(holes[12].yards,140);
  assert.ok(mappedRouteYards(features,13)>240);
- assert.equal(map.status,'source-review-blocked');
- assert.equal(map.file,undefined);
+ assert.equal(audit.referenceReady,false);
+});
+
+test('Kings Grant uses two disclosed reference tee points without passing the strict footprint gate',async()=>{
+ const {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard,founderMapRecord}=await import('../playtest/founders-verified-scorecards.js');
+ const {loadHoleSketch}=await import('../playtest/hole-sketch.js');
+ const course=founderCatalogRecords('Kings Grant')[0],map=founderMapRecord(course);
+ const tee=founderTeesForCourse(course).find(record=>record.providerTeeId==='blue');
+ const {holes}=founderVerifiedScorecard({course,tee});
+ const data=JSON.parse(readFileSync(new URL('../playtest/course-art/'+map.file,import.meta.url)));
+ const input={records:data.features,holes,metadata:data.metadata,expectedRef:map.ref,referenceTees:map.referenceTees};
+ const audit=auditFounderGeometry(input);
+ assert.equal(audit.pass,false);
+ assert.equal(audit.referenceReady,true);
+ assert.deepEqual(audit.referenceTees,[9,13]);
+ assert.equal(audit.quality.fairwayHoles,18);
+ assert.equal(auditFounderGeometry({...input,referenceTees:[]}).referenceReady,false);
+ assert.equal(auditFounderGeometry({...input,records:data.features.filter(record=>!(record.properties.layer==='green'&&record.properties.holes.includes(13)))}).referenceReady,false);
+ assert.equal(holes[8].yards,288);
+ assert.equal(holes[12].yards,132);
+ assert.ok(mappedRouteYards(data.features,13)<115);
+ const fetcher=async()=>({ok:true,json:async()=>data});
+ for(const n of [9,13]){
+  const sketch=await loadHoleSketch({course,tee},n,{fetcher});
+  assert.equal(sketch.coverage,'layout');
+  assert.equal(sketch.annotations.approximateTee,true);
+  assert.equal(sketch.shapes.some(shape=>shape.type==='tee'),false);
+  if(n===13)assert.equal(sketch.annotations.reference.label,'Pond beyond green');
+ }
 });
 
 test('reviewed Tobacco Road geometry cannot ship before tee and fairway coverage passes',async()=>{
@@ -126,7 +153,8 @@ test('reviewed Tobacco Road geometry cannot ship before tee and fairway coverage
 
 for(const entry of [
  {query:'The Chimneys',file:'chimneys-winder-ga.json',teeId:'gold',boundaryKey:'osm_relation',boundary:'143005',parThree:11},
- {query:'Pine Hills',file:'pine-hills-winder-ga.json',teeId:'blue',boundaryKey:'osm_way',boundary:'34772934',parThree:16}
+ {query:'Pine Hills',file:'pine-hills-winder-ga.json',teeId:'blue',boundaryKey:'osm_way',boundary:'34772934',parThree:16},
+ {query:'Ocean Course',file:'kiawah-ocean-course-sc.json',teeId:'black',boundaryKey:'osm_relation',boundary:'17647608',parThree:17}
 ]){
  test(`${entry.query} meets Bayonet mapping parity against its reference tee`,async()=>{
   const {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard,founderMapRecord}=await import('../playtest/founders-verified-scorecards.js');
@@ -143,5 +171,11 @@ for(const entry of [
   assert.equal(audit.quality.mappedHoles,18);
   assert.deepEqual(audit.quality.checks.filter(hole=>!hole.fairway).map(hole=>hole.number),[entry.parThree]);
   assert.deepEqual(audit.ratioErrors,[]);
+  if(entry.query==='Ocean Course'){
+   const route=features.find(feature=>feature.properties.layer==='hole'&&feature.properties.holes.includes(16));
+   assert.ok(route.properties.tee_alignment.source.startsWith('https://kiawahresort.com/'));
+   assert.equal(holes[15].yards,577);
+   assert.ok(features.some(feature=>feature.properties.osm==='r12742435'&&feature.properties.holes.includes(17)));
+  }
  });
 }

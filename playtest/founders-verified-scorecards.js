@@ -22,7 +22,9 @@ const founders=Object.freeze([
   source:'kings-grant-club-scorecard',
   provenance:{source:'King’s Grant official scorecard',url:'https://kingsgrantgolfcc.com/course-details/',checked:'2026-11-07',
    geography:'Fayetteville, North Carolina',teeYardageIsNotPinDistance:true},
-  map:{ref:'nc/kings-grant-golf-and-country-club',status:'source-review-blocked'}
+  map:{file:'kings-grant-fayetteville-nc.json',source:'https://www.openstreetmap.org/relation/6446970',
+   ref:'nc/kings-grant-golf-and-country-club',status:'bundled-reviewed-osm',auditTee:'blue',referenceTees:[9,13],
+   referenceNotes:{13:{bend:1,label:'Pond beyond green',note:'Wooded Lake sits beyond the green. Favor the center and avoid flying the back edge.'}}}
  },
  {
   id:'quail-ridge-sanford-nc',name:'The Golf Club at Quail Ridge',region:'Sanford, NC',
@@ -129,12 +131,12 @@ const founders=Object.freeze([
   },
   source:'kiawah-ocean-course-published-hole-card',
   provenance:{source:'Kiawah Island Ocean Course complete 18-hole card; club figures for Black/Gold/Silver/Red, reported figures for Dye/Kiawah',
-    url:'https://zommagolf.com/courses/sc/kiawah-island-golf-resort-the-ocean-course',checked:'2026-11-07',
+    url:'https://kiawahresort.com/wp-content/uploads/2025/03/Ocean-Course-SC25.pdf',checked:'2026-11-07',
     geography:'Kiawah Island, South Carolina',
-    audit:'Carolina tee aggregate total does not match the listed per-hole yardages; that set is withheld pending reconciliation.',
+    audit:'Black, Gold, Silver and Red match the club card. Dye and Kiawah retain their previously reported rows. Carolina is withheld pending reconciliation.',
     teeYardageIsNotPinDistance:true},
-  map:{source:'https://zommagolf.com/courses/sc/kiawah-island-golf-resort-the-ocean-course/geo.json',
-    ref:'sc/kiawah-island-golf-resort-the-ocean-course',status:'external-unverified-hole-assignment'}
+  map:{file:'kiawah-ocean-course-sc.json',source:'https://www.openstreetmap.org/relation/17647608',
+    ref:'sc/kiawah-island-golf-resort-the-ocean-course',status:'bundled-reviewed-osm',auditTee:'black'}
  }
   ,
  {

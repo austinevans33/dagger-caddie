@@ -835,7 +835,8 @@ test('From the hole, Ask My Caddy preserves the hole and returns without writing
  expect(scored).toBe(0);
 });
 
-test('Kings Grant founder book checks in on six local tees and opens eighteen real scorecard holes',async({page})=>{
+test('Kings Grant opens eighteen local drawings and shares the approximate tees with Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
  await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
  await page.goto('/playtest/');
@@ -845,18 +846,46 @@ test('Kings Grant founder book checks in on six local tees and opens eighteen re
  await expect(page.locator('#dcc-starter-results')).toContainText('Fayetteville, NC');
  await page.locator('#dcc-starter-results button').first().click();
  await expect(page.locator('#dcc-starter-tees option')).toHaveCount(7);
- await page.locator('#dcc-starter-tees').selectOption('2');
+ await page.locator('#dcc-starter-tees').selectOption('1');
  await page.locator('#dcc-starter-checkin').click();
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('#name')).toContainText('King');
- await expect(page.locator('#yards')).toContainText('346');
+ await expect(page.locator('#yards')).toContainText('376');
  await expect(page.locator('#mapPar')).toContainText('Par 4');
  await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
- await page.locator('#hole').selectOption('18');
- await expect(page.locator('#yards')).toContainText('421');
+ const route=page.locator('.field-sketch .route-mark');
+ const paths=new Set();
+ let previous=null;
+ for(let hole=1;hole<=18;hole++){
+  await page.locator('#hole').selectOption(String(hole));
+  if(previous)await expect(route).not.toHaveAttribute('d',previous);
+  await expect(route).toHaveAttribute('d',/^M/);
+  previous=await route.getAttribute('d');
+  paths.add(previous);
+ }
+ expect(paths.size).toBe(18);
+ await expect(page.locator('#yards')).toContainText('470');
  const fact=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_active_round_course_v1')));
  expect(fact.selection.course.provider).toBe('dagger-founder');
- expect(fact.selection.tee.providerTeeId).toBe('white');
+ expect(fact.selection.tee.providerTeeId).toBe('blue');
+ for(const [hole,yards] of [[9,288],[13,132]]){
+  await page.locator('#hole').selectOption(String(hole));
+  const path=Array.from(paths)[hole-1];
+  await expect(route).toHaveAttribute('d',path);
+  await expect(page.locator('#yards')).toContainText(String(yards));
+  await expect(page.locator('.field-sketch')).toContainText('TEE (APPROX.)');
+  if(hole===13)await expect(page.locator('.field-sketch')).toContainText('Pond beyond green');
+  await page.screenshot({path:`candidate-screenshots/kings-grant-${hole}-yardage-iphone.png`,fullPage:true});
+  await page.locator('#watchGhost').click();
+  const map=page.locator('#ghostHoleSketch');
+  await expect(map.locator('.route-mark')).toHaveAttribute('d',path);
+  await expect(map).toContainText('TEE (APPROX.)');
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+  await page.screenshot({path:`candidate-screenshots/kings-grant-${hole}-ghost-iphone.png`,fullPage:true});
+  await page.locator('#ghostBack').click();
+  await expect(page.locator('#hole')).toHaveValue(String(hole));
+ }
 });
 
 test('Sanford Quail Ridge uses all eighteen local drawings and shares hole fourteen with House Ghost',async({page})=>{
@@ -914,8 +943,9 @@ test('Sanford Quail Ridge uses all eighteen local drawings and shares hole fourt
 });
 
 for(const course of [
- {query:'The Chimneys',tee:'Gold',hole:11,yards:216,par:3},
- {query:'Pine Hills',tee:'Red',hole:18,yards:360,par:5},
+ {query:'The Chimneys',region:'Winder, GA',tee:'Gold',hole:11,yards:216,par:3},
+ {query:'Pine Hills',region:'Winder, GA',tee:'Red',hole:18,yards:360,par:5},
+ {query:'Ocean Course',region:'Kiawah Island, SC',tee:'Black',hole:16,yards:577,par:5},
 ]){
  test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
   await page.setViewportSize({width:390,height:844});
@@ -925,7 +955,7 @@ for(const course of [
   await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
   await page.locator('#dcc-starter-query').fill(course.query);
   await page.locator('#dcc-starter-search').click();
-  await expect(page.locator('#dcc-starter-results')).toContainText('Winder, GA');
+  await expect(page.locator('#dcc-starter-results')).toContainText(course.region);
   await page.locator('#dcc-starter-results button').first().click();
   const options=page.locator('#dcc-starter-tees');
   const selected=options.locator('option').filter({hasText:new RegExp('^'+course.tee+' ·')});
