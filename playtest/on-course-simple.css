@@ -1,5 +1,10 @@
 /* Keep the game engine and library in the DOM while removing the initial doom scroll. */
-#gamesMenu[data-dcc-collapsed="true"] > :not(.games-desk-heading){display:none!important}
+/* Only the format catalog is collapsed. Live games, previews and archives must stay usable. */
+#gamesMenu[data-dcc-collapsed="true"] > .dcc-game-filter,
+#gamesMenu[data-dcc-collapsed="true"] > #dccGameChoices,
+#gamesMenu[data-dcc-collapsed="true"] > #dccGameSearchEmpty,
+#gamesMenu[data-dcc-collapsed="true"] > #dccGameQuickRules,
+#gamesMenu[data-dcc-collapsed="true"] > #dccGameReference{display:none!important}
 #gamesMenu[data-dcc-collapsed="true"]{padding-bottom:14px!important;min-height:0!important}
 #gamesMenu .games-desk-heading{display:grid;gap:8px}
 #gamesMenu .dcc-game-library-current{font:600 13px/1.35 system-ui!important;color:#667866;margin:0 0 2px}
