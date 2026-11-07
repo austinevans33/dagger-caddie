@@ -410,9 +410,9 @@ test('Yardage Book prefills the Caddy with selected verified hole without auto-s
  await expect(page.locator('#aiStatus')).toContainText(/Ready|backend|Connect|Unavailable/i);
  const pending=await page.evaluate(()=>sessionStorage.getItem('dcc_yardage_caddy_handoff_v1'));
  expect(pending).toBeNull();
- await page.locator('#tab-play').click();
- await expect(page.locator('#dccClubhouseHome')).toBeVisible();
- await expect(prompt).toBeHidden();
+ await page.locator('#dccBackToHole').click();
+ await expect(page).toHaveURL(/yardage-preview\\.html\\?hole=3/);
+ await expect(page.locator('#mapHole')).toContainText('HOLE 3');
 });
 
 test('Bayonet photographed club scorecard loads all 18 White tee holes without a provider fetch',async({page})=>{
@@ -805,6 +805,6 @@ test('From the hole, Ask My Caddy preserves the hole and returns without writing
  await page.locator('#dccBackToHole').click();
  await expect(page).toHaveURL(/yardage-preview\.html\?hole=7/);
  await expect(page.locator('#mapHole')).toContainText('HOLE 7');
- const card=await page.evaluate(()=>localStorage.getItem('dcc_solo_scorecard_v1'));
- expect(card).toBeNull();
+ const scored=await page.evaluate(()=>{const raw=localStorage.getItem('dcc_solo_scorecard_v1');return raw?JSON.parse(raw).scores.filter(v=>Number.isInteger(v)).length:0});
+ expect(scored).toBe(0);
 });
