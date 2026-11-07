@@ -29,7 +29,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  const button=doc.createElement('button');button.id='dcc-starter-open';button.type='button';button.textContent='THE STARTER’S DESK';
  const dialog=doc.createElement('dialog');dialog.id='dcc-starter-dialog';
  dialog.setAttribute('aria-label','Dagger Country Club Starter’s Desk');
- dialog.innerHTML=`<div class="dcc-starter-head"><div class="dcc-starter-eyebrow">DAGGER COUNTRY CLUB · THE FIRST TEE</div><h2 style="color:#f3e9d3!important;-webkit-text-fill-color:#f3e9d3!important;opacity:1!important">The Starter’s Desk</h2><p>“Where shall we be conducting today’s investigation into your handicap?”</p></div><div class="dcc-starter-body"><p id="dcc-starter-current"></p><label for="dcc-starter-query">Course name</label><input id="dcc-starter-query" placeholder="Search a golf course by name" maxlength="100"/><button type="button" id="dcc-starter-search">Find courses</button><div id="dcc-starter-results" aria-live="polite"></div><label for="dcc-starter-tees">Your tees</label><select id="dcc-starter-tees" disabled><option value="">Select a course first</option></select><button type="button" id="dcc-starter-checkin" disabled>Begin Round</button><button class="secondary" id="dcc-starter-later" type="button">My course isn’t listed yet — enter the clubhouse</button><p style="font-size:10px;opacity:.75">Course data © OpenStreetMap contributors (ODbL 1.0) via OpenGolfAPI.</p></div>`;
+ dialog.innerHTML=`<div class="dcc-starter-head"><div class="dcc-starter-eyebrow">DAGGER COUNTRY CLUB · THE FIRST TEE</div><h2 style="color:#f3e9d3!important;-webkit-text-fill-color:#f3e9d3!important;opacity:1!important">The Starter’s Desk</h2><p>“Where shall we be conducting today’s investigation into your handicap?”</p></div><div class="dcc-starter-body"><p id="dcc-starter-current"></p><label for="dcc-starter-query">Course name</label><input id="dcc-starter-query" placeholder="Search a golf course by name" maxlength="100"/><button type="button" id="dcc-starter-search">Find courses</button><div id="dcc-starter-results" aria-live="polite"></div><label for="dcc-starter-tees">Your tees</label><select id="dcc-starter-tees" disabled><option value="">Select a course first</option></select><label for="dcc-starter-caddy">Your caddy</label><select id="dcc-starter-caddy" aria-label="Choose your caddy"><option value="keith">Keith · Head Caddy</option><option value="reginald">Reginald · Traditions</option><option value="vinny">Vinny · Wagering</option><option value="kyle">Kyle · Almost enlisted</option></select><button type="button" id="dcc-starter-checkin" disabled>Begin Round</button><button class="secondary" id="dcc-starter-later" type="button">My course isn’t listed yet — enter the clubhouse</button><p style="font-size:10px;opacity:.75">Course data © OpenStreetMap contributors (ODbL 1.0) via OpenGolfAPI.</p></div>`;
  dialog.querySelector('.dcc-starter-head h2').style.setProperty('color','#f3e9d3','important');
  dialog.querySelector('.dcc-starter-head h2').style.setProperty('-webkit-text-fill-color','#f3e9d3','important');
  const query=dialog.querySelector('#dcc-starter-query');
@@ -37,6 +37,20 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  const tees=dialog.querySelector('#dcc-starter-tees');
  const checkin=dialog.querySelector('#dcc-starter-checkin');
  let selected=null,available=[],requestId=0;
+ const caddyPicker=dialog.querySelector('#dcc-starter-caddy');
+ const validCaddies=new Set(['keith','reginald','vinny','kyle']);
+ function syncCaddy(){try{const id=storage.getItem('dagger_selected_caddie');caddyPicker.value=validCaddies.has(id)?id:'keith';}catch{caddyPicker.value='keith';}}
+ function chooseCaddy(){
+  const id=caddyPicker.value;if(!validCaddies.has(id))return;
+  try{storage.setItem('dagger_selected_caddie',id);}catch{}
+  // Delegate to the original staff selector, which owns all portraits,
+  // dialogue, voice personalization and its existing saved preference.
+  const picker=doc.querySelector('.staff-pick[data-caddie="'+id+'"]');
+  if(picker)picker.click();
+  doc.dispatchEvent(new CustomEvent('dcc:caddy-selected',{detail:{caddy:id}}));
+ }
+ syncCaddy();
+ caddyPicker.addEventListener('change',chooseCaddy);
  dialog.querySelector('#dcc-starter-search').addEventListener('click',async()=>{
   const current=++requestId;selected=null;available=[];checkin.disabled=true;tees.disabled=true;
   tees.replaceChildren(new Option('Select a course first',''));
@@ -79,6 +93,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
    const result=archiveAndClearSoloRound(storage);
    if(!result.ok){results.textContent='Could not safely archive the current round. Your scores were retained.';return;}
   }
+  chooseCaddy();
   if(saveActiveRound(storage,{course:selected,tee,holeNumber:1})){
    doc.dispatchEvent(new CustomEvent('dcc:course-selected',{detail:{course:selected,tee,holeNumber:1}}));
    dialog.close();
@@ -87,6 +102,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
   }else results.textContent='This browser could not remember your selection. You can still enter without checking in.';
  });
  button.addEventListener('click',()=>{
+  syncCaddy();
   const active=readActiveRound(storage);
   dialog.querySelector('#dcc-starter-current').textContent=active?`Checked in: ${active.selection.course.name} · ${active.selection.tee.name} · Hole ${active.selection.holeNumber}`:'No course checked in yet.';
   if(!dialog.open)dialog.showModal();
@@ -111,11 +127,22 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  // Keep course changes with the Caddy's course report, not as a large
  // masthead button above the country-club branding. The scorecard's
  // Change Course / New Round action remains available independently.
+ const heading=doc.querySelector('.ai-card[data-tab="play"] .dcc-caddy-heading');
  const reportActions=doc.getElementById('dcc-caddy-conditions-actions');
  const fallback=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]')||doc.body;
  button.textContent='CHANGE COURSE';
  button.setAttribute('aria-label','Open the Starter’s Desk to choose or change course and tees');
- (reportActions||fallback).append(button);doc.body.append(dialog);
+ if(heading){
+  const actions=doc.createElement('div');actions.id='dcc-round-switches';
+  actions.style.cssText='display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 6px';
+  button.style.cssText='width:100%;min-width:0;min-height:44px;white-space:normal';
+  const changeCaddy=doc.createElement('button');changeCaddy.id='dcc-change-caddy';changeCaddy.type='button';
+  changeCaddy.textContent='CHANGE CADDY';
+  changeCaddy.style.cssText='width:100%;min-width:0;min-height:44px;border:1px solid #b79c62;background:#173528;color:#f3e9d3;border-radius:12px;padding:10px;font:700 12px system-ui;cursor:pointer';
+  changeCaddy.addEventListener('click',()=>{button.click();caddyPicker.focus();});
+  actions.append(button,changeCaddy);heading.append(actions);
+ }else (reportActions||fallback).append(button);
+ doc.body.append(dialog);
  // First visit: offer the course register once per browser tab, without
  // blocking the clubhouse on repeat opens when a user chose to skip.
  try{
