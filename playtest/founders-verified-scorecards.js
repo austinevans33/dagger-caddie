@@ -74,6 +74,23 @@ const founders=Object.freeze([
   map:{source:'https://zommagolf.com/courses/nc/tobacco-road-golf-club/geo.json',
    ref:'nc/tobacco-road-golf-club',status:'external-unverified-hole-assignment'}
  }
+  ,
+ {
+  id:'hyland-southern-pines-nc',name:'Hyland Golf Club',region:'Southern Pines, NC',
+  par:[4,4,3,4,4,3,5,4,5,3,4,5,3,4,4,4,5,4],
+  handicapMen:[11,7,17,1,5,15,9,13,3,16,10,2,14,8,6,18,4,12],
+  tees:{
+   white:{label:'White',yards:[370,365,172,386,395,135,465,346,475,167,364,528,170,371,382,332,508,342]},
+   gold:{label:'Gold',yards:[339,348,155,321,385,115,439,332,455,149,349,486,156,348,370,319,488,321]},
+   red:{label:'Red',yards:[293,288,137,277,314,95,371,275,394,103,298,260,129,286,321,313,409,221]}
+  },
+  source:'hyland-published-hole-card',
+  provenance:{source:'Hyland Golf Club 18-hole published listing (source describes figures as public data)',
+   url:'https://zommagolf.com/courses/nc/hyland-golf-club',checked:'2026-11-07',
+   geography:'Southern Pines, North Carolina',teeYardageIsNotPinDistance:true,
+   audit:'Black and Blue published per-hole totals conflict with listed aggregate yardages; both sets withheld pending reconciliation. Hole maps not present in OSM.'},
+  map:{source:'https://zommagolf.com/courses/nc/hyland-golf-club/geo.json',ref:'nc/hyland-golf-club',status:'outline-only'}
+ }
 
 ]);
 const sum=values=>values.reduce((n,x)=>n+x,0);
