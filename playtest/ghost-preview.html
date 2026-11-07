@@ -31,9 +31,9 @@ ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
  <g id="traces" transform="scale(0.9375 0.51162790698)"></g>
  <g id="markers" transform="scale(0.9375 0.51162790698)"></g>
 </svg><small id="ghostMapStatus">Ghost shots are illustrative overlays, not measured GPS positions.</small></div>
-<div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button><p class="ghost-note">Gold tracer and flying ball are animated representations of simulated strokes, not measured trajectories.</p>
+<div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button>
 <p id="progress" role="status"></p></article>
-<article><strong>Revealed strokes</strong><ol id="shots"></ol></article>
+<article><strong>Shots played</strong><ol id="shots"></ol></article>
 </main><script type="module">
 import {ghostShotPlayback} from '../house-ghost-playback.js?v=friday-book-1';
 import {loadYardageState} from './yardage-live.js';
@@ -113,7 +113,7 @@ function render(){
  const count=Number($('length').value),holeNumber=Number($('hole').value);
  const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity,tier:ghostTier});
  revealed=state.shotsRevealed;
- $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par+' · Ghost '+state.score;
+ $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par++(state.complete?' · Ghost '+state.score:' · Ghost playing');
  $('summary').textContent=(selectedCourse?selectedCourse+' · ':'Practice defaults · ')+(state.coverage==='scorecard'?'selected-tee par & yards verified · ':'unverified hole facts · ')+state.label;
  const placement=placeGhostShots(state.visibleShots,currentRoute);
  drawGhostTracer($('trail'),placement.shots,{start:placement.start,animateLast:revealed>lastRendered});lastRendered=revealed;
@@ -124,8 +124,8 @@ function render(){
   const label=document.createElementNS(ns,'text');label.setAttribute('x',String(shot.x*320));label.setAttribute('y',String(shot.y*430+4));label.setAttribute('text-anchor','middle');label.setAttribute('font-size','12');label.setAttribute('fill','#fff');label.textContent=String(i+1);
   $('markers').append(dot,label);
  });
- $('shots').replaceChildren();state.visibleShots.forEach(s=>{const li=document.createElement('li');li.textContent=s.number+'. '+s.club+' · '+s.distanceLabel+' · '+s.lie;$('shots').append(li)});
- $('progress').textContent=revealed+' of '+state.totalShots+' simulated strokes shown';
+ $('shots').replaceChildren();state.visibleShots.forEach(s=>{const li=document.createElement('li');li.textContent=s.club+' · '+s.distanceLabel+' · '+s.lie;$('shots').append(li)});
+ $('progress').textContent=state.complete?'Holed out in '+state.score+' strokes':revealed===0?'Ghost on the tee':revealed+' '+(revealed===1?'stroke':'strokes')+' played · still on the hole';
  $('back').disabled=!state.canRewind;$('next').disabled=!state.canAdvance;
  if(state.complete)stopWatch();
 }
