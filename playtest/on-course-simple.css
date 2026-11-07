@@ -1,0 +1,33 @@
+/* Keep the game engine and library in the DOM while removing the initial doom scroll. */
+#gamesMenu[data-dcc-collapsed="true"] > :not(.games-desk-heading){display:none!important}
+#gamesMenu[data-dcc-collapsed="true"]{padding-bottom:14px!important;min-height:0!important}
+#gamesMenu .games-desk-heading{display:grid;gap:8px}
+#gamesMenu .dcc-game-library-current{font:600 13px/1.35 system-ui!important;color:#667866;margin:0 0 2px}
+#dccGameLibraryToggle{width:100%;min-height:48px;border:1px solid #af9465;background:#183c2e;color:#fff4dc;border-radius:12px;font:700 15px/1.3 system-ui;padding:10px 15px;text-align:center;cursor:pointer}
+#dccGameLibraryToggle:focus-visible{outline:3px solid #e5c47b;outline-offset:2px}
+
+/* Turning to your caddy should feel like one conversation on the course. */
+.dcc-caddy-turn-head{padding:12px 14px 4px}
+.dcc-caddy-turn-top{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dcc-caddy-turn-top button{border:1px solid #a98f61;background:#eee4ce;color:#1a402e;min-height:44px;padding:8px;border-radius:11px;font:750 13px/1.2 system-ui;cursor:pointer}
+.dcc-caddy-turn-person{display:flex;align-items:center;gap:14px;margin-top:15px;padding:14px;background:#eee4ce;color:#183c2e;border-radius:15px}
+.dcc-caddy-turn-person img{width:76px;height:76px;flex:0 0 76px;border-radius:50%;object-fit:cover;border:2px solid #a58d58;background:#d7ccb4}
+.dcc-caddy-turn-person small{font:800 10px/1.25 system-ui;letter-spacing:.12em;color:#73816b}
+.dcc-caddy-turn-person h2{font:700 32px/1.12 Georgia,serif!important;color:#183c2e!important;margin:4px 0!important}
+.dcc-caddy-turn-person p{font:13px system-ui;color:#647361;margin:1px 0}
+.dcc-caddy-turn-prompt{font:italic 19px/1.3 Georgia,serif;margin:15px 1px 8px;color:#f0e5ce}
+#dccCaddyTurnHead{display:none}
+body.dcc-caddy-turn #dccCaddyTurnHead{display:block}
+body.dcc-caddy-turn #dccClubhouseHome{display:none!important}
+body.dcc-caddy-turn [data-tab="play"]:not(.ai-card):not(#dccClubhouseHome){display:none!important}
+body.dcc-caddy-turn section.ai-card[data-tab="play"]{display:block!important;margin:10px auto 16px!important;padding:12px!important;max-width:640px}
+body.dcc-caddy-turn section.ai-card > :not(#dccCaddyTurnHead):not(.ai-history):not(.ai-row):not(.ai-status):not(.ai-mic){display:none!important}
+body.dcc-caddy-turn section.ai-card .ai-history{display:flex!important;max-height:42vh;min-height:110px;overflow:auto;margin:10px 0!important;padding:12px!important}
+body.dcc-caddy-turn section.ai-card .ai-row{display:flex!important;gap:9px;align-items:stretch;margin:0!important;padding:0!important}
+body.dcc-caddy-turn #aiInput{min-width:0;flex:1 1 auto;font-size:16px!important;min-height:68px;border-radius:12px}
+body.dcc-caddy-turn #aiSend{flex:0 0 auto;min-width:76px;padding:10px!important;font-size:16px!important}
+body.dcc-caddy-turn #aiMic{display:block!important;min-height:48px;width:100%;margin:10px 0!important;font:700 14px system-ui!important}
+body.dcc-caddy-turn #aiStatus{display:block!important;font:12px/1.3 system-ui!important;margin:8px 0!important;min-height:0!important}
+body.dcc-caddy-turn .dcc-yardage-caddy-arrival{display:none!important}
+body.dcc-caddy-turn .tabbar{display:none!important}
+@media(max-width:420px){.dcc-caddy-turn-person img{width:66px;height:66px;flex-basis:66px}body.dcc-caddy-turn section.ai-card .ai-history{max-height:37vh}}
