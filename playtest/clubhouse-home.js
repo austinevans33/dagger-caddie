@@ -7,6 +7,17 @@ function openTab(id){
  if(tab)tab.click();
 }
 function selectedHole(){return readYardageHole({session:sessionStorage,local:localStorage})}
+function openScorecard(){
+ // One shared scorecard. Never create a second scoring state.
+ const launch=document.getElementById('dcc-paper-launch');
+ if(launch&&!launch.hidden){launch.click();return}
+ const dialog=document.getElementById('dcc-paper-dialog');
+ if(dialog&&document.getElementById('dcc-solo-scorecard')?.hidden===false){if(!dialog.open)dialog.showModal();return}
+ // No active checked-in round: begin with the existing Starter's Desk.
+ const starter=document.getElementById('dcc-starter-open');
+ if(starter){starter.click();return}
+ const tab=document.getElementById('tab-play');if(tab)tab.click();
+}
 function mount(){
  if(document.getElementById('dccClubhouseHome'))return;
  const caddy=document.querySelector('section.caddie-roster[data-tab="play"]');
@@ -16,6 +27,7 @@ function mount(){
  section.className='dcc-home';
  section.dataset.tab='play';
  section.setAttribute('aria-label','Dagger Country Club Clubhouse shortcuts');
+ if(!document.getElementById('dcc-home-score-style'))document.head.insertAdjacentHTML('beforeend',"<style id=\"dcc-home-score-style\">\n.dcc-home-score{width:100%;min-height:84px;margin:14px 0;display:flex;align-items:center;gap:12px;text-align:left;background:#d2ac6d!important;color:#153729!important;border:1px solid #d4b778!important;border-radius:17px!important;padding:15px 18px!important;box-shadow:0 3px 0 #9e814e66;cursor:pointer}\n.dcc-home-score-icon{font:700 28px Georgia,serif;color:#163b2b;flex:0 0 auto}\n.dcc-home-score-copy{display:grid;gap:3px;min-width:0;flex:1}\n.dcc-home-score-copy strong{font:700 25px Georgia,serif;color:#153729}\n.dcc-home-score-copy small{font:13px/1.35 system-ui;color:#345040}\n.dcc-home-score-arrow{font:32px Georgia,serif}\n.dcc-home-score:focus-visible{outline:3px solid #f4e5bb;outline-offset:3px}\n@media(max-width:370px){.dcc-home-score{padding:13px!important;min-height:73px}.dcc-home-score-copy strong{font-size:22px}}\n</style>");
  section.innerHTML=`
  <header class="dcc-home-header"><div><div class="dcc-home-kicker">DAGGER COUNTRY CLUB</div><h2>The Clubhouse</h2></div><img class="dcc-home-seal" src="dcc-approved-seal.png" alt="Dagger Country Club circular seal"></header>
  <a class="dcc-home-feature" id="dccHomeYardage" href="yardage-preview.html?hole=1">
@@ -24,6 +36,7 @@ function mount(){
   <span class="dcc-home-feature-description">Your hole, course notes and caddy—without leaving the round behind.</span>
   <span class="dcc-home-view"><span>▤ &nbsp; View the hole</span><span aria-hidden="true">›</span></span>
  </a>
+ <button class="dcc-home-score" id="dccHomeScorecard" type="button" data-dcc-go="score"><span class="dcc-home-score-icon" aria-hidden="true">✎</span><span class="dcc-home-score-copy"><strong>Scorecard</strong><small id="dccHomeScoreStatus">Your round, one score at a time</small></span><span class="dcc-home-score-arrow" aria-hidden="true">›</span></button>
  <div class="dcc-home-grid">
   <button class="dcc-home-tile" type="button" data-dcc-go="games"><span class="dcc-home-tile-icon" aria-hidden="true">♜</span><span class="dcc-home-tile-name">Games</span><span class="dcc-home-tile-caption">Your matches</span></button>
   <a class="dcc-home-tile" href="ghost-preview.html"><span class="dcc-home-tile-icon" aria-hidden="true">♧</span><span class="dcc-home-tile-name">House Ghost</span><span class="dcc-home-tile-caption">Simulated shot action</span></a>
@@ -66,13 +79,7 @@ function mount(){
    const action=e.target.closest('[data-dcc-door]')?.dataset.dccDoor;
    if(action==='ticket'){openTab('bets');document.getElementById('dccPropBets')?.scrollIntoView({block:'start'})}
    if(action==='money'){openTab('bets');document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'})}
-   if(action==='score'){
-    // The paper scorecard's existing launcher lives in the original play tab.
-    openingScorecard=true;
-    document.body.classList.remove('dcc-clubhouse-focus');
-    const launch=document.getElementById('dccScorePulseOpen');
-    if(launch)launch.click();else openTab('play');
-   }
+   if(action==='score')openScorecard();
   });
   doors.querySelector('#dccGroundsBook').addEventListener('click',e=>{
    e.currentTarget.href='yardage-preview.html?hole='+selectedHole();
@@ -115,7 +122,8 @@ function mount(){
   const button=e.target.closest('[data-dcc-go]');
   if(!button)return;
   const target=button.dataset.dccGo;
-  if(target==='games'){openTab('games');document.getElementById('gamesMenu')?.scrollIntoView({block:'start'})}
+  if(target==='score')openScorecard();
+  else if(target==='games'){openTab('games');document.getElementById('gamesMenu')?.scrollIntoView({block:'start'})}
   else if(target==='ledger'){openTab('bets')}
   else if(target==='ticket'){openTab('bets');document.getElementById('dccPropBets')?.scrollIntoView({block:'start'})}
   else if(target==='money'){openTab('bets');document.querySelector('#moneyRoomSection [data-r62-open="roomSetup"]')?.click();document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'})}
