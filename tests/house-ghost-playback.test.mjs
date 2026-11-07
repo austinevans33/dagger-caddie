@@ -31,3 +31,18 @@ test('negative, fractional and out-of-range positions are rejected',()=>{
  for(const shotsRevealed of [-1,1.5,NaN])assert.throws(()=>ghostShotPlayback({shotsRevealed}),/Invalid Ghost/);
  for(const holeNumber of [0,10,19,2.1])assert.throws(()=>ghostShotPlayback({count:9,holeNumber}),/Invalid Ghost/);
 });
+
+test('competitive playback uses every saved stroke without rerolling its result',()=>{
+ for(let score=1;score<=20;score++){
+  const params={courseName:'Saved match',tier:'fiveTen',holeNumber:2,
+   matchHole:{hole:2,par:3,ghost:score},shotsRevealed:score};
+  const full=ghostShotPlayback(params);
+  assert.equal(full.par,3);
+  assert.equal(full.score,score);
+  assert.equal(full.totalShots,score);
+  assert.equal(full.complete,true);
+  assert.equal(full.visibleShots.at(-1).lie,'Holed');
+  assert.deepEqual(ghostShotPlayback(params),full);
+ }
+ assert.throws(()=>ghostShotPlayback({matchHole:{hole:1,par:4,ghost:0}}),/stroke count/);
+});

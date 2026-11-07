@@ -1,0 +1,95 @@
+/* The Ledger uses one consistent page measure and leaves the Club Record intact. */
+#dccPropBets.dcc-r66-betdesk {padding:0!important}
+#dccPropBets .dcc-r94-ledger-header {
+  padding: 4px 0 8px !important;
+  margin: 0 0 10px !important;
+}
+#dccPropBets .dcc-r66-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 0 0 14px !important;
+}
+#dccPropBets .dcc-r66-stats > div {
+  display: grid !important;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  padding: 12px 8px !important;
+  border-radius: 13px !important;
+}
+#dccPropBets .dcc-r66-stats small {
+  color: #4c6152 !important;
+  min-height: 0 !important;
+  font-size: 10px !important;
+}
+#dccPropBets .dcc-r66-stats strong {font-size: clamp(20px, 6vw, 28px) !important}
+#dccVisibleTickets {
+  border: 1px solid #ae9867;
+  border-radius: 16px;
+  padding: 14px;
+  background: #f2e8d5;
+  color: #16392b;
+}
+#dccVisibleTickets .dcc-ticket-heading {display:flex;justify-content:space-between;align-items:center;gap:8px}
+#dccVisibleTickets h3 {font:700 clamp(18px, 5vw, 24px)/1.15 Georgia,serif;margin:0;color:#16392b}
+#dccVisibleTickets #dccPropNew {min-height:44px!important;font-size:12px!important}
+#dccVisibleTickets #dccPropList {margin:9px 0}
+#dccVisibleTickets .dcc-r66-empty {padding:7px 0;border:0;margin:0;color:#4c6152}
+#dccVisibleTickets .dcc-r66-slip {border:1px solid #d9ccb2;border-left:3px solid #b09153}
+#dccVisibleTickets > details {margin:0;border-top:1px solid #d3c4a5;background:transparent}
+#dccVisibleTickets > details > summary {
+  min-height:44px;
+  padding:10px 0 0;
+  cursor:pointer;
+  font:650 13px/1.5 system-ui,sans-serif;
+  color:#16392b;
+}
+#dccPropUnsettled:not(:empty) {margin-left:.25em}
+#dccPropUnsettled:not(:empty)::before {content:"("}
+#dccPropUnsettled:not(:empty)::after {content:")"}
+#dccPropMessage:empty {display:none}
+.dcc-r60-archives[hidden], #dccPropBets > .dcc-r66-archive {display:none!important}
+
+#moneyRoomSection.dcc-r106-money.dcc-action-clubhouse {padding:0!important}
+#moneyRoomSection.dcc-r106-money .dcc-r95-live-head {
+  display:flex!important;
+  flex-flow:row wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px 10px!important;
+  padding:12px 14px!important;
+  margin:0!important;
+  border:1px solid #ae9867!important;
+  border-radius:16px!important;
+  background:#183c2d!important;
+}
+#moneyRoomSection.dcc-r106-money .dcc-r95-live-head strong {
+  font:700 clamp(18px,5vw,24px)/1.15 Georgia,serif!important;
+}
+#moneyRoomSection.dcc-r106-money .dcc-r95-live-head p {margin:4px 0 0!important;font-size:12px!important}
+#moneyRoomSection.dcc-r106-money .dcc-r95-live-head .dcc-r95-open-room {width:auto!important;min-height:44px!important}
+#moneyRoomSection #roomSetup:not([open]) {display:none!important}
+#moneyRoomSection:has(#roomScoreSection[hidden]) #roomWho {display:none!important}
+#moneyRoomSection #roomStatus {font-size:12px!important;line-height:1.35;margin:5px 0!important;padding:6px 10px!important}
+#moneyRoomSection .game-live > summary {cursor:pointer;min-height:44px;padding:8px 0;font-weight:700}
+#dccLedgerRecordsLinks {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  column-gap:8px;
+  margin:0 0 10px;
+}
+#dccLedgerRecordsLinks > :is(a,button) {
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  min-height:44px;
+  padding:4px 2px;
+  background:transparent;
+  border:0;
+  color:#f2e8d5;
+  text-decoration:underline;
+  text-underline-offset:.25em;
+  font:650 13px/1.2 system-ui,sans-serif;
+  cursor:pointer;
+}
+#dccRecordedSettlements[hidden] {display:none!important}

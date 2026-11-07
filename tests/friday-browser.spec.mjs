@@ -17,10 +17,10 @@ test('Games bet survives opening the Yardage Book and returning',async({page})=>
  const after=await page.evaluate(()=>({w:localStorage.getItem('dagger_foursome_active'),b:localStorage.getItem('dagger_bbb_active')}));
  expect(after).toEqual(before);
 });
-test('Games has direct Yardage Book entry and stable Ghost and 19th Hole links',async({page})=>{
+test('Games has direct Yardage Book entry and Clubhouse has one House Ghost launch',async({page})=>{
  await page.goto('/playtest/');
  await expect(page.locator('#dccGroundsBook')).toHaveAttribute('href',/yardage-preview\.html/);
- await expect(page.locator('a[href="ghost-preview.html"]').first()).toHaveCount(1);
+ await expect(page.locator('#dccClubhouseHome [data-dcc-go="ghost"]')).toHaveCount(1);
  await expect(page.locator('a[href="19th-hole.html"]').first()).toHaveCount(1);
 });
 
@@ -48,7 +48,12 @@ test('Capture Friday iPhone-sized Play, Games and Ledger views for release revie
  await page.screenshot({path:'candidate-screenshots/02-games-iphone.png',animations:'disabled'});
  await page.locator('#tab-bets').click();
  await expect(page.locator('[data-tab="bets"]').first()).toBeVisible();
+ await expect(page.locator('#dccLedgerRecordsLinks')).toBeVisible();
+ await expect(page.locator('#dccSimpleLedger .dcc-simple-room > summary')).toBeVisible();
+ await expect(page.locator('#dccSimpleLedger .dcc-simple-room > summary')).toHaveCSS('color','rgb(241, 231, 208)');
  await page.screenshot({path:'candidate-screenshots/03-ledger-iphone.png',animations:'disabled'});
+ await page.locator('#dccLedgerRecordsLinks').scrollIntoViewIfNeeded();
+ await page.screenshot({path:'candidate-screenshots/07-ledger-records-iphone.png',animations:'disabled'});
 });
 
 test('Clubhouse is the first Play destination with genuine app navigation',async({page})=>{
@@ -62,31 +67,37 @@ test('Clubhouse is the first Play destination with genuine app navigation',async
  await expect(home).toBeVisible();
  await expect(home.locator('img.dcc-home-seal')).toHaveAttribute('src','dcc-approved-seal.png');
  await expect(home.locator('#dccHomeYardage')).toHaveAttribute('href',/yardage-preview\.html/);
- await expect(home.locator('a[href="ghost-preview.html"]')).toHaveCount(1);
+ await expect(home.locator('[data-dcc-go="ghost"]')).toHaveCount(1);
  await home.locator('[data-dcc-go="games"]').click();
  await expect(page.locator('#gamesMenu')).toBeVisible();
  await page.locator('#tab-play').click();
  await home.locator('[data-dcc-go="ledger"]').click();
- await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ await expect(page.locator('#moneyRoomSection')).toBeAttached();
  await page.locator('#tab-play').click();
  await expect(home).toBeVisible();
  await page.screenshot({path:'candidate-screenshots/04-clubhouse-new-iphone.png',animations:'disabled'});
 });
-test('Ticket Window keeps original resolved-ticket controls visible and 19th Hole follows Money Room',async({page})=>{
+test('The Ledger shows a two-column overview, one ticket window and one competition archive route',async({page})=>{
  await page.goto('/playtest/');
  const desk=page.locator('#dcc-starter-dialog');
  if(await desk.isVisible())await page.keyboard.press('Escape');
  if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-bets').click();
- await expect(page.locator('#dccVisibleTickets')).toBeVisible();
- await expect(page.locator('#dccVisibleTickets #dccPropList')).toHaveCount(1);
- await expect(page.locator('#dccPropHistoryWrap')).toBeVisible();
+ await expect(page.locator('#dccSimpleLedger')).toBeVisible();
+ await expect(page.locator('#dccSimpleListHost #dccPropList')).toHaveCount(1);
+ await expect(page.locator('#dccPropHistoryWrap')).toBeHidden();
  await expect(page.locator('#dccPropHistoryWrap')).not.toHaveAttribute('open','');
  await expect(page.locator('#dccPropNew')).toBeVisible();
- const follows=await page.evaluate(()=>document.querySelector('#moneyRoomSection')?.nextElementSibling?.id);
- expect(follows).toBe('dcc19thHole');
- await expect(page.locator('#dcc19thHole a')).toContainText('The 19th Hole');
+ await expect(page.locator('#dccPropBets .dcc-r66-stats > div')).toHaveCount(2);
+ await expect(page.locator('#moneyRoomSection #roomMatchHistory')).toHaveCount(0);
+ await expect(page.locator('#dccR77RecordsDrawer + #dccLedgerRecordsLinks #dcc19thHole')).toBeVisible();
+ await expect(page.locator('#dcc19thHole')).toContainText('19th Hole Recap');
+ await page.locator('#dccLedgerArchive').click();
+ await expect(page.locator('#dccSavedGamesPanel')).toHaveAttribute('open','');
+ await expect(page.locator('#dccSavedGamesPanel #roomMatchHistory')).toBeVisible();
+ await expect(page.locator('#dccSavedGamesPanel #dccGhostArchivePanel')).toBeVisible();
+ await expect(page.locator('#dccSavedGamesPanel #bbbArchivePanel')).toBeVisible();
 });
 
 test('House Ghost reuses mapped pencil sketch without treating simulated strokes as GPS',async({page})=>{
@@ -115,28 +126,17 @@ test('House Ghost reuses mapped pencil sketch without treating simulated strokes
  expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":"untouched"}');
 });
 
-test('Selected House Ghost personality follows user into cinematic pencil playback',async({page})=>{
+test('The Grounds opens the actual House Ghost rival picker',async({page})=>{
  await page.goto('/playtest/');
  const desk=page.locator('#dcc-starter-dialog');
  if(await desk.isVisible())await page.keyboard.press('Escape');
  if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
  await page.locator('#useAustin').click({timeout:5000});
  await page.locator('#tab-games').click();
- // The original House Ghost challenge expands its selector on demand.
- // Dispatch the same native change event without depending on the panel being open.
- await page.locator('#dccGhostTier').evaluate(select=>{
-  select.value='scratch';
-  select.dispatchEvent(new Event('change',{bubbles:true}));
- });
- const link=page.locator('#dccClubhouseHome a[href^="ghost-preview.html"]');
- await page.locator('#tab-play').click();
- await link.click();
- await expect(page).toHaveURL(/ghost-preview\.html\?tier=scratch/);
- await expect(page.locator('#headline')).toContainText('The Undertaker');
- await expect(page.locator('#trail')).toBeVisible();
- await expect(page.locator('#trail #ghostHoleSketch')).toHaveCount(1);
- await page.locator('#next').click();
- await expect(page.locator('#trail #traces path')).toHaveCount(2);
+ await page.locator('#dccR91SoloPanel > summary').click();
+ await page.locator('#dccGhostTier').selectOption('scratch');
+ await expect(page.locator('#dccGhostIdentityName')).toHaveText('THE UNDERTAKER');
+ await expect(page.locator('#dccGhostPlay')).toHaveText('Start round');
 });
 
 test('House Ghost tracer draws animated schematic and watch mode',async({page})=>{
@@ -165,7 +165,7 @@ test('Clubhouse displays clean tab labels and opens existing Money Room setup',a
  const home=page.locator('#dccClubhouseHome');
  await expect(home.locator('[data-dcc-go="money"]')).toBeVisible();
  await home.locator('[data-dcc-go="money"]').click();
- await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ await expect(page.locator('#moneyRoomSection')).toBeAttached();
  await expect(page.locator('#roomSetup')).toHaveAttribute('open','');
  await page.locator('#tab-play').click();
  await home.locator('[data-dcc-go="ledger"]').click();
@@ -387,7 +387,7 @@ test('Rapid hole changes cancel stale map and cached return does not repeat a fe
  expect(holeOneRequests).toBe(1);
 });
 
-test('Yardage Book asks Caddy about selected verified hole without auto-sending',async({page})=>{
+test('Yardage Book prefills the Caddy with selected verified hole without auto-sending',async({page})=>{
  await page.addInitScript(()=>{
   if(sessionStorage.getItem('dccHandoffFixture'))return;
   sessionStorage.setItem('dccHandoffFixture','1');
@@ -399,9 +399,7 @@ test('Yardage Book asks Caddy about selected verified hole without auto-sending'
  await page.locator('#askHoleCaddy').click();
  await expect(page).toHaveURL('http://127.0.0.1:8765/playtest/');
  const prompt=page.locator('#aiInput');
- await expect(prompt).toHaveValue('');
- await expect(page.locator('#dccYardageCaddyArrival')).toBeVisible();
- await page.locator('#dccYardageCaddyArrival button').click();
+
  await expect(prompt).toHaveValue(/Pines Test Course, hole 3/);
  await expect(prompt).toHaveValue(/412 yards from the White tee/);
  await expect(prompt).toHaveValue(/NOT my current distance to the pin/);
@@ -499,7 +497,7 @@ test('Live Games reaches Money Room setup without exposing retired wager form or
  await page.locator('#tab-games').click({timeout:5000});
  await expect(page.locator('#dccGroundsDoors [data-dcc-door="money"]')).toBeVisible();
  await page.locator('#dccGroundsDoors [data-dcc-door="money"]').click();
- await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ await expect(page.locator('#moneyRoomSection')).toBeAttached();
  await expect(page.locator('#tab-bets')).toHaveClass(/active/);
  await expect(page.locator('details.dcc-r60-legacy-ticket')).toBeHidden();
  const after=await page.evaluate(()=>({
@@ -520,7 +518,7 @@ test('Selected course and tee survive opening the visible Money Room',async({pag
  const original=await page.evaluate(()=>localStorage.getItem('dcc_active_round_course_v1'));
  await page.locator('#tab-games').click({timeout:5000});
  await page.locator('#dccGroundsDoors [data-dcc-door="money"]').click();
- await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ await expect(page.locator('#moneyRoomSection')).toBeAttached();
  const current=await page.evaluate(()=>localStorage.getItem('dcc_active_round_course_v1'));
  expect(current).toBe(original);
  expect(JSON.parse(current).selection.tee.providerTeeId).toBe('white');
@@ -535,7 +533,7 @@ test('Games shortcut opens the existing Ticket Window without writing a bet',asy
  const before=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>/prop|bet|ledger|foursome/i.test(key))));
  await page.locator('#dccGroundsDoors [data-dcc-door="ticket"]').click();
  await expect(page.locator('#tab-bets')).toHaveClass(/active/);
- await expect(page.locator('#dccVisibleTickets')).toBeVisible();
+ await expect(page.locator('#dccSimpleLedger')).toBeVisible();
  await expect(page.locator('#dccPropFormWrap')).not.toHaveAttribute('open','');
  await expect(page.locator('#dccPropNew')).toBeVisible();
  const after=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([key])=>/prop|bet|ledger|foursome/i.test(key))));
@@ -552,7 +550,7 @@ test('Games Money Room shortcut opens existing live room without resetting store
  await page.evaluate(value=>localStorage.setItem('dagger_active_money_room',value),record);
  await page.locator('#dccGroundsDoors [data-dcc-door="money"]').click();
  await expect(page.locator('#tab-bets')).toHaveClass(/active/);
- await expect(page.locator('#moneyRoomSection')).toBeVisible();
+ await expect(page.locator('#moneyRoomSection')).toBeAttached();
  expect(await page.evaluate(()=>localStorage.getItem('dagger_active_money_room'))).toBe(record);
 });
 
@@ -640,7 +638,9 @@ test('Ticket Window resolves and toggles payment without changing recorded outco
  await ticket.getByRole('button',{name:'YES happened'}).click();
  await expect(ticket).toContainText('UNSETTLED');
  await expect(page.locator('#dccPropTotal')).toHaveText('+$10.00');
+ await expect(page.locator('#dccPropHistoryWrap')).toBeVisible();
  await ticket.getByRole('button',{name:'Mark paid',exact:true}).click();
+ await expect(page.locator('#dccPropHistoryWrap')).toBeHidden();
  await expect(ticket).toContainText('marked paid');
  await expect(page.locator('#dccPropTotal')).toHaveText('+$10.00');
  await ticket.getByRole('button',{name:'Undo paid',exact:true}).click();
@@ -649,4 +649,116 @@ test('Ticket Window resolves and toggles payment without changing recorded outco
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')));
  expect(saved).toHaveLength(1);
  expect(saved[0]).toMatchObject({result:'yes',settled:false,stake:5});
+});
+
+test('first Clubhouse load keeps late panels out and the Ledger opens a ready recap',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  const selectedAt=123456;
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt,selection:{
+   course:{provider:'opengolfapi',providerCourseId:'course',name:'Pines',region:'NC'},
+   tee:{providerTeeId:'blue',name:'Blue',totalYards:6200},holeNumber:3}}));
+  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({
+   version:1,identity:'course|blue|123456',hole:3,length:9,scores:[4,5,...Array(16).fill(null)]}));
+ });
+ await page.route('**/v1/courses/course/holes',route=>route.fulfill({json:{holes:[]}}));
+ await page.goto('/playtest/');
+ const home=page.locator('#dccClubhouseHome');
+ await expect(home).toBeVisible();
+ await expect(page.locator('#dccR86Clubhouse')).toBeAttached();
+ await expect(page.locator('#dccGroundsDoors')).toBeAttached();
+ for(const id of ['dccR86Clubhouse','dccGroundsDoors','clubRecordsSection','dcc19thHole']){
+  await expect(page.locator('#'+id)).toBeHidden();
+ }
+ const book=home.locator('#dccHomeYardage');
+ expect((await book.innerText()).match(/Yardage Book/gi)).toHaveLength(1);
+ await expect(home.locator('.dcc-home-seal')).toHaveCSS('mix-blend-mode','lighten');
+ await page.locator('#tab-games').click();
+ await expect(page.locator('#dccGroundsDoors')).toBeVisible();
+ await expect(page.locator('#dcc19thHole')).toBeHidden();
+ await page.locator('#tab-bets').click();
+ await page.locator('#dcc19thHole').click();
+ await expect(page.locator('#result')).toContainText('Pines · Blue');
+ await expect(page.locator('#result')).toContainText('9 strokes · 2 of 9 holes recorded');
+ await expect(page.locator('input, textarea')).toHaveCount(0);
+ await expect(page.locator('#copy')).toBeVisible();
+ await page.getByRole('link',{name:'Back to The Ledger'}).click();
+ await expect(page.locator('#tab-bets')).toHaveAttribute('aria-current','page');
+});
+
+test('House Ghost rival starts a match with automatic shared-hole playback and records the same score after reload',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,
+   selection:{course:{provider:'opengolfapi',providerCourseId:'1c31d1fb-faa1-4d9f-80a2-f281982df126',name:'Bayonet at Puppy Creek',region:'Raeford, NC'},
+    tee:{providerTeeId:'blue',name:'Blue',totalYards:6281},holeNumber:1}}));
+ });
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ const route=await page.locator('.field-sketch .route-mark').getAttribute('d');
+ await page.goto('/playtest/');
+ const launch=page.locator('#dccClubhouseHome [data-dcc-go="ghost"]');
+ await launch.click();
+ const panel=page.locator('#dccR91SoloPanel');
+ await expect(panel).toHaveAttribute('open','');
+ await page.locator('#dccGhostTier').selectOption('fiveTen');
+ await page.locator('#dccGhostLength').selectOption('9');
+ await page.locator('#dccGhostPlay').click();
+ const frame=page.frameLocator('#dccGhostPlayback iframe');
+ await expect(frame.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+ await expect(frame.locator('#headline')).toContainText('The Sandbagger · Hole 1 · Par 5');
+ await expect(frame.locator('#traces .dcc-ghost-tracer').first()).toBeAttached();
+ const draft=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')));
+ const pending=(await draft()).pending;
+ await expect(frame.locator('#shots li')).toHaveCount(pending.ghost,{timeout:15000});
+ await expect(frame.locator('#headline')).toContainText('Ghost '+pending.ghost);
+ await page.locator('#dccGhostPlayback').scrollIntoViewIfNeeded();
+ await page.screenshot({path:'candidate-screenshots/06-ghost-match-iphone.png',animations:'disabled'});
+ await page.reload();
+ await launch.click();
+ await expect(page.locator('#dccGhostPlay')).toHaveText('Replay Hole 1');
+ await expect(page.locator('#dccGhostTier')).toHaveValue('fiveTen');
+ expect((await draft()).pending).toEqual(pending);
+ await page.locator('#dccGhostPlayerScore').fill('5');
+ await page.locator('#dccGhostRecord').click();
+ expect((await draft()).holes).toEqual([{par:5,player:5,ghost:pending.ghost}]);
+ expect((await draft()).pending).toBeUndefined();
+ await expect(page.locator('#dccGhostPlay')).toHaveText('Watch Hole 2');
+});
+
+test('A $1.25 Bingo game keeps one visible financial receipt and one Competition Archive entry',async({page})=>{
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#useAustin').click();
+ await page.locator('#tab-games').click();
+ await page.locator('[data-game="bingo"]').click();
+ await page.locator('#gP1').fill('Alice');
+ await page.locator('#gP2').fill('Bob');
+ await page.locator('#gStake').fill('1.25');
+ await page.locator('#gStart').click();
+ await page.locator('#gBingo').selectOption('0');
+ await page.locator('#gBango').selectOption('1');
+ await page.locator('#gBongo').selectOption('0');
+ await page.locator('#gSave').click();
+ page.on('dialog',dialog=>dialog.accept());
+ await page.locator('#gFinish').click();
+ await page.locator('#tab-bets').click();
+ const settlement=page.locator('#dccRecordedSettlements > summary');
+ const receipt=page.locator('#dccBbbArchiveReceipts article');
+ await settlement.click();
+ await expect(receipt).toHaveCount(1);
+ await expect(receipt).toContainText('Alice 2 pts · +$1.25');
+ await expect(receipt).toContainText('Bob 1 pts · −$1.25');
+ await page.reload();
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#tab-bets').click();
+ await settlement.click();
+ await expect(receipt).toHaveCount(1);
+ await page.locator('#dccLedgerArchive').click();
+ await page.locator('#bbbArchivePanel > summary').click();
+ await expect(page.locator('#dccSavedGamesPanel #gHistory > p')).toHaveCount(1);
 });

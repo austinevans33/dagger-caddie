@@ -31,15 +31,13 @@ function mount(){
  section.innerHTML=`
  <header class="dcc-home-header"><div><div class="dcc-home-kicker">DAGGER COUNTRY CLUB</div><h2>The Clubhouse</h2></div><img class="dcc-home-seal" src="dcc-approved-seal.png" alt="Dagger Country Club circular seal"></header>
  <a class="dcc-home-feature" id="dccHomeYardage" href="yardage-preview.html?hole=1">
-  <span class="dcc-home-line"><span>YOUR YARDAGE BOOK · <span id="dccHomeHole">HOLE 1</span></span><span class="dcc-home-hole">YARDAGE BOOK</span></span>
-  <strong class="dcc-home-feature-title">Yardage Book</strong>
-  <span class="dcc-home-feature-description">Your hole, course notes and caddy—without leaving the round behind.</span>
-  <span class="dcc-home-view"><span>▤ &nbsp; View the hole</span><span aria-hidden="true">›</span></span>
+  <span class="dcc-home-line"><strong class="dcc-home-feature-title">Yardage Book</strong><span id="dccHomeHole" class="dcc-home-hole">HOLE 1</span></span>
+  <span class="dcc-home-view"><span>View the hole</span><span aria-hidden="true">›</span></span>
  </a>
  <button class="dcc-home-score" id="dccHomeScorecard" type="button" data-dcc-go="score"><span class="dcc-home-score-icon" aria-hidden="true">✎</span><span class="dcc-home-score-copy"><strong>Scorecard</strong><small id="dccHomeScoreStatus">Your round, one score at a time</small></span><span class="dcc-home-score-arrow" aria-hidden="true">›</span></button>
  <div class="dcc-home-grid">
   <button class="dcc-home-tile" type="button" data-dcc-go="games"><span class="dcc-home-tile-icon" aria-hidden="true">♜</span><span class="dcc-home-tile-name">Games</span><span class="dcc-home-tile-caption">Your matches</span></button>
-  <a class="dcc-home-tile" href="ghost-preview.html"><span class="dcc-home-tile-icon" aria-hidden="true">♧</span><span class="dcc-home-tile-name">House Ghost</span><span class="dcc-home-tile-caption">Simulated shot action</span></a>
+  <button class="dcc-home-tile" type="button" data-dcc-go="ghost"><span class="dcc-home-tile-icon" aria-hidden="true">♧</span><span class="dcc-home-tile-name">House Ghost</span><span class="dcc-home-tile-caption">Play the house</span></button>
   <button class="dcc-home-tile" type="button" data-dcc-go="ticket"><span class="dcc-home-tile-icon" aria-hidden="true">▣</span><span class="dcc-home-tile-name">Ticket Window</span><span class="dcc-home-tile-caption">Open wagers</span></button>
   <button class="dcc-home-tile" type="button" data-dcc-go="ledger"><span class="dcc-home-tile-icon" aria-hidden="true">▤</span><span class="dcc-home-tile-name">Ledger</span><span class="dcc-home-tile-caption">Balances &amp; statements</span></button>
  </div>
@@ -51,7 +49,7 @@ function mount(){
  document.body.classList.add('dcc-clubhouse-focus');
  // An explicit Ask Your Caddy action from the Yardage Book may reveal its
  // existing editable composer; never let a hidden question appear "lost".
- if(document.getElementById('dccYardageCaddyArrival')){
+ if(document.getElementById('dccYardageCaddyArrival')||document.getElementById('aiInput')?.dataset.yardageDraftContext){
   document.body.classList.remove('dcc-clubhouse-focus');
  }
  let openingScorecard=false;
@@ -61,7 +59,7 @@ function mount(){
   nav.title='The Clubhouse';
   const title=nav.querySelector('.dcc-tab-title');
   if(title)title.textContent='The Clubhouse';
-  nav.addEventListener('click',()=>{if(openingScorecard){openingScorecard=false;return}if(document.getElementById('dccYardageCaddyArrival')){document.body.classList.remove('dcc-clubhouse-focus');return}document.body.classList.add('dcc-clubhouse-focus')});
+  nav.addEventListener('click',()=>{if(openingScorecard){openingScorecard=false;return}if(document.getElementById('dccYardageCaddyArrival')||document.getElementById('aiInput')?.dataset.yardageDraftContext){document.body.classList.remove('dcc-clubhouse-focus');return}document.body.classList.add('dcc-clubhouse-focus')});
  }
  const groundsHeader=document.querySelector('section.dcc-competition-portal[data-tab="games"]');
  if(groundsHeader&&!document.getElementById('dccGroundsDoors')){
@@ -85,37 +83,14 @@ function mount(){
    e.currentTarget.href='yardage-preview.html?hole='+selectedHole();
   });
  }
- // Ticket Window remains the original wager engine: expose its already-working
- // Mark paid / Undo paid controls without duplicating storage or settlements.
- const ticket=document.getElementById('dccPropBets');
- const slips=document.getElementById('dccPropList');
- const archive=document.getElementById('dccPropHistoryWrap');
- if(ticket&&slips&&archive&&!document.getElementById('dccVisibleTickets')){
-  const visible=document.createElement('section');visible.id='dccVisibleTickets';
-  visible.setAttribute('aria-label','Your open and resolved tickets');
-  const title=document.createElement('h3');title.textContent='Your Tickets';
-  visible.append(title,slips);
-  archive.before(visible);
-  archive.hidden=false;
-  archive.open=false;
-  ticket.classList.add('dcc-ticket-simplified');
-  const total=ticket.querySelector('#dccPropTotal')?.previousElementSibling;
-  if(total)total.textContent='ALL-TIME NET POSITION';
- }
- // The 19th Hole is mounted by a later legacy DOMContentLoaded handler.
- // Reposition its existing link after both handlers finish, not before it exists.
- function placeNineteenth(){
-  const room=document.getElementById('moneyRoomSection');
-  const recap=document.getElementById('dcc19thHole');
-  if(!room||!recap)return;
-  if(room.nextElementSibling!==recap)room.after(recap);
-  recap.classList.add('dcc-nineteenth-door');
-  const link=recap.querySelector('a');
-  if(link)link.textContent='The 19th Hole · Round recap & bragging rights';
- }
- placeNineteenth();
- window.addEventListener('load',placeNineteenth,{once:true});
- document.getElementById('tab-bets')?.addEventListener('click',placeNineteenth);
+ document.getElementById('dccLedgerArchive')?.addEventListener('click',()=>{
+  openTab('games');
+  const archive=document.getElementById('dccSavedGamesPanel');
+  if(!archive)return;
+  archive.open=true;
+  archive.scrollIntoView({block:'start'});
+  archive.querySelector('summary')?.focus({preventScroll:true});
+ });
  function syncHole(){const hole=selectedHole();const label=document.getElementById('dccHomeHole');const link=document.getElementById('dccHomeYardage');if(label)label.textContent='HOLE '+hole;if(link)link.href='yardage-preview.html?hole='+hole}
  syncHole();
  section.addEventListener('click',function(e){
@@ -124,6 +99,11 @@ function mount(){
   const target=button.dataset.dccGo;
   if(target==='score')openScorecard();
   else if(target==='games'){openTab('games');document.getElementById('gamesMenu')?.scrollIntoView({block:'start'})}
+  else if(target==='ghost'){
+   openTab('games');
+   const ghost=document.getElementById('dccR91SoloPanel');
+   if(ghost){ghost.open=true;ghost.scrollIntoView({block:'start'});}
+  }
   else if(target==='ledger'){openTab('bets')}
   else if(target==='ticket'){openTab('bets');document.getElementById('dccPropBets')?.scrollIntoView({block:'start'})}
   else if(target==='money'){openTab('bets');document.querySelector('#moneyRoomSection [data-r62-open="roomSetup"]')?.click();document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'})}
@@ -149,13 +129,6 @@ function mount(){
   const saveGhostTier=()=>{try{sessionStorage.setItem('dccGhostPreviewTier',ghostTier.value)}catch{}};
   saveGhostTier();
   ghostTier.addEventListener('change',saveGhostTier);
- }
- for(const link of document.querySelectorAll('a[href="ghost-preview.html"]')){
-  link.addEventListener('click',()=>{
-   const tier=ghostTier?.value||'tenFifteen';
-   if(['scratch','fiveTen','tenFifteen','fifteenTwenty'].includes(tier))
-    link.href='ghost-preview.html?tier='+encodeURIComponent(tier);
-  });
  }
  window.addEventListener('pageshow',syncHole);
 

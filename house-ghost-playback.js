@@ -1,11 +1,11 @@
 // Read-only shot-by-shot view model for the schematic House Ghost.
 // This module never updates a golfer score, settles a bet, or asserts real GPS.
-import {buildGhostRound} from './house-ghost-round.js?v=friday-book-1';
+import {buildGhostRound} from './house-ghost-round.js?v=ghost-match-1';
 
-export function ghostShotPlayback({courseName,holes=[],seed='house-ghost',count=18,holeNumber=1,shotsRevealed=0,tier=null}={}){
+export function ghostShotPlayback({courseName,holes=[],seed='house-ghost',count=18,holeNumber=1,shotsRevealed=0,tier=null,matchHole}={}){
   if(!Number.isInteger(holeNumber)||holeNumber<1||holeNumber>count)throw Error('Invalid Ghost playback hole');
   if(!Number.isInteger(shotsRevealed)||shotsRevealed<0)throw Error('Invalid Ghost playback position');
-  const hole=buildGhostRound({courseName,holes,seed,count,tier})[holeNumber-1];
+  const hole=buildGhostRound({courseName,holes,seed,count,tier,matchHole})[holeNumber-1];
   const revealed=Math.min(shotsRevealed,hole.shots.length);
   const visibleShots=hole.shots.slice(0,revealed);
   const complete=revealed===hole.shots.length;

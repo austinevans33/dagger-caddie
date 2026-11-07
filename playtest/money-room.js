@@ -1,4 +1,4 @@
-import {installBingoMoney} from './bbb-money.js';
+import {installBingoMoney} from './bbb-money.js?v=ledger-layout-1';
 import {installLedgerSettlement} from './ledger-settlement.js';
 installLedgerSettlement(window);
 installBingoMoney();

@@ -1,18 +1,17 @@
 /* Dagger Clubhouse: prominent entry points without replacing game/caddy state. */
-.dcc-home{max-width:860px;margin:10px auto 16px;padding:16px;background:#12382b;border:1px solid #9f8655;border-radius:22px;color:#f6efdf;box-shadow:0 12px 26px rgba(17,39,29,.12);font-family:system-ui,-apple-system,sans-serif}
+.dcc-home{isolation:isolate;max-width:860px;margin:10px auto 16px;padding:16px;background:#12382b;border:1px solid #9f8655;border-radius:22px;color:#f6efdf;box-shadow:0 12px 26px rgba(17,39,29,.12);font-family:system-ui,-apple-system,sans-serif}
 .dcc-home *{box-sizing:border-box}
 .dcc-home-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}
 .dcc-home-kicker{font-size:11px;letter-spacing:.14em;font-weight:800;color:#cbb083}
 .dcc-home h2{margin:4px 0 0;font:700 clamp(26px,7vw,34px)/1.12 Georgia,serif;color:#f9f0df}
-.dcc-home-seal{width:72px;height:72px;object-fit:contain;border-radius:50%;flex-shrink:0}
+.dcc-home-seal{mix-blend-mode:lighten;width:72px;height:72px;object-fit:contain;border-radius:50%;flex-shrink:0}
 .dcc-home button,.dcc-home a{font:inherit;cursor:pointer}
 .dcc-home-feature{display:block;width:100%;padding:19px 18px;border-radius:18px;background:#f1e7d2;border:1px solid #b6a075;color:#173a2c;text-align:left;text-decoration:none;box-shadow:none}
 .dcc-home-feature:focus-visible,.dcc-home-tile:focus-visible,.dcc-home-caddy:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
 .dcc-home-line{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12px;font-weight:800;letter-spacing:.075em}
-.dcc-home-hole{padding:5px 10px;border-radius:30px;background:#e5dac5;font-size:12px;letter-spacing:0}
-.dcc-home-feature-title{display:block;margin:15px 0 10px;font:700 clamp(26px,7vw,36px)/1 Georgia,serif}
-.dcc-home-feature-description{display:block;max-width:36em;color:#625f54;font-size:14px;line-height:1.5}
-.dcc-home-view{display:flex;align-items:center;justify-content:space-between;margin-top:20px;font-size:17px;font-weight:800}
+.dcc-home-hole{white-space:nowrap;padding:5px 10px;border-radius:30px;background:#e5dac5;font-size:12px;letter-spacing:0}
+.dcc-home-feature-title{display:block;margin:0;font:700 clamp(20px,5.8vw,32px)/1 Georgia,serif;letter-spacing:0}
+.dcc-home-view{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:14px;font-weight:750}
 .dcc-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:12px}
 .dcc-home-tile{min-width:0;min-height:127px;padding:16px 13px;text-align:left;background:#214b38;color:#f5eddd;border:1px solid #42664e;border-radius:16px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 .dcc-home-tile-icon{color:#d5ba82;font-size:25px;line-height:1}
@@ -35,7 +34,7 @@
 .dcc-home-money small{display:block;margin-top:3px;color:#625f54;font:12px/1.3 system-ui,sans-serif}
 .dcc-home-money>span:last-child{font:26px Georgia,serif}
 .dcc-home-money:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
-@media(max-width:420px){.dcc-home{padding:13px}.dcc-home-header{margin-bottom:12px}.dcc-home-seal{width:62px;height:62px}.dcc-home-feature{padding:16px}.dcc-home-feature-title{margin:11px 0 8px}.dcc-home-view{margin-top:13px}.dcc-home-grid{gap:9px;margin-top:10px}.dcc-home-tile{padding:13px 11px;min-height:111px}.dcc-home-tile-name{font-size:17px}.dcc-home-tile-icon{font-size:22px}}
+@media(max-width:420px){.dcc-home{padding:13px}.dcc-home-header{margin-bottom:12px}.dcc-home-seal{width:62px;height:62px}.dcc-home-feature{padding:16px}.dcc-home-grid{gap:9px;margin-top:10px}.dcc-home-tile{padding:13px 11px;min-height:111px}.dcc-home-tile-name{font-size:17px}.dcc-home-tile-icon{font-size:22px}}
 
 /* On-course cockpit: three primary tabs. Service tabs are still reachable via Club Services. */
 nav.tabbar.dcc-bespoke-nav #tab-bag,nav.tabbar.dcc-bespoke-nav #tab-settings{display:none!important}
@@ -68,16 +67,3 @@ body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!i
    JavaScript, but the requested four shortcuts are the visible entry points. */
 #dccScorePulse,#dccGamesYardageAccessLink{display:none!important}
 @media(min-width:650px){#dccGroundsDoors .dcc-grounds-door-grid{max-width:600px;margin-inline:auto}}
-
-/* Ticket Window: original buttons still own saving, resolving and paying.
-   Only presentation changes; archived records and payment states are untouched. */
-#dccPropBets.dcc-ticket-simplified .dcc-r66-stats>div:nth-child(2){display:none!important}
-#dccPropBets.dcc-ticket-simplified .dcc-r66-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#dccVisibleTickets{border:1px solid #aa9166;border-radius:16px;padding:13px;margin:12px 0;background:#f2e8d5;color:#16392b}
-#dccVisibleTickets h3{font:700 22px/1.2 Georgia,serif;margin:2px 0 14px;color:#16392b}
-#dccVisibleTickets .dcc-r66-slip{margin-bottom:10px}
-#dccVisibleTickets .dcc-r66-actions button{min-height:44px}
-#dccPropHistoryWrap[hidden]{display:none!important}
-#dcc19thHole.dcc-nineteenth-door{max-width:860px;margin:15px auto!important;text-align:left!important}
-#dcc19thHole.dcc-nineteenth-door a{display:block;padding:17px 18px;min-height:60px;border:1px solid #ae9867;border-radius:16px;background:#f0e5ce;color:#173d2b!important;text-decoration:none!important;font:700 18px/1.3 Georgia,serif!important}
-#dcc19thHole.dcc-nineteenth-door a:focus-visible{outline:3px solid #dbb875;outline-offset:3px}

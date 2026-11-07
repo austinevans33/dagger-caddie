@@ -19,12 +19,13 @@ function skillResult(seed,hole,tier){
  }
  return 0;
 }
-export function simulateGhostHole({holeNumber,par=4,teeYards=390,seed='house-ghost',tier=null}={}){
+export function simulateGhostHole({holeNumber,par=4,teeYards=390,seed='house-ghost',tier=null,strokeCount}={}){
  if(!Number.isInteger(holeNumber)||holeNumber<1||holeNumber>18||![3,4,5].includes(par)||!Number.isFinite(teeYards)||teeYards<80||teeYards>750)throw Error('Invalid ghost hole');
  const luck=hash(seed+':'+holeNumber)%7;
  const delta=skillResult(seed,holeNumber,tier);
- const score=Math.max(2,Math.min(8,par+(delta===null?(luck===0?-1:luck>=5?1:0):delta)));
- const putts=score<=2?1:(luck%3===0?1:2);const approachCount=Math.max(1,score-putts);
+ if(strokeCount!==undefined&&(!Number.isInteger(strokeCount)||strokeCount<1||strokeCount>20))throw Error('Invalid ghost stroke count');
+ const score=strokeCount??Math.max(2,Math.min(8,par+(delta===null?(luck===0?-1:luck>=5?1:0):delta)));
+ const putts=score===1?0:score===2?1:(luck%3===0?1:2);const approachCount=Math.max(1,score-putts);
  const skill=SKILL[tier];
  const shots=[];let remaining=teeYards;
  for(let n=0;n<approachCount;n++){
@@ -37,6 +38,7 @@ export function simulateGhostHole({holeNumber,par=4,teeYards=390,seed='house-gho
    distanceLabel:'about '+carry+' yards',lie:Math.abs(lateral)>.055?'Rough / recovery':n===0?'Tee':remaining<35?'Greenside':'Fairway / playable',
    x:Number((.5+lateral).toFixed(2)),y:Number((.92-progress*.82).toFixed(2)),kind:'simulated',comment:n===0?'A playable start.':'The Ghost keeps moving.'});
  }
+ if(score===1)Object.assign(shots[0],{x:.5,y:.08,lie:'Holed',distanceLabel:'tee to green',comment:'In the cup from the tee.'});
  for(let n=0;n<putts;n++)shots.push({number:shots.length+1,club:'Putter',distanceLabel:n===putts-1?'short putt':'putt',lie:n===putts-1?'Holed':'Green',x:.5,y:.08,kind:'simulated',comment:n===putts-1?'In the cup.':'Still putting.'});
  return Object.freeze({holeNumber,par,score,source:'schematic-simulation',shots,schematicOnly:true});
 }
