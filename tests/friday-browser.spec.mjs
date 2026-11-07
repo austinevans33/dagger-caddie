@@ -715,6 +715,8 @@ test('House Ghost rival starts a match with automatic shared-hole playback and r
  await launch.click();
  const panel=page.locator('#dccR91SoloPanel');
  await expect(panel).toHaveAttribute('open','');
+ await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE 1 · PAR 5');
+ await expect(page.locator('#dccGhostManualPar')).toBeHidden();
  await page.locator('#dccGhostTier').selectOption('fiveTen');
  await page.locator('#dccGhostLength').selectOption('9');
  await page.locator('#dccGhostPlay').click();
@@ -749,6 +751,8 @@ test('House Ghost rival starts a match with automatic shared-hole playback and r
  expect((await draft()).holes).toEqual([{par:5,player:5,ghost:pending.ghost}]);
  expect((await draft()).pending).toBeUndefined();
  await expect(page.locator('#dccGhostPlay')).toHaveText('Watch Hole 2');
+ await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE 2 · PAR 4');
+ await expect(page.locator('#dccGhostManualPar')).toBeHidden();
 });
 
 test('A $1.25 Bingo game keeps one visible financial receipt and one Competition Archive entry',async({page})=>{
@@ -875,4 +879,14 @@ test('Sanford Quail Ridge never mixes Michigan data or invented blue tee yards',
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_active_round_course_v1')));
  expect(saved.selection.course.region).toBe('Sanford, NC');
  expect(saved.selection.tee.totalYards).toBe(6120);
+});
+
+test('Ghost only offers manual hole par when there is no verified course scorecard',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.evaluate(()=>document.getElementById('dcc-starter-dialog')?.close());
+ await page.locator('#dccClubhouseHome [data-dcc-go="ghost"]').click();
+ await expect(page.locator('#dccGhostManualPar')).toBeVisible();
+ await expect(page.locator('#dccGhostAutoPar')).toBeHidden();
 });
