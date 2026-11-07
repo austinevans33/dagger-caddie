@@ -5,7 +5,7 @@ const find=(term)=>founderCatalogRecords(term)[0];
 test('both founders are exact North Carolina courses, not a same-name out-of-state club',()=>{
  const k=find('King');const q=find('Quail Ridge');
  assert.equal(k.region,'Fayetteville, NC');assert.equal(q.region,'Sanford, NC');
- assert.equal(FOUNDERS_READY_COUNT,5);
+ assert.equal(FOUNDERS_READY_COUNT,7);
  assert.equal(founderCatalogRecords('Michigan').length,0);
  assert.equal(founderTeesForCourse({...q,region:'Ada, Michigan'}).length,0);
  assert.equal(founderVerifiedScorecard({course:{...q,name:'Quail Ridge Michigan'},tee:{providerTeeId:'white',name:'White',totalYards:6120}}),null);
@@ -73,4 +73,33 @@ test('Ryder does not invent unavailable hole stroke indices or mapped outlines',
 test('Hyland withholds inconsistent Blue/Black tee cards rather than invent corrected yards',()=>{
  const course=founderCatalogRecords('Hyland')[0];
  assert.deepEqual(founderTeesForCourse(course).map(t=>t.providerTeeId),['white','gold','red']);
+});
+
+test('Pinehurst No. 3 official tee cards sum correctly to par 68',()=>{
+ const course=founderCatalogRecords('Pinehurst No. 3')[0];
+ assert.equal(course.region,'Pinehurst, NC');
+ const expected={white:5155,green:4823,red:4347,yellow:3642};
+ const tees=founderTeesForCourse(course);
+ assert.deepEqual(Object.fromEntries(tees.map(t=>[t.providerTeeId,t.totalYards])),expected);
+ for(const tee of tees){const card=founderVerifiedScorecard({course,tee});assert.equal(card.holes.length,18);
+  assert.equal(card.holes.reduce((n,h)=>n+h.par,0),68);
+  assert.equal(card.holes.reduce((n,h)=>n+h.yards,0),tee.totalYards);
+  assert.equal(new Set(card.holes.map(h=>h.handicapMen)).size,18);
+ }
+ const red=founderVerifiedScorecard({course,tee:tees.find(t=>t.providerTeeId==='red')});
+ assert.equal(red.holes[0].handicapMen,13);
+});
+test('Ocean Course uses the exact Kiawah course, never an unrelated Ocean Course',()=>{
+ const course=founderCatalogRecords('Ocean Course')[0];
+ assert.equal(course.region,'Kiawah Island, SC');
+ const expected={black:7385,gold:6793,silver:6356,red:5226,dye:6475,kiawah:6202};
+ const tees=founderTeesForCourse(course);
+ assert.deepEqual(Object.fromEntries(tees.map(t=>[t.providerTeeId,t.totalYards])),expected);
+ for(const tee of tees){const card=founderVerifiedScorecard({course,tee});assert.equal(card.holes.length,18);
+  assert.equal(card.holes.reduce((n,h)=>n+h.par,0),72);
+  assert.equal(card.holes.reduce((n,h)=>n+h.yards,0),tee.totalYards);
+ }
+ assert.ok(!tees.some(t=>t.providerTeeId==='carolina'));
+ const altered={...course,region:'Some other Ocean Course'};
+ assert.equal(founderTeesForCourse(altered).length,0);
 });

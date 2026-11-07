@@ -91,6 +91,46 @@ const founders=Object.freeze([
    audit:'Black and Blue published per-hole totals conflict with listed aggregate yardages; both sets withheld pending reconciliation. Hole maps not present in OSM.'},
   map:{source:'https://zommagolf.com/courses/nc/hyland-golf-club/geo.json',ref:'nc/hyland-golf-club',status:'outline-only'}
  }
+  ,
+ {
+  id:'pinehurst-no-3-nc',name:'Pinehurst No. 3',region:'Pinehurst, NC',
+  par:[4,3,4,3,4,3,4,3,4,4,5,3,5,3,4,4,4,4],
+  handicapMen:[11,15,1,7,13,9,5,17,3,2,16,6,18,12,14,10,8,4],
+  tees:{
+   white:{label:'White',yards:[283,119,346,151,296,166,327,111,327,338,502,196,423,191,328,319,346,386]},
+   green:{label:'Green',yards:[263,109,316,124,285,149,304,99,311,321,458,177,411,177,316,297,336,370]},
+   red:{label:'Red',yards:[251,98,307,113,276,134,278,83,283,309,429,124,403,128,296,267,306,262],
+    handicap:[13,15,3,11,7,9,1,17,5,2,12,14,8,18,6,10,4,16]},
+   yellow:{label:'Yellow',yards:[193,60,267,82,187,97,252,76,244,238,389,119,329,109,256,241,251,252],
+    handicap:[13,15,3,11,7,9,1,17,5,2,12,14,8,18,6,10,4,16]}
+  },
+  source:'pinehurst-no-3-official-scorecard',
+  provenance:{source:'Pinehurst Resort official No. 3 scorecard, including four tees and stroke indices',
+    url:'https://www.pinehurst.com/golf/courses/no-3/',checked:'2026-11-07',
+    geography:'Pinehurst, North Carolina',teeYardageIsNotPinDistance:true},
+  map:{status:'not-curated'}
+ },
+ {
+  id:'ocean-course-kiawah-sc',name:'The Ocean Course at Kiawah Island',region:'Kiawah Island, SC',
+  par:[4,5,4,4,3,4,5,3,4,4,5,4,4,3,4,5,3,4],
+  handicapMen:[15,3,9,1,11,13,7,17,5,16,8,10,2,14,18,4,12,6],
+  tees:{
+   black:{label:'Black',yards:[396,543,384,451,207,455,527,198,464,439,562,466,399,194,416,577,223,484]},
+   gold:{label:'Gold',yards:[371,520,363,430,185,382,505,180,415,388,521,420,371,171,387,548,197,439]},
+   silver:{label:'Silver',yards:[365,495,308,396,165,342,491,166,394,368,503,408,364,161,368,479,159,424]},
+   red:{label:'Red',yards:[303,410,254,328,117,299,437,105,344,310,407,326,312,132,306,392,122,322]},
+   dye:{label:'Dye',yards:[365,501,319,401,177,345,493,166,406,360,506,412,364,161,381,540,182,396]},
+   kiawah:{label:'Kiawah',yards:[357,495,310,396,171,331,484,151,399,347,476,398,333,151,358,491,168,386]}
+  },
+  source:'kiawah-ocean-course-published-hole-card',
+  provenance:{source:'Kiawah Island Ocean Course complete 18-hole card; club figures for Black/Gold/Silver/Red, reported figures for Dye/Kiawah',
+    url:'https://zommagolf.com/courses/sc/kiawah-island-golf-resort-the-ocean-course',checked:'2026-11-07',
+    geography:'Kiawah Island, South Carolina',
+    audit:'Carolina tee aggregate total does not match the listed per-hole yardages; that set is withheld pending reconciliation.',
+    teeYardageIsNotPinDistance:true},
+  map:{source:'https://zommagolf.com/courses/sc/kiawah-island-golf-resort-the-ocean-course/geo.json',
+    ref:'sc/kiawah-island-golf-resort-the-ocean-course',status:'external-unverified-hole-assignment'}
+ }
 
 ]);
 const sum=values=>values.reduce((n,x)=>n+x,0);
@@ -99,8 +139,9 @@ for(const founder of founders){
  if(founder.handicapMen&&(founder.handicapMen.length!==18||new Set(founder.handicapMen).size!==18))throw Error('Invalid handicap '+founder.id);
  for(const [color,tee] of Object.entries(founder.tees)){
   if(tee.yards.length!==18||tee.yards.some(y=>!Number.isInteger(y)||y<50||y>800))throw Error('Invalid founder tee '+founder.id+':'+color);
+  if(tee.handicap&&(tee.handicap.length!==18||new Set(tee.handicap).size!==18))throw Error('Invalid tee stroke index '+founder.id+':'+color);
   tee.totalYards=sum(tee.yards);
-  Object.freeze(tee.yards);Object.freeze(tee);
+  Object.freeze(tee.yards);if(tee.handicap)Object.freeze(tee.handicap);Object.freeze(tee);
  }
  Object.freeze(founder.tees);Object.freeze(founder.par);if(founder.handicapMen)Object.freeze(founder.handicapMen);
  Object.freeze(founder.handicapWomen||[]);Object.freeze(founder.provenance);Object.freeze(founder.map);Object.freeze(founder);
@@ -131,7 +172,7 @@ export function founderVerifiedScorecard(selection){
  if(!tee||selection.tee.totalYards!==tee.totalYards||selection.tee.name!==tee.label)return null;
  const holes=holeRange.map(number=>Object.freeze({
   number,par:f.par[number-1],yards:tee.yards[number-1],
-  ...(f.handicapMen?.length?{handicapMen:f.handicapMen[number-1]}:{}),
+  ...((tee.handicap||f.handicapMen)?.length?{handicapMen:(tee.handicap||f.handicapMen)[number-1]}:{}),
   ...(f.handicapWomen?.length?{handicapWomen:f.handicapWomen[number-1]}:{}),
   hazards:Object.freeze([])
  }));

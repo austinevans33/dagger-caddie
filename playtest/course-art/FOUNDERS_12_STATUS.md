@@ -15,8 +15,8 @@ A complete book requires an identified course, validated par + hole yards for ea
 | 8 | Pine Hills Golf Club | Provider fallback only | Provider fallback only | Verify correct club identity, then source cards/art |
 | 9 | Sassamon Trace Golf Course | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
 | 10 | The Golf Club at Quail Ridge, Sanford NC | White/Gold/Red 18-hole listing; source totals conflict with hole values | Mapped geometry exists but hole numbering is unverified; deliberately blocked | Scorecard functional; map reconciliation and published-total review pending |
-| 11 | Pinehurst No. 3 | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
-| 12 | The Ocean Course | Provider fallback only | Provider fallback only | Verify correct venue/identity and hole-map QA |
+| 11 | Pinehurst No. 3 | Official course card: all 18 holes across White/Green/Red/Yellow | Not curated into the shared pencil-book geometry | Verified scorecard ready; map sourcing QA pending |
+| 12 | The Ocean Course, Kiawah Island SC | Six complete published 18-hole tee rows; Carolina excluded for conflicting total | 18 mapped OSM routes available via remote adapter | Scorecard ready; remote art QA pending |
 
 ## Source and audit guardrails
 - King's Grant scorecard: https://kingsgrantgolfcc.com/course-details/ — par 71, six sets, all 18 holes.
@@ -30,3 +30,6 @@ A complete book requires an identified course, validated par + hole yards for ea
 - Ryder published card: https://zommagolf.com/courses/nc/ryder-golf-course — three sets, 18 holes; published source has no stroke index or mapped holes.
 - Tobacco Road published card/map: https://zommagolf.com/courses/nc/tobacco-road-golf-club — five separate tee sets with cross-checked sums and 18 mapped course routes.
 - Hyland published card: https://zommagolf.com/courses/nc/hyland-golf-club — White/Gold/Red rows sum properly. Source Blue/Black aggregate totals disagree with hole values; those rows remain withheld.
+
+- Pinehurst No. 3 official four-tee par-68 scorecard: https://www.pinehurst.com/golf/courses/no-3/ — 18 holes and tee-specific stroke index.
+- Ocean Course Kiawah 18-hole card and OSM mapping: https://zommagolf.com/courses/sc/kiawah-island-golf-resort-the-ocean-course — Black/Gold/Silver/Red club-checked yardages, plus Dye/Kiawah reported. Carolina total disagrees with row sum and is withheld.
