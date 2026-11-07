@@ -67,3 +67,11 @@ body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!i
    JavaScript, but the requested four shortcuts are the visible entry points. */
 #dccScorePulse,#dccGamesYardageAccessLink{display:none!important}
 @media(min-width:650px){#dccGroundsDoors .dcc-grounds-door-grid{max-width:600px;margin-inline:auto}}
+
+/* Small on-course menu: no duplicated Ledger/Ticket Window entrances. */
+.dcc-home-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.dcc-home-grid .dcc-home-tile{min-height:84px!important;padding:14px 15px!important;justify-content:center;gap:5px}
+.dcc-home-grid .dcc-home-tile-name{margin:0!important;font-size:19px!important}
+.dcc-home-grid .dcc-home-tile-icon{font-size:20px!important}
+.dcc-home-money{min-height:54px!important}
+@media(max-width:420px){.dcc-home-grid .dcc-home-tile{min-height:78px!important}}
