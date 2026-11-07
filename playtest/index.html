@@ -5020,12 +5020,15 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <option value="9">9 Holes</option>
 <option selected="" value="18">18 Holes</option>
 </select>
-<label for="dccGhostPar">Hole par</label>
+<p id="dccGhostAutoPar" hidden aria-live="polite" style="margin:10px 0 0;font:700 14px/1.4 system-ui;color:#decc9c"></p>
+<div id="dccGhostManualPar">
+<label for="dccGhostPar">Hole par · manual fallback</label>
 <select id="dccGhostPar">
 <option value="3">Par 3</option>
 <option selected="" value="4">Par 4</option>
 <option value="5">Par 5</option>
 </select>
+</div>
 </div>
 </div>
 <button id="dccGhostPlay" class="btn-primary" type="button">Start round</button>
@@ -7196,6 +7199,53 @@ try {
   console.warn('House Ghost draft could not be loaded:', error);
 }
 
+// Auto-read the EXACT selected course/hole tee scorecard. The active
+// Ghost draft keeps its course snapshot, so changing Starter Desk mid-match
+// cannot rewrite an earlier opponent's hole par.
+let dccGhostParRenderToken=0;
+async function dccGhostSyncPar(){
+ const token=++dccGhostParRenderToken;
+ const hole=dccGhostPending?.hole??(dccGhostHoles.length+1);
+ const snapshot=dccGhostCourse===undefined
+   ?localStorage.getItem('dcc_active_round_course_v1'):dccGhostCourse;
+ let par=dccGhostPending?.par;
+ let verified=false;
+ try{
+  const selection=JSON.parse(snapshot||'null')?.selection;
+  if(selection){
+   const {readCourseScorecard}=await import('./active-course-context.js');
+   const card=readCourseScorecard(localStorage,selection);
+   const coursePar=card?.holes?.find(facts=>facts.number===hole)?.par;
+   if([3,4,5].includes(coursePar)){
+    // An existing pending Ghost score is immutable, even if a card changed.
+    if(!dccGhostPending||dccGhostPending.par===coursePar){
+     par=coursePar;verified=true;
+    }
+   }
+  }
+ }catch(error){console.warn('Ghost hole par lookup unavailable',error)}
+ if(token!==dccGhostParRenderToken)return;
+ const manual=document.getElementById('dccGhostManualPar');
+ const automatic=document.getElementById('dccGhostAutoPar');
+ const field=document.getElementById('dccGhostPar');
+ if(!manual||!automatic||!field)return;
+ if(verified){
+  field.value=String(par);
+  manual.hidden=true;
+  automatic.hidden=false;
+  automatic.textContent='HOLE '+hole+' · PAR '+par+' · FROM YOUR SCORECARD';
+ }else if([3,4,5].includes(dccGhostPending?.par)){
+  field.value=String(dccGhostPending.par);
+  manual.hidden=true;
+  automatic.hidden=false;
+  automatic.textContent='HOLE '+hole+' · PAR '+dccGhostPending.par+' · GHOST SHOT SAVED';
+ }else{
+  manual.hidden=false;
+  automatic.hidden=true;
+  automatic.textContent='';
+ }
+}
+
 function dccGhostRender() {
   const scores = dccGhostHoles.map(h => [h.player, h.ghost]);
   
@@ -7226,6 +7276,7 @@ function dccGhostRender() {
   tierSelect.disabled = dccGhostHoles.length > 0 || !!dccGhostPending;
   document.getElementById('dccGhostLength').disabled = tierSelect.disabled;
   document.getElementById('dccGhostPar').disabled = !!dccGhostPending;
+  void dccGhostSyncPar();
   const playButton = document.getElementById('dccGhostPlay');
   playButton.disabled = result.decided;
   playButton.textContent = dccGhostPending ? 'Replay Hole ' + dccGhostPending.hole :
