@@ -11,6 +11,20 @@ const audits=[
  ['Pine Hills','Winder, GA'],
  ['Ocean Course','Kiawah Island, SC']
 ];
+const alternates=[
+ ['OpenGolfAPI course discovery','https://api.opengolfapi.org/v1/courses/search?q=Quail%20Ridge&limit=5'],
+ ['OpenGolfAPI mapped Bayonet hole','https://api.opengolfapi.org/api/v1/features?course=1c31d1fb-faa1-4d9f-80a2-f281982df126&hole=1'],
+ ['OSM Overpass API status','https://overpass.kumi.systems/api/status']
+];
+for(const [label,url] of alternates){
+ const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),10000);
+ try{
+  const res=await fetch(url,{headers:{Accept:'application/json, text/plain'},signal:ac.signal});
+  const body=(await res.text()).slice(0,400);
+  console.log('ALTERNATE SOURCE '+JSON.stringify({label,status:res.status,contentType:res.headers.get('content-type'),sample:body}));
+ }catch(error){console.log('ALTERNATE SOURCE '+JSON.stringify({label,error:String(error.message||error)}));}
+ finally{clearTimeout(timer)}
+}
 const out='artifacts/founders-map-audit';
 await mkdir(out,{recursive:true});
 const results=[];
