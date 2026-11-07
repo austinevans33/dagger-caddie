@@ -19,6 +19,8 @@ jobs:
         run: node --test tests/friday-founder-geometry-audit.test.mjs
       - name: Check exact remote Founders map data, without deploying it
         run: node scripts/audit-founder-remote-art.mjs
+      - name: Probe OpenGolfAPI Founder course identities and hole geometry
+        run: node scripts/probe-founder-opengolf.mjs
       - name: Save source snapshots and audit report for visual review
         uses: actions/upload-artifact@v4
         with:
