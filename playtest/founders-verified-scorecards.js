@@ -131,6 +131,42 @@ const founders=Object.freeze([
   map:{source:'https://zommagolf.com/courses/sc/kiawah-island-golf-resort-the-ocean-course/geo.json',
     ref:'sc/kiawah-island-golf-resort-the-ocean-course',status:'external-unverified-hole-assignment'}
  }
+  ,
+ {
+  id:'chimneys-winder-ga',name:'The Chimneys Golf Course',region:'Winder, GA',
+  par:[4,4,4,4,3,5,4,4,4,4,3,4,4,4,4,5,3,5],
+  handicapMen:[13,17,1,11,15,3,5,9,7,14,8,4,10,2,6,16,18,12],
+  tees:{
+   gold:{label:'Gold',yards:[340,261,416,261,150,518,371,382,344,383,216,380,348,415,411,557,164,467]},
+   blue:{label:'Blue',yards:[320,257,406,257,135,504,356,331,334,340,196,344,327,381,397,537,149,445]},
+   white:{label:'White',yards:[294,245,396,250,130,449,352,322,324,322,164,319,305,344,383,492,138,433]},
+   green:{label:'Green',yards:[274,238,371,243,119,440,282,284,275,285,157,319,278,309,332,443,127,406]}
+  },
+  source:'chimneys-winder-scorecard-by-hole',
+  provenance:{source:'The Chimneys Winder hole-by-hole scorecard, OpenGolfAPI via maps.golf',
+   url:'https://maps.golf/courses/the-chimneys-golf-course',checked:'2026-11-07',
+   geography:'Winder, Georgia',teeYardageIsNotPinDistance:true,
+   audit:'Published course aggregate totals conflict on a secondary source. Tee totals here are sums of each explicitly documented hole yardage.'},
+  map:{status:'not-curated'}
+ },
+ {
+  id:'pine-hills-winder-ga',name:'Pine Hills Golf Club',region:'Winder, GA',
+  par:[4,3,4,4,4,3,5,4,5,5,3,4,4,4,5,3,4,4],
+  handicapMen:[11,17,15,3,9,5,7,13,1,6,8,18,16,10,2,12,14,4],
+  tees:{
+   blue:{label:'Blue',yards:[364,160,335,406,348,238,460,340,528,537,205,312,389,386,517,167,325,406]},
+   white:{label:'White',yards:[343,142,316,390,340,233,449,325,512,520,200,302,377,381,502,151,310,388]},
+   red:{label:'Red',yards:[320,133,260,323,246,183,376,253,310,430,133,270,304,280,396,110,295,360],
+    par:[4,3,4,4,4,3,5,4,5,5,3,4,4,4,5,3,4,5]}
+  },
+  source:'pine-hills-winder-published-scorecard',
+  provenance:{source:'Pine Hills Golf Club Winder scorecard; per-tee hole yardages and 18-hole course maps',
+   url:'https://zommagolf.com/courses/ga/pine-hills-golf-club',checked:'2026-11-07',
+   geography:'Winder, Georgia',teeYardageIsNotPinDistance:true,
+   audit:'Red tees published as par 73 with 18th hole a par 5; Blue and White play to par 72.'},
+  map:{source:'https://zommagolf.com/courses/ga/pine-hills-golf-club/geo.json',
+   ref:'ga/pine-hills-golf-club',status:'external-unverified-hole-assignment'}
+ }
 
 ]);
 const sum=values=>values.reduce((n,x)=>n+x,0);
@@ -139,9 +175,10 @@ for(const founder of founders){
  if(founder.handicapMen&&(founder.handicapMen.length!==18||new Set(founder.handicapMen).size!==18))throw Error('Invalid handicap '+founder.id);
  for(const [color,tee] of Object.entries(founder.tees)){
   if(tee.yards.length!==18||tee.yards.some(y=>!Number.isInteger(y)||y<50||y>800))throw Error('Invalid founder tee '+founder.id+':'+color);
+  if(tee.par&&(tee.par.length!==18||tee.par.some(p=>![3,4,5,6].includes(p))))throw Error('Invalid tee-specific par '+founder.id+':'+color);
   if(tee.handicap&&(tee.handicap.length!==18||new Set(tee.handicap).size!==18))throw Error('Invalid tee stroke index '+founder.id+':'+color);
   tee.totalYards=sum(tee.yards);
-  Object.freeze(tee.yards);if(tee.handicap)Object.freeze(tee.handicap);Object.freeze(tee);
+  Object.freeze(tee.yards);if(tee.par)Object.freeze(tee.par);if(tee.handicap)Object.freeze(tee.handicap);Object.freeze(tee);
  }
  Object.freeze(founder.tees);Object.freeze(founder.par);if(founder.handicapMen)Object.freeze(founder.handicapMen);
  Object.freeze(founder.handicapWomen||[]);Object.freeze(founder.provenance);Object.freeze(founder.map);Object.freeze(founder);
@@ -171,7 +208,7 @@ export function founderVerifiedScorecard(selection){
  const tee=f.tees[key];
  if(!tee||selection.tee.totalYards!==tee.totalYards||selection.tee.name!==tee.label)return null;
  const holes=holeRange.map(number=>Object.freeze({
-  number,par:f.par[number-1],yards:tee.yards[number-1],
+  number,par:(tee.par||f.par)[number-1],yards:tee.yards[number-1],
   ...((tee.handicap||f.handicapMen)?.length?{handicapMen:(tee.handicap||f.handicapMen)[number-1]}:{}),
   ...(f.handicapWomen?.length?{handicapWomen:f.handicapWomen[number-1]}:{}),
   hazards:Object.freeze([])
