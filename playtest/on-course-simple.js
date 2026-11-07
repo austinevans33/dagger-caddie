@@ -62,8 +62,9 @@ function mountGamePicker(){
  }
  setOpen(false);
  toggle.addEventListener('click',()=>{
+  // On iPhone, focusing the search field automatically raises the keyboard.
+  // Browsing the game list is not a search action; let golfers tap search explicitly.
   setOpen(!open);
-  if(open)$('dccGameSearch')?.focus({preventScroll:true});
  });
  // A user searching for games outside this menu still gets the real list.
  document.addEventListener('focusin',event=>{
