@@ -1,14 +1,34 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The 19th Hole · Dagger Country Club</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f4f0e7;color:#17352a;font:16px system-ui,sans-serif}main{max-width:540px;margin:auto;padding:20px 16px 50px}h1,h2{font-family:Georgia,serif}h1{font-size:32px;margin:8px 0}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.17em;color:#75623e}.panel{background:#fffdf7;border:1px solid #c9bea2;border-radius:16px;padding:17px;margin:16px 0}label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}input,textarea{width:100%;min-height:42px;padding:9px;border:1px solid #b7aa92;border-radius:8px;font:inherit;background:white;color:#17352a}textarea{min-height:85px}button,a.action{min-height:44px;border:0;border-radius:9px;background:#17352a;color:white;padding:12px;cursor:pointer;font-weight:750;text-decoration:none;display:inline-block}button.secondary{background:#e9e2d2;color:#17352a}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row{display:grid;grid-template-columns:1.4fr .8fr;gap:10px;margin-bottom:10px}.hint{font-size:12px;color:#655e51}.status{font-size:13px;min-height:18px}pre{white-space:pre-wrap;font:14px/1.6 system-ui;overflow-wrap:anywhere}nav a{color:#17352a}#result{border-top:1px solid #d4c8af;padding-top:10px}</style></head><body><main>
-<nav><a href="./">← Back to Dagger</a></nav><p class="eyebrow">DAGGER COUNTRY CLUB / MEMBERS ONLY</p><h1>The 19th Hole</h1><p>Settle up, roast the field, and copy the post-round receipt to the group chat.</p>
-<div class="panel"><label for="course">Where'd we play?</label><input id="course" maxlength="90" placeholder="Course name"><div class="grid" style="margin-top:10px"><div><label for="holes">Holes played</label><input id="holes" type="number" min="1" max="36" value="18"></div><div><label for="game">Game</label><input id="game" maxlength="60" placeholder="Nassau / BBB / Skins"></div></div></div>
-<div class="panel"><h2>The foursome</h2><p class="hint">Enter each player's final net winnings (+) or losses (−) in dollars from the Ledger. This doesn't pull or change live wagers.</p><div id="players"></div><label for="highlight">Shot of the day / moment worth roasting</label><textarea id="highlight" maxlength="400" placeholder="The bunker shot that somehow got worse..."></textarea></div>
-<div class="grid"><button id="make">Build receipt</button><button id="clear" class="secondary">Clear form</button></div><div class="panel"><h2>Group-chat receipt</h2><pre id="result" aria-live="polite">Your recap will appear here.</pre><button id="copy" disabled>Copy to group chat</button><p id="status" class="status" role="status"></p></div>
-<p class="hint">Private, manual recap. No Firebase writes, money transfers, or automatic wager settlement. Amounts should add up to $0.</p>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The 19th Hole · Dagger Country Club</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#153729;color:#f3ead7;font:16px/1.5 system-ui,sans-serif}main{max-width:580px;margin:0 auto;padding:22px 14px 65px}h1,h2{font-family:Georgia,serif}h1{font-size:clamp(31px,8vw,43px);margin:8px 0}.kicker{color:#d1ac6b;font:800 11px system-ui;letter-spacing:.17em}.back{color:#f3ead7;display:inline-block;min-height:44px;padding:8px 0;text-decoration:none}.subtitle{color:#d8c7a7;margin:7px 0 20px}.paper{background:#f4ead3;color:#173729;border:1px solid #c9ad75;border-radius:17px;padding:20px 17px;box-shadow:0 9px 22px #091e1659}.paper .stamp{font:800 10px system-ui;letter-spacing:.16em;color:#856e47;text-align:center}.paper h2{font-size:29px;text-align:center;line-height:1.15;margin:18px 0}.opening{font:italic 19px/1.45 Georgia,serif;margin:17px 0;border-bottom:1px solid #c5b38d;padding-bottom:16px}.fact{margin:12px 0;padding:9px 0;border-bottom:1px dashed #cab891;font:16px/1.5 Georgia,serif}.signature{font:italic 19px Georgia,serif;color:#476047;margin:18px 0 0;text-align:right}button{width:100%;min-height:51px;padding:12px;border:0;border-radius:12px;background:#d1ac6b;color:#173729;font:750 17px system-ui;cursor:pointer;margin-top:14px}button:disabled{opacity:.5}.status{font:13px system-ui;color:#dfcda5;margin:10px 2px;min-height:20px}.small{font-size:12px;color:#d8c7a7;margin:14px 2px}.blank{padding:16px;border:1px solid #b79c62;border-radius:12px;background:#254637}#receipt[hidden]{display:none}
+</style></head><body><main><a class="back" href="./">← Back to The Ledger</a><p class="kicker">DAGGER COUNTRY CLUB · AFTER THE ROUND</p><h1>The 19th Hole</h1><p class="subtitle">A sarcastic round recap. No paperwork. The scorecard tells the story.</p>
+<section class="paper" id="receipt" hidden aria-label="Automatic round recap"><div class="stamp">DAGGER COUNTRY CLUB · OFFICIAL NON-OFFICIAL ACCOUNT</div><h2 id="heading"></h2><p id="opening" class="opening"></p><div id="facts"></div><p id="signature" class="signature"></p></section>
+<section class="blank" id="empty" role="status">Checking your current round…</section>
+<button id="copy" type="button" disabled>Copy the recap</button><p class="status" id="status" role="status"></p><p class="small">From your saved scorecard only. We don't invent shots, opponents, or money. This recap does not settle bets or change scores.</p>
 </main><script type="module">
-import {makeRoundReceipt} from '../round-receipt.js';
-const $=id=>document.getElementById(id);for(let i=0;i<4;i++){const r=document.createElement('div');r.className='row';const n=document.createElement('input');n.placeholder='Player '+(i+1);n.maxLength=45;n.setAttribute('aria-label','Player '+(i+1)+' name');n.id='name'+i;const v=document.createElement('input');v.placeholder='Net $ (e.g. -10)';v.type='number';v.step='0.01';v.id='net'+i;v.setAttribute('aria-label','Player '+(i+1)+' net amount');r.append(n,v);$('players').append(r)}
-let receipt='';$('make').onclick=()=>{try{const players=Array.from({length:4},(_,i)=>({name:$('name'+i).value.trim(),net:$('net'+i).value})).filter(p=>p.name||p.net!=='');receipt=makeRoundReceipt({course:$('course').value,holes:Number($('holes').value),game:$('game').value,players,highlight:$('highlight').value});$('result').textContent=receipt;$('copy').disabled=false;$('status').textContent='Ready for the group chat.'}catch(e){receipt='';$('copy').disabled=true;$('result').textContent='Check your numbers.';$('status').textContent=e.message}};
-$('copy').onclick=async()=>{if(!receipt)return;try{await navigator.clipboard.writeText(receipt);$('status').textContent='Copied. Send it to the boys.'}catch{$('status').textContent='Copy unavailable here. Select and copy the receipt above.'}};
-$('clear').onclick=()=>{for(const i of document.querySelectorAll('input,textarea')){if(i.id==='holes')i.value='18';else i.value=''}receipt='';$('result').textContent='Your recap will appear here.';$('copy').disabled=true;$('status').textContent=''};
+import {readActiveRound} from './starters-desk-session.js';
+import {readSoloCard} from './solo-scorecard.js';
+import {readCourseScorecard} from './active-course-context.js';
+import {buildNineteenthRecap} from './nineteenth-recap.js';
+const $=id=>document.getElementById(id);
+function get(){
+ const active=readActiveRound(localStorage),card=readSoloCard(localStorage);
+ const scorecard=active?readCourseScorecard(localStorage,active.selection):null;
+ let caddy='keith';try{caddy=localStorage.getItem('dagger_selected_caddie')||'keith'}catch{}
+ return buildNineteenthRecap({active,card,scorecard,caddy});
+}
+function render(){
+ const recap=get();$('receipt').hidden=!recap;$('empty').hidden=!!recap;
+ if(!recap){$('empty').textContent='No matching round scorecard yet. Choose a course at the Starter’s Desk and enter scores to begin the story.';$('copy').disabled=true;return;}
+ $('heading').textContent=recap.heading;$('opening').textContent=recap.opening;
+ $('facts').replaceChildren();for(const line of recap.lines){const p=document.createElement('p');p.className='fact';p.textContent=line;$('facts').append(p)}
+ $('signature').textContent='— '+recap.name;$('copy').disabled=recap.scored===0;
+ $('copy').textContent=recap.complete?'Copy the round recap':'Copy the round so far';
+}
+$('copy').addEventListener('click',async()=>{
+ const recap=get();if(!recap||recap.scored===0)return;
+ try{await navigator.clipboard.writeText(recap.text);$('status').textContent='Copied. Take it to the group chat.'}
+ catch{$('status').textContent='Copy unavailable in this browser. Select the recap text above.'}
+});
+window.addEventListener('pageshow',render);window.addEventListener('storage',render);render();
 </script></body></html>
