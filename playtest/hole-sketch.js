@@ -85,6 +85,22 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
     try {
       const records = await readCourseArt(entry, fetcher);
       signal?.throwIfAborted();
+      if(mappedFounder){
+        // An external founder bundle must pass all eighteen real mapped
+        // holes and scorecard-distance checks before any hole is drawn
+        // for the Yardage Book OR the shared House Ghost shot tracer.
+        const {founderVerifiedScorecard}=await import('./founders-verified-scorecards.js');
+        const official=founderVerifiedScorecard(selection);
+        if(!official)return buildHoleSketch([]);
+        const {auditFounderGeometry}=await import('./founder-geometry-audit.js');
+        const audit=auditFounderGeometry({
+          records,holes:official.holes,
+          metadata:{course_ref:entry.ref},expectedRef:entry.ref
+        });
+        // readCourseArt already checked payload metadata.course_ref; the
+        // audit additionally checks 18 mapped hole shapes and lengths.
+        if(!audit.pass)return buildHoleSketch([]);
+      }
       const features = courseArtFeatures(records, holeNumber);
       if (features.length) return buildHoleSketch(features, {credit: entry.credit, source: entry.source, referenceNote: entry.referenceNotes?.[holeNumber]});
     } catch (error) {
