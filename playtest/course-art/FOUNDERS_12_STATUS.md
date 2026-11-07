@@ -6,12 +6,12 @@ A complete book requires an identified course, validated par + hole yards for ea
 | # | Founder course | Verified 18-hole scorecard | 18 matched pencil maps | Status |
 |---|---|---|---|---|
 | 1 | Bayonet at Puppy Creek, Raeford NC | Five club-verified tee sets | 18 mapped routes, bundled | Complete; iPhone field-tested |
-| 2 | Ryder Golf Course, Fort Bragg NC | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
+| 2 | Ryder Golf Course, Fort Bragg NC | Three published tee sets with 18 hole values | No hole-specific OSM outlines | Scorecard functional; actual hole maps need survey or other verified source |
 | 3 | King's Grant Golf & Country Club, Fayetteville NC | Six tee sets from club source | Mapped remote art adapter, cross-origin and hole labels require live QA | Scorecard ready; mapping QA pending |
 | 4 | The Chimneys Golf Course | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
 | 5 | Pelican Pointe Golf and Country Club | Provider fallback only | Provider fallback only | Resolve three nine-hole loops before assigning 18 holes |
-| 6 | Hyland Golf Club | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
-| 7 | Tobacco Road Golf Course | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
+| 6 | Hyland Golf Club | White/Gold/Red all 18 holes; Black/Blue totals conflict with source row sums | No hole-specific OSM outlines | Scorecard functional for three tees; map sourcing and remaining tee audit needed |
+| 7 | Tobacco Road Golf Course | Five verified-sum published tee rows covering all 18 | Source has 18 OSM mapped holes; remote-art check pending | Scorecard functional; mapping QA pending |
 | 8 | Pine Hills Golf Club | Provider fallback only | Provider fallback only | Verify correct club identity, then source cards/art |
 | 9 | Sassamon Trace Golf Course | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
 | 10 | The Golf Club at Quail Ridge, Sanford NC | White/Gold/Red 18-hole listing; source totals conflict with hole values | Mapped geometry exists but hole numbering is unverified; deliberately blocked | Scorecard functional; map reconciliation and published-total review pending |
@@ -26,3 +26,7 @@ A complete book requires an identified course, validated par + hole yards for ea
 - Never invent pin distances, hazards, mapped hole shapes, or a tee's unpublished 18-hole distances.
 - Do not mark a course 'full Yardage Book' merely because it is in provider search.
 - Preserve existing round, Ghost, games, and ledger identities when switching courses. Never silently move an old round to a new provider identity.
+
+- Ryder published card: https://zommagolf.com/courses/nc/ryder-golf-course — three sets, 18 holes; published source has no stroke index or mapped holes.
+- Tobacco Road published card/map: https://zommagolf.com/courses/nc/tobacco-road-golf-club — five separate tee sets with cross-checked sums and 18 mapped course routes.
+- Hyland published card: https://zommagolf.com/courses/nc/hyland-golf-club — White/Gold/Red rows sum properly. Source Blue/Black aggregate totals disagree with hole values; those rows remain withheld.
