@@ -5,7 +5,7 @@ const find=(term)=>founderCatalogRecords(term)[0];
 test('both founders are exact North Carolina courses, not a same-name out-of-state club',()=>{
  const k=find('King');const q=find('Quail Ridge');
  assert.equal(k.region,'Fayetteville, NC');assert.equal(q.region,'Sanford, NC');
- assert.equal(FOUNDERS_READY_COUNT,7);
+ assert.equal(FOUNDERS_READY_COUNT,9);
  assert.equal(founderCatalogRecords('Michigan').length,0);
  assert.equal(founderTeesForCourse({...q,region:'Ada, Michigan'}).length,0);
  assert.equal(founderVerifiedScorecard({course:{...q,name:'Quail Ridge Michigan'},tee:{providerTeeId:'white',name:'White',totalYards:6120}}),null);
@@ -102,4 +102,30 @@ test('Ocean Course uses the exact Kiawah course, never an unrelated Ocean Course
  assert.ok(!tees.some(t=>t.providerTeeId==='carolina'));
  const altered={...course,region:'Some other Ocean Course'};
  assert.equal(founderTeesForCourse(altered).length,0);
+});
+
+test('Winder, Georgia Chimneys and Pine Hills both have complete validated 18-hole tee cards',()=>{
+ const cases=[
+  ['Chimneys','The Chimneys Golf Course',{gold:6384,blue:6016,white:5662,green:5182}],
+  ['Pine Hills','Pine Hills Golf Club',{blue:6423,white:6181,red:4982}]
+ ];
+ for(const [search,name,totals] of cases){
+  const course=founderCatalogRecords(search)[0];
+  assert.equal(course.name,name);assert.equal(course.region,'Winder, GA');
+  const tees=founderTeesForCourse(course);
+  assert.deepEqual(Object.fromEntries(tees.map(t=>[t.providerTeeId,t.totalYards])),totals);
+  for(const tee of tees){
+   const card=founderVerifiedScorecard({course,tee});
+   assert.equal(card.holes.length,18);
+   assert.equal(card.holes.reduce((n,h)=>n+h.yards,0),tee.totalYards);
+  }
+ }
+});
+test('Pine Hills Red has published par 73 rather than fabricating a par 72 card',()=>{
+ const course=founderCatalogRecords('Pine Hills')[0],tees=founderTeesForCourse(course);
+ for(const tee of tees){
+  const card=founderVerifiedScorecard({course,tee});
+  assert.equal(card.holes.reduce((n,h)=>n+h.par,0),tee.providerTeeId==='red'?73:72);
+  assert.equal(card.holes[17].par,tee.providerTeeId==='red'?5:4);
+ }
 });
