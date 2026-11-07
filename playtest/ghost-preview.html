@@ -65,6 +65,30 @@ if(params.get('match')==='1'){
      [3,4,5].includes(pending.par)&&Number.isInteger(pending.ghost)&&pending.ghost>=1&&pending.ghost<=20)matchDraft=draft;
  } catch {}
 }
+// iOS Safari does not reliably hand a vertical swipe from a tall same-origin
+// iframe back to its parent page. Relay touch scrolling only when the Ghost
+// player is embedded; keep the shot controls clickable and the tracer intact.
+if(window.parent!==window&&document.body.classList.contains('match')){
+ let lastTouchY=null,lastTouchX=null;
+ document.addEventListener('touchstart',event=>{
+  if(event.touches.length!==1)return;
+  lastTouchY=event.touches[0].clientY;
+  lastTouchX=event.touches[0].clientX;
+ },{passive:true});
+ document.addEventListener('touchmove',event=>{
+  if(event.touches.length!==1||lastTouchY===null)return;
+  const y=event.touches[0].clientY,x=event.touches[0].clientX;
+  const dy=y-lastTouchY,dx=x-lastTouchX;
+  lastTouchY=y;lastTouchX=x;
+  if(Math.abs(dy)<=Math.abs(dx)||Math.abs(dy)<1)return;
+  // A gesture that starts over a control still scrolls the page, but taps
+  // keep native behavior because they do not trigger touchmove.
+  if(event.cancelable)event.preventDefault();
+  window.parent.postMessage({type:'dcc:ghost-parent-scroll',deltaY:-dy},location.origin);
+ },{passive:false});
+ document.addEventListener('touchend',()=>{lastTouchY=null;lastTouchX=null},{passive:true});
+ document.addEventListener('touchcancel',()=>{lastTouchY=null;lastTouchX=null},{passive:true});
+}
 const matchHole=matchDraft?.pending;
 const requestedTier=matchDraft?.tier??params.get('tier');
 const requestedHole=Number(params.get('hole'));
