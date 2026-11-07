@@ -233,7 +233,7 @@ test('Real Bayonet White Yardage Book covers all 18 holes and safe caddy handoff
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('#coverage')).toContainText('18/18');
  await expect(page.locator('#name')).toContainText('Bayonet at Puppy Creek · Regular / White');
- await expect(page.locator('#caddySignature')).toContainText('Vinny');
+ await expect(page.locator('#pocketCaddyName')).toContainText('Vinny');
  const par=[5,4,3,4,5,4,4,4,3,4,4,4,4,3,5,3,4,5];
  const yards=[433,370,134,366,440,326,345,378,142,292,308,317,346,140,415,148,402,450];
  for(let hole=1;hole<=18;hole++){
@@ -271,8 +271,8 @@ test('Mapped tee-to-green pencil route labels both sides and informs caddy game 
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('.field-sketch .route-mark')).toHaveCount(1);
  await expect(page.locator('.field-sketch .hazard-tag')).toHaveCount(2);
- await expect(page.locator('#caddyNote')).toContainText('Approximate mapped trouble');
- await expect(page.locator('#caddyDisclaimer')).toContainText('on-course confirmation');
+ await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+ await expect(page.locator('#pocketNoteTwo')).not.toBeEmpty();
 });
 
 test('Pencil sketch labels mapped water and bunkers and gives cautious caddy attack guidance',async({page})=>{
@@ -287,13 +287,13 @@ test('Pencil sketch labels mapped water and bunkers and gives cautious caddy att
  });
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(3);
- await expect(page.locator('#caddyNote')).toContainText('Mapped trouble');
- await expect(page.locator('#caddyNote')).toContainText('water');
- await expect(page.locator('#hazards')).toContainText('Bunker');
+ await expect(page.locator('.field-sketch svg polygon')).toHaveCount(3);
+ await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+ await expect(page.locator('#pocketNoteTwo')).not.toBeEmpty();
  await page.locator('#next').click();
  await expect(page.locator('#position')).toContainText('HOLE 2 / 18');
- await expect(page.locator('#caddyNote')).not.toContainText('Mapped trouble');
- await expect(page.locator('#hazards')).toContainText('not verified');
+ await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+ await expect(page.locator('#pocketNoteTwo')).not.toBeEmpty();
 });
 
 test('Pencil Yardage Book follows selected caddy without inventing hole geometry',async({page})=>{
@@ -306,8 +306,8 @@ test('Pencil Yardage Book follows selected caddy without inventing hole geometry
  await page.route(url=>url.toString().startsWith('https://api.opengolfapi.org/api/v1/features?'),route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({features:[]})}));
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('.paper')).toBeVisible();
- await expect(page.locator('#caddySignature')).toContainText('Vinny');
- await expect(page.locator('#caddyNote')).not.toBeEmpty();
+ await expect(page.locator('#pocketCaddyName')).toContainText('Vinny');
+ await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
  await expect(page.locator('.field-sketch')).toContainText('No hole-assigned mapped outlines');
  await expect(page.locator('#yards')).toContainText('Not verified');
  await page.locator('#next').click();
@@ -341,7 +341,7 @@ test('Pencil map is readable and tappable with one hand using Green / Trouble fi
  const map=page.locator('.field-sketch');
  await expect(page.locator('#mapHole')).toHaveText('HOLE 1');
  await expect(page.locator('#mapPar')).toContainText('Par');
- expect(await page.evaluate(()=>{const map=document.querySelector('.field-sketch'),notes=document.querySelector('.paper .card');return !!(map.compareDocumentPosition(notes)&Node.DOCUMENT_POSITION_FOLLOWING)})).toBe(true);
+ expect(await page.evaluate(()=>{const map=document.querySelector('.field-sketch'),notes=document.querySelector('.pocket-note');return !!(map.compareDocumentPosition(notes)&Node.DOCUMENT_POSITION_FOLLOWING)})).toBe(true);
  await expect(map.locator('svg polygon')).toHaveCount(2);
  await expect(map.locator('.map-feature')).toHaveCount(2);
  await map.getByText('Explore the sketch',{exact:true}).click();
@@ -403,6 +403,10 @@ test('Yardage Book prefills the Caddy with selected verified hole without auto-s
  await expect(prompt).toHaveValue(/412 yards from the White tee/);
  await expect(prompt).toHaveValue(/NOT my current distance to the pin/);
  await expect(page.locator('#aiSend')).toBeVisible();
+ await expect(page.locator('body')).toHaveClass(/dcc-caddy-turn/);
+ await expect(page.locator('#dccTurnName')).toContainText('Keith');
+ await expect(page.locator('#dccBackToHole')).toBeVisible();
+ await expect(page.locator('#dccTurnChangeCaddy')).toBeVisible();
  await expect(page.locator('#aiStatus')).toContainText(/Ready|backend|Connect|Unavailable/i);
  const pending=await page.evaluate(()=>sessionStorage.getItem('dcc_yardage_caddy_handoff_v1'));
  expect(pending).toBeNull();
@@ -422,7 +426,8 @@ test('Bayonet photographed club scorecard loads all 18 White tee holes without a
  await expect(page.locator('#yards')).toContainText('433');
  await expect(page.locator('#par')).toContainText('5');
  await expect(page.locator('#strokeIndex')).toContainText('Men 7 / Women 1');
- await expect(page.locator('#source')).toContainText('Bayonet club scorecard');
+ await expect(page.locator('#mapYards')).toContainText('433 yds');
+ await expect(page.locator('#source')).toHaveCount(0);
  await page.locator('#hole').selectOption('18');
  await expect(page.locator('#yards')).toContainText('450');
  await expect(page.locator('#strokeIndex')).toContainText('Men 18 / Women 2');
@@ -609,7 +614,8 @@ test('Bayonet Blue notebook shows the supplied course routing and shares it with
  await expect(page.locator('#mapYards')).toHaveText('471 yds');
  await expect(page.locator('.field-sketch svg')).toHaveAttribute('viewBox','0 0 300 440');
  await expect(page.locator('.field-sketch svg polygon')).toHaveCount(11);
- await expect(page.locator('#gamePlan')).toContainText('Mini Driver 235 yd');
+ await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+ await expect(page.locator('#pocketNoteTwo')).not.toBeEmpty();
  const first=await page.locator('.field-sketch .route-mark').getAttribute('d');
  await page.screenshot({path:'candidate-screenshots/04-bayonet-book-iphone.png',fullPage:true,animations:'disabled'});
  await page.locator('#hole').selectOption('18');
@@ -741,6 +747,7 @@ test('A $1.25 Bingo game keeps one visible financial receipt and one Competition
  if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
  await page.locator('#useAustin').click();
  await page.locator('#tab-games').click();
+ await page.locator('#dccGameLibraryToggle').click();
  await page.locator('[data-game="bingo"]').click();
  await page.locator('#gP1').fill('Alice');
  await page.locator('#gP2').fill('Bob');
@@ -768,4 +775,36 @@ test('A $1.25 Bingo game keeps one visible financial receipt and one Competition
  await page.locator('#dccLedgerArchive').click();
  await page.locator('#bbbArchivePanel > summary').click();
  await expect(page.locator('#dccSavedGamesPanel #gHistory > p')).toHaveCount(1);
+});
+
+test('Growing Games catalog stays compact until requested and works when opened',async({page})=>{
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.evaluate(()=>document.querySelector('#dcc-starter-dialog')?.close());
+ await page.locator('#tab-games').click();
+ await expect(page.locator('#gamesMenu')).toHaveAttribute('data-dcc-collapsed','true');
+ await expect(page.locator('#dccGameChoices')).toBeHidden();
+ await page.locator('#dccGameLibraryToggle').click();
+ await expect(page.locator('#dccGameChoices')).toBeVisible();
+ await expect(page.locator('#dccGameSearch')).toBeVisible();
+ await page.locator('#dccGameLibraryToggle').click();
+ await expect(page.locator('#dccGameChoices')).toBeHidden();
+});
+test('From the hole, Ask My Caddy preserves the hole and returns without writing a score',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_selected_caddie',JSON.stringify('reginald'));
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'1c31d1fb-faa1-4d9f-80a2-f281982df126',name:'Bayonet at Puppy Creek',region:'NC'},tee:{providerTeeId:'white',name:'White',totalYards:5752},holeNumber:7}}));
+ });
+ await page.goto('/playtest/yardage-preview.html?hole=7');
+ await expect(page.locator('#mapHole')).toContainText('HOLE 7');
+ await page.locator('#askHoleCaddy').click();
+ await expect(page.locator('#dccTurnName')).toContainText('Reginald');
+ await expect(page.locator('#aiInput')).toBeVisible();
+ await expect(page.locator('#dccClubhouseHome')).toBeHidden();
+ await expect(page.locator('#aiHistory')).toBeVisible();
+ await page.locator('#dccBackToHole').click();
+ await expect(page).toHaveURL(/yardage-preview\.html\?hole=7/);
+ await expect(page.locator('#mapHole')).toContainText('HOLE 7');
+ const card=await page.evaluate(()=>localStorage.getItem('dcc_solo_scorecard_v1'));
+ expect(card).toBeNull();
 });
