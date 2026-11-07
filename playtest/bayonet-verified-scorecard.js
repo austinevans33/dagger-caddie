@@ -28,11 +28,16 @@ for(const [name,tee] of Object.entries(data)){
 }
 if(sum(par.slice(0,9))!==36||sum(par.slice(9))!==36||new Set(men).size!==18||new Set(women).size!==18)throw Error('Bayonet par/handicap checksum failed');
 
+export const BAYONET_COURSE_ID='1c31d1fb-faa1-4d9f-80a2-f281982df126';
+export function isBayonetCourse(course){
+ return course?.provider==='opengolfapi'&&course.providerCourseId===BAYONET_COURSE_ID&&
+  typeof course.name==='string'&&/^bayonet at puppy creek(?: golf (?:club|course))?$/i.test(course.name.trim());
+}
 export const BAYONET_TEES=Object.freeze(data);
 export const BAYONET_PAR=Object.freeze(par);
 export function bayonetTeeForSelection(selection){
  const course=selection?.course,tee=selection?.tee;
- if(course?.provider!=='opengolfapi'||typeof course.name!=='string'||!/^bayonet at puppy creek(?: golf (?:club|course))?$/i.test(course.name.trim())||!tee)return null;
+ if(!isBayonetCourse(course)||!tee)return null;
  const matched=Object.entries(data).find(([,row])=>tee.totalYards===row.total);
  if(!matched)return null;
  const [color,row]=matched;

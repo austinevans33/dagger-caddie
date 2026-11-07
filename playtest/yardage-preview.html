@@ -58,35 +58,56 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .field-sketch.no-map{min-height:110px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:15px;background:#eee7d4}
 .field-sketch.no-map .geometry-label{font:700 16px/1.4 Georgia,serif;color:#465743;margin:0 0 5px}
 .field-sketch.no-map .geometry-foot{background:transparent;max-width:none;padding:0;font:13px/1.45 system-ui,sans-serif;margin:0}
-</style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1>Yardage Book</h1><a href="./" id="backToPlay">← Back to The Clubhouse</a></header>
+.bar{grid-template-columns:44px minmax(0,1fr) 44px;margin:8px 0}
+.nav{display:block}.nav button{width:100%}
+#teeCaption{margin:0 0 8px}
+#status{margin:3px 0 8px;padding:0;border:0;background:transparent;font:12px/1.35 system-ui}
+.field-sketch.has-features{padding:4px;background:#f5efd9;border:1px solid #b3a180;transform:none}
+.field-sketch.has-features svg{max-height:520px;margin:auto}
+.field-sketch details{text-align:left;padding:5px 8px;font:13px/1.4 system-ui}
+.field-sketch .route-mark{stroke-width:1;stroke-dasharray:3 5;opacity:.75}
+.book-actions{display:flex;align-items:center;gap:10px}
+.book-actions>*{flex:1}.book-actions a{min-height:44px;display:grid;place-items:center;text-align:center;font-weight:bold}
+#gamePlan{margin:9px 0}#gamePlan dt{font:700 11px system-ui;letter-spacing:.08em;color:#4d6251;margin-top:9px}
+#gamePlan dd{margin:3px 0;font:15px/1.35 Georgia,serif}
+#courseTitle{font-size:clamp(24px,6vw,32px)}
+.field-sketch .geometry-foot{font-size:11px;color:#465448;text-align:left;padding:0 8px}
+</style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1 id="courseTitle">Yardage Book</h1><a href="./" id="backToPlay">← Back to The Clubhouse</a></header>
 <div class="paper"><p class="warning" id="status" role="status">Loading selected course and tee scorecard… No GPS or live pin distances are claimed.</p>
-<div class="bar"><label>Hole<br><select id="hole" style="width:100%"></select></label><label>Tees<br><select id="tees" style="width:100%"><option>Checking selection…</option></select></label></div>
+<div class="bar"><button id="prev" aria-label="Previous hole">←</button><select id="hole" aria-label="Hole"></select><button id="next" aria-label="Next hole">→</button></div>
 <div class="hole-glance" aria-label="Hole at a glance"><span id="mapHole">HOLE 1</span><strong id="mapPar">Par —</strong><strong id="mapYards">Tee yards —</strong></div>
-<div class="field-sketch" aria-label="Hole map unavailable until verified geometry is sourced"><p>Hole sketch reserved for verified fairway, green and hazard geometry.<br>No invented course layout.</p></div>
-<section class="card"><span id="position" class="hole-pill"></span><p id="name" class="muted"></p><div id="par" class="big"></div><div id="yards" class="big"></div><p id="coverage" class="muted"></p><p id="strokeIndex" class="muted"></p><h3 class="pencil-title">Trouble on the hole</h3><ul id="hazards"></ul></section>
+<p id="teeCaption" class="muted"></p>
+<div class="field-sketch" aria-label="Hole illustration"></div>
+<div class="book-actions"><button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask My Caddy</button><a id="watchGhost" href="ghost-preview.html">Watch House Ghost →</a></div>
+<aside class="pencil-note" aria-label="Your selected caddy’s notebook"><span id="caddySignature" class="signature">The Caddy's Game Plan</span><dl id="gamePlan"></dl><details><summary>Field notes</summary><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></details></aside>
+<details class="card"><summary>Mapped trouble and scorecard details</summary><span id="position" class="hole-pill"></span><p id="name" class="muted"></p><div id="par" class="big"></div><div id="yards" class="big"></div><p id="coverage" class="muted"></p><p id="strokeIndex" class="muted"></p><ul id="hazards"></ul></details>
 
-<button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask your caddy about this hole →</button>
-<aside class="pencil-note" aria-label="Your selected caddy’s notebook"><span id="caddySignature" class="signature">The Caddy's Game Plan</span><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></aside>
-<div class="nav"><button id="prev">← Previous</button><button id="return" class="primary">Clubhouse</button><button id="next">Next →</button></div>
+<div class="nav"><button id="return" class="primary">Return to the round</button></div>
 <p class="muted" id="source">Course par and yards are from a tee-specific scorecard, not the live pin. Missing data stays unverified. This screen does not change your scores or wagers.</p>
 <p class="muted">Course data where available: © OpenStreetMap contributors (ODbL 1.0) via <a href="https://opengolfapi.org/" target="_blank" rel="noopener noreferrer">OpenGolfAPI</a>.</p>
 </div></main><script type="module">
 import {loadYardageState,resolveYardageState} from './yardage-live.js';
-import {readYardageCaddy,yardageCaddyNote} from './yardage-caddy-notes.js';
-import {loadCourseFeatures,pencilGeometry,orientPencilTeeToGreen} from './course-pencil-geometry.js';
-import {pencilOrientation} from './yardage-pencil-orientation.js';
-import {pencilBookAnnotations} from './pencil-book-annotations.js';
-import {renderSharedHoleSketch} from './shared-hole-sketch.js';
+import {readActiveRound,ACTIVE_ROUND_KEY} from './starters-desk-session.js';
+import {readCourseScorecard} from './active-course-context.js';
+import {readYardageCaddy,yardageCaddyNote,sketchGamePlan,describeSketchTrouble} from './yardage-caddy-notes.js?v=friday-book-1';
+import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=friday-book-1';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=friday-book-1';
 import {bayonetOsmTrouble} from './bayonet-osm-trouble.js';
-import {readYardageHole,saveYardageHole} from './yardage-navigation.js';
-import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js';
+import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
+import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 const requested=params.has('hole')?Number(params.get('hole')):null;
 let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
-let latest=resolveYardageState({holeNumber:number});let spatialGeneration=0;const spatialCache=new Map();let spatialPending=null;let mapMode='all';let mapSelected=null;
+function cachedState(){
+ const active=readActiveRound(localStorage);
+ const context=active?readCourseScorecard(localStorage,active.selection):null;
+ return resolveYardageState({active,context,holeNumber:number});
+}
+let latest=cachedState();let spatialGeneration=0;let spatialPending=null;let activeAnnotations=null;let currentSketch=null;let roundGeneration=0;let mapMode='all';let mapSelected=null;
 for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
 function renderAttack(features=[],annotations=null){
+ activeAnnotations=annotations;
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
  const survey=bayonetOsmTrouble(latest.selection,number);
  const caddy=yardageCaddyNote({caddy:readYardageCaddy(localStorage),hole:page.hole,features,annotations,survey});
@@ -94,10 +115,24 @@ function renderAttack(features=[],annotations=null){
  $('caddyNote').textContent=caddy.advice;
  $('caddySecond').textContent=caddy.second;
  $('caddyDisclaimer').textContent=caddy.label+' · '+caddy.disclaimer;
+ let profile=[],shotHistory=[];
+ try{profile=JSON.parse(localStorage.getItem('dagger_profile')||'[]')}catch{}
+ try{shotHistory=JSON.parse(localStorage.getItem('dagger_shot_log')||'[]')}catch{}
+ const plan=sketchGamePlan({hole:page.hole,annotations,profile,shotHistory});
+ const gamePlan=$('gamePlan');gamePlan.replaceChildren();
+ for(const [title,copy] of [['Off the tee',plan.offTee],['The miss',plan.miss],['The approach',plan.approach],['The play',plan.play]]){
+  const term=document.createElement('dt'),description=document.createElement('dd');
+  term.textContent=title.toUpperCase();description.textContent=copy;
+  gamePlan.append(term,description);
+ }
  const notes=$('hazards');
  notes.replaceChildren();
  if(annotations?.labels?.length){
+  const seen=new Set();
   for(const feature of annotations.labels){
+   const key=[feature.type,feature.side,feature.stage].join(':');
+   if(seen.has(key))continue;
+   seen.add(key);
    const li=document.createElement('li');
    li.textContent=(feature.type==='water'?'Water':'Bunker')+' · '+feature.side+' · '+feature.stage+' (mapped outline, approximate position)';
    notes.append(li);
@@ -112,14 +147,17 @@ function renderAttack(features=[],annotations=null){
   notes.append(li);
  }
 }
-function draw(){
+function draw({refreshSketch=true}={}){
  const {selection,coverage,source,state,hasCourse}=latest;
  const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
- renderAttack();
+ if(refreshSketch)currentSketch=null;
+ renderAttack(currentSketch?.shapes,currentSketch?.annotations);
  $('askHoleCaddy').disabled=!selection?.course||!selection?.tee;
  $('askHoleCaddy').title=selection?.course&&selection?.tee?'Prepare an editable question for your caddy':'Select a course and tee at the Starter’s Desk first';
  $('hole').value=String(number);$('position').textContent='HOLE '+number+' / 18';
  $('name').textContent=page.courseName+' · '+page.teeName;
+ $('courseTitle').textContent=hasCourse?page.courseName:'Yardage Book';
+ $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage';
  $('par').textContent='Par: '+page.displayPar;$('yards').textContent='Tee yards: '+page.displayYards;
  $('mapHole').textContent='HOLE '+number;
  $('mapPar').textContent='Par '+page.displayPar;
@@ -130,8 +168,8 @@ function draw(){
  $('source').textContent=source+' · Tee yardage is not GPS pin distance. No scores or bets are changed here.';
 
  rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
- $('tees').replaceChildren(new Option(selection?.tee?.name||'No tees selected'));
- void updateSketch(selection,number);
+ $('teeCaption').textContent=selection?.tee?.name?selection.tee.name+' tees':'';
+ if(refreshSketch)void updateSketch(selection,number);
  $('status').textContent=!hasCourse?'Select a course and tees at the Starter’s Desk first. No distances are invented.':
   coverage.complete?'Complete selected-tee scorecard · '+coverage.verifiedHoles+'/18 holes.':
   coverage.verifiedHoles?coverage.detail:'No provider-verified tee-specific hole data available for this selection. '+(state==='unavailable'?'Check connection or select another course.':'');
@@ -140,7 +178,6 @@ function updateSketch(selection,hole){
  const gen=++spatialGeneration,box=document.querySelector('.field-sketch');
  if(spatialPending){spatialPending.abort();spatialPending=null}
  mapSelected=null;mapMode='all';
- const key=selection?.course?.provider+'|'+selection?.course?.providerCourseId+'|'+hole;
  function unavailable(){
   if(gen!==spatialGeneration)return;
   box.classList.remove('has-features');box.replaceChildren();
@@ -149,38 +186,29 @@ function updateSketch(selection,hole){
   // A scorecard provides par/yardage, not a mapped fairway or green.
   box.classList.add('no-map');
   const heading=document.createElement('strong');heading.className='geometry-label';
-  heading.textContent='Hole '+hole+' · precise pencil layout unavailable';
+  heading.textContent='Hole '+hole+' · Scorecard notes';
   const message=document.createElement('p');message.className='geometry-foot';
   message.textContent=bayonetOsmTrouble(selection,hole)?
-   'OSM survey has hole-specific trouble notes below. An accurate fairway and green outline is still needed for this drawing.':
+   'See the Game Plan and field notes for the available information on this hole.':
    'No hole-assigned mapped outlines available. We will not invent doglegs, landing zones, or hazards.';
   box.append(heading,message);
  }
- if(!selection?.course||selection.course.provider!=='opengolfapi'){unavailable();return}
- if(!spatialCache.has(key)){unavailable();const p=document.createElement('p');p.setAttribute('role','status');p.className='geometry-foot';p.textContent='Checking for mapped hole-specific outlines…';box.append(p)}
+ if(!selection?.course){unavailable();return}
+ unavailable();
  const controller=new AbortController();
- if(!spatialCache.has(key))spatialPending=controller;
- const load=spatialCache.has(key)?Promise.resolve(spatialCache.get(key)):loadCourseFeatures(selection,hole,{signal:controller.signal}).then(features=>{
-  if(!controller.signal.aborted){
-   // Keep a short in-memory history; never persist unknown geometry to a live score or bet.
-   if(spatialCache.size>=24)spatialCache.delete(spatialCache.keys().next().value);
-   spatialCache.set(key,features);
-  }
-  return features;
- });
- load.then(features=>{
+ spatialPending=controller;
+ loadHoleSketch(selection,hole,{signal:controller.signal}).then(sketch=>{
   if(spatialPending===controller)spatialPending=null;
   if(gen!==spatialGeneration)return;
-  // Render an actual portrait yardage-book page from the selected course geometry.
-  // Ghost keeps its existing landscape 300x220 playback, sharing the same polygons.
-  const artHeight=440;
-  const shapes=orientPencilTeeToGreen(pencilGeometry(features,{width:300,height:artHeight,padding:22}),{width:300,height:artHeight,padding:22});
-  const annotations=pencilBookAnnotations(shapes);
+  currentSketch=sketch;
+  const {shapes,annotations}=sketch;
+  const features=shapes;
+  const artHeight=SKETCH_HEIGHT;
   renderAttack(features,annotations);
-  if(!shapes.length){unavailable();return}
+  if(sketch.coverage==='scorecard'){unavailable();return}
   box.classList.remove('no-map');box.classList.add('has-features');box.replaceChildren();
-  const title=document.createElement('p');title.className='geometry-label';title.textContent='Hole '+hole+' · mapped caddy-book drawing';box.append(title);
-  const tools=document.createElement('div');tools.className='map-tools';tools.setAttribute('role','group');tools.setAttribute('aria-label','Map feature filters');box.append(tools);
+
+  const tools=document.createElement('div');tools.className='map-tools';tools.setAttribute('role','group');tools.setAttribute('aria-label','Map feature filters');
   const labels={green:'Green',fairway:'Fairway',bunker:'Bunker',water:'Water',rough:'Rough',tee:'Tee'};
   const count=type=>shapes.filter(f=>f.type===type).length;
   const modes=[['all','All'],['green','Green'],['trouble','Trouble']];
@@ -211,11 +239,17 @@ function updateSketch(selection,hole){
     visible+' mapped '+(visible===1?'feature':'features')+' shown · tap a label to highlight';
   }
   for(const [id,label] of modes){const button=document.createElement('button');button.type='button';button.dataset.mapMode=id;button.textContent=label;button.setAttribute('aria-pressed',String(id===mapMode));button.onclick=()=>{mapMode=id;mapSelected=null;updateMode()};tools.append(button)}
-  box.append(svg,list,note);
+  box.append(svg);
+  if(shapes.length){
+   const details=document.createElement('details'),summary=document.createElement('summary');
+   summary.textContent='Explore the sketch';details.append(summary,tools,list,note);box.append(details);
+  }
   updateMode();
-  const foot=document.createElement('p');foot.className='geometry-foot';foot.textContent=annotations.route?
-   'Pencil route connects mapped tee and green (not a verified playing line). Trouble positions are approximate · no carry distances or live pin.':
-   'Partial mapped shapes: tee-to-green route unverified. No invented fairway, dogleg, carry distance or pin.';box.append(foot);
+  const foot=document.createElement('p');foot.className='geometry-foot';
+  foot.textContent=annotations.route?'Illustrative layout · approximate tee area and trouble. Confirm carries on course. ':'Partial mapped shapes · No invented fairway or hazard outlines. ';
+  if(sketch.source){const credit=document.createElement('a');credit.href=sketch.source;credit.textContent=sketch.credit;foot.append(credit)}
+  if(annotations.reference)foot.append(' · * Club booklet reference');
+  box.append(foot);
  }).catch(error=>{if(spatialPending===controller)spatialPending=null;if(!controller.signal.aborted)unavailable()});
 }
 $('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
@@ -223,16 +257,26 @@ $('next').onclick=()=>{number=Math.min(18,number+1);draw()};
 $('hole').onchange=()=>{number=Number($('hole').value);draw()};
 $('askHoleCaddy').onclick=()=>{
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
- const question=latest.selection?composeHoleQuestion({courseName:latest.selection.course?.name,teeName:latest.selection.tee?.name,holeNumber:number,par:page.hole?.par,yards:page.hole?.yards}):null;
- if(!question||!saveHoleQuestion(sessionStorage,question)){document.querySelector('#status').textContent='Unable to prepare the caddy question. Your current round is unchanged.';return}
+ const question=latest.selection?composeHoleQuestion({courseName:latest.selection.course?.name,teeName:latest.selection.tee?.name,holeNumber:number,par:page.hole?.par,yards:page.hole?.yards,trouble:[describeSketchTrouble(activeAnnotations),activeAnnotations?.reference?.note].filter(Boolean).join('. ')}):null;
+ if(!question||!saveHoleQuestion(sessionStorage,question,Date.now(),{selectionKey:yardageSelectionKey(latest.selection),holeNumber:number})){document.querySelector('#status').textContent='Unable to prepare the caddy question. Your current round is unchanged.';return}
  rememberHole();
  location.assign('./');
 };
 $('return').onclick=()=>{rememberHole();location.assign('./')};
 async function load(){
  // Reuse active course provider/cache exactly as AI Caddy does.
- latest=await loadYardageState({storage:localStorage,holeNumber:number});
- draw();
+ const generation=++roundGeneration;
+ const result=await loadYardageState({storage:localStorage,holeNumber:number,signal:AbortSignal.timeout?.(7000)});
+ if(generation!==roundGeneration||result.state==='selection-changed')return;
+ const changed=yardageSelectionKey(result.selection)!==yardageSelectionKey(latest.selection);
+ latest=result;
+ draw({refreshSketch:changed});
 }
-draw();load().catch(()=>{$('status').textContent='Course scorecard could not be loaded. Your scores and wagers are unchanged.'});
+function refreshRound(){
+ latest=cachedState();
+ draw();
+ load().catch(()=>{$('status').textContent='Scorecard details are temporarily unavailable.'});
+}
+window.addEventListener('storage',event=>{if(event.key===ACTIVE_ROUND_KEY)refreshRound()});
+refreshRound();
 </script></body></html>

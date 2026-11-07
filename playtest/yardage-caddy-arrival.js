@@ -1,8 +1,8 @@
 // Yardage Book question arrives as an editable draft, never an automatic AI request.
-import {takeHoleQuestion} from './yardage-caddy-handoff.js';
+import {takeHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 function install(){
- const question=takeHoleQuestion(sessionStorage);
- if(!question)return;
+ const draft=takeHoleQuestion(sessionStorage,Date.now(),{withContext:true});
+ if(!draft)return;
  // The Clubhouse is normally intentionally minimal. A golfer who explicitly
  // taps Ask Caddy in the Yardage Book may open the editor without losing it.
  document.body.classList.remove('dcc-clubhouse-focus');
@@ -19,7 +19,9 @@ function install(){
  button.type='button';
  button.textContent='Use hole question';
  function populate(){
-  field.value=question;
+  field.dataset.yardageDraftContext=JSON.stringify(draft.context);
+  document.dispatchEvent(new CustomEvent('dcc:yardage-caddy-context',{detail:draft.context}));
+  field.value=draft.question;
   field.dispatchEvent(new Event('input',{bubbles:true}));
   field.scrollIntoView({block:'center'});
   field.focus({preventScroll:true});
@@ -33,5 +35,5 @@ function install(){
  // Never replace any draft automatically. A single explicit tap inserts the hole question.
  note.scrollIntoView({block:'nearest'});
 }
-// Wait for the page's existing draft initialization before deciding whether to prefill.
-if(document.readyState==='complete')install();else document.addEventListener('DOMContentLoaded',install,{once:true});
+// Module scripts run after markup parsing. Avoid waiting for unrelated SDK modules.
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();

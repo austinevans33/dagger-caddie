@@ -5,13 +5,13 @@
 // reference tee and MUST NOT be shown as selected-tee carries or pin distances.
 // Source does not consistently identify the hazard TYPE in text: do not call
 // these bunkers, water, OB, or safe landing areas without mapped polygons.
+import {isBayonetCourse} from './bayonet-verified-scorecard.js';
 const SIDES=Object.freeze([
  'LR','LR','LR','LR','LR','LR','LR','R','LR',
  'L','','LR','R','LR','LR','LR','LR','LR'
 ]);
 export function bayonetOsmTrouble(selection,holeNumber){
- if(selection?.course?.provider!=='opengolfapi'||
-    String(selection.course.name||'').trim().toLowerCase()!=='bayonet at puppy creek'||
+ if(!isBayonetCourse(selection?.course)||
     !Number.isInteger(holeNumber)||holeNumber<1||holeNumber>18)return null;
  const sides=SIDES[holeNumber-1];
  if(!sides)return null;

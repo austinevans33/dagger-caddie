@@ -2,7 +2,11 @@
 # Publish an approved, unzipped Friday candidate to an expiring STAGING channel.
 set -euo pipefail
 PROJECT="dagger-country-club-staging"
-CHANNEL="friday-friends-20261106"
+CHANNEL="${DCC_FRIDAY_CHANNEL:-friday-friends-20261106}"
+if [[ "$CHANNEL" != "friday-friends-20261106" && ! "$CHANNEL" =~ ^friday-[0-9a-f]{10}$ ]]; then
+  echo "STOP: Invalid isolated Friday preview channel." >&2
+  exit 2
+fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD="${1:-}"
 if [[ -z "$BUILD" || ! -d "$BUILD/playtest" ]]; then
@@ -82,6 +86,9 @@ JSON
   firebase hosting:channel:deploy "$CHANNEL" \
     --project "$PROJECT" \
     --config "$BUILD/firebase.friday-preview.json" \
-    --expires 7d
+    --expires 7d \
+    --no-authorized-domains \
+    --non-interactive \
+    --json
 )
 echo "Open the returned URL with /playtest/ appended. Verify exact SHA before any two-phone test."

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {BAYONET_TEES,BAYONET_PAR,BAYONET_SCORECARD_PROVENANCE,bayonetVerifiedScorecard,bayonetTeeForSelection} from '../playtest/bayonet-verified-scorecard.js';
 import {getActiveCourseContext,readCourseScorecard} from '../playtest/active-course-context.js';
 import {saveActiveRound} from '../playtest/starters-desk-session.js';
-const makeSelection=(color='white',overrides={})=>({course:{provider:'opengolfapi',providerCourseId:'actual-provider-id-from-search',name:'Bayonet at Puppy Creek',region:'Raeford, NC',...(overrides.course||{})},tee:{providerTeeId:color,name:color.charAt(0).toUpperCase()+color.slice(1),totalYards:BAYONET_TEES[color]?.total||5752,...(overrides.tee||{})},holeNumber:1});
+const makeSelection=(color='white',overrides={})=>({course:{provider:'opengolfapi',providerCourseId:'1c31d1fb-faa1-4d9f-80a2-f281982df126',name:'Bayonet at Puppy Creek',region:'Raeford, NC',...(overrides.course||{})},tee:{providerTeeId:color,name:color.charAt(0).toUpperCase()+color.slice(1),totalYards:BAYONET_TEES[color]?.total||5752,...(overrides.tee||{})},holeNumber:1});
 const memory=()=>{const data=new Map();return {getItem:k=>data.has(k)?data.get(k):null,setItem:(k,v)=>data.set(k,String(v)),removeItem:k=>data.delete(k),keys:()=>[...data.keys()]}};
 test('all five photographed Bayonet tees reconcile front/back/18 and par 36+36',()=>{
  assert.equal(BAYONET_PAR.slice(0,9).reduce((a,b)=>a+b),36);assert.equal(BAYONET_PAR.slice(9).reduce((a,b)=>a+b),36);
@@ -38,4 +38,12 @@ test('matching Bayonet row works offline and never writes a fake provider cache'
  assert.equal(ctx.holes[17].yards,450);
  assert.equal(readCourseScorecard(storage,makeSelection('white')).holes[0].yards,433);
  assert.equal(storage.keys().some(k=>k.includes('scorecard')),false);
+});
+
+test('Starter offers exact club tees for Raeford and preserves other providers’ selection path',async()=>{
+ const {loadOpenGolfTees}=await import('../playtest/opengolf-catalog.js');
+ const selection=makeSelection('blue');
+ const [entry]=await loadOpenGolfTees(selection.course,{fetcher:()=>{throw Error('club tees should be available offline')}});
+ assert.equal(entry.tees.find(t=>t.providerTeeId==='blue').totalYards,6281);
+ assert.equal(bayonetVerifiedScorecard({...selection,course:{...selection.course,providerCourseId:'monterey'}}),null);
 });

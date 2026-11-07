@@ -18,7 +18,7 @@ ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
 .ghost-hole-paper small{display:block;margin:6px 0;color:#455548;font:12px/1.4 system-ui,sans-serif}
 
 @media(prefers-reduced-motion:reduce){.dcc-ghost-tracer{animation:none!important;stroke-dashoffset:0!important}}
-</style></head><body><main><header><small>DAGGER COUNTRY CLUB · ISOLATED FRIDAY QA</small><h1>House Ghost · Shot Trail</h1><a href="./">← Back to Playtest</a></header>
+</style></head><body><main><header><small>DAGGER COUNTRY CLUB · HOUSE GHOST</small><h1>House Ghost · Shot Trail</h1><a id="ghostBack" href="./">← Back to The Clubhouse</a></header>
 <p class="notice"><strong>Simulated schematic only.</strong> This preview does not read or change scores, bets, GPS, Firebase, or real pin positions. It reads your selected course and tees when available; Ghost shots remain simulated.</p>
 <div class="controls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
 <article><strong id="headline">Loading…</strong><p id="summary"></p>
@@ -32,72 +32,91 @@ ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
 <p id="progress" role="status"></p></article>
 <article><strong>Revealed strokes</strong><ol id="shots"></ol></article>
 </main><script type="module">
-import {ghostShotPlayback} from '../house-ghost-playback.js';
+import {ghostShotPlayback} from '../house-ghost-playback.js?v=friday-book-1';
 import {loadYardageState} from './yardage-live.js';
-import {drawGhostTracer} from './ghost-tracer.js';
-import {loadCourseFeatures,pencilGeometry,orientPencilTeeToGreen} from './course-pencil-geometry.js';
-import {pencilBookAnnotations} from './pencil-book-annotations.js';
-import {renderSharedHoleSketch} from './shared-hole-sketch.js';
+import {drawGhostTracer} from './ghost-tracer.js?v=friday-book-1';
+import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './hole-sketch.js?v=friday-book-1';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=friday-book-1';
+import {readYardageHole} from './yardage-navigation.js';
 import {pencilOrientation} from './yardage-pencil-orientation.js';
 const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
 const TIER_NAMES=Object.freeze({scratch:'The Undertaker',fiveTen:'The Sandbagger',tenFifteen:'The Weekend Menace',fifteenTwenty:'The Liability'});
-const requestedTier=new URLSearchParams(location.search).get('tier');
+const params=new URLSearchParams(location.search);
+const requestedTier=params.get('tier');
+const requestedHole=Number(params.get('hole'));
+const firstHole=Number.isInteger(requestedHole)&&requestedHole>=1&&requestedHole<=18
+ ?requestedHole:readYardageHole({session:sessionStorage,local:localStorage});
 let savedTier=null;try{savedTier=sessionStorage.getItem('dccGhostPreviewTier')}catch{}
 const ghostTier=Object.hasOwn(TIER_NAMES,requestedTier)?requestedTier:
  Object.hasOwn(TIER_NAMES,savedTier)?savedTier:'tenFifteen';
 let selectedCourse=null;let verifiedHoles=[];let courseIdentity='friday-qa';
 let activeCourseSelection=null,sketchGeneration=0;
-const sketchCache=new Map();
+let currentRoute=null,sketchPending=null;
+function sizeStage(height){
+ $('trail').setAttribute('viewBox','0 0 '+SKETCH_WIDTH+' '+height);
+ $('ghostHoleSketch').setAttribute('height',height);
+ const scale='scale('+(SKETCH_WIDTH/320)+' '+(height/430)+')';
+ for(const id of ['traces','markers'])$(id).setAttribute('transform',scale);
+}
 function showUnmappedPencil(holeNumber){
  const svg=$('ghostHoleSketch');
  const facts=verifiedHoles.find(h=>h.number===holeNumber);
- // This is deliberately the same clearly labeled orientation fallback used by
- // the Yardage Book, never a fictional map of the selected golf course.
+ sizeStage(220);
+ svg.setAttribute('viewBox','0 0 300 220');
  svg.innerHTML=pencilOrientation({holeNumber,par:facts?.par,yards:facts?.yards}).svg;
 }
 async function updateGhostHoleSketch(){
  const generation=++sketchGeneration;
+ sketchPending?.abort();
+ currentRoute=null;
  const holeNumber=Number($('hole').value);
+ if(params.get('from')==='yardage')$('ghostBack').href='yardage-preview.html?hole='+holeNumber;
  const svg=$('ghostHoleSketch'),status=$('ghostMapStatus');
- svg.replaceChildren();
+ showUnmappedPencil(holeNumber);
+ render();
  if(!activeCourseSelection){
-  showUnmappedPencil(holeNumber);
-  status.textContent='Illustrative pencil orientation · hole geography unverified. Ghost flights are simulated on this same drawing.';
+  status.textContent='Practice strokes · hole geography unverified.';
   return;
  }
- status.textContent='Checking provider-mapped fairway, green and hazards for hole '+holeNumber+'…';
- const key=activeCourseSelection.course.providerCourseId+'|'+holeNumber;
+ const controller=new AbortController();
+ sketchPending=controller;
+ status.textContent='Checking course artwork for hole '+holeNumber+'…';
  try{
-  let features=sketchCache.get(key);
-  if(!features){
-   features=await loadCourseFeatures(activeCourseSelection,holeNumber);
-   if(sketchCache.size>=18)sketchCache.delete(sketchCache.keys().next().value);
-   sketchCache.set(key,features);
-  }
+  const sketch=await loadHoleSketch(activeCourseSelection,holeNumber,{signal:controller.signal});
   if(generation!==sketchGeneration)return;
-  const shapes=orientPencilTeeToGreen(pencilGeometry(features));
-  const annotations=pencilBookAnnotations(shapes);
-  if(!shapes.length){showUnmappedPencil(holeNumber);status.textContent='No mapped hole outlines available. Illustrative pencil orientation and Ghost flights only.';return;}
-  renderSharedHoleSketch(svg,shapes,annotations);
-  status.textContent=annotations.route?'Same mapped pencil drawing as Yardage Book. Gold flights are illustrative, not real shot positions.':
-   'Partial mapped outlines · illustrative Ghost flights over the same pencil drawing.';
+  if(sketch.coverage==='scorecard'){
+   status.textContent='No mapped hole outlines available. Simulated practice strokes.';
+   return;
+  }
+  sizeStage(SKETCH_HEIGHT);
+  renderSharedHoleSketch(svg,sketch.shapes,sketch.annotations,{height:SKETCH_HEIGHT});
+  currentRoute=sketch.annotations.route;
+  status.textContent='Same mapped pencil drawing as Yardage Book. Simulated flights. ';
+  if(sketch.source){
+   const credit=document.createElement('a');
+   credit.href=sketch.source;credit.textContent=sketch.credit;status.append(credit);
+  }
+  render();
  }catch{
-  if(generation===sketchGeneration){showUnmappedPencil(holeNumber);status.textContent='Hole geography unavailable · illustrative pencil orientation with simulated Ghost flights.';}
+  if(generation===sketchGeneration)status.textContent='Hole geography unavailable · simulated practice strokes.';
  }
 }
 
 function stopWatch(){if(watchTimer!==null){clearInterval(watchTimer);watchTimer=null;}$('watch').textContent='▶ Watch Ghost play the hole'}
 for(let n=1;n<=18;n++)$('hole').add(new Option('Hole '+n,n));
+$('hole').value=String(firstHole);
+if(params.get('from')==='yardage')$('ghostBack').textContent='← Back to Yardage Book';
 function render(){
  const count=Number($('length').value),holeNumber=Number($('hole').value);
  const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity,tier:ghostTier});
  revealed=state.shotsRevealed;
  $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par+' · Ghost '+state.score;
  $('summary').textContent=(selectedCourse?selectedCourse+' · ':'Practice defaults · ')+(state.coverage==='scorecard'?'selected-tee par & yards verified · ':'unverified hole facts · ')+state.label;
- drawGhostTracer($('trail'),state.visibleShots,{animateLast:revealed>lastRendered});lastRendered=revealed;
+ const placement=placeGhostShots(state.visibleShots,currentRoute);
+ drawGhostTracer($('trail'),placement.shots,{start:placement.start,animateLast:revealed>lastRendered});lastRendered=revealed;
  $('markers').replaceChildren();
  const ns='http://www.w3.org/2000/svg';
- state.visibleShots.forEach((shot,i)=>{
+ placement.shots.forEach((shot,i)=>{
   const dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',String(shot.x*320));dot.setAttribute('cy',String(shot.y*430));dot.setAttribute('r','10');dot.setAttribute('fill','#143126');dot.setAttribute('stroke','#fff');dot.setAttribute('stroke-width','2');
   const label=document.createElementNS(ns,'text');label.setAttribute('x',String(shot.x*320));label.setAttribute('y',String(shot.y*430+4));label.setAttribute('text-anchor','middle');label.setAttribute('font-size','12');label.setAttribute('fill','#fff');label.textContent=String(i+1);
   $('markers').append(dot,label);

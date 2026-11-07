@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {bayonetOsmTrouble} from '../playtest/bayonet-osm-trouble.js';
 import {yardageCaddyNote} from '../playtest/yardage-caddy-notes.js';
-const selection={course:{provider:'opengolfapi',name:'Bayonet at Puppy Creek'}};
+const selection={course:{provider:'opengolfapi',providerCourseId:'1c31d1fb-faa1-4d9f-80a2-f281982df126',name:'Bayonet at Puppy Creek'}};
 test('Bayonet 18-hole OSM trouble survey is course-specific and not a guessed map',()=>{
  const results=Array.from({length:18},(_,i)=>bayonetOsmTrouble(selection,i+1));
  assert.equal(results.filter(Boolean).length,17);

@@ -81,7 +81,8 @@ test('Ticket Window keeps original resolved-ticket controls visible and 19th Hol
  await page.locator('#tab-bets').click();
  await expect(page.locator('#dccVisibleTickets')).toBeVisible();
  await expect(page.locator('#dccVisibleTickets #dccPropList')).toHaveCount(1);
- await expect(page.locator('#dccPropHistoryWrap')).toBeHidden();
+ await expect(page.locator('#dccPropHistoryWrap')).toBeVisible();
+ await expect(page.locator('#dccPropHistoryWrap')).not.toHaveAttribute('open','');
  await expect(page.locator('#dccPropNew')).toBeVisible();
  const follows=await page.evaluate(()=>document.querySelector('#moneyRoomSection')?.nextElementSibling?.id);
  expect(follows).toBe('dcc19thHole');
@@ -225,7 +226,7 @@ test('Yardage Book uses actual selected tee/provider scorecard and preserves bet
 test('Real Bayonet White Yardage Book covers all 18 holes and safe caddy handoff',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>{
-  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'bayonet-release-test',name:'Bayonet at Puppy Creek',region:'NC'},tee:{providerTeeId:'white',name:'Regular / White',totalYards:5752},holeNumber:1}}));
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{course:{provider:'opengolfapi',providerCourseId:'1c31d1fb-faa1-4d9f-80a2-f281982df126',name:'Bayonet at Puppy Creek',region:'NC'},tee:{providerTeeId:'white',name:'Regular / White',totalYards:5752},holeNumber:1}}));
   localStorage.setItem('dagger_selected_caddie',JSON.stringify('vinny'));
   localStorage.setItem('dagger_foursome_active',JSON.stringify({players:['Golfer','Friend'],format:'skins',stake:5,holes:[[4,5]],started:123}));
  });
@@ -344,6 +345,7 @@ test('Pencil map is readable and tappable with one hand using Green / Trouble fi
  expect(await page.evaluate(()=>{const map=document.querySelector('.field-sketch'),notes=document.querySelector('.paper .card');return !!(map.compareDocumentPosition(notes)&Node.DOCUMENT_POSITION_FOLLOWING)})).toBe(true);
  await expect(map.locator('svg polygon')).toHaveCount(2);
  await expect(map.locator('.map-feature')).toHaveCount(2);
+ await map.getByText('Explore the sketch',{exact:true}).click();
  const trouble=map.getByRole('button',{name:'Trouble'});
  const green=map.getByRole('button',{name:'Green',exact:true});
  expect((await trouble.boundingBox()).height).toBeGreaterThanOrEqual(44);
@@ -412,9 +414,9 @@ test('Yardage Book asks Caddy about selected verified hole without auto-sending'
 test('Bayonet photographed club scorecard loads all 18 White tee holes without a provider fetch',async({page})=>{
  let providerCalls=0;
  await page.addInitScript(()=>{
-  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'bayonet-photo-fixture',name:'Bayonet at Puppy Creek',region:'Raeford, NC'},tee:{providerTeeId:'white',name:'White',totalYards:5752},holeNumber:1}}));
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:Date.now(),selection:{course:{provider:'opengolfapi',providerCourseId:'1c31d1fb-faa1-4d9f-80a2-f281982df126',name:'Bayonet at Puppy Creek',region:'Raeford, NC'},tee:{providerTeeId:'white',name:'White',totalYards:5752},holeNumber:1}}));
  });
- await page.route(url=>url.toString().includes('/v1/courses/bayonet-photo-fixture/holes'),route=>{providerCalls++;return route.abort()});
+ await page.route(url=>url.toString().includes('/v1/courses/1c31d1fb-faa1-4d9f-80a2-f281982df126/holes'),route=>{providerCalls++;return route.abort()});
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('#status')).toContainText('18/18');
  await expect(page.locator('#yards')).toContainText('433');
@@ -586,4 +588,65 @@ test('Host QR uses secure room invitation and renders a scannable black-and-whit
  expect(result.renderedHeight).toBe(result.size);
  expect(result.quietZoneWhite).toBe(true);
  expect(result.rejectsInvalid).toBe(true);
+});
+
+test('Bayonet Blue notebook shows the supplied course routing and shares it with Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,
+   selection:{course:{provider:'opengolfapi',providerCourseId:'1c31d1fb-faa1-4d9f-80a2-f281982df126',name:'Bayonet at Puppy Creek',region:'Raeford, NC'},
+    tee:{providerTeeId:'blue',name:'Blue',totalYards:6281},holeNumber:1}}));
+  localStorage.setItem('dagger_profile',JSON.stringify([{name:'Mini Driver',manualCarry:235}]));
+ });
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('#courseTitle')).toHaveText('Bayonet at Puppy Creek');
+ await expect(page.locator('#mapPar')).toHaveText('Par 5');
+ await expect(page.locator('#mapYards')).toHaveText('471 yds');
+ await expect(page.locator('.field-sketch svg')).toHaveAttribute('viewBox','0 0 300 440');
+ await expect(page.locator('.field-sketch svg polygon')).toHaveCount(11);
+ await expect(page.locator('#gamePlan')).toContainText('Mini Driver 235 yd');
+ const first=await page.locator('.field-sketch .route-mark').getAttribute('d');
+ await page.screenshot({path:'candidate-screenshots/04-bayonet-book-iphone.png',fullPage:true,animations:'disabled'});
+ await page.locator('#hole').selectOption('18');
+ await expect(page.locator('#mapYards')).toHaveText('495 yds');
+ await expect(page.locator('.field-sketch .route-mark')).not.toHaveAttribute('d',first);
+ await page.locator('#hole').selectOption('1');
+ await expect(page.locator('.field-sketch .route-mark')).toHaveAttribute('d',first);
+ await page.locator('#watchGhost').click();
+ await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',first);
+ await expect(page.locator('#trail')).toHaveAttribute('viewBox','0 0 300 440');
+ await page.locator('#next').click();
+ await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+ await page.screenshot({path:'candidate-screenshots/05-bayonet-ghost-iphone.png',fullPage:true,animations:'disabled'});
+ await page.locator('#ghostBack').click();
+ await expect(page.locator('#hole')).toHaveValue('1');
+});
+
+test('Ticket Window resolves and toggles payment without changing recorded outcome or net',async({page})=>{
+ await page.goto('/playtest/');
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ await page.locator('#useAustin').click();
+ await page.locator('#dccClubhouseHome [data-dcc-go="ticket"]').click();
+ await expect(page.locator('#dccPropNew')).toHaveAttribute('aria-expanded','false');
+ await page.locator('#dccPropNew').click();
+ for(const [id,value] of [['dccPropText','QA tee shot'],['dccPropMe','Golfer'],['dccPropOther','Friend'],['dccPropStake','5'],['dccPropOdds','2']]){
+  await page.locator('#'+id).fill(value);
+ }
+ await page.locator('#dccPropForm button[type="submit"]').click();
+ const ticket=page.locator('#dccPropList article').filter({hasText:'QA tee shot'});
+ await expect(ticket).toContainText('OPEN');
+ page.on('dialog',dialog=>dialog.accept());
+ await ticket.getByRole('button',{name:'YES happened'}).click();
+ await expect(ticket).toContainText('UNSETTLED');
+ await expect(page.locator('#dccPropTotal')).toHaveText('+$10.00');
+ await ticket.getByRole('button',{name:'Mark paid',exact:true}).click();
+ await expect(ticket).toContainText('marked paid');
+ await expect(page.locator('#dccPropTotal')).toHaveText('+$10.00');
+ await ticket.getByRole('button',{name:'Undo paid',exact:true}).click();
+ await expect(ticket).toContainText('UNSETTLED');
+ await expect(page.locator('#dccPropTotal')).toHaveText('+$10.00');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')));
+ expect(saved).toHaveLength(1);
+ expect(saved[0]).toMatchObject({result:'yes',settled:false,stake:5});
 });

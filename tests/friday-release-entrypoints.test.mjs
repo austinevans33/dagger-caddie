@@ -17,7 +17,7 @@ test('all local module script references in Friday HTML resolve on disk',()=>{
    assert(existsSync(resolve(root,dirname(p),target.split(/[?#]/)[0])),p+': '+target);
   }
   const imports=[...source.matchAll(/\bimport\s+(?:[^'"]+\s+from\s+)?["'](\.[^'"]+)["']/g)].map(m=>m[1]);
-  for(const target of imports)assert(existsSync(resolve(root,dirname(p),target)),p+': '+target);
+  for(const target of imports)assert(existsSync(resolve(root,dirname(p),target.split(/[?#]/)[0])),p+': '+target);
  }
 });
 test('Playtest preserves live scoring and Money Room entrypoints',()=>{

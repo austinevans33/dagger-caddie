@@ -1,4 +1,4 @@
-import {simulateGhostHole} from './house-ghost-trail.js';
+import {simulateGhostHole} from './house-ghost-trail.js?v=friday-book-1';
 // One deterministic Ghost round for ANY selected course: verified par/yards when present,
 // clearly labeled planning defaults when absent. Never label a fallback as a course fact.
 export function buildGhostRound({courseName='Selected course',holes=[],seed='house-ghost',count=18,tier=null}={}){

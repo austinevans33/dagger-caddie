@@ -95,7 +95,7 @@ jobs:
           node --check house-ghost-round.js
           node --check house-ghost-ledger.js
           node --check house-ghost-playback.js
-          node --test tests/house-ghost-trail.test.mjs tests/house-ghost-round.test.mjs tests/house-ghost-ledger.test.mjs tests/house-ghost-playback.test.mjs tests/friday-ghost-entry.test.mjs tests/friday-money-room-guard.test.mjs tests/friday-room-recovery.test.mjs tests/friday-ledger-settlement.test.mjs tests/friday-bbb-settlement.test.mjs tests/friday-course-switch.test.mjs tests/friday-yardage-book.test.mjs tests/friday-yardage-entry.test.mjs tests/friday-yardage-selection.test.mjs tests/friday-round-yardage-transition.test.mjs tests/friday-yardage-roundtrip.test.mjs tests/friday-yardage-navigation.test.mjs tests/friday-course-pencil-geometry.test.mjs tests/friday-yardage-caddy-handoff.test.mjs tests/friday-round-score-snapshot.test.mjs tests/friday-round-score-pulse.test.mjs tests/friday-bayonet-scorecard.test.mjs tests/friday-course-scorecard-reconcile.test.mjs tests/friday-release-entrypoints.test.mjs tests/friday-round-receipt.test.mjs tests/friday-playable-code-parity.test.mjs tests/friday-game-yardage-roundtrip.test.mjs tests/friday-pencil-orientation.test.mjs tests/friday-yardage-attack-plan.test.mjs tests/friday-bayonet-osm-trouble.test.mjs tests/friday-pencil-book-annotations.test.mjs tests/friday-shared-hole-sketch.test.mjs tests/friday-ghost-tier-preview.test.mjs tests/friday-round-game-score-adapter.test.mjs tests/friday-paper-game-prefill.test.mjs tests/friday-foursome-money-math.test.mjs tests/friday-release-gate.test.mjs
+          node --test tests/*.test.mjs
 
       - name: Check staging-only deploy helper syntax
         run: bash -n qa/deploy-friday-preview.sh
@@ -198,3 +198,52 @@ jobs:
           name: dagger-friday-visuals
           path: candidate-screenshots/
           retention-days: 14
+
+  staging-preview:
+    needs: browser-smoke
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release/friday-staging-20261106'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: dagger-friday-candidate
+          path: candidate
+      - name: Check exact verified candidate before staging authorization
+        run: |
+          test "$GITHUB_SHA" = "$(cat candidate/FRIDAY_CHECKED_OUT_SHA.txt)"
+          test "$GITHUB_SHA" = "$(cat candidate/FRIDAY_BROWSER_VERIFIED_SHA.txt)"
+          python3 tests/friday-bundle-integrity.py candidate
+          node --input-type=module -e "import {firebaseConfig} from './candidate/playtest/firebase-config.js'; if (firebaseConfig.projectId !== 'dagger-country-club-staging') process.exit(1)"
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+      - name: Publish isolated exact-commit Firebase preview
+        run: |
+          set -euo pipefail
+          npm install --global firebase-tools@14.22.0
+          export DCC_FRIDAY_CHANNEL="friday-${GITHUB_SHA:0:10}"
+          printf '%s\n' 'DEPLOY STAGING' | bash qa/deploy-friday-preview.sh "$PWD/candidate" | tee "$RUNNER_TEMP/dagger-preview.log"
+          preview_url="$(python3 - "$RUNNER_TEMP/dagger-preview.log" <<'PYTHON'
+          import re
+          import sys
+          from pathlib import Path
+          found = re.search(r'https://dagger-country-club-staging--friday-[a-f0-9]{10}-[a-z0-9-]+\.web\.app', Path(sys.argv[1]).read_text())
+          if not found:
+              raise SystemExit('No isolated staging preview URL returned')
+          print(found.group())
+          PYTHON
+          )"
+          curl --fail --retry 4 --max-time 20 "$preview_url/FRIDAY_BROWSER_VERIFIED_SHA.txt" -o "$RUNNER_TEMP/hosted-sha.txt"
+          cmp candidate/FRIDAY_BROWSER_VERIFIED_SHA.txt "$RUNNER_TEMP/hosted-sha.txt"
+          curl --fail --max-time 20 "$preview_url/playtest/hole-sketch.js" -o "$RUNNER_TEMP/hosted-sketch.js"
+          cmp candidate/playtest/hole-sketch.js "$RUNNER_TEMP/hosted-sketch.js"
+          printf 'Verified staging preview %s/playtest/ for %s\n' "$preview_url" "$GITHUB_SHA" | tee -a "$GITHUB_STEP_SUMMARY"

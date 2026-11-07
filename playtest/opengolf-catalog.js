@@ -1,5 +1,6 @@
 // OpenGolfAPI catalog adapter: public read-only API, no credentials or writes.
 // Provider attribution and ODbL terms: https://opengolfapi.org
+import {BAYONET_TEES,isBayonetCourse} from './bayonet-verified-scorecard.js';
 import {normalizeCatalog} from './course-catalog.js';
 const BASE='https://api.opengolfapi.org/v1/courses';
 const provider='opengolfapi';
@@ -41,6 +42,14 @@ export async function searchOpenGolfCourses(query,{fetcher=fetch,signal}={}){
 }
 export async function loadOpenGolfTees(course,{fetcher=fetch,signal}={}){
  if(course?.provider!==provider||!course.providerCourseId||!/^[a-zA-Z0-9._:-]+$/.test(course.providerCourseId))return [];
+ // The matched club scorecard and provider disagree on Bayonet tee totals.
+ // Offer a coherent club tee row for new check-ins. Saved rounds retain their tee.
+ if(isBayonetCourse(course)){
+  const tees=Object.entries(BAYONET_TEES).map(([providerTeeId,tee])=>({
+   providerTeeId,name:tee.label,totalYards:tee.total
+  }));
+  return normalizeCatalog([{course,tees}]);
+ }
  const url=BASE+'/'+encodeURIComponent(course.providerCourseId)+'/tees';
  const response=await fetcher(url,{headers:{Accept:'application/json'},signal});
  if(!response.ok)throw Error('Course details unavailable ('+response.status+').');

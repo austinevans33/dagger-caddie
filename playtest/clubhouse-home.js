@@ -89,10 +89,11 @@ function mount(){
   const title=document.createElement('h3');title.textContent='Your Tickets';
   visible.append(title,slips);
   archive.before(visible);
-  archive.hidden=true;
+  archive.hidden=false;
+  archive.open=false;
   ticket.classList.add('dcc-ticket-simplified');
   const total=ticket.querySelector('#dccPropTotal')?.previousElementSibling;
-  if(total)total.textContent='ALL-TIME PAID NET';
+  if(total)total.textContent='ALL-TIME NET POSITION';
  }
  // The 19th Hole is mounted by a later legacy DOMContentLoaded handler.
  // Reposition its existing link after both handlers finish, not before it exists.
@@ -116,7 +117,7 @@ function mount(){
   const target=button.dataset.dccGo;
   if(target==='games'){openTab('games');document.getElementById('gamesMenu')?.scrollIntoView({block:'start'})}
   else if(target==='ledger'){openTab('bets')}
-  else if(target==='ticket'){openTab('bets');document.getElementById('dccPropNew')?.click()}
+  else if(target==='ticket'){openTab('bets');document.getElementById('dccPropBets')?.scrollIntoView({block:'start'})}
   else if(target==='money'){openTab('bets');document.querySelector('#moneyRoomSection [data-r62-open="roomSetup"]')?.click();document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'})}
   else if(target==='caddy'){caddy.scrollIntoView({block:'start',behavior:'instant'})}
   else if(target==='bag'||target==='settings'){openTab(target)}

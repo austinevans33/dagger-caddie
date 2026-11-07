@@ -1,5 +1,6 @@
 // Personality notes on a scorecard page. Never assert unverified features, hazards or distances.
 // These are general caddy prompts, not provider facts or AI responses.
+import {recordedMissNotes} from './shot-record-context.js?v=friday-book-1';
 const names={keith:'Keith',reginald:'Reginald',vinny:'Vinny',kyle:'Kyle'};
 const standard={
  keith:['Pick a committed target. Swing through it.','Take the club that covers the number with a normal swing.'],
@@ -67,4 +68,46 @@ export function yardageCaddyNote({caddy='keith',hole=null,features=[],annotation
   disclaimer:trouble.length?'Hazard outlines from hole-assigned provider data. Positions and distances require on-course confirmation.':
    survey?'OSM survey route is not measured from your selected tees. Check carry distances on course; obstacle types and exact positions remain unverified.':
    'No unverified hazards, precise landing areas or live pin distances assumed.'});
+}
+
+// Compact, descriptive prompts using only the drawing's known features.
+// The drawing has no measured carry or selected-tee location.
+export function describeSketchTrouble(annotations, stages) {
+ const labels = annotations?.labels || [];
+ const named = labels.filter(label =>
+  ['bunker', 'water'].includes(label.type) &&
+  ['left', 'right', 'center'].includes(label.side) &&
+  ['tee zone', 'landing corridor', 'approach', 'beyond green'].includes(label.stage) &&
+  (!stages || stages.includes(label.stage))
+ ).map(label => label.type + ' ' + label.side + ' near the ' + label.stage);
+ return [...new Set(named)].slice(0, 3).join(', ');
+}
+
+export function sketchGamePlan({hole, annotations, profile = [], shotHistory = []} = {}) {
+ const teeTrouble = describeSketchTrouble(annotations, ['tee zone', 'landing corridor']);
+ const approachTrouble = describeSketchTrouble(annotations, ['approach', 'beyond green']);
+ const hazards = annotations?.labels || [];
+ const sides = new Set(hazards.filter(label => ['tee zone', 'landing corridor'].includes(label.stage)).map(label => label.side));
+ const troubleSide = sides.size === 1 && !sides.has('center') ? [...sides][0] : null;
+ const offTee = hole?.par === 3
+  ? 'Pick a green section after confirming the actual carry and pin.'
+  : troubleSide
+    ? 'Start your target search on the ' + (troubleSide === 'left' ? 'right' : 'left') + ' half. Check that it gives you a clear approach.'
+    : annotations?.mappedFairway
+      ? 'Use the widest mapped part of the fairway as your starting target. Check how far it is from your tee.'
+      : 'Check the fairway width and first trouble from the tee before picking a line.';
+ const clubs = (Array.isArray(profile) ? profile : []).filter(club =>
+  typeof club?.name==='string'&&/driver|(?:^|\b)[35]\s*wood\b/i.test(club?.name || '') &&
+  Number(club.manualCarry ?? club.carry) >= 100 && Number(club.manualCarry ?? club.carry) <= 400
+ ).sort((a, b) => Number(b.manualCarry ?? b.carry) - Number(a.manualCarry ?? a.carry)).slice(0, 2);
+ const recorded = recordedMissNotes(shotHistory, clubs.map(club=>club.name)).join(' / ');
+ const carries = clubs.map(club => club.name.slice(0, 28) + ' ' + Math.round(club.manualCarry ?? club.carry) + ' yd').join(' / ');
+ return {
+  offTee,
+  miss: annotations?.reference?.note || (teeTrouble ? 'Watch for ' + teeTrouble + '. Check the clearance on the opposite side.' : 'Tee-shot miss locations are unconfirmed.'),
+  approach: approachTrouble ? 'The sketch marks ' + approachTrouble + '. Confirm which green section has a clear entry.' : 'Confirm the green entrance and pin before choosing an approach.',
+  play: hole?.par !== 3 && carries
+   ? 'Your carries: ' + carries + '. ' + (recorded?'Recent outcomes: '+recorded+'. ':'') + 'Compare with the confirmed carry and landing space.'
+   : 'Use your actual target distance, lie and wind to pick a club you can carry comfortably.'
+ };
 }
