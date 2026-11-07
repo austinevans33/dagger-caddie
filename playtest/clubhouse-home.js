@@ -52,14 +52,13 @@ function mount(){
  if(document.getElementById('dccYardageCaddyArrival')||document.getElementById('aiInput')?.dataset.yardageDraftContext){
   document.body.classList.remove('dcc-clubhouse-focus');
  }
- let openingScorecard=false;
  const nav=document.getElementById('tab-play');
  if(nav){
   nav.setAttribute('aria-label','The Clubhouse');
   nav.title='The Clubhouse';
   const title=nav.querySelector('.dcc-tab-title');
   if(title)title.textContent='The Clubhouse';
-  nav.addEventListener('click',()=>{if(openingScorecard){openingScorecard=false;return}if(document.getElementById('dccYardageCaddyArrival')||document.getElementById('aiInput')?.dataset.yardageDraftContext){document.body.classList.remove('dcc-clubhouse-focus');return}document.body.classList.add('dcc-clubhouse-focus')});
+  nav.addEventListener('click',()=>document.body.classList.add('dcc-clubhouse-focus'));
  }
  const groundsHeader=document.querySelector('section.dcc-competition-portal[data-tab="games"]');
  if(groundsHeader&&!document.getElementById('dccGroundsDoors')){

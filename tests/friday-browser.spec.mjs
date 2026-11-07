@@ -52,7 +52,7 @@ test('Capture Friday iPhone-sized Play, Games and Ledger views for release revie
  await expect(page.locator('#dccSimpleLedger .dcc-simple-room > summary')).toBeVisible();
  await expect(page.locator('#dccSimpleLedger .dcc-simple-room > summary')).toHaveCSS('color','rgb(241, 231, 208)');
  await page.screenshot({path:'candidate-screenshots/03-ledger-iphone.png',animations:'disabled'});
- await page.locator('#dccLedgerRecordsLinks').scrollIntoViewIfNeeded();
+ await page.locator('#dccLedgerRecordsLinks').evaluate(el=>el.scrollIntoView({block:'center'}));
  await page.screenshot({path:'candidate-screenshots/07-ledger-records-iphone.png',animations:'disabled'});
 });
 
@@ -246,8 +246,7 @@ test('Real Bayonet White Yardage Book covers all 18 holes and safe caddy handoff
  await page.screenshot({path:'candidate-screenshots/05-bayonet-yardage-iphone.png',animations:'disabled'});
  await page.locator('#askHoleCaddy').click();
  await expect(page).toHaveURL(/\/playtest\/?$/);
- await expect(page.locator('#dccYardageCaddyArrival')).toBeVisible();
- await page.locator('#dccYardageCaddyArrival button').click();
+ await expect(page.locator('#aiInput')).toBeVisible();
  await expect(page.locator('#aiInput')).toHaveValue(/Bayonet at Puppy Creek/);
  await expect(page.locator('#aiInput')).toHaveValue(/hole 1/);
  await expect(page.locator('#aiInput')).toHaveValue(/433 yards/);
@@ -407,6 +406,9 @@ test('Yardage Book prefills the Caddy with selected verified hole without auto-s
  await expect(page.locator('#aiStatus')).toContainText(/Ready|backend|Connect|Unavailable/i);
  const pending=await page.evaluate(()=>sessionStorage.getItem('dcc_yardage_caddy_handoff_v1'));
  expect(pending).toBeNull();
+ await page.locator('#tab-play').click();
+ await expect(page.locator('#dccClubhouseHome')).toBeVisible();
+ await expect(prompt).toBeHidden();
 });
 
 test('Bayonet photographed club scorecard loads all 18 White tee holes without a provider fetch',async({page})=>{

@@ -6,7 +6,6 @@ function install(){
  if(!draft)return;
  const field=document.getElementById('aiInput');
  if(!field)return;
- document.body.classList.remove('dcc-clubhouse-focus');
  // Preserve a user's unfinished typed message instead of silently deleting it.
  const occupied=field.value.trim().length>0;
  function apply(){
@@ -18,6 +17,7 @@ function install(){
   field.scrollIntoView({block:'center'});
  }
  document.getElementById('tab-play')?.click();
+ document.body.classList.remove('dcc-clubhouse-focus');
  if(!occupied){apply();return;}
  const bar=document.createElement('div');
  bar.id='dccYardageCaddyArrival';

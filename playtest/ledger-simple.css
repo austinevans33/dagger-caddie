@@ -59,7 +59,7 @@
 #dccSimpleLedger .dcc-simple-room > summary {color:#f1e7d0!important}
 #dccSimpleListHost .dcc-r66-empty {border:0!important;padding:4px 0!important;margin:0!important;background:transparent!important}
 #dccSimpleLedger #dccPropHistoryWrap:not(:has(.dcc-r70-account-row)) {display:none!important}
-#dccLedgerRecordsLinks {
+body[data-active-tab="bets"] #dccLedgerRecordsLinks:not(.hidden-panel) {
   display:flex!important;
   flex-wrap:nowrap;
   align-items:center;
