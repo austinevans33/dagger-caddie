@@ -96,3 +96,52 @@ test('Kings Grant original mapped shapes remain audit-only while holes 9 and 13 
  assert.equal(map.status,'source-review-blocked');
  assert.equal(map.file,undefined);
 });
+
+test('reviewed Tobacco Road geometry cannot ship before tee and fairway coverage passes',async()=>{
+ const {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard,founderMapRecord}=await import('../playtest/founders-verified-scorecards.js');
+ const {loadHoleSketch}=await import('../playtest/hole-sketch.js');
+ const course=founderCatalogRecords('Tobacco Road')[0];
+ const tee=founderTeesForCourse(course).find(record=>record.providerTeeId==='ripper');
+ const {holes}=founderVerifiedScorecard({course,tee});
+ const {features,metadata}=JSON.parse(readFileSync(new URL('../qa/course-factory/tobacco-audit-only.json',import.meta.url)));
+ const map=founderMapRecord(course);
+ const audit=auditFounderGeometry({records:features,holes,metadata,expectedRef:map.ref});
+ assert.equal(metadata.osm_way,'430227508');
+ assert.equal(audit.pass,false);
+ assert.deepEqual(audit.ratioErrors,[]);
+ assert.equal(audit.quality.greenHoles,18);
+ assert.equal(audit.quality.fairwayHoles,14);
+ assert.deepEqual(audit.quality.checks.filter(hole=>!hole.tee).map(hole=>hole.number),[1,10]);
+ assert.deepEqual(features.find(feature=>feature.properties.osm==='r19746375').properties.holes,[15,16]);
+ assert.deepEqual(features.filter(feature=>feature.properties.layer==='water').map(feature=>feature.properties.holes),[[14]]);
+ assert.equal(map.status,'source-review-blocked');
+ let requests=0;
+ const sketch=await loadHoleSketch({course,tee},14,{fetcher:async()=>{
+  requests++;
+  return {ok:true,json:async()=>({features,metadata})};
+ }});
+ assert.equal(sketch.coverage,'scorecard');
+ assert.equal(requests,0);
+});
+
+for(const entry of [
+ {query:'The Chimneys',file:'chimneys-winder-ga.json',teeId:'gold',boundaryKey:'osm_relation',boundary:'143005',parThree:11},
+ {query:'Pine Hills',file:'pine-hills-winder-ga.json',teeId:'blue',boundaryKey:'osm_way',boundary:'34772934',parThree:16}
+]){
+ test(`${entry.query} meets Bayonet mapping parity against its reference tee`,async()=>{
+  const {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard,founderMapRecord}=await import('../playtest/founders-verified-scorecards.js');
+  const course=founderCatalogRecords(entry.query)[0];
+  const map=founderMapRecord(course);
+  const tee=founderTeesForCourse(course).find(record=>record.providerTeeId===entry.teeId);
+  const {holes}=founderVerifiedScorecard({course,tee});
+  const {features,metadata}=JSON.parse(readFileSync(new URL('../playtest/course-art/'+entry.file,import.meta.url)));
+  assert.equal(map.file,entry.file);
+  assert.equal(map.auditTee,entry.teeId);
+  assert.equal(metadata[entry.boundaryKey],entry.boundary);
+  const audit=auditFounderGeometry({records:features,holes,metadata,expectedRef:map.ref});
+  assert.equal(audit.pass,true);
+  assert.equal(audit.quality.mappedHoles,18);
+  assert.deepEqual(audit.quality.checks.filter(hole=>!hole.fairway).map(hole=>hole.number),[entry.parThree]);
+  assert.deepEqual(audit.ratioErrors,[]);
+ });
+}

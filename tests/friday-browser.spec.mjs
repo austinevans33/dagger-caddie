@@ -913,6 +913,54 @@ test('Sanford Quail Ridge uses all eighteen local drawings and shares hole fourt
  await expect(page.locator('#hole')).toHaveValue('14');
 });
 
+for(const course of [
+ {query:'The Chimneys',tee:'Gold',hole:11,yards:216,par:3},
+ {query:'Pine Hills',tee:'Red',hole:18,yards:360,par:5},
+]){
+ test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
+  await page.goto('/playtest/');
+  await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+  await page.locator('#dcc-starter-query').fill(course.query);
+  await page.locator('#dcc-starter-search').click();
+  await expect(page.locator('#dcc-starter-results')).toContainText('Winder, GA');
+  await page.locator('#dcc-starter-results button').first().click();
+  const options=page.locator('#dcc-starter-tees');
+  const selected=options.locator('option').filter({hasText:new RegExp('^'+course.tee+' ·')});
+  await expect(selected).toHaveCount(1);
+  await options.selectOption(await selected.getAttribute('value'));
+  await page.locator('#dcc-starter-checkin').click();
+  await page.goto('/playtest/yardage-preview.html?hole=1');
+  const route=page.locator('.field-sketch .route-mark');
+  const paths=new Set();
+  let previous=null;
+  for(let number=1;number<=18;number++){
+   await page.locator('#hole').selectOption(String(number));
+   if(previous)await expect(route).not.toHaveAttribute('d',previous);
+   await expect(route).toHaveAttribute('d',/^M/);
+   previous=await route.getAttribute('d');
+   paths.add(previous);
+  }
+  expect(paths.size).toBe(18);
+  await page.locator('#hole').selectOption(String(course.hole));
+  await expect(route).toHaveAttribute('d',Array.from(paths)[course.hole-1]);
+  await expect(page.locator('#yards')).toContainText(String(course.yards));
+  await expect(page.locator('#mapPar')).toContainText('Par '+course.par);
+  await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+  await expect(page.locator('#pocketNoteTwo')).not.toBeEmpty();
+  const shapeAttrs=items=>items.map(node=>[node.getAttribute('d'),node.getAttribute('points')]);
+  const shapes=await page.locator('.field-sketch svg [data-map-feature]').evaluateAll(shapeAttrs);
+  await page.locator('#watchGhost').click();
+  const ghost=page.locator('#ghostHoleSketch');
+  await expect(ghost.locator('.route-mark')).toHaveAttribute('d',Array.from(paths)[course.hole-1]);
+  expect(await ghost.locator('[data-map-feature]').evaluateAll(shapeAttrs)).toEqual(shapes);
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+ });
+}
+
 test('Ghost only offers manual hole par when there is no verified course scorecard',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
  await page.goto('/playtest/');

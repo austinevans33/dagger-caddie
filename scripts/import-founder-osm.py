@@ -37,7 +37,9 @@ def build_bundle(review, osm):
     nodes = {n.get("id"): (float(n.get("lon")), float(n.get("lat"))) for n in root.findall("node")}
     ways = {w.get("id"): w for w in root.findall("way")}
     relations = {r.get("id"): r for r in root.findall("relation")}
-    course = relations[review["boundary"]]
+    boundary_type = review.get("boundary_type", "relation")
+    require(boundary_type in {"way", "relation"}, "Unsupported OSM course boundary type")
+    course = (ways if boundary_type == "way" else relations)[review["boundary"]]
     require(all(tags(course).get(k) == v for k, v in review["identity"].items()),
             "Course boundary identity differs from the review")
 
@@ -70,13 +72,20 @@ def build_bundle(review, osm):
     boundary = polygon(boundary_rings)
     require(len(review["holes"]) == 18, "Expected all 18 hole entries in course review")
     output = []
-    used = set()
+    used = {}
 
-    def feature(kind, ref, hole, geometry_type, coords):
-        require(ref not in used, f"Duplicate assigned OSM element {ref}")
-        used.add(ref)
-        return {"type": "Feature", "properties": {"layer": kind, "holes": [hole], "osm": ref},
-                "geometry": {"type": geometry_type, "coordinates": coords}}
+    def add_feature(kind, ref, hole, geometry_type, coords):
+        previous = used.get(ref)
+        if previous is not None:
+            properties = previous["properties"]
+            require(kind == properties["layer"] == "fairway" and hole not in properties["holes"],
+                    f"Duplicate assigned OSM element {ref}")
+            properties["holes"].append(hole)
+            return
+        feature = {"type": "Feature", "properties": {"layer": kind, "holes": [hole], "osm": ref},
+                   "geometry": {"type": geometry_type, "coordinates": coords}}
+        used[ref] = feature
+        output.append(feature)
 
     for number, hole in enumerate(review["holes"], 1):
         route_id = hole["route"]
@@ -87,14 +96,19 @@ def build_bundle(review, osm):
         route = LineString(local(coords))
         require(route.is_valid and route.length > 0 and boundary.buffer(3).covers(route),
                 f"Hole {number} route lies outside the matched course")
-        output.append(feature("hole", "w" + route_id, number, "LineString", coords))
+        add_feature("hole", "w" + route_id, number, "LineString", coords)
         middle = substring(route, 0.12, 0.9, normalized=True)
         for kind in ("tee", "green", "fairway", "bunker", "water"):
             for ref in hole.get(kind, []):
                 require(ref[0] in {"w", "r"}, f"Invalid OSM feature reference {ref}")
                 element = (ways if ref[0] == "w" else relations)[ref[1:]]
-                element_kind = tags(element).get("golf")
-                require(LAYERS.get(element_kind, element_kind) == kind, f"Incorrect golf tag for {ref}")
+                element_tags = tags(element)
+                element_kind = element_tags.get("golf")
+                confirmed_pond = (kind == "water" and element_kind is None and
+                                  element_tags.get("natural") == "water" and
+                                  bool(review.get("water_evidence", {}).get(ref)))
+                require(LAYERS.get(element_kind, element_kind) == kind or confirmed_pond,
+                        f"Incorrect golf tag for {ref}")
                 all_rings = rings(element)
                 shape = polygon(all_rings)
                 require(boundary.covers(shape.representative_point()), f"Feature {ref} belongs outside the course")
@@ -107,9 +121,10 @@ def build_bundle(review, osm):
                             f"Fairway {ref} does not meet the reviewed hole {number} route")
                 else:
                     require(route.distance(shape) <= 30, f"Hazard {ref} too far from hole {number} route")
-                output.append(feature(kind, ref, number, "Polygon", all_rings))
+                add_feature(kind, ref, number, "Polygon", all_rings)
+    boundary_key = "osm_way" if boundary_type == "way" else "osm_relation"
     return {"type": "FeatureCollection", "metadata": {
-        "course_ref": review["course_ref"], "osm_relation": review["boundary"], "source": review["source"],
+        "course_ref": review["course_ref"], boundary_key: review["boundary"], "source": review["source"],
         "source_sha256": digest, "copyright": "© OpenStreetMap contributors",
         "attribution": "https://www.openstreetmap.org/copyright", "license": ODBL,
     }, "features": output}
