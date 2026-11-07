@@ -15,9 +15,11 @@ test('provider query asks for larger, bounded search results and does not fabric
   calls.push({url,options});
   return {ok:true,json:async()=>({courses:[course(1),course(2)]})};
  }});
- assert.equal(result.length,2);
+ const providerMatches=result.filter(item=>item.provider==='opengolfapi');
+ assert.equal(providerMatches.length,2);
  assert.match(calls[0].url,/q=Pinehurst&limit=40$/);
- assert.equal(result[1].providerCourseId,'course-2');
+ assert.equal(providerMatches[1].providerCourseId,'course-2');
+ assert.ok(result.some(item=>item.name==='Pinehurst No. 3'));
 });
 test('missing provider data still means no courses',async()=>{
  assert.deepEqual(searchResultCourses({courses:[]}),[]);
