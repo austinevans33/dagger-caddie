@@ -829,3 +829,50 @@ test('From the hole, Ask My Caddy preserves the hole and returns without writing
  const scored=await page.evaluate(()=>{const raw=localStorage.getItem('dcc_solo_scorecard_v1');return raw?JSON.parse(raw).scores.filter(v=>Number.isInteger(v)).length:0});
  expect(scored).toBe(0);
 });
+
+test('Kings Grant founder book checks in on six local tees and opens eighteen real scorecard holes',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
+ await page.goto('/playtest/');
+ await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Kings Grant');
+ await page.locator('#dcc-starter-search').click();
+ await expect(page.locator('#dcc-starter-results')).toContainText('Fayetteville, NC');
+ await page.locator('#dcc-starter-results button').first().click();
+ await expect(page.locator('#dcc-starter-tees option')).toHaveCount(7);
+ await page.locator('#dcc-starter-tees').selectOption('2');
+ await page.locator('#dcc-starter-checkin').click();
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('#name')).toContainText('King');
+ await expect(page.locator('#yards')).toContainText('346');
+ await expect(page.locator('#mapPar')).toContainText('Par 4');
+ await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+ await page.locator('#hole').selectOption('18');
+ await expect(page.locator('#yards')).toContainText('421');
+ const fact=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_active_round_course_v1')));
+ expect(fact.selection.course.provider).toBe('dagger-founder');
+ expect(fact.selection.tee.providerTeeId).toBe('white');
+});
+
+test('Sanford Quail Ridge never mixes Michigan data or invented blue tee yards',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
+ await page.goto('/playtest/');
+ await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Quail Ridge');
+ await page.locator('#dcc-starter-search').click();
+ await expect(page.locator('#dcc-starter-results')).toContainText('Sanford, NC');
+ await page.locator('#dcc-starter-results button').first().click();
+ await expect(page.locator('#dcc-starter-tees option')).toHaveCount(4);
+ await expect(page.locator('#dcc-starter-tees')).not.toContainText('Blue');
+ await page.locator('#dcc-starter-tees').selectOption('0');
+ await page.locator('#dcc-starter-checkin').click();
+ await page.goto('/playtest/yardage-preview.html?hole=1');
+ await expect(page.locator('#yards')).toContainText('363');
+ await expect(page.locator('#mapPar')).toContainText('Par 4');
+ await page.locator('#hole').selectOption('18');
+ await expect(page.locator('#yards')).toContainText('361');
+ const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_active_round_course_v1')));
+ expect(saved.selection.course.region).toBe('Sanford, NC');
+ expect(saved.selection.tee.totalYards).toBe(6120);
+});

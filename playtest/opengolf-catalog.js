@@ -2,6 +2,7 @@
 // Provider attribution and ODbL terms: https://opengolfapi.org
 import {BAYONET_TEES,isBayonetCourse} from './bayonet-verified-scorecard.js';
 import {normalizeCatalog} from './course-catalog.js';
+import {founderCatalogRecords,founderTeesForCourse} from './founders-verified-scorecards.js';
 const BASE='https://api.opengolfapi.org/v1/courses';
 const provider='opengolfapi';
 const SEARCH_LIMIT=40; // Provider-backed results, never synthetic courses.
@@ -36,12 +37,28 @@ async function getJSON(url,fetcher){
 export async function searchOpenGolfCourses(query,{fetcher=fetch,signal}={}){
  const q=String(query||'').trim();
  if(q.length<2||q.length>100)return [];
+ const local=founderCatalogRecords(q);
  const url=BASE+'/search?q='+encodeURIComponent(q)+'&limit='+SEARCH_LIMIT;
- const response=await fetcher(url,{headers:{Accept:'application/json'},signal});
- if(!response.ok)throw Error('Course search unavailable ('+response.status+').');
- return searchResultCourses(await response.json());
+ try{
+  const response=await fetcher(url,{headers:{Accept:'application/json'},signal});
+  if(!response.ok)throw Error('Course search unavailable ('+response.status+').');
+  const remote=searchResultCourses(await response.json());
+  const normalized=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const filtered=remote.filter(course=>!local.some(f=>{
+   const region=normalized(course.region),city=normalized(f.region.split(',')[0]);
+   const remoteName=normalized(course.name),founderName=normalized(f.name).replace(/^the/,'');
+   return region.includes(city)&&(remoteName.includes(founderName)||founderName.includes(remoteName));
+  }));
+  return [...local,...filtered];
+ }catch(error){
+  if(signal?.aborted)throw error;
+  if(local.length)return local;
+  throw error;
+ }
 }
 export async function loadOpenGolfTees(course,{fetcher=fetch,signal}={}){
+ const local=founderTeesForCourse(course);
+ if(local.length)return normalizeCatalog([{course,tees:local}]);
  if(course?.provider!==provider||!course.providerCourseId||!/^[a-zA-Z0-9._:-]+$/.test(course.providerCourseId))return [];
  // The matched club scorecard and provider disagree on Bayonet tee totals.
  // Offer a coherent club tee row for new check-ins. Saved rounds retain their tee.
