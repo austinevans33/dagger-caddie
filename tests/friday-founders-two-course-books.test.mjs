@@ -5,7 +5,7 @@ const find=(term)=>founderCatalogRecords(term)[0];
 test('both founders are exact North Carolina courses, not a same-name out-of-state club',()=>{
  const k=find('King');const q=find('Quail Ridge');
  assert.equal(k.region,'Fayetteville, NC');assert.equal(q.region,'Sanford, NC');
- assert.equal(FOUNDERS_READY_COUNT,9);
+ assert.equal(FOUNDERS_READY_COUNT,12);
  assert.equal(founderCatalogRecords('Michigan').length,0);
  assert.equal(founderTeesForCourse({...q,region:'Ada, Michigan'}).length,0);
  assert.equal(founderVerifiedScorecard({course:{...q,name:'Quail Ridge Michigan'},tee:{providerTeeId:'white',name:'White',totalYards:6120}}),null);
@@ -128,4 +128,34 @@ test('Pine Hills Red has published par 73 rather than fabricating a par 72 card'
   assert.equal(card.holes.reduce((n,h)=>n+h.par,0),tee.providerTeeId==='red'?73:72);
   assert.equal(card.holes[17].par,tee.providerTeeId==='red'?5:4);
  }
+});
+
+test('Pelican Pointe offers three genuinely different loop combinations, not a fabricated universal back nine',()=>{
+ const routes=founderCatalogRecords('Pelican Pointe');
+ assert.equal(routes.length,3);
+ assert.equal(new Set(routes.map(x=>x.providerCourseId)).size,3);
+ assert.deepEqual(routes.map(x=>x.name),[
+  'Pelican Pointe · Meadows / Preserve',
+  'Pelican Pointe · Preserve / Hatchett Creek',
+  'Pelican Pointe · Hatchett Creek / Meadows'
+ ]);
+ const expected={blue:[6614,6477,6542],white:[6052,5904,6080]};
+ for(let i=0;i<routes.length;i++){
+  const tees=founderTeesForCourse(routes[i]);
+  assert.deepEqual(tees.map(t=>t.providerTeeId),['blue','white']);
+  for(const tee of tees){
+   const card=founderVerifiedScorecard({course:routes[i],tee});
+   assert.equal(card.holes.length,18);
+   assert.equal(card.holes.reduce((n,h)=>n+h.par,0),72);
+   assert.equal(card.holes.reduce((n,h)=>n+h.yards,0),tee.totalYards);
+   assert.equal(tee.totalYards,expected[tee.providerTeeId][i]);
+   assert.equal(new Set(card.holes.map(h=>h.handicapMen)).size,18);
+  }
+ }
+});
+test('Pelican routes cannot silently reuse another loop pairs scorecard',()=>{
+ const [meadows,preserve]=founderCatalogRecords('Pelican Pointe');
+ const tee=founderTeesForCourse(meadows)[0];
+ assert.equal(founderVerifiedScorecard({course:preserve,tee}),null);
+ assert.equal(founderVerifiedScorecard({course:{...meadows,name:'Pelican Pointe'},tee}),null);
 });

@@ -5,7 +5,54 @@
 // total rows conflict with their hole sums, so we expose sums only.
 const founderProvider='dagger-founder';
 const holeRange=Array.from({length:18},(_,i)=>i+1);
+// Pelican Pointe has THREE physically different nines. Each 18-hole round below
+// joins two named loops with their own sequence and tee yardages—never repeats
+// a generic back nine or imports the wrong combination's stroke indices.
+const pelicanLoops=Object.freeze({
+ meadows:{
+  par:[4,4,5,4,3,4,5,3,4],
+  blue:[336,336,556,420,189,396,492,191,413],
+  white:[340,324,516,391,160,369,459,166,389]
+ },
+ preserve:{
+  par:[4,3,5,4,4,4,3,5,4],
+  blue:[360,186,482,354,419,367,208,489,420],
+  white:[355,140,440,325,390,328,168,454,338]
+ },
+ hatchett:{
+  par:[4,3,4,5,4,3,4,4,5],
+  blue:[336,176,370,501,419,131,389,370,500],
+  white:[301,159,349,474,392,128,359,327,477]
+ }
+});
+const pelicanPair=(id,name,front,back,handicapMen)=>({
+ id:'pelican-pointe-'+id+'-venice-fl',name:'Pelican Pointe · '+name,region:'Venice, FL',
+ par:[...pelicanLoops[front].par,...pelicanLoops[back].par],
+ handicapMen,
+ tees:{
+  blue:{label:'Blue',yards:[...pelicanLoops[front].blue,...pelicanLoops[back].blue]},
+  white:{label:'White',yards:[...pelicanLoops[front].white,...pelicanLoops[back].white]}
+ },
+ source:'pelican-pointe-official-loop-routing-scorecard',
+ provenance:{source:'Pelican Pointe Venice loop-pair scorecard, published by Offcourse with club course-layout confirmation',
+  url:'https://offcourse.co/courses/scorecard/pelican-pointe-golf-country-club/',
+  official:'https://www.pelicanpointeclub.com/-course-layout',
+  checked:'2026-11-07',geography:'Venice, Florida',
+  audit:'27 holes, three distinct nine-hole loops. Each selectable 18-hole routing is a different course/round identity; do not merge scores or yardages between loop pairs.',
+  teeYardageIsNotPinDistance:true
+ },
+ map:{status:'not-curated'}
+});
+const pelicanBooks=[
+ pelicanPair('meadows-preserve','Meadows / Preserve','meadows','preserve',
+  [17,9,7,3,13,5,15,11,1,6,14,18,8,4,10,12,16,2]),
+ pelicanPair('preserve-hatchett','Preserve / Hatchett Creek','preserve','hatchett',
+  [5,13,17,7,3,9,11,15,1,16,18,4,10,6,14,8,12,2]),
+ pelicanPair('hatchett-meadows','Hatchett Creek / Meadows','hatchett','meadows',
+  [15,17,3,9,5,13,7,11,1,18,10,8,4,16,6,14,12,2])
+];
 const founders=Object.freeze([
+ ...pelicanBooks,
  {
   id:'kings-grant-fayetteville-nc',name:"King's Grant Golf & Country Club",region:'Fayetteville, NC',
   par:[4,5,4,3,4,5,3,4,4,4,3,4,3,4,5,3,4,5],
