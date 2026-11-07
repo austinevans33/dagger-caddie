@@ -72,21 +72,36 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 #gamePlan dd{margin:3px 0;font:15px/1.35 Georgia,serif}
 #courseTitle{font-size:clamp(24px,6vw,32px)}
 .field-sketch .geometry-foot{font-size:11px;color:#465448;text-align:left;padding:0 8px}
+
+/* Pocket-book hierarchy: the hole art and two handwritten caddy lines are the page. */
+.pocket-note{padding:12px 14px 13px;margin:4px 0 12px;border-left:3px solid #b69b68;background:#f0e8d3;color:#253a2c;transform:rotate(-.2deg)}
+.pocket-signature{font:italic 20px Georgia,serif;color:#365744;margin-bottom:6px}
+.pocket-note p{font:italic 17px/1.35 Georgia,serif;margin:6px 0}
+.pocket-note p::before{content:'✎';font-style:normal;color:#8b744b;margin-right:8px}
+.advanced-caddy{margin:9px 0 7px;font:13px system-ui;color:#435646}
+.advanced-caddy>summary,.paper .card>summary,.source-info>summary{min-height:44px;display:flex;align-items:center;font:700 13px system-ui;cursor:pointer}
+.advanced-caddy .pencil-note{margin:0;padding:8px}
+.paper>.card,.source-info{opacity:.85}
+.book-actions{margin-top:9px}
+#status[hidden]{display:none!important}
+.field-sketch.has-features svg{max-height:none}
 </style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1 id="courseTitle">Yardage Book</h1><a href="./" id="backToPlay">← Back to The Clubhouse</a></header>
-<div class="paper"><p class="warning" id="status" role="status">Loading selected course and tee scorecard… No GPS or live pin distances are claimed.</p>
+<div class="paper"><p class="warning" id="status" role="status">Loading hole…</p>
 <div class="bar"><button id="prev" aria-label="Previous hole">←</button><select id="hole" aria-label="Hole"></select><button id="next" aria-label="Next hole">→</button></div>
 <div class="hole-glance" aria-label="Hole at a glance"><span id="mapHole">HOLE 1</span><strong id="mapPar">Par —</strong><strong id="mapYards">Tee yards —</strong></div>
 <p id="teeCaption" class="muted"></p>
 <div class="field-sketch" aria-label="Hole illustration"></div>
+<aside class="pocket-note" aria-label="Two quick notes from your selected caddy"><div id="pocketCaddyName" class="pocket-signature">Keith’s pencil</div><p id="pocketNoteOne"></p><p id="pocketNoteTwo"></p></aside>
 <div class="book-actions"><button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask My Caddy</button><a id="watchGhost" href="ghost-preview.html">Watch House Ghost →</a></div>
-<aside class="pencil-note" aria-label="Your selected caddy’s notebook"><span id="caddySignature" class="signature">The Caddy's Game Plan</span><dl id="gamePlan"></dl><details><summary>Field notes</summary><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></details></aside>
+<details class="advanced-caddy"><summary>More hole details</summary><aside class="pencil-note" aria-label="Additional strategy from your selected caddy"><span id="caddySignature" class="signature">The Caddy's Game Plan</span><dl id="gamePlan"></dl><details><summary>Field notes</summary><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></details></aside></details>
 <details class="card"><summary>Mapped trouble and scorecard details</summary><span id="position" class="hole-pill"></span><p id="name" class="muted"></p><div id="par" class="big"></div><div id="yards" class="big"></div><p id="coverage" class="muted"></p><p id="strokeIndex" class="muted"></p><ul id="hazards"></ul></details>
 
 <div class="nav"><button id="return" class="primary">Return to the round</button></div>
 <p class="muted" id="source">Course par and yards are from a tee-specific scorecard, not the live pin. Missing data stays unverified. This screen does not change your scores or wagers.</p>
-<p class="muted">Course data where available: © OpenStreetMap contributors (ODbL 1.0) via <a href="https://opengolfapi.org/" target="_blank" rel="noopener noreferrer">OpenGolfAPI</a>.</p>
+<details class="source-info"><summary>Map credits</summary><p class="muted">Course data where available: © OpenStreetMap contributors (ODbL 1.0) via <a href="https://opengolfapi.org/" target="_blank" rel="noopener noreferrer">OpenGolfAPI</a>.</p></details>
 </div></main><script type="module">
 import {loadYardageState,resolveYardageState} from './yardage-live.js';
+import {pocketCaddyNotes} from './pocket-caddy-notes.js';
 import {readActiveRound,ACTIVE_ROUND_KEY} from './starters-desk-session.js';
 import {readCourseScorecard} from './active-course-context.js';
 import {readYardageCaddy,yardageCaddyNote,sketchGamePlan,describeSketchTrouble} from './yardage-caddy-notes.js?v=friday-book-1';
@@ -111,6 +126,10 @@ function renderAttack(features=[],annotations=null){
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
  const survey=bayonetOsmTrouble(latest.selection,number);
  const caddy=yardageCaddyNote({caddy:readYardageCaddy(localStorage),hole:page.hole,features,annotations,survey});
+ const pocket=pocketCaddyNotes({caddy:readYardageCaddy(localStorage),hole:page.hole,annotations});
+ $('pocketCaddyName').textContent=pocket.name+' · On the bag';
+ $('pocketNoteOne').textContent=pocket.lines[0];
+ $('pocketNoteTwo').textContent=pocket.lines[1];
  $('caddySignature').textContent=caddy.name+' · The Game Plan';
  $('caddyNote').textContent=caddy.advice;
  $('caddySecond').textContent=caddy.second;
@@ -165,14 +184,14 @@ function draw({refreshSketch=true}={}){
  $('coverage').textContent=coverage.label;
  const currentFact=(latest.holes||[]).find(h=>h.number===number);
  $('strokeIndex').textContent=Number.isInteger(currentFact?.handicapMen)&&Number.isInteger(currentFact?.handicapWomen)?'Handicap index · Men '+currentFact.handicapMen+' / Women '+currentFact.handicapWomen:'';
- $('source').textContent=source+' · Tee yardage is not GPS pin distance. No scores or bets are changed here.';
+ $('source').textContent=source+' · Yardages are from the selected tee, not the live pin.';
 
  rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
  $('teeCaption').textContent=selection?.tee?.name?selection.tee.name+' tees':'';
  if(refreshSketch)void updateSketch(selection,number);
- $('status').textContent=!hasCourse?'Select a course and tees at the Starter’s Desk first. No distances are invented.':
-  coverage.complete?'Complete selected-tee scorecard · '+coverage.verifiedHoles+'/18 holes.':
-  coverage.verifiedHoles?coverage.detail:'No provider-verified tee-specific hole data available for this selection. '+(state==='unavailable'?'Check connection or select another course.':'');
+ $('status').textContent=!hasCourse?'Choose a course at the Starter’s Desk to open your book.':
+  coverage.verifiedHoles?'':state==='unavailable'?'Course facts unavailable offline.':'Tee distances unavailable for this course.';
+ $('status').hidden=!!hasCourse&&coverage.verifiedHoles>0;
 }
 function updateSketch(selection,hole){
  const gen=++spatialGeneration,box=document.querySelector('.field-sketch');
