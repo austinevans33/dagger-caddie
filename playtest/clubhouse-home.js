@@ -1,5 +1,6 @@
 /* Dagger Clubhouse: navigation facade only. Do not own scoring, bets or round state. */
 import {readYardageHole} from './yardage-navigation.js';
+import {readRoundScoreSnapshot} from './round-score-snapshot.js';
 (function(){
 'use strict';
 function openTab(id){
@@ -88,7 +89,18 @@ function mount(){
   archive.querySelector('summary')?.focus({preventScroll:true});
  });
  function syncHole(){const hole=selectedHole();const label=document.getElementById('dccHomeHole');const link=document.getElementById('dccHomeYardage');if(label)label.textContent='HOLE '+hole;if(link)link.href='yardage-preview.html?hole='+hole}
- syncHole();
+ function syncScorecard(){
+  const label=document.getElementById('dccHomeScoreStatus');if(!label)return;
+  let snapshot=null;try{snapshot=readRoundScoreSnapshot(localStorage)}catch{}
+  label.textContent=snapshot
+   ?snapshot.completedCount+'/18 holes scored · '+snapshot.courseName
+   :'Start a round or enter your score';
+ }
+ syncHole();syncScorecard();
+ for(const eventName of ['dcc:solo-hole-change','dcc:course-selected','dcc:course-cleared']){
+  document.addEventListener(eventName,syncScorecard);
+ }
+ window.addEventListener('storage',event=>{if(!event.key||['dcc_solo_scorecard_v1','dcc_active_round_course_v1'].includes(event.key))syncScorecard();});
  section.addEventListener('click',function(e){
   const button=e.target.closest('[data-dcc-go]');
   if(!button)return;
@@ -126,7 +138,7 @@ function mount(){
   saveGhostTier();
   ghostTier.addEventListener('change',saveGhostTier);
  }
- window.addEventListener('pageshow',syncHole);
+ window.addEventListener('pageshow',()=>{syncHole();syncScorecard()});
 
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
