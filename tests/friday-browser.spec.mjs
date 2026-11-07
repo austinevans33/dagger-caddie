@@ -245,7 +245,7 @@ test('Real Bayonet White Yardage Book covers all 18 holes and safe caddy handoff
  await page.locator('#hole').selectOption('1');
  await page.screenshot({path:'candidate-screenshots/05-bayonet-yardage-iphone.png',animations:'disabled'});
  await page.locator('#askHoleCaddy').click();
- await expect(page).toHaveURL(/\/playtest\/?$/);
+ await page.waitForURL('**/playtest/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#aiInput')).toBeVisible();
  await expect(page.locator('#aiInput')).toHaveValue(/Bayonet at Puppy Creek/);
  await expect(page.locator('#aiInput')).toHaveValue(/hole 1/);
@@ -823,6 +823,7 @@ test('From the hole, Ask My Caddy preserves the hole and returns without writing
  await page.goto('/playtest/yardage-preview.html?hole=7');
  await expect(page.locator('#mapHole')).toContainText('HOLE 7');
  await page.locator('#askHoleCaddy').click();
+ await page.waitForURL('**/playtest/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#dccTurnName')).toContainText('Reginald');
  await expect(page.locator('#aiInput')).toBeVisible();
  await expect(page.locator('#dccClubhouseHome')).toBeHidden();
