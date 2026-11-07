@@ -7111,6 +7111,20 @@ let dccGhostPending = null;
 let dccGhostCourse;
 let dccGhostResizeObserver;
 
+// A Ghost match uses a same-origin iframe so its animated hole remains
+// independent of match scoring. On iOS, a swipe inside that frame can trap
+// the parent scroll. Accept scroll deltas only from the active Ghost frame.
+window.addEventListener('message', event => {
+  if (event.origin !== window.location.origin ||
+      event.data?.type !== 'dcc:ghost-parent-scroll') return;
+  const frame = document.querySelector('#dccGhostPlayback iframe');
+  if (!frame || event.source !== frame.contentWindow) return;
+  const delta = event.data.deltaY;
+  if (typeof delta !== 'number' || !Number.isFinite(delta) ||
+      Math.abs(delta) > 150) return;
+  window.scrollBy(0, delta);
+});
+
 function dccGhostShowPlayback() {
   const target = document.getElementById('dccGhostPlayback');
   dccGhostResizeObserver?.disconnect();
