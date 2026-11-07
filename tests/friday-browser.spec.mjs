@@ -858,7 +858,8 @@ test('Kings Grant founder book checks in on six local tees and opens eighteen re
  expect(fact.selection.tee.providerTeeId).toBe('white');
 });
 
-test('Sanford Quail Ridge never mixes Michigan data or invented blue tee yards',async({page})=>{
+test('Sanford Quail Ridge uses all eighteen local drawings and shares hole fourteen with House Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
  await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
  await page.goto('/playtest/');
@@ -867,18 +868,48 @@ test('Sanford Quail Ridge never mixes Michigan data or invented blue tee yards',
  await page.locator('#dcc-starter-search').click();
  await expect(page.locator('#dcc-starter-results')).toContainText('Sanford, NC');
  await page.locator('#dcc-starter-results button').first().click();
- await expect(page.locator('#dcc-starter-tees option')).toHaveCount(4);
+ await expect(page.locator('#dcc-starter-tees option')).toHaveCount(5);
  await expect(page.locator('#dcc-starter-tees')).not.toContainText('Blue');
- await page.locator('#dcc-starter-tees').selectOption('0');
+ await page.locator('#dcc-starter-tees').selectOption({label:'Black · 6783 yards'});
  await page.locator('#dcc-starter-checkin').click();
  await page.goto('/playtest/yardage-preview.html?hole=1');
- await expect(page.locator('#yards')).toContainText('363');
+ await expect(page.locator('#yards')).toContainText('409');
  await expect(page.locator('#mapPar')).toContainText('Par 4');
- await page.locator('#hole').selectOption('18');
- await expect(page.locator('#yards')).toContainText('361');
+ const route=page.locator('.field-sketch .route-mark');
+ const drawings=new Set();
+ for(let hole=1;hole<=18;hole++){
+  await page.locator('#hole').selectOption(String(hole));
+  const previous=drawings.size?Array.from(drawings).at(-1):null;
+  if(previous)await expect(route).not.toHaveAttribute('d',previous);
+  const path=await route.getAttribute('d');
+  expect(path).toBeTruthy();
+  drawings.add(path);
+  await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+  await expect(page.locator('#pocketNoteTwo')).not.toBeEmpty();
+ }
+ expect(drawings.size).toBe(18);
+ await expect(page.locator('#yards')).toContainText('399');
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_active_round_course_v1')));
  expect(saved.selection.course.region).toBe('Sanford, NC');
- expect(saved.selection.tee.totalYards).toBe(6120);
+ expect(saved.selection.tee.totalYards).toBe(6783);
+ await page.locator('#hole').selectOption('14');
+ await expect(page.locator('#mapPar')).toContainText('Par 5');
+ await expect(page.locator('#yards')).toContainText('496');
+ const map=page.locator('.field-sketch svg');
+ await expect(map.locator('[fill-rule="evenodd"]')).toHaveCount(1);
+ const before=await map.locator('.route-mark').getAttribute('d');
+ const shapes=await map.locator('[data-map-feature]').evaluateAll(items=>items.map(node=>[node.getAttribute('d'),node.getAttribute('points')]));
+ await page.screenshot({path:'candidate-screenshots/quail-ridge-14-yardage-iphone.png',fullPage:true});
+ await page.locator('#watchGhost').click();
+ const ghostMap=page.locator('#ghostHoleSketch');
+ await expect(ghostMap.locator('.route-mark')).toHaveAttribute('d',before);
+ expect(await ghostMap.locator('[data-map-feature]').evaluateAll(items=>items.map(node=>[node.getAttribute('d'),node.getAttribute('points')]))).toEqual(shapes);
+ await page.locator('#next').click();
+ await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+ await expect(page.locator('#headline')).not.toContainText(/Ghost \d/);
+ await page.screenshot({path:'candidate-screenshots/quail-ridge-14-ghost-iphone.png',fullPage:true});
+ await page.locator('#ghostBack').click();
+ await expect(page.locator('#hole')).toHaveValue('14');
 });
 
 test('Ghost only offers manual hole par when there is no verified course scorecard',async({page})=>{

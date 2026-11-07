@@ -22,7 +22,7 @@ const founders=Object.freeze([
   source:'kings-grant-club-scorecard',
   provenance:{source:'King’s Grant official scorecard',url:'https://kingsgrantgolfcc.com/course-details/',checked:'2026-11-07',
    geography:'Fayetteville, North Carolina',teeYardageIsNotPinDistance:true},
-  map:{source:'https://zommagolf.com/courses/nc/kings-grant-golf-and-country-club/geo.json',ref:'nc/kings-grant-golf-and-country-club',status:'external-unverified-hole-assignment'}
+  map:{ref:'nc/kings-grant-golf-and-country-club',status:'source-review-blocked'}
  },
  {
   id:'quail-ridge-sanford-nc',name:'The Golf Club at Quail Ridge',region:'Sanford, NC',
@@ -31,14 +31,20 @@ const founders=Object.freeze([
   tees:{
    white:{label:'White',yards:[363,386,154,458,349,340,163,471,377,372,158,389,177,438,352,416,396,361]},
    gold:{label:'Gold',yards:[310,331,142,408,307,324,124,421,326,341,123,346,160,408,286,375,334,303]},
-   red:{label:'Red',yards:[256,271,120,312,217,303,89,382,278,245,97,306,116,308,222,330,261,229]}
+   red:{label:'Red',yards:[256,271,120,312,217,303,89,382,278,245,97,306,116,308,222,330,261,229]},
+   black:{label:'Black',yards:[409,397,178,507,392,374,193,483,405,410,189,459,203,496,386,456,447,399],
+    source:'quail-ridge-sanford-black-card',provenance:{source:'Sanford Quail Ridge Black hole card with USGA rating cross-check',
+     url:'https://www.hitthepin.com/courses/quail-ridge-golf-course-sanford-nc',
+     rating:'https://ncrdb.usga.org/courseTeeInfo?CourseID=271',checked:'2026-11-07',
+     geography:'Sanford, North Carolina',teeYardageIsNotPinDistance:true}}
   },
   source:'quail-ridge-sanford-published-hole-card',
   provenance:{source:'Quail Ridge Golf Club · Sanford hole-by-hole listing',url:'https://zommagolf.com/courses/nc/quail-ridge-golf-club',
    checked:'2026-11-07',geography:'Sanford, North Carolina',
-   audit:'Published total yardages disagree with the sum of individual hole distances. Dagger uses exact published hole values and the arithmetic sum; blue tee hole values are not published.',
+   audit:'Published total yardages disagree with the sum of individual hole distances. Dagger uses exact published hole values and the arithmetic sum; No verified Blue tee hole values are available.',
    teeYardageIsNotPinDistance:true},
-  map:{source:'https://zommagolf.com/courses/nc/quail-ridge-golf-club/geo.json',ref:'nc/quail-ridge-golf-club',status:'hole-numbering-requires-confirmation'}
+  map:{file:'quail-ridge-sanford-nc.json',source:'https://www.openstreetmap.org/relation/6400453',
+   ref:'nc/quail-ridge-golf-club',status:'bundled-reviewed-osm',auditTee:'black'}
  }  ,
  {
   id:'ryder-fort-bragg-nc',name:'Ryder Golf Course',region:'Fort Bragg, NC',
@@ -178,7 +184,7 @@ for(const founder of founders){
   if(tee.par&&(tee.par.length!==18||tee.par.some(p=>![3,4,5,6].includes(p))))throw Error('Invalid tee-specific par '+founder.id+':'+color);
   if(tee.handicap&&(tee.handicap.length!==18||new Set(tee.handicap).size!==18))throw Error('Invalid tee stroke index '+founder.id+':'+color);
   tee.totalYards=sum(tee.yards);
-  Object.freeze(tee.yards);if(tee.par)Object.freeze(tee.par);if(tee.handicap)Object.freeze(tee.handicap);Object.freeze(tee);
+  Object.freeze(tee.yards);if(tee.provenance)Object.freeze(tee.provenance);if(tee.par)Object.freeze(tee.par);if(tee.handicap)Object.freeze(tee.handicap);Object.freeze(tee);
  }
  Object.freeze(founder.tees);Object.freeze(founder.par);if(founder.handicapMen)Object.freeze(founder.handicapMen);
  Object.freeze(founder.handicapWomen||[]);Object.freeze(founder.provenance);Object.freeze(founder.map);Object.freeze(founder);
@@ -213,8 +219,8 @@ export function founderVerifiedScorecard(selection){
   ...(f.handicapWomen?.length?{handicapWomen:f.handicapWomen[number-1]}:{}),
   hazards:Object.freeze([])
  }));
- return Object.freeze({version:1,selection,holes:Object.freeze(holes),source:f.source,
-  provenance:f.provenance,livePinDistance:false,state:'published-hole-scorecard',verifiedTee:key});
+ return Object.freeze({version:1,selection,holes:Object.freeze(holes),source:tee.source||f.source,
+  provenance:tee.provenance||f.provenance,livePinDistance:false,state:'published-hole-scorecard',verifiedTee:key});
 }
 export function founderMapRecord(course){
  const f=exactFounder(course);

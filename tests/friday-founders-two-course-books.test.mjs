@@ -26,7 +26,7 @@ test('Kings Grant has 18 verified official-par holes from every one of six tees'
 });
 test('Sanford Quail Ridge preserves the exact hole values and does not fabricate Blue tee yardages',()=>{
  const course=find('Quail Ridge'),tees=founderTeesForCourse(course);
- assert.deepEqual(tees.map(x=>x.providerTeeId),['white','gold','red']);
+ assert.deepEqual(tees.map(x=>x.providerTeeId),['white','gold','red','black']);
  for(const tee of tees){
   const card=founderVerifiedScorecard({course,tee});
   assert.equal(card.holes.length,18);assert.equal(card.holes.reduce((n,h)=>n+h.par,0),72);
@@ -36,6 +36,10 @@ test('Sanford Quail Ridge preserves the exact hole values and does not fabricate
  assert.equal(tees.find(t=>t.providerTeeId==='gold').totalYards,5369);
  assert.equal(tees.find(t=>t.providerTeeId==='red').totalYards,4342);
  assert.match(founderVerifiedScorecard({course,tee:tees[0]}).provenance.audit,/disagree/);
+ const black=founderVerifiedScorecard({course,tee:tees.at(-1)});
+ assert.equal(black.selection.tee.totalYards,6783);
+ assert.deepEqual(black.holes[13],{number:14,par:5,yards:496,handicapMen:4,hazards:[]});
+ assert.match(black.provenance.rating,/CourseID=271/);
 });
 test('wrong tee totals, tee labels and non-Founder provider IDs cannot use a card',()=>{
  const c=find('King'),tee=founderTeesForCourse(c)[0];

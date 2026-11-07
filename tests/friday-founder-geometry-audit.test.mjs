@@ -43,3 +43,56 @@ test('duplicate primary routes on one hole are ambiguous and fail closed',()=>{
  assert.equal(audit.pass,false);
  assert.ok(audit.ratioErrors.includes(1));
 });
+
+test('Sanford Quail Ridge bundle passes Bayonet parity using the published Black card',async()=>{
+ const {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard}=await import('../playtest/founders-verified-scorecards.js');
+ const {loadHoleSketch,placeGhostShots}=await import('../playtest/hole-sketch.js');
+ const data=JSON.parse(readFileSync(new URL('../playtest/course-art/quail-ridge-sanford-nc.json',import.meta.url)));
+ const review=JSON.parse(readFileSync(new URL('../qa/course-factory/quail-osm-review.json',import.meta.url)));
+ const course=founderCatalogRecords('Quail Ridge')[0];
+ const tees=founderTeesForCourse(course);
+ const black=tees.find(tee=>tee.providerTeeId==='black');
+ const {holes}=founderVerifiedScorecard({course,tee:black});
+ const results=auditFounderGeometry({records:data.features,holes,metadata:data.metadata,expectedRef:review.course_ref});
+ assert.equal(data.metadata.osm_relation,review.boundary);
+ assert.equal(data.metadata.source_sha256,review.sha256);
+ assert.equal(results.pass,true);
+ assert.equal(results.quality.mappedHoles,18);
+ assert.equal(results.quality.fairwayHoles,18);
+ assert.deepEqual(results.ratioErrors,[]);
+ const fetcher=async url=>{
+  assert.equal(url.pathname.endsWith('/course-art/quail-ridge-sanford-nc.json'),true);
+  return {ok:true,json:async()=>data};
+ };
+ const seen=new Set();
+ for(const hole of holes){
+  const book=await loadHoleSketch({course,tee:black},hole.number,{fetcher});
+  const ghost=await loadHoleSketch({course,tee:tees[0]},hole.number,{fetcher});
+  assert.equal(book.coverage,'layout');
+  assert.deepEqual(book,ghost);
+  seen.add(JSON.stringify(book.annotations.route.path));
+  const trace=placeGhostShots([{lie:'Holed'}],ghost.annotations.route);
+  assert.ok(trace.start);
+  assert.equal(trace.shots[0].y,ghost.annotations.route.green[1]/440);
+ }
+ assert.equal(seen.size,18);
+ const number14=await loadHoleSketch({course,tee:black},14,{fetcher});
+ assert.equal(number14.shapes.find(s=>s.type==='fairway').interiors.length,2);
+});
+
+test('Kings Grant original mapped shapes remain audit-only while holes 9 and 13 are unresolved',async()=>{
+ const {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard,founderMapRecord}=await import('../playtest/founders-verified-scorecards.js');
+ const course=founderCatalogRecords('Kings Grant')[0],tee=founderTeesForCourse(course)[0];
+ const {holes}=founderVerifiedScorecard({course,tee});
+ const {features,metadata}=JSON.parse(readFileSync(new URL('../qa/course-factory/kings-grant-audit-only.json',import.meta.url)));
+ const map=founderMapRecord(course);
+ const audit=auditFounderGeometry({records:features,holes,metadata,expectedRef:map.ref});
+ assert.equal(audit.pass,false);
+ assert.equal(audit.quality.mappedHoles,17);
+ assert.equal(audit.quality.checks[8].tee,false);
+ assert.deepEqual(audit.ratioErrors,[13]);
+ assert.equal(holes[12].yards,140);
+ assert.ok(mappedRouteYards(features,13)>240);
+ assert.equal(map.status,'source-review-blocked');
+ assert.equal(map.file,undefined);
+});

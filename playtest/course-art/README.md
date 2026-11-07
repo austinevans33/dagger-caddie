@@ -17,3 +17,9 @@ fairways, 42 bunker outlines and 5 water outlines. Geometry is approximate.
 The tee outlines have no verified color labels. The separate selected-tee
 scorecard supplies par and yardage. Some visible trouble in the booklet
 is absent from the mapped outlines. Missing features imply unknown coverage.
+
+## Quail Ridge, Sanford, NC
+
+`quail-ridge-sanford-nc.json` uses [OpenStreetMap relation 6400453](https://www.openstreetmap.org/relation/6400453). The data were derived from the [OSM API 0.6 course-area extract](https://api.openstreetmap.org/api/0.6/map?bbox=-79.257,35.377,-79.222,35.408). The SHA-256 of the reviewed source bytes is `538f156994965afbb882cae4b0dbc5bf359caca2d585cbd229dfa803f86a91af`. Data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), distributed under [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/). The bundled GeoJSON supplies the corresponding machine-readable data. It preserves the original selected OSM coordinates, feature references and interior rings. Hole assignment uses the source's numbered lines and explicitly reviewed polygon IDs.
+
+The map is approximate. The mapped starting tee represents the route and has no verified tee color. The selected scorecard supplies the playing yardage and par. Ambiguous hazards were withheld. See [the batch QA and import instructions](../../qa/course-factory/README.md).

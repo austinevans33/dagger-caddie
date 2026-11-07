@@ -34,8 +34,13 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
  // Provider fairway, rough, bunker and water first; route/labels stay readable.
  shapes.forEach((shape,i)=>{
   if(!PENCIL_PALETTE[shape.type]||!Array.isArray(shape.points))return;
-  const polygon=item('polygon',{
-   points:shape.points.map(p=>p.join(',')).join(' '),
+  const points=ring=>ring.map(p=>p.join(',')).join(' ');
+  const cutouts=shape.interiors;
+  const geometry=cutouts?.length
+   ? {d:[shape.points,...cutouts].map(ring=>'M '+points(ring)+' Z').join(' '),'fill-rule':'evenodd'}
+   : {points:points(shape.points)};
+  const polygon=item(cutouts?.length?'path':'polygon',{
+   ...geometry,
    fill:'url(#pencil-'+shape.type+')',stroke:PENCIL_PALETTE[shape.type][1],
    'stroke-width':shape.type==='fairway'?1.6:1.1,'stroke-linejoin':'round',
    'data-map-feature':i

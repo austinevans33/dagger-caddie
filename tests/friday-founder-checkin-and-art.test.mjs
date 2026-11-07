@@ -27,24 +27,16 @@ test('Founder check-in loads all tees and all eighteen holes entirely offline',a
   }
  }
 });
-test('Kings Grant rejects one-hole-only remote art instead of showing an unverified Ghost map',async()=>{
+test('Kings Grant keeps its scorecard without requesting blocked artwork',async()=>{
  const course=find('Kings Grant');
- const selection={course,tee:(await loadOpenGolfTees(course))[0].tees.find(tee=>tee.providerTeeId==='white')};
- const point=(lng,lat)=>[lng,lat];
- const features=[{type:'Feature',properties:{holes:[1],layer:'hole'},geometry:{type:'LineString',coordinates:[point(-78.8,35),point(-78.8,35.002)]}},
- {type:'Feature',properties:{holes:[1],layer:'tee'},geometry:{type:'Polygon',coordinates:[[point(-78.8001,35),point(-78.8,35),point(-78.8,35.0001),point(-78.8001,35)]]}},
- {type:'Feature',properties:{holes:[1],layer:'green'},geometry:{type:'Polygon',coordinates:[[point(-78.8001,35.002),point(-78.8,35.002),point(-78.8,35.0021),point(-78.8001,35.002)]]}}];
- const fetcher=async url=>({ok:true,json:async()=>String(url).includes('zommagolf')?{metadata:{course_ref:'nc/kings-grant-golf-and-country-club'},features}:{features:[]}});
- const art=await loadHoleSketch(selection,1,{fetcher});
+ const tee=(await loadOpenGolfTees(course))[0].tees.find(tee=>tee.providerTeeId==='white');
+ const art=await loadHoleSketch({course,tee},9,{fetcher:()=>assert.fail('Blocked artwork must not be fetched')});
  assert.equal(art.coverage,'scorecard');
- const other=await loadHoleSketch({...selection,course:{...selection.course,providerCourseId:'incorrect'}},1,{fetcher});
- assert.equal(other.coverage,'scorecard');
 });
-test('Quail Ridge mismatched map hole numbering must not be used as mapped reality',async()=>{
- const selection={course:find('Quail Ridge')};
- const calls=[];
- const art=await loadHoleSketch(selection,1,{fetcher:async url=>{calls.push(String(url));return {ok:true,json:async()=>({features:[]})};}});
+test('Quail Ridge rejects a mismatched bundled course identity before using geometry',async()=>{
+ const course=find('Quail Ridge');
+ const tee=(await loadOpenGolfTees(course))[0].tees[0];
+ const art=await loadHoleSketch({course,tee},1,{fetcher:async()=>({ok:true,
+  json:async()=>({metadata:{course_ref:'mi/quail-ridge-golf-club'},features:[]})})});
  assert.equal(art.coverage,'scorecard');
- assert.equal(calls.some(url=>url.includes('zommagolf.com')),false);
- assert.ok(founderVerifiedScorecard({course:selection.course,tee:(await loadOpenGolfTees(selection.course))[0].tees[0]}));
 });
