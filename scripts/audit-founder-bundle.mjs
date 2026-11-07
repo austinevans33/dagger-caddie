@@ -1,5 +1,5 @@
-// Compare a reviewed geometry bundle with the published Black tee reference.
-// Usage: node scripts/audit-founder-bundle.mjs "Quail Ridge" path/to/art.json
+// Compare a reviewed geometry bundle with a published reference tee.
+// Usage: node scripts/audit-founder-bundle.mjs "Tobacco Road" path/to/art.json ripper
 import {readFileSync} from 'node:fs';
 import {auditFounderGeometry,mappedRouteYards} from '../playtest/founder-geometry-audit.js';
 import {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard,founderMapRecord} from '../playtest/founders-verified-scorecards.js';
@@ -17,7 +17,7 @@ const holes=card.holes.map((hole,index)=>({...audit.quality?.checks[index],
  par:hole.par,cardYards:hole.yards,routeYards:Math.round(mappedRouteYards(features,hole.number)??0)||null}));
 console.log(JSON.stringify({
  course,tee,scorecard:card.provenance.url,source:metadata.source,sourceSha256:metadata.source_sha256,
- license:metadata.license,boundary:metadata.osm_relation,
+ license:metadata.license,boundary:metadata.osm_relation??metadata.osm_way,
  pass:audit.pass,reason:audit.reason,ratioErrors:audit.ratioErrors,
  mappedHoles:audit.quality?.mappedHoles??0,fairwayHoles:audit.quality?.fairwayHoles??0,
  teeHoles:audit.quality?.teeHoles??0,greenHoles:audit.quality?.greenHoles??0,

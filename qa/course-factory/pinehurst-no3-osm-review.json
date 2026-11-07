@@ -1,0 +1,173 @@
+{
+  "course": "Pinehurst No. 3, Pinehurst, NC",
+  "facility_relation": "13969631",
+  "note": "Route IDs match the published No. 3 sequence inside the parent resort. No dedicated No. 3 boundary or matching fairways in this extract. Evidence only; do not ingest as an isolated course identity.",
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-79.485,35.174,-79.459,35.192",
+  "sha256": "a4e36193539f81fde7bb0c015acbe314b4d5d0ee412fcd899929cecee03a1d4a",
+  "holes": [
+    {
+      "route": "286101663",
+      "tee": [],
+      "green": [
+        "w949495286"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "949495288",
+      "tee": [],
+      "green": [
+        "w949495287"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101664",
+      "tee": [
+        "w286129602"
+      ],
+      "green": [
+        "w949495289"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101665",
+      "tee": [
+        "w286135348"
+      ],
+      "green": [
+        "w949495290"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101653",
+      "tee": [
+        "w286135345"
+      ],
+      "green": [
+        "w286135364"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101652",
+      "tee": [
+        "w286135362"
+      ],
+      "green": [
+        "w286135359"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101651",
+      "tee": [
+        "w286129595"
+      ],
+      "green": [
+        "w949495291"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "949500892",
+      "tee": [],
+      "green": [
+        "w949500891"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101647",
+      "tee": [
+        "w286101646"
+      ],
+      "green": [
+        "w949500893"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101643",
+      "tee": [
+        "w286101642"
+      ],
+      "green": [
+        "w949500894"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101650",
+      "tee": [],
+      "green": [
+        "w949500895"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101654",
+      "tee": [
+        "w286135388"
+      ],
+      "green": [
+        "w949500896"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101655",
+      "tee": [
+        "w286135384"
+      ],
+      "green": [
+        "w949500897"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101658",
+      "tee": [
+        "w286135382"
+      ],
+      "green": [
+        "w949500898"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101657",
+      "tee": [],
+      "green": [
+        "w949500899"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101656",
+      "tee": [],
+      "green": [
+        "w949500900"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101659",
+      "tee": [],
+      "green": [
+        "w949500901"
+      ],
+      "fairway": []
+    },
+    {
+      "route": "286101661",
+      "tee": [],
+      "green": [
+        "w949500902"
+      ],
+      "fairway": []
+    }
+  ]
+}

@@ -77,8 +77,7 @@ const founders=Object.freeze([
   provenance:{source:'Tobacco Road Golf Club published 18-hole open-data card',
    url:'https://zommagolf.com/courses/nc/tobacco-road-golf-club',checked:'2026-11-07',
    geography:'Sanford, North Carolina',teeYardageIsNotPinDistance:true},
-  map:{source:'https://zommagolf.com/courses/nc/tobacco-road-golf-club/geo.json',
-   ref:'nc/tobacco-road-golf-club',status:'external-unverified-hole-assignment'}
+  map:{ref:'nc/tobacco-road-golf-club',status:'source-review-blocked'}
  }
   ,
  {

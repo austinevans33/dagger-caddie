@@ -7,15 +7,15 @@ A complete book requires an identified course, validated par + hole yards for ea
 |---|---|---|---|---|
 | 1 | Bayonet at Puppy Creek, Raeford NC | Five club-verified tee sets | 18 mapped routes, bundled | Complete; iPhone field-tested |
 | 2 | Ryder Golf Course, Fort Bragg NC | Three published tee sets with 18 hole values | No hole-specific OSM outlines | Scorecard functional; actual hole maps need survey or other verified source |
-| 3 | King's Grant Golf & Country Club, Fayetteville NC | Six tee sets from club source | 18 OSM lines, 17 tee/green matches, 18 fairway matches in QA | Scorecard available. Artwork blocked by missing tee at No. 9 and No. 13 route/card mismatch |
+| 3 | King's Grant Golf & Country Club, Fayetteville NC | Six tee sets from club source | 18 lines and greens, 17 tees, 18 fairways in QA | Screenshots corroborate both greens. No. 9 tee footprint and No. 13 current short route still unverified |
 | 4 | The Chimneys Golf Course, Winder GA | Four 18-hole tee cards with published par and stroke index | Provider geometry only; no bundled 18-hole art yet | Scorecard available; full map QA pending |
 | 5 | Pelican Pointe Golf and Country Club | Provider fallback only | Provider fallback only | Resolve three nine-hole loops before assigning 18 holes |
 | 6 | Hyland Golf Club | White/Gold/Red all 18 holes; Black/Blue totals conflict with source row sums | No hole-specific OSM outlines | Scorecard functional for three tees; map sourcing and remaining tee audit needed |
-| 7 | Tobacco Road Golf Course | Five verified-sum published tee rows covering all 18 | Source has 18 OSM mapped holes; remote-art check pending | Scorecard functional; mapping QA pending |
+| 7 | Tobacco Road Golf Course | Five verified-sum published tee rows covering all 18 | 18 routes and greens, 16 tees, 14 fairways in QA | Scorecard functional; artwork gated off pending verified starts for Nos. 1/10 and fairway coverage |
 | 8 | Pine Hills Golf Club, Winder GA | Blue/White 18-hole par 72; Red 18-hole par 73, all published hole yards | 18 mapped OSM holes available, hole-assignment QA pending | Scorecard ready; map QA pending |
 | 9 | Sassamon Trace Golf Course | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
 | 10 | The Golf Club at Quail Ridge, Sanford NC | Black 6,783 yards, par 72, USGA total cross-check. Existing White, Gold and Red are source-listed legacy cards | 18 matched routes, tees, greens and fairways bundled from OSM | Passes Bayonet parity on Black; current White, Gold and Red hole cards still need confirmation |
-| 11 | Pinehurst No. 3 | Official course card: all 18 holes across White/Green/Red/Yellow | Not curated into the shared pencil-book geometry | Verified scorecard ready; map sourcing QA pending |
+| 11 | Pinehurst No. 3 | Official course card: all 18 holes across White/Green/Red/Yellow | 18 candidate routes and greens, 10 tees, no validated fairways | Scorecard ready; separate No. 3 boundary and missing shapes require source review |
 | 12 | The Ocean Course, Kiawah Island SC | Six complete published 18-hole tee rows; Carolina excluded for conflicting total | 18 mapped OSM routes available via remote adapter | Scorecard ready; remote art QA pending |
 
 ## Source and audit guardrails

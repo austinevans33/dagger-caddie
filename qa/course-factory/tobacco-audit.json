@@ -1,0 +1,226 @@
+{
+  "course": {
+    "provider": "dagger-founder",
+    "providerCourseId": "tobacco-road-sanford-nc",
+    "name": "Tobacco Road Golf Club",
+    "region": "Sanford, NC"
+  },
+  "tee": {
+    "providerTeeId": "ripper",
+    "name": "Ripper",
+    "totalYards": 6557
+  },
+  "scorecard": "https://zommagolf.com/courses/nc/tobacco-road-golf-club",
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-79.228,35.382,-79.195,35.414",
+  "sourceSha256": "d65c462d7fce24d110b5b833ba3f6f10af7fec33f9281f04e32ed5896d9db0dc",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "boundary": "430227508",
+  "pass": false,
+  "reason": "incomplete-hole-art",
+  "ratioErrors": [],
+  "mappedHoles": 16,
+  "fairwayHoles": 14,
+  "teeHoles": 16,
+  "greenHoles": 18,
+  "routes": 18,
+  "holes": [
+    {
+      "number": 1,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": false,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 558,
+      "routeYards": 531
+    },
+    {
+      "number": 2,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 392,
+      "routeYards": 383
+    },
+    {
+      "number": 3,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": false,
+      "par": 3,
+      "cardYards": 152,
+      "routeYards": 152
+    },
+    {
+      "number": 4,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 535,
+      "routeYards": 526
+    },
+    {
+      "number": 5,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 333,
+      "routeYards": 318
+    },
+    {
+      "number": 6,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": false,
+      "par": 3,
+      "cardYards": 148,
+      "routeYards": 129
+    },
+    {
+      "number": 7,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 411,
+      "routeYards": 410
+    },
+    {
+      "number": 8,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 178,
+      "routeYards": 185
+    },
+    {
+      "number": 9,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 427,
+      "routeYards": 411
+    },
+    {
+      "number": 10,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": false,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 441,
+      "routeYards": 390
+    },
+    {
+      "number": 11,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 531,
+      "routeYards": 493
+    },
+    {
+      "number": 12,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 419,
+      "routeYards": 372
+    },
+    {
+      "number": 13,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 573,
+      "routeYards": 531
+    },
+    {
+      "number": 14,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": false,
+      "par": 3,
+      "cardYards": 194,
+      "routeYards": 184
+    },
+    {
+      "number": 15,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 365,
+      "routeYards": 363
+    },
+    {
+      "number": 16,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 326,
+      "routeYards": 270
+    },
+    {
+      "number": 17,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": false,
+      "par": 3,
+      "cardYards": 142,
+      "routeYards": 132
+    },
+    {
+      "number": 18,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 432,
+      "routeYards": 394
+    }
+  ]
+}
