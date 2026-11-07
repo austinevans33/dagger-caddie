@@ -103,6 +103,12 @@ function mountCaddyTurn(){
  $('tab-play')?.click();
  document.body.classList.remove('dcc-clubhouse-focus');
  document.body.classList.add('dcc-caddy-turn');
+ // An explicit Clubhouse tab selection exits the conversation cleanly.
+ $('tab-play')?.addEventListener('click',()=>{
+  try{sessionStorage.removeItem('dccCaddyTurn')}catch{}
+  document.body.classList.remove('dcc-caddy-turn');
+  document.body.classList.add('dcc-clubhouse-focus');
+ });
  // Keep the actual AI input, handler and history, rather than creating a fake assistant.
  ai.scrollIntoView({block:'start',behavior:'instant'});
  // Auto focus can cause Safari to zoom/jump; focus after user taps into the input.
