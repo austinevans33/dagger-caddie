@@ -27,16 +27,16 @@ test('Founder check-in loads all tees and all eighteen holes entirely offline',a
   }
  }
 });
-test('Kings Grant remote art is accepted only with matching course identity and assigned hole geometry',async()=>{
- const selection={course:find('Kings Grant')};
+test('Kings Grant rejects one-hole-only remote art instead of showing an unverified Ghost map',async()=>{
+ const course=find('Kings Grant');
+ const selection={course,tee:(await loadOpenGolfTees(course))[0].tees.find(tee=>tee.providerTeeId==='white')};
  const point=(lng,lat)=>[lng,lat];
  const features=[{type:'Feature',properties:{holes:[1],layer:'hole'},geometry:{type:'LineString',coordinates:[point(-78.8,35),point(-78.8,35.002)]}},
  {type:'Feature',properties:{holes:[1],layer:'tee'},geometry:{type:'Polygon',coordinates:[[point(-78.8001,35),point(-78.8,35),point(-78.8,35.0001),point(-78.8001,35)]]}},
  {type:'Feature',properties:{holes:[1],layer:'green'},geometry:{type:'Polygon',coordinates:[[point(-78.8001,35.002),point(-78.8,35.002),point(-78.8,35.0021),point(-78.8001,35.002)]]}}];
  const fetcher=async url=>({ok:true,json:async()=>String(url).includes('zommagolf')?{metadata:{course_ref:'nc/kings-grant-golf-and-country-club'},features}:{features:[]}});
  const art=await loadHoleSketch(selection,1,{fetcher});
- assert.notEqual(art.coverage,'scorecard');
- assert.match(art.credit,/OpenStreetMap/);
+ assert.equal(art.coverage,'scorecard');
  const other=await loadHoleSketch({...selection,course:{...selection.course,providerCourseId:'incorrect'}},1,{fetcher});
  assert.equal(other.coverage,'scorecard');
 });
