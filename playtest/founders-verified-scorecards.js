@@ -39,18 +39,53 @@ const founders=Object.freeze([
    audit:'Published total yardages disagree with the sum of individual hole distances. Dagger uses exact published hole values and the arithmetic sum; blue tee hole values are not published.',
    teeYardageIsNotPinDistance:true},
   map:{source:'https://zommagolf.com/courses/nc/quail-ridge-golf-club/geo.json',ref:'nc/quail-ridge-golf-club',status:'hole-numbering-requires-confirmation'}
+ }  ,
+ {
+  id:'ryder-fort-bragg-nc',name:'Ryder Golf Course',region:'Fort Bragg, NC',
+  par:[4,4,4,4,3,4,5,5,3,4,4,3,4,4,5,3,4,5],
+  tees:{
+   blue:{label:'Blue',yards:[406,404,332,383,191,381,527,526,190,333,294,175,403,353,501,149,367,487]},
+   white:{label:'White',yards:[389,396,306,381,171,351,520,517,174,328,288,163,380,314,491,137,339,469]},
+   red:{label:'Red',yards:[373,328,228,268,137,293,471,460,158,318,277,132,357,296,415,128,292,407]}
+  },
+  source:'ryder-fort-bragg-published-hole-card',
+  provenance:{source:'Ryder Golf Course Fort Bragg hole card, reported figures (not checked against the club)',
+   url:'https://zommagolf.com/courses/nc/ryder-golf-course',checked:'2026-11-07',
+   geography:'Fort Bragg, North Carolina',teeYardageIsNotPinDistance:true,
+   audit:'No published stroke index and no traced hole-specific greens or fairways. Do not invent.'},
+  map:{source:'https://zommagolf.com/courses/nc/ryder-golf-course/geo.json',
+   ref:'nc/ryder-golf-course',status:'outline-only'}
+ },
+ {
+  id:'tobacco-road-sanford-nc',name:'Tobacco Road Golf Club',region:'Sanford, NC',
+  par:[5,4,3,5,4,3,4,3,4,4,5,4,5,3,4,4,3,4],
+  handicapMen:[3,11,17,9,15,13,7,5,1,6,10,14,2,8,12,16,18,4],
+  tees:{
+   ripper:{label:'Ripper',yards:[558,392,152,535,333,148,411,178,427,441,531,419,573,194,365,326,142,432]},
+   disc:{label:'Disc',yards:[547,377,147,507,322,143,401,173,415,421,511,412,536,178,358,321,134,414]},
+   plow:{label:'Plow',yards:[521,344,125,478,315,133,383,152,394,398,486,380,497,152,351,281,127,369]},
+   points:{label:'Points',yards:[478,301,112,466,309,107,353,142,364,365,361,347,455,111,311,266,102,352]},
+   cultivator:{label:'Cultivator',yards:[315,280,91,368,297,107,248,132,269,242,290,291,429,96,267,248,84,242]}
+  },
+  source:'tobacco-road-published-hole-card',
+  provenance:{source:'Tobacco Road Golf Club published 18-hole open-data card',
+   url:'https://zommagolf.com/courses/nc/tobacco-road-golf-club',checked:'2026-11-07',
+   geography:'Sanford, North Carolina',teeYardageIsNotPinDistance:true},
+  map:{source:'https://zommagolf.com/courses/nc/tobacco-road-golf-club/geo.json',
+   ref:'nc/tobacco-road-golf-club',status:'external-unverified-hole-assignment'}
  }
+
 ]);
 const sum=values=>values.reduce((n,x)=>n+x,0);
 for(const founder of founders){
  if(founder.par.length!==18||founder.par.some(v=>![3,4,5,6].includes(v)))throw Error('Invalid founder pars '+founder.id);
- if(founder.handicapMen?.length!==18||new Set(founder.handicapMen).size!==18)throw Error('Invalid handicap '+founder.id);
+ if(founder.handicapMen&&(founder.handicapMen.length!==18||new Set(founder.handicapMen).size!==18))throw Error('Invalid handicap '+founder.id);
  for(const [color,tee] of Object.entries(founder.tees)){
   if(tee.yards.length!==18||tee.yards.some(y=>!Number.isInteger(y)||y<50||y>800))throw Error('Invalid founder tee '+founder.id+':'+color);
   tee.totalYards=sum(tee.yards);
   Object.freeze(tee.yards);Object.freeze(tee);
  }
- Object.freeze(founder.tees);Object.freeze(founder.par);Object.freeze(founder.handicapMen);
+ Object.freeze(founder.tees);Object.freeze(founder.par);if(founder.handicapMen)Object.freeze(founder.handicapMen);
  Object.freeze(founder.handicapWomen||[]);Object.freeze(founder.provenance);Object.freeze(founder.map);Object.freeze(founder);
 }
 function exactFounder(course){
@@ -79,7 +114,7 @@ export function founderVerifiedScorecard(selection){
  if(!tee||selection.tee.totalYards!==tee.totalYards||selection.tee.name!==tee.label)return null;
  const holes=holeRange.map(number=>Object.freeze({
   number,par:f.par[number-1],yards:tee.yards[number-1],
-  handicapMen:f.handicapMen[number-1],
+  ...(f.handicapMen?.length?{handicapMen:f.handicapMen[number-1]}:{}),
   ...(f.handicapWomen?.length?{handicapWomen:f.handicapWomen[number-1]}:{}),
   hazards:Object.freeze([])
  }));
