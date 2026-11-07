@@ -21,6 +21,8 @@ jobs:
         run: node scripts/audit-founder-remote-art.mjs
       - name: Probe OpenGolfAPI Founder course identities and hole geometry
         run: node scripts/probe-founder-opengolf.mjs
+      - name: One-off OSM golf geometry probe (never retry rate limits)
+        run: node scripts/probe-founder-overpass.mjs
       - name: Save source snapshots and audit report for visual review
         uses: actions/upload-artifact@v4
         with:
