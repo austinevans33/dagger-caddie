@@ -85,6 +85,9 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .book-actions{margin-top:9px}
 #status[hidden]{display:none!important}
 .field-sketch.has-features svg{max-height:none}
+.tiny-credits{font:10px/1.25 system-ui;color:#647363;margin:15px 3px 0;text-align:center}
+.tiny-credits a{color:inherit}
+.pocket-note p{font-size:16px;line-height:1.32}
 </style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1 id="courseTitle">Yardage Book</h1><a href="./" id="backToPlay">← Back to The Clubhouse</a></header>
 <div class="paper"><p class="warning" id="status" role="status">Loading hole…</p>
 <div class="bar"><button id="prev" aria-label="Previous hole">←</button><select id="hole" aria-label="Hole"></select><button id="next" aria-label="Next hole">→</button></div>
@@ -93,21 +96,17 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 <div class="field-sketch" aria-label="Hole illustration"></div>
 <aside class="pocket-note" aria-label="Two quick notes from your selected caddy"><div id="pocketCaddyName" class="pocket-signature">Keith’s pencil</div><p id="pocketNoteOne"></p><p id="pocketNoteTwo"></p></aside>
 <div class="book-actions"><button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask My Caddy</button><a id="watchGhost" href="ghost-preview.html">Watch House Ghost →</a></div>
-<details class="advanced-caddy"><summary>More hole details</summary><aside class="pencil-note" aria-label="Additional strategy from your selected caddy"><span id="caddySignature" class="signature">The Caddy's Game Plan</span><dl id="gamePlan"></dl><details><summary>Field notes</summary><p id="caddyNote"></p><p id="caddySecond"></p><p id="caddyDisclaimer" class="muted"></p></details></aside></details>
-<details class="card"><summary>Mapped trouble and scorecard details</summary><span id="position" class="hole-pill"></span><p id="name" class="muted"></p><div id="par" class="big"></div><div id="yards" class="big"></div><p id="coverage" class="muted"></p><p id="strokeIndex" class="muted"></p><ul id="hazards"></ul></details>
 
 <div class="nav"><button id="return" class="primary">Return to the round</button></div>
-<p class="muted" id="source">Course par and yards are from a tee-specific scorecard, not the live pin. Missing data stays unverified. This screen does not change your scores or wagers.</p>
-<details class="source-info"><summary>Map credits</summary><p class="muted">Course data where available: © OpenStreetMap contributors (ODbL 1.0) via <a href="https://opengolfapi.org/" target="_blank" rel="noopener noreferrer">OpenGolfAPI</a>.</p></details>
+<p class="tiny-credits">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> where map data is used</p>
 </div></main><script type="module">
 import {loadYardageState,resolveYardageState} from './yardage-live.js';
 import {pocketCaddyNotes} from './pocket-caddy-notes.js';
 import {readActiveRound,ACTIVE_ROUND_KEY} from './starters-desk-session.js';
 import {readCourseScorecard} from './active-course-context.js';
-import {readYardageCaddy,yardageCaddyNote,sketchGamePlan,describeSketchTrouble} from './yardage-caddy-notes.js?v=friday-book-1';
+import {readYardageCaddy} from './yardage-caddy-notes.js?v=friday-book-1';
 import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=friday-book-1';
 import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=friday-book-1';
-import {bayonetOsmTrouble} from './bayonet-osm-trouble.js';
 import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
@@ -125,49 +124,13 @@ function renderAttack(features=[],annotations=null){
  activeAnnotations=annotations;
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
  const survey=bayonetOsmTrouble(latest.selection,number);
- const caddy=yardageCaddyNote({caddy:readYardageCaddy(localStorage),hole:page.hole,features,annotations,survey});
  const pocket=pocketCaddyNotes({caddy:readYardageCaddy(localStorage),hole:page.hole,annotations});
  $('pocketCaddyName').textContent=pocket.name+' · On the bag';
  $('pocketNoteOne').textContent=pocket.lines[0];
  $('pocketNoteTwo').textContent=pocket.lines[1];
- $('caddySignature').textContent=caddy.name+' · The Game Plan';
- $('caddyNote').textContent=caddy.advice;
- $('caddySecond').textContent=caddy.second;
- $('caddyDisclaimer').textContent=caddy.label+' · '+caddy.disclaimer;
- let profile=[],shotHistory=[];
- try{profile=JSON.parse(localStorage.getItem('dagger_profile')||'[]')}catch{}
- try{shotHistory=JSON.parse(localStorage.getItem('dagger_shot_log')||'[]')}catch{}
- const plan=sketchGamePlan({hole:page.hole,annotations,profile,shotHistory});
- const gamePlan=$('gamePlan');gamePlan.replaceChildren();
- for(const [title,copy] of [['Off the tee',plan.offTee],['The miss',plan.miss],['The approach',plan.approach],['The play',plan.play]]){
-  const term=document.createElement('dt'),description=document.createElement('dd');
-  term.textContent=title.toUpperCase();description.textContent=copy;
-  gamePlan.append(term,description);
- }
- const notes=$('hazards');
- notes.replaceChildren();
- if(annotations?.labels?.length){
-  const seen=new Set();
-  for(const feature of annotations.labels){
-   const key=[feature.type,feature.side,feature.stage].join(':');
-   if(seen.has(key))continue;
-   seen.add(key);
-   const li=document.createElement('li');
-   li.textContent=(feature.type==='water'?'Water':'Bunker')+' · '+feature.side+' · '+feature.stage+' (mapped outline, approximate position)';
-   notes.append(li);
-  }
- }else if(caddy.trouble.length){
-  for(const label of caddy.trouble){const li=document.createElement('li');li.textContent=label+' · hole-assigned mapped outline; route orientation unverified';notes.append(li)}
- }else if(survey){
-  const li=document.createElement('li');li.textContent=survey.label+' · reference-tee survey; exact carries and obstacle types unverified';notes.append(li);
- }else{
-  const li=document.createElement('li');
-  li.textContent=features.length?'Mapped data is partial; no confirmed water or bunker outlines for this hole.':'Hazard locations not verified for this hole';
-  notes.append(li);
- }
 }
 function draw({refreshSketch=true}={}){
- const {selection,coverage,source,state,hasCourse}=latest;
+ const {selection,coverage,state,hasCourse}=latest;
  const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
  if(refreshSketch)currentSketch=null;
  renderAttack(currentSketch?.shapes,currentSketch?.annotations);
@@ -184,7 +147,7 @@ function draw({refreshSketch=true}={}){
  $('coverage').textContent=coverage.label;
  const currentFact=(latest.holes||[]).find(h=>h.number===number);
  $('strokeIndex').textContent=Number.isInteger(currentFact?.handicapMen)&&Number.isInteger(currentFact?.handicapWomen)?'Handicap index · Men '+currentFact.handicapMen+' / Women '+currentFact.handicapWomen:'';
- $('source').textContent=source+' · Yardages are from the selected tee, not the live pin.';
+
 
  rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
  $('teeCaption').textContent=selection?.tee?.name?selection.tee.name+' tees':'';
