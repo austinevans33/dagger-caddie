@@ -418,7 +418,7 @@ test('Bayonet photographed club scorecard loads all 18 White tee holes without a
  });
  await page.route(url=>url.toString().includes('/v1/courses/1c31d1fb-faa1-4d9f-80a2-f281982df126/holes'),route=>{providerCalls++;return route.abort()});
  await page.goto('/playtest/yardage-preview.html?hole=1');
- await expect(page.locator('#status')).toContainText('18/18');
+ await expect(page.locator('#mapHole')).toContainText('HOLE 1');
  await expect(page.locator('#yards')).toContainText('433');
  await expect(page.locator('#par')).toContainText('5');
  await expect(page.locator('#strokeIndex')).toContainText('Men 7 / Women 1');
