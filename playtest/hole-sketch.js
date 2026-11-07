@@ -3,6 +3,7 @@ import {loadCourseFeatures, normalizeCourseFeatures, pencilGeometry, orientPenci
 import {pencilBookAnnotations} from './pencil-book-annotations.js?v=friday-book-1';
 
 import {BAYONET_COURSE_ID} from './bayonet-verified-scorecard.js';
+import {founderMapRecord} from './founders-verified-scorecards.js';
 
 export const SKETCH_WIDTH = 300;
 export const SKETCH_HEIGHT = 440;
@@ -72,7 +73,14 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
     return buildHoleSketch([]);
   }
   const identity = course.provider + ':' + course.providerCourseId;
-  const entry = courseArt.get(identity);
+  const mappedFounder = founderMapRecord(course);
+  // The published Quail Ridge layout's hole numbering has not been reconciled
+  // with its scorecard, so never put that unverified drawing on the wrong hole.
+  const safeFounderArt = mappedFounder?.status === 'external-unverified-hole-assignment'
+    ? {file: mappedFounder.source,ref: mappedFounder.ref,
+       credit:'© OpenStreetMap contributors via Zomma Golf (ODbL 1.0)',source:mappedFounder.source}
+    : null;
+  const entry = courseArt.get(identity) || safeFounderArt;
   if (entry) {
     try {
       const records = await readCourseArt(entry, fetcher);
