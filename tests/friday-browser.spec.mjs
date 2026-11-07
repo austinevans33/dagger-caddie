@@ -790,6 +790,10 @@ test('Growing Games catalog stays compact until requested and works when opened'
  await page.locator('#dccGameLibraryToggle').click();
  await expect(page.locator('#dccGameChoices')).toBeVisible();
  await expect(page.locator('#dccGameSearch')).toBeVisible();
+ // Expand should not summon iOS keyboard: search receives focus only on tap.
+ expect(await page.locator('#dccGameSearch').evaluate(el=>document.activeElement===el)).toBe(false);
+ await page.locator('#dccGameSearch').click();
+ expect(await page.locator('#dccGameSearch').evaluate(el=>document.activeElement===el)).toBe(true);
  await page.locator('#dccGameChoices [data-game="wolf"]').click();
  await expect(page.locator('#dccGameLibraryCurrent')).toContainText('Wolf');
  await expect(page.locator('#dccGameLibraryCurrent')).not.toContainText('Selected:');
