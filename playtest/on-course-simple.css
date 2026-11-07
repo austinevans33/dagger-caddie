@@ -22,7 +22,7 @@ body.dcc-caddy-turn #dccClubhouseHome{display:none!important}
 body.dcc-caddy-turn [data-tab="play"]:not(.ai-card):not(#dccClubhouseHome){display:none!important}
 body.dcc-caddy-turn section.ai-card[data-tab="play"]{display:block!important;margin:10px auto 16px!important;padding:12px!important;max-width:640px}
 body.dcc-caddy-turn section.ai-card > :not(#dccCaddyTurnHead):not(.ai-history):not(.ai-row):not(.ai-status):not(.ai-mic){display:none!important}
-body.dcc-caddy-turn section.ai-card .ai-history{display:flex!important;max-height:42vh;min-height:110px;overflow:auto;margin:10px 0!important;padding:12px!important}
+body.dcc-caddy-turn section.ai-card .ai-history{display:block!important;max-height:42vh;min-height:110px;overflow:auto;margin:10px 0!important;padding:12px!important}
 body.dcc-caddy-turn section.ai-card .ai-row{display:flex!important;gap:9px;align-items:stretch;margin:0!important;padding:0!important}
 body.dcc-caddy-turn #aiInput{min-width:0;flex:1 1 auto;font-size:16px!important;min-height:68px;border-radius:12px}
 body.dcc-caddy-turn #aiSend{flex:0 0 auto;min-width:76px;padding:10px!important;font-size:16px!important}
