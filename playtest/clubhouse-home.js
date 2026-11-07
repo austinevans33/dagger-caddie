@@ -60,28 +60,6 @@ function mount(){
   if(title)title.textContent='The Clubhouse';
   nav.addEventListener('click',()=>document.body.classList.add('dcc-clubhouse-focus'));
  }
- const groundsHeader=document.querySelector('section.dcc-competition-portal[data-tab="games"]');
- if(groundsHeader&&!document.getElementById('dccGroundsDoors')){
-  const doors=document.createElement('section');
-  doors.id='dccGroundsDoors';doors.dataset.tab='games';
-  doors.setAttribute('aria-label','Grounds shortcuts');
-  doors.innerHTML='<div class="dcc-grounds-door-grid">'+
-   '<a href="yardage-preview.html" id="dccGroundsBook" class="dcc-grounds-door"><span aria-hidden="true">▤</span><strong>Yardage Book</strong></a>'+
-   '<button type="button" class="dcc-grounds-door" data-dcc-door="ticket"><span aria-hidden="true">▣</span><strong>Ticket Window</strong></button>'+
-   '<button type="button" class="dcc-grounds-door" data-dcc-door="money"><span aria-hidden="true">♟</span><strong>Money Room</strong></button>'+
-   '<button type="button" class="dcc-grounds-door" data-dcc-door="score"><span aria-hidden="true">□</span><strong>Scorecard</strong></button>'+
-   '</div>';
-  groundsHeader.after(doors);
-  doors.addEventListener('click',e=>{
-   const action=e.target.closest('[data-dcc-door]')?.dataset.dccDoor;
-   if(action==='ticket'){openTab('bets');document.getElementById('dccPropBets')?.scrollIntoView({block:'start'})}
-   if(action==='money'){openTab('bets');document.getElementById('moneyRoomSection')?.scrollIntoView({block:'start'})}
-   if(action==='score')openScorecard();
-  });
-  doors.querySelector('#dccGroundsBook').addEventListener('click',e=>{
-   e.currentTarget.href='yardage-preview.html?hole='+selectedHole();
-  });
- }
  document.getElementById('dccLedgerArchive')?.addEventListener('click',()=>{
   openTab('games');
   const archive=document.getElementById('dccSavedGamesPanel');
