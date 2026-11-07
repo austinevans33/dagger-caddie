@@ -1,0 +1,39 @@
+/* The Ledger — a simple private-club sportsbook. */
+#dccPropBets.dcc-simple-ledger{background:#153b2c!important;color:#f1e7d0!important;border:0!important;border-radius:25px!important;padding:14px!important;box-shadow:none!important;max-width:700px;margin:12px auto!important}
+#dccPropBets.dcc-simple-ledger>.dcc-r94-ledger-header,#dccPropBets.dcc-simple-ledger>.dcc-r66-intro,#dccPropBets.dcc-simple-ledger>.dcc-r66-stats,#dccPropBets.dcc-simple-ledger>.dcc-r70-accounts,#dccPropBets.dcc-simple-ledger>#dccPropHistoryWrap{display:none!important}
+#dccSimpleLedger{display:block!important}
+.dcc-simple-head{text-align:center;padding:12px 4px 7px}
+.dcc-simple-head small{display:block;color:#d4ad69;font:700 12px system-ui;letter-spacing:.16em}
+.dcc-simple-head h2{color:#f1e7d0!important;font:700 clamp(32px,8vw,48px)/1.1 Georgia,serif!important;margin:10px 0!important}
+.dcc-simple-head p{color:#e1d1af;font:15px/1.4 Georgia,serif;margin:4px 0 12px}
+.dcc-simple-numbers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}
+.dcc-simple-numbers>div{background:#f1e7d0;border-radius:17px;text-align:center;padding:19px 7px;color:#153b2c;min-width:0}
+.dcc-simple-numbers small{display:block;color:#607262;font:700 11px/1.3 system-ui}
+.dcc-simple-numbers strong{display:block;font:700 clamp(27px,7vw,38px) Georgia,serif;margin:8px 0 0;font-variant-numeric:tabular-nums}
+#dccSimpleWrite{display:block;width:100%;background:#d0ab6c!important;border:0!important;color:#173b2b!important;border-radius:15px!important;min-height:58px;font:700 21px Georgia,serif!important;padding:13px!important;margin:15px 0!important}
+.dcc-simple-tickets{background:#f1e7d0;color:#153b2c;border-radius:17px;padding:16px 13px;margin:12px 0}
+.dcc-simple-tickets-title{display:flex;gap:8px;align-items:center;justify-content:space-between;border-bottom:1px solid #c9ba97;padding-bottom:15px}
+.dcc-simple-tickets-title strong{font:700 25px Georgia,serif}
+.dcc-simple-tickets-title span{color:#637365;font:12px system-ui}
+#dccSimpleListHost #dccPropList{display:block!important;background:transparent!important;color:#153b2c!important;padding:12px 0!important}
+#dccSimpleListHost .dcc-r66-slip{background:#fffbef!important;color:#153b2c!important;border:1px solid #c7b78e!important}
+#dccSimpleListHost .dcc-r66-empty{color:#647464!important;padding:16px 4px;font:14px system-ui}
+.dcc-simple-balances .dcc-r70-clear{display:none}
+.dcc-simple-balances .dcc-r70-account-row{color:#153b2c}
+#dccSimpleHistory{border-top:1px solid #c9ba97;margin-top:12px}
+#dccSimpleHistory>summary{list-style:none;cursor:pointer;color:#153b2c;display:flex;justify-content:space-between;align-items:center;font:700 18px system-ui;min-height:54px}
+#dccSimpleHistory>summary::-webkit-details-marker{display:none}
+#dccSimpleHistory>summary:after{content:'›';font-size:25px}
+#dccSimpleHistory[open]>summary:after{content:'⌄'}
+#dccSimpleHistoryBody{max-height:65vh;overflow:auto}
+#dccSimpleHistoryBody>*{margin:10px 0!important}
+.dcc-simple-recap{display:block;background:#254b39;color:#f1e7d0!important;border:1px solid #937c52;border-radius:16px;padding:16px;text-decoration:none!important;margin:15px 0 0}
+.dcc-simple-recap strong{display:flex;justify-content:space-between;font:700 24px Georgia,serif}
+.dcc-simple-recap small{display:block;color:#d8c5a5;font:13px system-ui;margin-top:9px}
+.dcc-simple-room{margin:12px 0;background:#1e4533;border:1px solid #98865f;border-radius:14px}
+.dcc-simple-room>summary{list-style:none;cursor:pointer;min-height:48px;padding:14px;font:700 16px system-ui}
+.dcc-simple-room>summary:after{content:'+';float:right}
+.dcc-simple-room[open]>summary:after{content:'−'}
+.dcc-simple-room #moneyRoomSection{display:block!important;margin:0!important}
+#dccPropBets #dccPropFormWrap[open]{display:block!important;background:#f6ead1;color:#153b2c;border-radius:12px;padding:14px;margin:10px 0}
+#dccPropBets #dccPropMessage{color:#e3d5b6}
