@@ -411,7 +411,7 @@ test('Yardage Book prefills the Caddy with selected verified hole without auto-s
  const pending=await page.evaluate(()=>sessionStorage.getItem('dcc_yardage_caddy_handoff_v1'));
  expect(pending).toBeNull();
  await page.locator('#dccBackToHole').click();
- await expect(page).toHaveURL(/yardage-preview\\.html\\?hole=3/);
+ await expect(page).toHaveURL(/yardage-preview[.]html[?]hole=3/);
  await expect(page.locator('#mapHole')).toContainText('HOLE 3');
 });
 
