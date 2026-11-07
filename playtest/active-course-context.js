@@ -28,7 +28,7 @@ export async function getActiveCourseContext({storage,fetcher,signal,now=Date.no
  const active=readActiveRound(storage);
  if(!active)return {state:'not-selected',holes:[],livePinDistance:false};
  const selection=active.selection;
- const official=bayonetVerifiedScorecard(selection);
+ const official=bayonetVerifiedScorecard(selection)||founderVerifiedScorecard(selection);
  if(official)return official;
  let holes=[];
  try{
