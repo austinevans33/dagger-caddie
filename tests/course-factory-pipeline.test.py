@@ -17,6 +17,24 @@ GolfSnapshot = runpy.run_path(str(SCRIPTS / "course-factory-review.py"))["GolfSn
 
 
 class CourseFactoryPipeline(unittest.TestCase):
+    def test_reviewed_par_correction_checks_printed_value_and_totals(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "pinned.pdf"
+            path.write_bytes(b"fixture")
+            spec = {
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "format": "reviewed-image", "reviewNote": "Checked printed card",
+                "reviewedRows": {"Par": [[4] * 9 + [36], [4] * 7 + [5, 4, 36, 72]],
+                                 "Blue": [[400] * 9 + [3600], [400] * 9 + [3600, 7200]]},
+                "tees": {"blue": {"label": "Blue"}},
+            }
+            with self.assertRaisesRegex(ValueError, "subtotal or total"):
+                load_card(path, spec)
+            correction = {"hole": 17, "printed": 5, "verified": 4, "evidence": ["club card"]}
+            self.assertEqual(load_card(path, {**spec, "parCorrection": correction})["par"], [4] * 18)
+            with self.assertRaisesRegex(ValueError, "printed par differs"):
+                load_card(path, {**spec, "parCorrection": {**correction, "printed": 3}})
+
     def test_pdf_page_selection_prevents_adjacent_course_mixups(self):
         def row(label, value):
             nine = [value] * 9 + [value * 9]
@@ -107,12 +125,12 @@ class CourseFactoryPipeline(unittest.TestCase):
                     writer.add_node(osmium.osm.mutable.Node(id=ref, location=point))
                 for ref, nodes, tags in [
                     (1, [1, 2, 3, 4, 1], {"leisure": "golf_course", "name": "Fixture Golf", "contact:email": "excluded@example.test"}),
-                    (2, [5, 6], {"golf": "hole", "ref": "1", "par": "4"}),
+                    (2, [5, 6], {"golf": "hole", "ref": "1", "par": "4", "name": "Blue Routing"}),
                     (3, [7, 8, 9, 10, 7], {"golf": "tee"}),
                     (4, [7, 8, 9, 10, 7], {"golf": "tee"}),
                     (5, [11, 12, 13, 14, 11], {"golf": "green"}),
                     (6, [15, 5], {"golf": "hole", "ref": "2"}),
-                    (7, [5, 6], {"golf": "hole", "ref": "20"}),
+                    (7, [5, 6], {"golf": "hole", "ref": "20", "name": "Other Routing"}),
                 ]:
                     writer.add_way(osmium.osm.mutable.Way(id=ref, nodes=nodes, tags=tags))
             output = path / "snapshot.osm"
@@ -136,6 +154,12 @@ class CourseFactoryPipeline(unittest.TestCase):
             self.assertNotIn("tee", review["holes"][0])
             self.assertIn({"hole": 1, "issue": "tee-ambiguous", "candidates": ["w3", "w4"]}, issues)
             self.assertIn({"hole": 2, "issue": "missing-route"}, issues)
+            scoped, issues = data.review({"boundary": "w1", "osmName": "Fixture Golf",
+                                           "mapRef": "fl/fixture", "routeName": "Blue Routing"}, "fixture")
+            self.assertEqual(scoped["routeName"], "Blue Routing")
+            self.assertEqual(scoped["holes"][0]["route"], "2")
+            self.assertNotIn("green", scoped["holes"][0])
+            self.assertIn({"hole": 1, "issue": "green-shared-endpoint", "candidates": ["w5"]}, issues)
             with self.assertRaisesRegex(ValueError, "boundary name"):
                 data.review({"boundary": "w1", "osmName": "Other Fixture", "mapRef": "fl/fixture"}, "fixture")
 
