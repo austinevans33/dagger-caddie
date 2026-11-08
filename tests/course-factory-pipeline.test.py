@@ -17,6 +17,7 @@ snapshot = runpy.run_path(str(SCRIPTS / "course-factory-snapshot.py"))["snapshot
 GolfSnapshot = runpy.run_path(str(SCRIPTS / "course-factory-review.py"))["GolfSnapshot"]
 
 
+review_greens = runpy.run_path(str(SCRIPTS / "course-factory-green-review.py"))["review"]
 checked_range = runpy.run_path(str(SCRIPTS / "course-factory-imagery.py"))["checked_range"]
 
 
@@ -46,6 +47,20 @@ class CourseFactoryPipeline(unittest.TestCase):
         pixels = {tuple(g["pixel"]) for g in review["greens"]}
         self.assertEqual(len(pixels), 18)
         self.assertTrue(all(0 <= x < right - left and 0 <= y < bottom - top for x, y in pixels))
+
+    def test_ryder_green_outlines_match_anchors_and_reject_swapped_holes(self):
+        folder = SCRIPTS.parent / "qa" / "course-factory" / "founders" / "ryder"
+        traces = json.loads((folder / "green-footprints.json").read_text())
+        source = json.loads((folder / traces["cropManifest"]).read_text())
+        anchors = json.loads((folder / "green-review.json").read_text())["greens"]
+        self.assertEqual(list(review_greens(source, anchors, traces)), list(range(1, 19)))
+        first, second = traces["polygons"][:2]
+        first["ring"], second["ring"] = second["ring"], first["ring"]
+        with self.assertRaisesRegex(ValueError, "Hole 1: invalid green or missing its review anchor"):
+            review_greens(source, anchors, traces)
+        first["ring"].pop()
+        with self.assertRaisesRegex(ValueError, "Hole 1: green ring is open or incomplete"):
+            review_greens(source, anchors, traces)
 
     def test_all_parts_of_an_official_card_are_required(self):
         with tempfile.TemporaryDirectory() as temp:
