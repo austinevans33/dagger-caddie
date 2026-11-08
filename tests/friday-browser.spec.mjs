@@ -946,6 +946,8 @@ for(const course of [
  {query:'The Chimneys',region:'Winder, GA',tee:'Gold',hole:11,yards:216,par:3},
  {query:'Pine Hills',region:'Winder, GA',tee:'Red',hole:18,yards:360,par:5},
  {query:'Ocean Course',region:'Kiawah Island, SC',tee:'Black',hole:16,yards:577,par:5},
+ {query:'Orange Blossom Hills',region:'The Villages, FL',tee:'Gold',hole:16,yards:533,par:5,caddy:true},
+ {query:'Baseline Golf Course',region:'Ocala, FL',tee:'Blue',hole:13,yards:272,par:4,caddy:true},
 ]){
  test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
   await page.setViewportSize({width:390,height:844});
@@ -988,6 +990,17 @@ for(const course of [
   expect(await ghost.locator('[data-map-feature]').evaluateAll(shapeAttrs)).toEqual(shapes);
   await page.locator('#next').click();
   await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+  if(course.caddy){
+   await page.screenshot({path:'candidate-screenshots/'+course.query.toLowerCase().replaceAll(' ','-')+'-ghost.png',fullPage:true});
+   await page.locator('#ghostBack').click();
+   await expect(page.locator('#hole')).toHaveValue(String(course.hole));
+   await page.screenshot({path:'candidate-screenshots/'+course.query.toLowerCase().replaceAll(' ','-')+'-yardage.png',fullPage:true});
+   await page.locator('#askHoleCaddy').click();
+   await page.waitForURL('**/playtest/',{waitUntil:'domcontentloaded'});
+   await expect(page.locator('#aiInput')).toHaveValue(new RegExp(course.query,'i'));
+   await expect(page.locator('#aiInput')).toHaveValue(new RegExp('hole '+course.hole,'i'));
+   await expect(page.locator('#aiInput')).toHaveValue(new RegExp(course.yards+' yards','i'));
+  }
  });
 }
 

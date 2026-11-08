@@ -3,6 +3,8 @@
 // King’s Grant holes are from its club-published scorecard. Quail Ridge's
 // per-hole card comes from the Sanford-specific Zomma source; its printed
 // total rows conflict with their hole sums, so we expose sums only.
+import {floridaCourses} from './florida-course-factory.js';
+
 const founderProvider='dagger-founder';
 const holeRange=Array.from({length:18},(_,i)=>i+1);
 const founders=Object.freeze([
@@ -178,7 +180,10 @@ const founders=Object.freeze([
 
 ]);
 const sum=values=>values.reduce((n,x)=>n+x,0);
-for(const founder of founders){
+const courseBooks=Object.freeze([...founders,...floridaCourses]);
+const courseBooksById=new Map(courseBooks.map(course=>[course.id,course]));
+if(courseBooksById.size!==courseBooks.length)throw Error('Duplicate course book identity');
+for(const founder of courseBooks){
  if(founder.par.length!==18||founder.par.some(v=>![3,4,5,6].includes(v)))throw Error('Invalid founder pars '+founder.id);
  if(founder.handicapMen&&(founder.handicapMen.length!==18||new Set(founder.handicapMen).size!==18))throw Error('Invalid handicap '+founder.id);
  for(const [color,tee] of Object.entries(founder.tees)){
@@ -193,13 +198,14 @@ for(const founder of founders){
 }
 function exactFounder(course){
  if(course?.provider!==founderProvider)return null;
- return founders.find(f=>f.id===course.providerCourseId&&f.name===course.name&&f.region===course.region)||null;
+ const book=courseBooksById.get(course.providerCourseId);
+ return book?.name===course.name&&book?.region===course.region?book:null;
 }
 export const FOUNDERS_READY_COUNT=founders.length;
 export function founderCatalogRecords(query=''){
  const term=String(query).trim().toLowerCase();
  if(term.length<2)return [];
- return founders.filter(f=>(f.name+' '+f.region).toLowerCase().includes(term)||
+ return courseBooks.filter(f=>(f.name+' '+f.region).toLowerCase().includes(term)||
   (f.id==='kings-grant-fayetteville-nc'&&/kings?\s+grant|king.s\s+grant/i.test(term))||
   (f.id==='quail-ridge-sanford-nc'&&/quail\s+ridge/i.test(term))
  ).map(f=>({provider:founderProvider,providerCourseId:f.id,name:f.name,region:f.region}));

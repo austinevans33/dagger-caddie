@@ -1,0 +1,28 @@
+name: Course Factory
+on:
+  pull_request:
+    paths:
+      - 'scripts/course-factory-*'
+      - 'scripts/import-founder-osm.py'
+      - 'qa/course-factory/**'
+      - 'playtest/course-art/**'
+      - 'playtest/florida-course-factory.js'
+      - 'tests/course-factory-*'
+      - '.github/workflows/course-factory.yml'
+permissions:
+  contents: read
+jobs:
+  source-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python3 -m pip install shapely==2.1.2 osmium==4.2.0
+      - run: python3 tests/course-factory-pipeline.test.py
+      - run: node --test tests/course-factory-florida.test.mjs
