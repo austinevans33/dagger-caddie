@@ -1,0 +1,68 @@
+{
+  "catalogSlug": "north-carolina",
+  "reviewDate": "2026-11-07",
+  "source": "https://download.geofabrik.de/north-america/us/north-carolina-261106.osm.pbf",
+  "pbfSha256": "0dcda9e83ab1f7babd5a1622e9bed815864ef58ff6df9ecad409e48fa7759c31",
+  "snapshotSha256": "2cde2ef5b5018c45515e200f478551aa914b5bbb3fb73d01c7ab358ffe0dcc7b",
+  "courses": [
+    {
+      "id": "gates-four-fayetteville-nc",
+      "name": "Gates Four Golf & Country Club",
+      "region": "Fayetteville, NC",
+      "boundary": "r6377450",
+      "osmName": "Gates Four Golf & Country Club",
+      "mapRef": "nc/gates-four",
+      "auditTee": "black",
+      "scorecard": {
+        "url": "https://www.gatesfour.com/wp-content/uploads/scorecard.pdf",
+        "sha256": "228b5c6eb87b0c3ee36244511c0c09c5def8d0269af185b43440d9172cca05b0",
+        "format": "pdf",
+        "page": 2,
+        "parWidth": [
+          21
+        ],
+        "handicap": "MEN’S HCP",
+        "handicapWidth": [
+          18
+        ],
+        "tees": {
+          "black": {
+            "label": "Black",
+            "total": 6895,
+            "width": [
+              21
+            ]
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6433,
+            "width": [
+              21
+            ]
+          },
+          "white": {
+            "label": "White",
+            "total": 6072,
+            "width": [
+              21
+            ]
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5506,
+            "width": [
+              21
+            ]
+          },
+          "red": {
+            "label": "Red",
+            "total": 5365,
+            "width": [
+              21
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
