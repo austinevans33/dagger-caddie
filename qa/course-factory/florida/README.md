@@ -14,12 +14,12 @@ The initial 18 were screened using exact boundary matches, route and polygon cou
 | Waldorf Astoria Golf Club | 18 / 18 / 18 / 16 | Partial. Official Black, Blue and White cards. Fairways missing or ambiguous on Nos. 7 and 16. Mapped pars conflict on Nos. 17 and 18. |
 | Disney’s Magnolia | 9 / 9 / 9 / 8 | Partial. Official Classic, Green and White cards. Need full, current routing and boundary after the course changes. |
 | Disney’s Lake Buena Vista | 0 / 0 / 0 / 0 | Scorecard only. Official Blue and White. Need an independently matched course boundary. |
-| Orange County National — Panther Lake | 0 / 0 / 0 / 0 | Scorecard only. Official Champ. Resolve separate routing from Crooked Cat and conflicting secondary tee entries on the club page. |
-| Orange County National — Crooked Cat | 0 / 0 / 0 / 0 | Scorecard only. Official Champ. Resolve separate routing from Panther Lake and cross-check the remaining tee rows. |
+| Orange County National — Panther Lake | 16 / 16 / 16 / 12 | Partial. Official Champ. Exact named routes isolate the courses, but No. 12 crosses the parent boundary and No. 17 is unnamed. Four retained holes lack matched fairways. |
+| Orange County National — Crooked Cat | 18 / 18 / 18 / 14 | Partial. Official Champ. Exact named routes and endpoint shapes match, but Nos. 6, 8, 13 and 15 lack qualifying fairways. |
 | TPC Sawgrass — Players Stadium | 0 / 0 / 0 / 0 | Scorecard only. Four tees from the official PDF. Need exact Stadium map identity, separate from Dye’s Valley. |
-| Disney’s Palm | 18 / 18 / 18 / 17 | Blocked. Official PDF prints par 5 on No. 17, but the printed back-nine and round pars disagree with its hole sum. Need confirmed official correction. |
-| Palatka Golf Club | 18 / 18 / 18 / 18 | Blocked. Obtain the club’s complete 18-hole card. |
-| Mount Dora Golf Club | 18 / 18 / 18 / 18 | Blocked. Obtain the club’s complete 18-hole card. |
+| Disney’s Palm | 18 / 18 / 18 / 17 | **Strict pass** on Blue (6,840 yards, par 72). Current card yardages, and independently corroborated par 4 on No. 17. No qualifying fairway on par-3 No. 16. |
+| Palatka Golf Club | 18 / 18 / 18 / 18 | **Strict pass** on Blue (5,862 yards, par 70). Both White variants are verified. The OSM par 5 on No. 18 matches the club's separate women's card. Red is withheld due to inconsistent printed totals. |
+| Mount Dora Golf Club | 18 / 18 / 18 / 18 | **Strict pass** on Blue (5,719 yards, par 70). Four published tee rows. The Red and Gold card uses separately published par and stroke indexes. |
 | The Plantation — Otter Creek | 18 / 18 / 18 / 18 | Blocked. USGA/FSGA rating records identify the course. Obtain the official per-hole card for the Otter Creek loop. |
 | Highlands Reserve | 18 / 18 / 18 / 14 | Blocked. Official hole rows and additional fairway associations needed. |
 | Cimarrone | 18 / 18 / 18 / 15 | Blocked. Official card is image-only. Needs a checked transcription and additional fairway coverage. |
@@ -27,7 +27,11 @@ The initial 18 were screened using exact boundary matches, route and polygon cou
 | Falcon’s Fire | 18 / 18 / 18 / 15 | Blocked. Official PDF is image-only. Needs a checked transcription and additional fairway coverage. |
 | Streamsong Black | 18 / 0 / 18 / 15 | Blocked. Official PDF has no usable text layer; the OCR attempt was inconclusive. The pinned data also lacks matched tee polygons. |
 
-Totals are **2 strict passes, 3 reviewed partials, 4 scorecard-only and 9 blocked**. The app candidate contains the two strict books and seven additional verified card-only entries. Neither Florida book has been field-tested on a physical phone.
+Totals are **5 strict passes, 5 reviewed partials, 2 scorecard-only and 6 blocked**. The app candidate contains five strict books and seven additional verified card-only entries. The books are for browser and physical-device review before any deployment.
+
+The Palm correction applies only to the exact printed par 5 on hole 17 in the pinned current PDF. The [earlier Disney-printed card](https://www.mygolfvacation.com/courseImages/Disne_Palm.pdf) identifies that hole as par 4. [Disney Parks](https://disneyparksblog.com/wdw/golf-at-disney-world-mini-golfing-and-more/) independently states four par fives on the current 6,840-yard course. The pinned OSM way agrees, and the corrected row matches the current card’s printed back-nine 36 and round 72. Current tee yardages are unchanged. Palatka and Mount Dora use visually reviewed rows from the clubs’ published cards.
+
+Both Orange County National pages returned new bytes. Before repinning, the exact Champ par and yardage rows were checked against the previous generated catalog and agreed. The shared venue uses exact OSM route names. Endpoint shapes used by other routes are excluded, as are fairways or hazards with competing route matches. Neither course bypasses the strict gate.
 
 ## Reproduce from the pinned inputs
 
@@ -71,4 +75,4 @@ The official-card cache fetches only pinned HTTPS URLs, with a size cap and a ti
 
 ## Continue the batch
 
-Review Palatka, Mount Dora and Otter Creek first. Each already has all four geometry counts and needs an official card. Resolve the independently confirmed Palm par and DeBary routing separately. For thousands of courses, partition by region, keep dated PBF inputs in durable storage, key reusable shards by source hash and bounding box, and run independent reviewed manifests per batch. Leave venue approval, club document layout changes, image transcription and anomalous routing as review steps. The pilot verifies a repeatable pipeline for reviewed inputs; source acquisition and approval remain the limiting steps.
+Otter Creek still has all four geometry counts but needs an official full card. DeBary requires current routing evidence for nine par conflicts and four distance flags. Waldorf's designer and club document a renovation, so the older mapped No. 17/18 pars and missing fairways need current licensed geometry. Resolve Magnolia’s duplicated front-nine routes and renovated Nos. 14–17 separately. For larger batches, reuse source-hashed regional snapshots and keep venue approval, image transcription and anomalous routing as review steps.

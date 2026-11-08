@@ -21,7 +21,7 @@ test('Florida published catalog agrees with source pins and coverage, strict geo
  const strict = coverage.courses.filter(row=>row.status==='strict-pass');
  const allowedMaps = strict.map(row=>row.id+'.json').sort();
  assert.deepEqual(readdirSync(mapDir).filter(name=>name.endsWith('-fl.json')).sort(),allowedMaps);
- assert.equal(strict.length,2);
+ assert.equal(strict.length,5);
  for(const row of coverage.courses){
   const input=manifest.courses.find(course=>course.id===row.id);
   const record=floridaCourses.find(course=>course.id===row.id);
@@ -57,5 +57,24 @@ test('Florida published catalog agrees with source pins and coverage, strict geo
   assert.equal(audit.quality.mappedHoles,18);
   assert.ok(audit.quality.fairwayHoles>=17);
   assert.ok(!features.some(feature=>feature.properties.reference_tee || feature.properties.tee_alignment));
+ }
+});
+
+test('Florida repairs keep verified course and tee-specific pars separate',()=>{
+ const card=(query,key)=>{
+  const course=founderCatalogRecords(query).find(row=>row.region.endsWith(', FL'));
+  const tee=founderTeesForCourse(course).find(row=>row.providerTeeId===key);
+  return founderVerifiedScorecard({course,tee}).holes;
+ };
+ assert.equal(card("Disney's Palm",'blue')[16].par,4);
+ assert.equal(card("Disney's Palm",'blue')[16].yards,395);
+ assert.equal(card('Palatka Golf Club','blue')[17].par,4);
+ assert.equal(card('Palatka Golf Club','white-women')[17].par,5);
+ assert.equal(card('Mount Dora Golf Club','red')[17].par,5);
+ for(const key of ['ocn-panther-lake-fl','ocn-crooked-cat-fl']){
+  const row=coverage.courses.find(course=>course.id===key);
+  assert.equal(row.status,'playable-partial');
+  const review=JSON.parse(read('reviews/'+key+'.json'));
+  assert.equal(review.routeName,manifest.courses.find(course=>course.id===key).routeName);
  }
 });

@@ -103,6 +103,9 @@ def build_bundle(review, osm):
         coords = coordinates(way)
         require(tags(way).get("golf") == "hole" and tags(way).get("ref") == str(number),
                 f"Route {route_id} does not identify hole {number}")
+        if "routeName" in review:
+            require(tags(way).get("name") == review["routeName"],
+                    f"Route {route_id} does not identify the reviewed routing")
         reference = hole.get("reference_tee")
         tee_alignment = hole.get("tee_alignment")
         if tee_alignment is not None:

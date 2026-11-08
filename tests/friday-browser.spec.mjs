@@ -1024,6 +1024,9 @@ for(const course of [
  {query:'Ocean Course',region:'Kiawah Island, SC',tee:'Black',hole:16,yards:577,par:5},
  {query:'Orange Blossom Hills',region:'The Villages, FL',tee:'Gold',hole:16,yards:533,par:5,caddy:true},
  {query:'Baseline Golf Course',region:'Ocala, FL',tee:'Blue',hole:13,yards:272,par:4,caddy:true},
+ {query:"Disney's Palm",region:'Lake Buena Vista, FL',tee:'Blue',hole:17,yards:395,par:4,caddy:true},
+ {query:'Palatka Golf Club',region:'Palatka, FL',tee:'Blue',hole:18,yards:411,par:4,caddy:true},
+ {query:'Mount Dora Golf Club',region:'Mount Dora, FL',tee:'Red',hole:18,yards:392,par:5,caddy:true},
  {query:'Gates Four',region:'Fayetteville, NC',tee:'Black',hole:13,yards:536,par:5,caddy:true},
  {query:'Crooked Oaks',region:'Seabrook Island, SC',tee:'Hawk',hole:13,yards:175,par:3,caddy:true},
 ]){

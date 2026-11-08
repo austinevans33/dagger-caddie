@@ -106,6 +106,9 @@ class GolfSnapshot:
         if hole_count not in (9, 18, 27):
             raise ValueError("physical hole count must be 9, 18 or 27")
         valid_numbers = {str(n) for n in range(1, hole_count + 1)}
+        route_name = course.get("routeName")
+        if route_name is not None and (not isinstance(route_name, str) or not route_name.strip()):
+            raise ValueError("shared venue route name must be explicit")
         center = area.centroid
         sx, sy = 111195 * math.cos(math.radians(center.y)), 111195
 
@@ -116,6 +119,7 @@ class GolfSnapshot:
         route_boundary = boundary.buffer(3)
         routes = defaultdict(list)
         outside_routes = defaultdict(list)
+        other_routes = []
         layers = defaultdict(dict)
         for i in self.index.query(area.buffer(0.0001)):
             obj_ref = self.refs[i]
@@ -123,6 +127,10 @@ class GolfSnapshot:
             shape = meters(raw)
             if layer == "hole":
                 number = obj_tags.get("ref")
+                if route_name is not None and obj_tags.get("name") != route_name:
+                    if route_boundary.intersects(shape) and shape.length > 0:
+                        other_routes.append(shape)
+                    continue
                 if number not in valid_numbers:
                     continue
                 if route_boundary.covers(shape):
@@ -161,20 +169,25 @@ class GolfSnapshot:
                     diagnostics.append({"hole": n, "issue": f"{layer}-{'ambiguous' if options else 'missing'}",
                                         "candidates": options})
         for (layer, feature), numbers in sorted(assignments.items()):
-            if len(numbers) == 1:
+            endpoint = 0 if layer == "tee" else -1
+            overlaps_other = any(layers[layer][feature].covers(Point(line.coords[endpoint])) for line in other_routes)
+            if len(numbers) == 1 and not overlaps_other:
                 holes[numbers[0] - 1][layer] = [feature]
             else:
                 diagnostics.extend({"hole": n, "issue": f"{layer}-shared-endpoint", "candidates": [feature]} for n in numbers)
 
         middles = {n: substring(route, 0.12, 0.9, normalized=True) for n, (_, route, _) in lines.items() if route.length > 0}
+        other_middles = [substring(route, 0.12, 0.9, normalized=True) for route in other_routes]
         for feature, shape in sorted(layers["fairway"].items()):
             owners = [n for n, middle in middles.items() if middle.intersection(shape).length >= 10]
-            if len(owners) == 1:
+            if len(owners) == 1 and not any(line.intersection(shape).length >= 10 for line in other_middles):
                 holes[owners[0] - 1].setdefault("fairway", []).append(feature)
         for layer in ("bunker", "water"):
             for feature, shape in sorted(layers[layer].items()):
                 ranked = sorted((line.distance(shape), n) for n, (_, line, _) in lines.items())
-                if ranked and ranked[0][0] <= 25 and (len(ranked) == 1 or ranked[1][0] - ranked[0][0] >= 10):
+                if (ranked and ranked[0][0] <= 25
+                        and (len(ranked) == 1 or ranked[1][0] - ranked[0][0] >= 10)
+                        and all(line.distance(shape) - ranked[0][0] >= 10 for line in other_routes)):
                     holes[ranked[0][1] - 1].setdefault(layer, []).append(feature)
 
         for n, hole in enumerate(holes, 1):
@@ -184,6 +197,8 @@ class GolfSnapshot:
                   "boundary": ref[1:], "identity": {k: v for k, v in tags.items()
                   if k in {"name", "leisure", "addr:city", "addr:state", "addr:housenumber", "addr:street"}},
                   "source": source_url, "sha256": self.sha, "holes": holes}
+        if route_name is not None:
+            review["routeName"] = route_name
         return review, diagnostics
 
     def write_subset(self, review, path):

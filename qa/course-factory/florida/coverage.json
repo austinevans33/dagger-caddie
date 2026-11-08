@@ -48,15 +48,11 @@
       "auditTee": "blue",
       "scorecard": "https://www.golfwdw.com/images/documents/10134_144601_Walt_Disney_World_Golf-Palm.pdf",
       "cardSha256": "326c361bb91c7069e3c7562b34044617485e538c6a7c86f21cd633d2342b52f2",
-      "cardVerified": false,
+      "cardVerified": true,
       "issues": [
         {
           "hole": 16,
           "issue": "no-unambiguous-fairway"
-        },
-        {
-          "issue": "scorecard-unverified",
-          "detail": "published subtotal or total differs from hole values"
         }
       ],
       "counts": {
@@ -65,7 +61,22 @@
         "green": 18,
         "fairway": 17
       },
-      "status": "blocked"
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "f552860c93ced0a5020be7a32b06934b36c3f00c0e0fbe0f24da23cc0ed787ec",
+      "teeTotals": {
+        "blue": 6840,
+        "white": 6359,
+        "yellow": 5988,
+        "red": 5200
+      }
     },
     {
       "id": "baseline-golf-course-fl",
@@ -104,14 +115,19 @@
       "region": "Palatka, FL",
       "boundary": "w301780787",
       "mapRef": "fl/palatka-golf-club",
-      "auditTee": null,
-      "scorecard": "https://www.palatkagolfclub.com/",
-      "cardSha256": null,
-      "cardVerified": false,
+      "auditTee": "blue",
+      "scorecard": "https://vip.teeitup.com/palatkagolfclub/wp-content/uploads/sites/7988/2020/09/scorecard.pdf",
+      "cardSha256": "a5df109f3d7c93895040f6de94c1404d98c449584ddc5d3557be140eab092312",
+      "cardVerified": true,
       "issues": [
         {
-          "issue": "scorecard-unverified",
-          "detail": "No independently verified official hole-by-hole scorecard acquired."
+          "hole": 18,
+          "issue": "mapped-par-tee-variant",
+          "mappedPar": "5",
+          "officialPar": 4,
+          "alternateTees": [
+            "white-women"
+          ]
         }
       ],
       "counts": {
@@ -120,7 +136,21 @@
         "green": 18,
         "fairway": 18
       },
-      "status": "blocked"
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "d36ffc4d3f6c78af75d9123519a318d3b41cc557881763af37f46ed8fefdfd5c",
+      "teeTotals": {
+        "blue": 5862,
+        "white": 5589,
+        "white-women": 5589
+      }
     },
     {
       "id": "mount-dora-golf-club-fl",
@@ -128,23 +158,33 @@
       "region": "Mount Dora, FL",
       "boundary": "w304039301",
       "mapRef": "fl/mount-dora-golf-club",
-      "auditTee": null,
-      "scorecard": "https://www.mountdoragolf.com/",
-      "cardSha256": null,
-      "cardVerified": false,
-      "issues": [
-        {
-          "issue": "scorecard-unverified",
-          "detail": "No independently verified official hole-by-hole scorecard acquired."
-        }
-      ],
+      "auditTee": "blue",
+      "scorecard": "https://www.mountdoragolf.com/wp-content/uploads/sites/6218/2017/02/Scorecard-No-Map.jpg",
+      "cardSha256": "35adb28af60499d9a8110d73c7305fc535d226da59931716a210b9bde13c37c0",
+      "cardVerified": true,
+      "issues": [],
       "counts": {
         "route": 18,
         "tee": 18,
         "green": 18,
         "fairway": 18
       },
-      "status": "blocked"
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "b5eb319f1852752da42b4021a937231db452f43c03c3d21ca9794acbcc4a329f",
+      "teeTotals": {
+        "blue": 5719,
+        "white": 5470,
+        "red": 5238,
+        "gold": 4410
+      }
     },
     {
       "id": "debary-country-club-fl",
@@ -552,25 +592,48 @@
       "id": "ocn-panther-lake-fl",
       "name": "Orange County National — Panther Lake",
       "region": "Winter Garden, FL",
-      "boundary": null,
+      "boundary": "w727848182",
       "mapRef": "fl/ocn-panther-lake",
       "auditTee": "champ",
       "scorecard": "https://www.ocngolf.com/panther-lake-yardage-book/",
-      "cardSha256": "66e9610941f8ae1ab9f18ebbefa3b9876540c7dde44b737f5141b9224b1f364a",
+      "cardSha256": "38ea824db230676d291f019adb16acd3711dcf75bd20d3c51de9b5a36739c842",
       "cardVerified": true,
       "issues": [
         {
-          "issue": "boundary-unverified",
-          "detail": "OSM boundary combines Orange County National courses. No isolated Panther Lake boundary and unique route set."
+          "hole": 12,
+          "issue": "route-crosses-boundary",
+          "candidates": [
+            "w1207899275"
+          ]
+        },
+        {
+          "hole": 17,
+          "issue": "missing-route"
+        },
+        {
+          "hole": 4,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 6,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 11,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 15,
+          "issue": "no-unambiguous-fairway"
         }
       ],
       "counts": {
-        "route": 0,
-        "tee": 0,
-        "green": 0,
-        "fairway": 0
+        "route": 16,
+        "tee": 16,
+        "green": 16,
+        "fairway": 12
       },
-      "status": "scorecard-only",
+      "status": "playable-partial",
       "teeTotals": {
         "champ": 7269
       }
@@ -579,25 +642,45 @@
       "id": "ocn-crooked-cat-fl",
       "name": "Orange County National — Crooked Cat",
       "region": "Winter Garden, FL",
-      "boundary": null,
+      "boundary": "w727848182",
       "mapRef": "fl/ocn-crooked-cat",
       "auditTee": "champ",
       "scorecard": "https://www.ocngolf.com/crooked-cat-yardage-book/",
-      "cardSha256": "64fef1c92fa1451d82ea8edcb50c6e1df70447c37fe808f74c6b873c0d7b584b",
+      "cardSha256": "e7f5492cf1bc8eaabef8438752665cbd5118a960900ffb13e13cd5c140b95164",
       "cardVerified": true,
       "issues": [
         {
-          "issue": "boundary-unverified",
-          "detail": "OSM boundary combines Orange County National courses. No isolated Crooked Cat boundary and unique route set."
+          "hole": 6,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 8,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 13,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 15,
+          "issue": "no-unambiguous-fairway"
         }
       ],
       "counts": {
-        "route": 0,
-        "tee": 0,
-        "green": 0,
-        "fairway": 0
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 14
       },
-      "status": "scorecard-only",
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "incomplete-hole-art",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 14
+      },
       "teeTotals": {
         "champ": 7388
       }

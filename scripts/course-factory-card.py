@@ -111,10 +111,32 @@ def load_card(path, spec):
             return spec["reviewedRows"].get(label, [])
     else:
         raise ValueError("unsupported official scorecard format")
-    par = validate_nines(read(spec.get("parLabel", "Par"), spec.get("parWidth", [10, 11]),
-                               0, spec.get("parUnlabeledBack")), True)
-    if any(value < 3 or value > 6 for value in par):
-        raise ValueError("invalid per-hole par")
+    def read_par(config):
+        rows = read(config.get("parLabel", "Par"), config.get("parWidth", [10, 11]),
+                    0, config.get("parUnlabeledBack"))
+        if "parCorrection" in config:
+            correction = config["parCorrection"]
+            number = correction["hole"]
+            if (type(number) is not int or not 1 <= number <= 18 or not correction.get("evidence")
+                    or len(rows) != 2):
+                raise ValueError("par correction requires a numbered hole and reviewed source evidence")
+            nine, offset = divmod(number - 1, 9)
+            if len(rows[nine]) <= offset or rows[nine][offset] != correction["printed"]:
+                raise ValueError("printed par differs from the reviewed correction")
+            rows = [list(row) for row in rows]
+            rows[nine][offset] = correction["verified"]
+        par = validate_nines(rows, True)
+        if any(value < 3 or value > 6 for value in par):
+            raise ValueError("invalid per-hole par")
+        return par
+
+    def read_handicap(config):
+        handicap = validate_nines(read(config["handicap"], config.get("handicapWidth", [9, 9])), False)
+        if sorted(handicap) != list(range(1, 19)):
+            raise ValueError("stroke indexes must use 1 through 18 once")
+        return handicap
+
+    par = read_par(spec)
     tees = {}
     for tee_id, config in spec["tees"].items():
         yards = validate_nines(read(config["label"], config.get("width", [10, 11]),
@@ -124,14 +146,15 @@ def load_card(path, spec):
         if "total" in config and sum(yards) != config["total"]:
             raise ValueError(f"{tee_id} differs from independently checked published total")
         tees[tee_id] = {"label": config.get("name", config["label"]), "yards": yards}
+        if "parLabel" in config:
+            tees[tee_id]["par"] = read_par(config)
+        if "handicap" in config:
+            tees[tee_id]["handicap"] = read_handicap(config)
     if not tees:
         raise ValueError("no complete official tee")
     card = {"par": par, "tees": tees}
     if "handicap" in spec:
-        handicap = validate_nines(read(spec["handicap"], spec.get("handicapWidth", [9, 9])), False)
-        if sorted(handicap) != list(range(1, 19)):
-            raise ValueError("stroke indexes must use 1 through 18 once")
-        card["handicapMen"] = handicap
+        card["handicapMen"] = read_handicap(spec)
     return card
 
 

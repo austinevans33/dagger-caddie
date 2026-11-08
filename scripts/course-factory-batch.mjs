@@ -22,16 +22,22 @@ export function buildBatch(manifestPath, snapshotPath, scorecardCache, outputPat
     if (!/^[a-f0-9]{64}$/.test(manifest[field])) throw Error('Invalid source pin '+field);
   }
   const ids = new Set();
-  const bounds = new Set();
+  const bounds = new Map();
   const mapRefs = new Set();
   for (const course of manifest.courses) {
+    const siblingRoutes = bounds.get(course.boundary);
+    const routeName = course.routeName ?? '';
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(course.id) || ids.has(course.id) ||
-        (course.boundary !== null && (!/^[wr][1-9][0-9]*$/.test(course.boundary) || bounds.has(course.boundary))) ||
+        (course.boundary !== null && (!/^[wr][1-9][0-9]*$/.test(course.boundary) ||
+         siblingRoutes && (!routeName || siblingRoutes.has('') || siblingRoutes.has(routeName)))) ||
         !/^[a-z]{2}\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(course.mapRef) || mapRefs.has(course.mapRef)) {
       throw Error('Invalid or duplicate course identity '+course.id);
     }
     ids.add(course.id);
-    if (course.boundary !== null) bounds.add(course.boundary);
+    if (course.boundary !== null) {
+      if (!siblingRoutes) bounds.set(course.boundary,new Set());
+      bounds.get(course.boundary).add(routeName);
+    }
     mapRefs.add(course.mapRef);
   }
   const temp = mkdtempSync(join(tmpdir(), 'dagger-course-factory-'));
@@ -48,12 +54,19 @@ export function buildBatch(manifestPath, snapshotPath, scorecardCache, outputPat
       const {id, name, region, boundary, mapRef, auditTee, scorecard} = course;
       const {review, issues} = reviews[id];
       const {card, issue} = cards[id];
+      const tee = card?.tees[auditTee];
+      const auditPars = tee?.par ?? card?.par;
       const report = {id, name, region, boundary, mapRef, auditTee, scorecard:scorecard?.url ?? null,
         cardSha256:scorecard?.sha256 ?? null, cardVerified:!!card, issues:[...issues]};
       if (issue) report.issues.push({issue:'scorecard-unverified', detail:issue});
       if (card && review) review.holes.forEach(({mappedPar}, index)=>{
-        if (mappedPar !== undefined && mappedPar !== String(card.par[index])) {
-          report.issues.push({hole:index+1,issue:'mapped-par-conflict',mappedPar,officialPar:card.par[index]});
+        if (mappedPar !== undefined && mappedPar !== String(auditPars[index])) {
+          const alternateTees = Object.entries(card.tees)
+            .filter(([key,tee])=>key!==auditTee && mappedPar===String(tee.par?.[index]))
+            .map(([key])=>key);
+          report.issues.push(alternateTees.length
+            ? {hole:index+1,issue:'mapped-par-tee-variant',mappedPar,officialPar:auditPars[index],alternateTees}
+            : {hole:index+1,issue:'mapped-par-conflict',mappedPar,officialPar:auditPars[index]});
         }
       });
       const counts = {};
@@ -63,7 +76,6 @@ export function buildBatch(manifestPath, snapshotPath, scorecardCache, outputPat
       report.counts = counts;
       if (review) writeFileSync(join(outputPath, 'reviews', id+'.json'), json(review));
       report.status = card ? (counts.route > 0 && counts.tee > 0 && counts.green > 0 ? 'playable-partial' : 'scorecard-only') : 'blocked';
-      const tee = card?.tees[auditTee];
       if (card && !tee) report.issues.push({issue:'reference-tee-unverified'});
       if (tee && counts.route === 18) {
         const reviewPath = join(outputPath, 'reviews', id+'.json');
@@ -72,7 +84,7 @@ export function buildBatch(manifestPath, snapshotPath, scorecardCache, outputPat
           python('import-founder-osm.py', [reviewPath, join(temp,id+'.osm'), bundlePath]);
           const bytes = readFileSync(bundlePath);
           const bundle = JSON.parse(bytes);
-          const holes = card.par.map((par,index)=>({number:index+1,par,yards:tee.yards[index]}));
+          const holes = auditPars.map((par,index)=>({number:index+1,par,yards:tee.yards[index]}));
           const audit = auditFounderGeometry({records:bundle.features, holes, metadata:bundle.metadata, expectedRef:mapRef});
           report.audit = {pass:audit.pass, reason:audit.reason, ratioErrors:audit.ratioErrors,
             teeHoles:audit.quality?.teeHoles, greenHoles:audit.quality?.greenHoles, fairwayHoles:audit.quality?.fairwayHoles};
