@@ -9,8 +9,9 @@ function ring(points){
 }
 function polygon(coordinates){
  if(!Array.isArray(coordinates)||!coordinates.length)return null;
- const exterior=ring(coordinates[0]);
- return exterior&&new Set(exterior.map(pt=>pt.join(','))).size>=3?exterior:null;
+ const [points,...interiors]=coordinates.map(ring);
+ if(!points||new Set(points.map(pt=>pt.join(','))).size<3||interiors.some(inner=>!inner))return null;
+ return {points,...(interiors.length?{interiors:Object.freeze(interiors)}:{})};
 }
 export function normalizeCourseFeatures(payload,{holeNumber=1}={}){
  if(!Number.isInteger(holeNumber)||holeNumber<1||holeNumber>18)return [];
@@ -40,9 +41,9 @@ export function normalizeCourseFeatures(payload,{holeNumber=1}={}){
    geometry?.type==='MultiPolygon'?geometry.coordinates:null;
   if(!Array.isArray(polygons)||polygons.length>20)continue;
   for(const coords of polygons){
-   const outer=polygon(coords);
-   if(!outer)continue;
-   result.push(Object.freeze({type:kind,points:Object.freeze(outer)}));
+   const outline=polygon(coords);
+   if(!outline)continue;
+   result.push(mapOutline({type:kind,...outline},point=>point));
    if(result.length>=100)return Object.freeze(result);
   }
  }
@@ -68,6 +69,12 @@ function featureBounds(features){
  }
  return {left,right,top,bottom};
 }
+function mapOutline(shape, project) {
+ const points=Object.freeze(shape.points.map(project));
+ const interiors=shape.interiors?.map(inner=>Object.freeze(inner.map(project)));
+ return Object.freeze({type:shape.type,points,...(interiors?.length?{interiors:Object.freeze(interiors)}:{})});
+}
+
 export function orientPencilTeeToGreen(shapes,{width=300,height=220,padding=16}={}){
  if(!Array.isArray(shapes)||!shapes.length)return shapes;
  const tee=shapes.filter(s=>s.type==='tee'),greens=shapes.filter(s=>s.type==='green');
@@ -79,10 +86,10 @@ export function orientPencilTeeToGreen(shapes,{width=300,height=220,padding=16}=
  const dx=end[0]-start[0],dy=end[1]-start[1];
  if(!Number.isFinite(dx)||!Number.isFinite(dy)||Math.hypot(dx,dy)<3)return shapes;
  const angle=-Math.PI/2-Math.atan2(dy,dx),cos=Math.cos(angle),sin=Math.sin(angle);
- const projected=shapes.map(shape=>({type:shape.type,points:shape.points.map(([x,y])=>[
+ const projected=shapes.map(shape=>mapOutline(shape,([x,y])=>[
   (x-start[0])*cos-(y-start[1])*sin,
   (x-start[0])*sin+(y-start[1])*cos
- ])}));
+ ]));
  const {left,right,top,bottom}=featureBounds(projected);
  if(![left,right,top,bottom].every(Number.isFinite))return shapes;
  const spanX=right-left,spanY=bottom-top;
@@ -90,9 +97,9 @@ export function orientPencilTeeToGreen(shapes,{width=300,height=220,padding=16}=
  const scale=Math.min((width-padding*2)/spanX,(height-padding*2)/spanY);
  if(!Number.isFinite(scale)||scale<=0)return shapes;
  const offX=(width-spanX*scale)/2,offY=(height-spanY*scale)/2;
- return projected.map(shape=>Object.freeze({type:shape.type,points:Object.freeze(shape.points.map(([x,y])=>Object.freeze([
+ return projected.map(shape=>mapOutline(shape,([x,y])=>Object.freeze([
   +(offX+(x-left)*scale).toFixed(2),+(offY+(y-top)*scale).toFixed(2)
- ])))}));
+ ])));
 }
 
 export function pencilGeometry(features,{width=300,height=220,padding=16}={}){
@@ -103,7 +110,7 @@ export function pencilGeometry(features,{width=300,height=220,padding=16}={}){
  if(latScale<.01)return [];
  const spanX=(maxX-minX)*latScale,spanY=maxY-minY,scale=Math.min((width-2*padding)/spanX,(height-2*padding)/spanY);
  const xOff=(width-spanX*scale)/2,yOff=(height-spanY*scale)/2;
- return features.map(f=>Object.freeze({type:f.type,points:f.points.map(([lng,lat])=>Object.freeze([
+ return features.map(f=>mapOutline(f,([lng,lat])=>Object.freeze([
   +(xOff+(lng-minX)*latScale*scale).toFixed(2),+(yOff+(maxY-lat)*scale).toFixed(2)
- ]))}));
+ ])));
 }

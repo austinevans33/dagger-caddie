@@ -1,9 +1,9 @@
 // A single course/hole drawing for the book and simulated Ghost playback.
-import {loadCourseFeatures, normalizeCourseFeatures, pencilGeometry, orientPencilTeeToGreen} from './course-pencil-geometry.js?v=friday-book-1';
+import {loadCourseFeatures, normalizeCourseFeatures, pencilGeometry, orientPencilTeeToGreen} from './course-pencil-geometry.js?v=founders-osm-1';
 import {pencilBookAnnotations} from './pencil-book-annotations.js?v=friday-book-1';
 
 import {BAYONET_COURSE_ID} from './bayonet-verified-scorecard.js';
-import {founderMapRecord} from './founders-verified-scorecards.js';
+import {founderMapRecord, founderTeesForCourse, founderVerifiedScorecard} from './founders-verified-scorecards.js';
 
 export const SKETCH_WIDTH = 300;
 export const SKETCH_HEIGHT = 440;
@@ -19,6 +19,7 @@ const courseArt = new Map([
 ]);
 const catalogCache = new Map();
 const providerCache = new Map();
+const bundledAudits = new WeakMap();
 
 function readCourseArt(entry, fetcher) {
   if (!catalogCache.has(entry.ref)) {
@@ -61,7 +62,7 @@ export function buildHoleSketch(features, provenance = {}) {
     ? {...mapped, reference: {...reference, point: referencePoint}}
     : mapped;
   return {
-    ...provenance, shapes, annotations,
+    ...provenance, shapes, annotations: provenance.approximateTee ? {...annotations, approximateTee: true} : annotations,
     coverage: annotations.route && shapes.some(shape => shape.type === 'fairway')
       ? 'layout' : (shapes.length || annotations.route) ? 'partial' : 'scorecard'
   };
@@ -69,40 +70,47 @@ export function buildHoleSketch(features, provenance = {}) {
 
 export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, signal} = {}) {
   const course = selection?.course;
-  if (!course || !Number.isInteger(holeNumber) || holeNumber < 1 || holeNumber > 18) {
+  if (!course || !Number.isInteger(holeNumber) || holeNumber < 1 || holeNumber > (course.holeCount ?? 18)) {
     return buildHoleSketch([]);
   }
   const identity = course.provider + ':' + course.providerCourseId;
   const mappedFounder = founderMapRecord(course);
-  // The published Quail Ridge layout's hole numbering has not been reconciled
-  // with its scorecard, so never put that unverified drawing on the wrong hole.
-  const safeFounderArt = mappedFounder?.status === 'external-unverified-hole-assignment'
-    ? {file: mappedFounder.source,ref: mappedFounder.ref,
-       credit:'© OpenStreetMap contributors via Zomma Golf (ODbL 1.0)',source:mappedFounder.source}
-    : null;
+  const bundled = mappedFounder?.status === 'bundled-reviewed-osm';
+  const safeFounderArt = bundled
+    ? {file: new URL('./course-art/' + mappedFounder.file, import.meta.url),ref: mappedFounder.ref,
+       credit:'© OpenStreetMap contributors (ODbL 1.0)',source:mappedFounder.source}
+    : mappedFounder?.status === 'external-unverified-hole-assignment'
+      ? {file: mappedFounder.source,ref: mappedFounder.ref,
+         credit:'© OpenStreetMap contributors via Zomma Golf (ODbL 1.0)',source:mappedFounder.source}
+      : null;
   const entry = courseArt.get(identity) || safeFounderArt;
   if (entry) {
     try {
       const records = await readCourseArt(entry, fetcher);
       signal?.throwIfAborted();
+      let approximateTee = false;
       if(mappedFounder){
-        // An external founder bundle must pass all eighteen real mapped
-        // holes and scorecard-distance checks before any hole is drawn
-        // for the Yardage Book OR the shared House Ghost shot tracer.
-        const {founderVerifiedScorecard}=await import('./founders-verified-scorecards.js');
-        const official=founderVerifiedScorecard(selection);
+        if(!founderVerifiedScorecard(selection))return buildHoleSketch([]);
+        // The artwork represents the route, not every selected tee position.
+        // A pinned, published card is used only for bundle-wide geometry QA.
+        const tee=bundled
+          ? founderTeesForCourse(course).find(t=>t.providerTeeId===mappedFounder.auditTee)
+          : selection.tee;
+        const official=founderVerifiedScorecard({course,tee});
         if(!official)return buildHoleSketch([]);
         const {auditFounderGeometry}=await import('./founder-geometry-audit.js');
-        const audit=auditFounderGeometry({
+        const audit=bundledAudits.get(records) || auditFounderGeometry({
           records,holes:official.holes,
-          metadata:{course_ref:entry.ref},expectedRef:entry.ref
+          metadata:{course_ref:entry.ref},expectedRef:entry.ref,referenceTees:bundled?mappedFounder.referenceTees:undefined,
+          holeCount:course.holeCount??18
         });
-        // readCourseArt already checked payload metadata.course_ref; the
-        // audit additionally checks 18 mapped hole shapes and lengths.
-        if(!audit.pass)return buildHoleSketch([]);
+        if(bundled)bundledAudits.set(records,audit);
+        if(!audit.pass&&!audit.referenceReady)return buildHoleSketch([]);
+        approximateTee = audit.referenceTees.includes(holeNumber);
       }
       const features = courseArtFeatures(records, holeNumber);
-      if (features.length) return buildHoleSketch(features, {credit: entry.credit, source: entry.source, referenceNote: entry.referenceNotes?.[holeNumber]});
+      if (features.length) return buildHoleSketch(features, {credit: entry.credit, source: entry.source,
+        approximateTee, referenceNote: (mappedFounder?.referenceNotes ?? entry.referenceNotes)?.[holeNumber]});
     } catch (error) {
       if (signal?.aborted) throw error;
     }

@@ -245,7 +245,7 @@ test('Real Bayonet White Yardage Book covers all 18 holes and safe caddy handoff
  await page.locator('#hole').selectOption('1');
  await page.screenshot({path:'candidate-screenshots/05-bayonet-yardage-iphone.png',animations:'disabled'});
  await page.locator('#askHoleCaddy').click();
- await expect(page).toHaveURL(/\/playtest\/?$/);
+ await page.waitForURL('**/playtest/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#aiInput')).toBeVisible();
  await expect(page.locator('#aiInput')).toHaveValue(/Bayonet at Puppy Creek/);
  await expect(page.locator('#aiInput')).toHaveValue(/hole 1/);
@@ -823,6 +823,7 @@ test('From the hole, Ask My Caddy preserves the hole and returns without writing
  await page.goto('/playtest/yardage-preview.html?hole=7');
  await expect(page.locator('#mapHole')).toContainText('HOLE 7');
  await page.locator('#askHoleCaddy').click();
+ await page.waitForURL('**/playtest/',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#dccTurnName')).toContainText('Reginald');
  await expect(page.locator('#aiInput')).toBeVisible();
  await expect(page.locator('#dccClubhouseHome')).toBeHidden();
@@ -834,7 +835,8 @@ test('From the hole, Ask My Caddy preserves the hole and returns without writing
  expect(scored).toBe(0);
 });
 
-test('Kings Grant founder book checks in on six local tees and opens eighteen real scorecard holes',async({page})=>{
+test('Kings Grant opens eighteen local drawings and shares the approximate tees with Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
  await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
  await page.goto('/playtest/');
@@ -844,21 +846,50 @@ test('Kings Grant founder book checks in on six local tees and opens eighteen re
  await expect(page.locator('#dcc-starter-results')).toContainText('Fayetteville, NC');
  await page.locator('#dcc-starter-results button').first().click();
  await expect(page.locator('#dcc-starter-tees option')).toHaveCount(7);
- await page.locator('#dcc-starter-tees').selectOption('2');
+ await page.locator('#dcc-starter-tees').selectOption('1');
  await page.locator('#dcc-starter-checkin').click();
  await page.goto('/playtest/yardage-preview.html?hole=1');
  await expect(page.locator('#name')).toContainText('King');
- await expect(page.locator('#yards')).toContainText('346');
+ await expect(page.locator('#yards')).toContainText('376');
  await expect(page.locator('#mapPar')).toContainText('Par 4');
  await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
- await page.locator('#hole').selectOption('18');
- await expect(page.locator('#yards')).toContainText('421');
+ const route=page.locator('.field-sketch .route-mark');
+ const paths=new Set();
+ let previous=null;
+ for(let hole=1;hole<=18;hole++){
+  await page.locator('#hole').selectOption(String(hole));
+  if(previous)await expect(route).not.toHaveAttribute('d',previous);
+  await expect(route).toHaveAttribute('d',/^M/);
+  previous=await route.getAttribute('d');
+  paths.add(previous);
+ }
+ expect(paths.size).toBe(18);
+ await expect(page.locator('#yards')).toContainText('470');
  const fact=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_active_round_course_v1')));
  expect(fact.selection.course.provider).toBe('dagger-founder');
- expect(fact.selection.tee.providerTeeId).toBe('white');
+ expect(fact.selection.tee.providerTeeId).toBe('blue');
+ for(const [hole,yards] of [[9,288],[13,132]]){
+  await page.locator('#hole').selectOption(String(hole));
+  const path=Array.from(paths)[hole-1];
+  await expect(route).toHaveAttribute('d',path);
+  await expect(page.locator('#yards')).toContainText(String(yards));
+  await expect(page.locator('.field-sketch')).toContainText('TEE (APPROX.)');
+  if(hole===13)await expect(page.locator('.field-sketch')).toContainText('Pond beyond green');
+  await page.screenshot({path:`candidate-screenshots/kings-grant-${hole}-yardage-iphone.png`,fullPage:true});
+  await page.locator('#watchGhost').click();
+  const map=page.locator('#ghostHoleSketch');
+  await expect(map.locator('.route-mark')).toHaveAttribute('d',path);
+  await expect(map).toContainText('TEE (APPROX.)');
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+  await page.screenshot({path:`candidate-screenshots/kings-grant-${hole}-ghost-iphone.png`,fullPage:true});
+  await page.locator('#ghostBack').click();
+  await expect(page.locator('#hole')).toHaveValue(String(hole));
+ }
 });
 
-test('Sanford Quail Ridge never mixes Michigan data or invented blue tee yards',async({page})=>{
+test('Sanford Quail Ridge uses all eighteen local drawings and shares hole fourteen with House Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
  await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
  await page.goto('/playtest/');
@@ -867,19 +898,196 @@ test('Sanford Quail Ridge never mixes Michigan data or invented blue tee yards',
  await page.locator('#dcc-starter-search').click();
  await expect(page.locator('#dcc-starter-results')).toContainText('Sanford, NC');
  await page.locator('#dcc-starter-results button').first().click();
- await expect(page.locator('#dcc-starter-tees option')).toHaveCount(4);
+ await expect(page.locator('#dcc-starter-tees option')).toHaveCount(5);
  await expect(page.locator('#dcc-starter-tees')).not.toContainText('Blue');
- await page.locator('#dcc-starter-tees').selectOption('0');
+ await page.locator('#dcc-starter-tees').selectOption({label:'Black · 6783 yards'});
  await page.locator('#dcc-starter-checkin').click();
  await page.goto('/playtest/yardage-preview.html?hole=1');
- await expect(page.locator('#yards')).toContainText('363');
+ await expect(page.locator('#yards')).toContainText('409');
  await expect(page.locator('#mapPar')).toContainText('Par 4');
- await page.locator('#hole').selectOption('18');
- await expect(page.locator('#yards')).toContainText('361');
+ const route=page.locator('.field-sketch .route-mark');
+ const drawings=new Set();
+ for(let hole=1;hole<=18;hole++){
+  await page.locator('#hole').selectOption(String(hole));
+  const previous=drawings.size?Array.from(drawings).at(-1):null;
+  if(previous)await expect(route).not.toHaveAttribute('d',previous);
+  const path=await route.getAttribute('d');
+  expect(path).toBeTruthy();
+  drawings.add(path);
+  await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+  await expect(page.locator('#pocketNoteTwo')).not.toBeEmpty();
+ }
+ expect(drawings.size).toBe(18);
+ await expect(page.locator('#yards')).toContainText('399');
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_active_round_course_v1')));
  expect(saved.selection.course.region).toBe('Sanford, NC');
- expect(saved.selection.tee.totalYards).toBe(6120);
+ expect(saved.selection.tee.totalYards).toBe(6783);
+ await page.locator('#hole').selectOption('14');
+ await expect(page.locator('#mapPar')).toContainText('Par 5');
+ await expect(page.locator('#yards')).toContainText('496');
+ const map=page.locator('.field-sketch svg');
+ await expect(map.locator('[fill-rule="evenodd"]')).toHaveCount(1);
+ const before=await map.locator('.route-mark').getAttribute('d');
+ const shapes=await map.locator('[data-map-feature]').evaluateAll(items=>items.map(node=>[node.getAttribute('d'),node.getAttribute('points')]));
+ await page.screenshot({path:'candidate-screenshots/quail-ridge-14-yardage-iphone.png',fullPage:true});
+ await page.locator('#watchGhost').click();
+ const ghostMap=page.locator('#ghostHoleSketch');
+ await expect(ghostMap.locator('.route-mark')).toHaveAttribute('d',before);
+ expect(await ghostMap.locator('[data-map-feature]').evaluateAll(items=>items.map(node=>[node.getAttribute('d'),node.getAttribute('points')]))).toEqual(shapes);
+ await page.locator('#next').click();
+ await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+ await expect(page.locator('#headline')).not.toContainText(/Ghost \d/);
+ await page.screenshot({path:'candidate-screenshots/quail-ridge-14-ghost-iphone.png',fullPage:true});
+ await page.locator('#ghostBack').click();
+ await expect(page.locator('#hole')).toHaveValue('14');
 });
+
+test('Sassamon Trace plays nine real holes through check-in, scoring, Yardage Book and House Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Sassamon Trace');
+ await page.locator('#dcc-starter-search').click();
+ await page.locator('#dcc-starter-results button').filter({hasText:'Natick, MA'}).click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'Blue · 2383 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+ await page.locator('#dccHomeScorecard').click();
+ await expect(page.locator('#dcc-paper-length')).toHaveValue('9');
+ await expect(page.locator('#dcc-paper-length')).toBeDisabled();
+ await expect(page.locator('#dcc-paper-grid .dcc-paper-hole')).toHaveCount(9);
+ await page.getByRole('button',{name:'Select hole 9, not scored'}).click();
+ await page.getByRole('button',{name:'Pencil 4 strokes for hole 9'}).click();
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ await expect(page.getByRole('button',{name:'Select hole 9, 4 strokes'})).toBeVisible();
+ await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
+ await page.locator('#dccClubhouseHome [data-dcc-go="ghost"]').click();
+ await expect(page.locator('#dccGhostLength')).toHaveValue('9');
+ await expect(page.locator('#dccGhostLength')).toBeDisabled();
+ await page.locator('#dccGhostPlay').click();
+ const match=page.frameLocator('#dccGhostPlayback iframe');
+ await expect(match.locator('#length')).toHaveValue('9');
+ await expect(match.locator('#ghostHoleSketch .route-mark')).toBeAttached();
+ await page.goto('/playtest/yardage-preview.html?hole=9');
+ await expect(page.locator('#hole option')).toHaveCount(9);
+ const routes=new Set();
+ const drawing=page.locator('.field-sketch .route-mark');
+ let previous=null;
+ for(let hole=1;hole<=9;hole++){
+  await page.locator('#hole').selectOption(String(hole));
+  if(previous)await expect(drawing).not.toHaveAttribute('d',previous);
+  await expect(drawing).toHaveAttribute('d',/^M/);
+  previous=await drawing.getAttribute('d');
+  routes.add(previous);
+ }
+ expect(routes.size).toBe(9);
+ await expect(page.locator('#next')).toBeDisabled();
+ await expect(page.locator('#yards')).toContainText('367');
+ const route=await drawing.getAttribute('d');
+ await page.locator('#watchGhost').click();
+ await expect(page.locator('#hole option')).toHaveCount(9);
+ await expect(page.locator('#length')).toHaveValue('9');
+ await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+ await page.locator('#next').click();
+ await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+});
+
+test('Pelican Pointe preserves its selected pairing and official White tee through the Yardage Book',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/');
+ await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Pelican Pointe');
+ await page.locator('#dcc-starter-search').click();
+ const choices=page.locator('#dcc-starter-results button');
+ await expect(choices).toHaveCount(3);
+ await choices.filter({hasText:'Meadows / Preserve'}).click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'White · 6022 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+ await expect(page.locator('#dcc-starter-dialog')).toBeHidden();
+ await page.goto('/playtest/yardage-preview.html');
+ await expect(page.locator('#yards')).toContainText('307');
+ await page.locator('#hole').selectOption('10');
+ await expect(page.locator('#yards')).toContainText('329');
+ await expect(page.locator('.field-sketch')).toContainText('Hole 10 · Scorecard notes');
+ await expect(page.locator('.field-sketch svg')).toHaveCount(0);
+ await page.reload();
+ await expect(page.locator('#yards')).toContainText('329');
+});
+
+for(const course of [
+ {query:'The Chimneys',region:'Winder, GA',tee:'Gold',hole:11,yards:216,par:3},
+ {query:'Pine Hills',region:'Winder, GA',tee:'Red',hole:18,yards:360,par:5},
+ {query:'Ocean Course',region:'Kiawah Island, SC',tee:'Black',hole:16,yards:577,par:5},
+ {query:'Orange Blossom Hills',region:'The Villages, FL',tee:'Gold',hole:16,yards:533,par:5,caddy:true},
+ {query:'Baseline Golf Course',region:'Ocala, FL',tee:'Blue',hole:13,yards:272,par:4,caddy:true},
+ {query:"Disney's Palm",region:'Lake Buena Vista, FL',tee:'Blue',hole:17,yards:395,par:4,caddy:true},
+ {query:'Palatka Golf Club',region:'Palatka, FL',tee:'Blue',hole:18,yards:411,par:4,caddy:true},
+ {query:'Mount Dora Golf Club',region:'Mount Dora, FL',tee:'Red',hole:18,yards:392,par:5,caddy:true},
+ {query:'Gates Four',region:'Fayetteville, NC',tee:'Black',hole:13,yards:536,par:5,caddy:true},
+ {query:'Crooked Oaks',region:'Seabrook Island, SC',tee:'Hawk',hole:13,yards:175,par:3,caddy:true},
+ {query:'Tanglewood Park Championship',region:'Clemmons, NC',tee:'Red',hole:17,yards:292,par:5,caddy:true},
+ {query:'Hidden Cypress',region:'Bluffton, SC',tee:'Gold',hole:12,yards:165,par:3,caddy:true},
+ {query:'Longleaf',region:'Southern Pines, NC',tee:'Tee 6',hole:5,yards:509,par:5,caddy:true},
+ {query:'Sanford Municipal',region:'Sanford, NC',tee:'Men’s',hole:16,yards:522,par:5,caddy:true},
+]){
+ test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
+  await page.goto('/playtest/');
+  await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+  await page.locator('#dcc-starter-query').fill(course.query);
+  await page.locator('#dcc-starter-search').click();
+  await expect(page.locator('#dcc-starter-results')).toContainText(course.region);
+  await page.locator('#dcc-starter-results button').first().click();
+  const options=page.locator('#dcc-starter-tees');
+  const selected=options.locator('option').filter({hasText:new RegExp('^'+course.tee+' ·')});
+  await expect(selected).toHaveCount(1);
+  await options.selectOption(await selected.getAttribute('value'));
+  await page.locator('#dcc-starter-checkin').click();
+  await page.goto('/playtest/yardage-preview.html?hole=1');
+  const route=page.locator('.field-sketch .route-mark');
+  const paths=new Set();
+  let previous=null;
+  for(let number=1;number<=18;number++){
+   await page.locator('#hole').selectOption(String(number));
+   if(previous)await expect(route).not.toHaveAttribute('d',previous);
+   await expect(route).toHaveAttribute('d',/^M/);
+   previous=await route.getAttribute('d');
+   paths.add(previous);
+  }
+  expect(paths.size).toBe(18);
+  await page.locator('#hole').selectOption(String(course.hole));
+  await expect(route).toHaveAttribute('d',Array.from(paths)[course.hole-1]);
+  await expect(page.locator('#yards')).toContainText(String(course.yards));
+  await expect(page.locator('#mapPar')).toContainText('Par '+course.par);
+  await expect(page.locator('#pocketNoteOne')).not.toBeEmpty();
+  await expect(page.locator('#pocketNoteTwo')).not.toBeEmpty();
+  const shapeAttrs=items=>items.map(node=>[node.getAttribute('d'),node.getAttribute('points')]);
+  const shapes=await page.locator('.field-sketch svg [data-map-feature]').evaluateAll(shapeAttrs);
+  await page.locator('#watchGhost').click();
+  const ghost=page.locator('#ghostHoleSketch');
+  await expect(ghost.locator('.route-mark')).toHaveAttribute('d',Array.from(paths)[course.hole-1]);
+  expect(await ghost.locator('[data-map-feature]').evaluateAll(shapeAttrs)).toEqual(shapes);
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+  if(course.caddy){
+   await page.screenshot({path:'candidate-screenshots/'+course.query.toLowerCase().replaceAll(' ','-')+'-ghost.png',fullPage:true});
+   await page.locator('#ghostBack').click();
+   await expect(page.locator('#hole')).toHaveValue(String(course.hole));
+   await page.screenshot({path:'candidate-screenshots/'+course.query.toLowerCase().replaceAll(' ','-')+'-yardage.png',fullPage:true});
+   await page.locator('#askHoleCaddy').click();
+   await page.waitForURL('**/playtest/',{waitUntil:'domcontentloaded'});
+   await expect(page.locator('#aiInput')).toHaveValue(new RegExp(course.query,'i'));
+   await expect(page.locator('#aiInput')).toHaveValue(new RegExp('hole '+course.hole,'i'));
+   await expect(page.locator('#aiInput')).toHaveValue(new RegExp(course.yards+' yards','i'));
+  }
+ });
+}
 
 test('Ghost only offers manual hole par when there is no verified course scorecard',async({page})=>{
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));

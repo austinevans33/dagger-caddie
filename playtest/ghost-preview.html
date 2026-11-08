@@ -44,11 +44,11 @@ body.match {background:#f5f0e5}
 <article><strong>Shots played</strong><ol id="shots"></ol></article>
 </main><script type="module">
 import {ghostShotPlayback} from '../house-ghost-playback.js?v=ghost-match-1';
-import {ACTIVE_ROUND_KEY} from './starters-desk-session.js';
+import {ACTIVE_ROUND_KEY,readActiveRound} from './starters-desk-session.js';
 import {loadYardageState} from './yardage-live.js';
 import {drawGhostTracer} from './ghost-tracer.js?v=friday-book-1';
-import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './hole-sketch.js?v=friday-book-1';
-import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=friday-book-1';
+import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-reference-2';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=founders-reference-2';
 import {readYardageHole} from './yardage-navigation.js';
 import {pencilOrientation} from './yardage-pencil-orientation.js';
 const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
@@ -90,6 +90,7 @@ if(window.parent!==window&&document.body.classList.contains('match')){
  document.addEventListener('touchcancel',()=>{lastTouchY=null;lastTouchX=null},{passive:true});
 }
 const matchHole=matchDraft?.pending;
+const nativeNine=!matchDraft&&readActiveRound(localStorage)?.selection.course.holeCount===9;
 const requestedTier=matchDraft?.tier??params.get('tier');
 const requestedHole=Number(params.get('hole'));
 const firstHole=Number.isInteger(requestedHole)&&requestedHole>=1&&requestedHole<=18
@@ -152,9 +153,10 @@ async function updateGhostHoleSketch(){
 
 if(matchHole){$('back').textContent='Previous shot';$('next').textContent='Next shot';}
 function stopWatch(){if(watchTimer!==null){clearInterval(watchTimer);watchTimer=null;}$('watch').textContent=matchHole?'▶ Replay hole':'▶ Watch Ghost play the hole'}
-for(let n=1;n<=18;n++)$('hole').add(new Option('Hole '+n,n));
-$('hole').value=String(matchHole?.hole??firstHole);
+for(let n=1;n<=(nativeNine?9:18);n++)$('hole').add(new Option('Hole '+n,n));
+$('hole').value=String(matchHole?.hole??(nativeNine?Math.min(firstHole,9):firstHole));
 if(matchDraft)$('length').value=String(matchDraft.holesPlanned);
+if(nativeNine){$('length').value='9';$('length').disabled=true}
 if(params.get('from')==='yardage')$('ghostBack').textContent='← Back to Yardage Book';
 function render(){
  const count=Number($('length').value),holeNumber=Number($('hole').value);

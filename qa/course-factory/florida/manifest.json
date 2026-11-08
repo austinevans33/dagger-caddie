@@ -1,0 +1,1053 @@
+{
+  "reviewDate": "2026-11-07",
+  "source": "https://download.geofabrik.de/north-america/us/florida-261106.osm.pbf",
+  "pbfSha256": "96bbbf94612bef9b717985dd961b14b9e2104d53ca03c64b81f6aa9585c33aa2",
+  "snapshotSha256": "55a7899898b372fddc49452f3e773ccacbd65c3206e69a7b75474431d8d81554",
+  "bbox": [
+    -82.14,
+    27.53,
+    -81.28,
+    30.26
+  ],
+  "courses": [
+    {
+      "id": "orange-blossom-hills-fl",
+      "name": "Orange Blossom Hills Golf & Country Club",
+      "region": "The Villages, FL",
+      "boundary": "w252838512",
+      "mapRef": "fl/orange-blossom-hills",
+      "auditTee": "gold",
+      "osmName": "Orange Blossom Hills Golf & Country Club (The Villages)",
+      "scorecard": {
+        "url": "https://www.golfthevillages.com/championship-golf/images/scorecards/ORANGE%20BLOSSOM%20HILLS.pdf",
+        "sha256": "17ceddc099dba307665eee65b373c656993b625fa142c1f0790e7583f00cd394",
+        "format": "pdf",
+        "tees": {
+          "gold": {
+            "label": "Gold",
+            "total": 6198,
+            "unlabeledBack": {
+              "page": 1,
+              "line": 0,
+              "columns": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                11
+              ]
+            }
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 5805,
+            "unlabeledBack": {
+              "page": 1,
+              "line": 1,
+              "columns": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                11
+              ]
+            }
+          },
+          "white": {
+            "label": "White",
+            "total": 5265,
+            "unlabeledBack": {
+              "page": 1,
+              "line": 2,
+              "columns": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                11
+              ]
+            }
+          },
+          "green": {
+            "label": "Green",
+            "total": 4694,
+            "unlabeledBack": {
+              "page": 1,
+              "line": 3,
+              "columns": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                11
+              ]
+            }
+          },
+          "friendly": {
+            "label": "Friendly",
+            "total": 3857,
+            "unlabeledBack": {
+              "page": 1,
+              "line": 4,
+              "columns": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                11
+              ]
+            }
+          }
+        },
+        "parUnlabeledBack": {
+          "page": 1,
+          "line": 8,
+          "columns": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "id": "disney-palm-fl",
+      "name": "Disney's Palm Golf Course",
+      "region": "Lake Buena Vista, FL",
+      "boundary": "w44643367",
+      "mapRef": "fl/disney-palm",
+      "auditTee": "blue",
+      "osmName": "Disney's Palm Golf Course",
+      "scorecard": {
+        "url": "https://www.golfwdw.com/images/documents/10134_144601_Walt_Disney_World_Golf-Palm.pdf",
+        "sha256": "326c361bb91c7069e3c7562b34044617485e538c6a7c86f21cd633d2342b52f2",
+        "format": "pdf",
+        "tees": {
+          "blue": {
+            "label": "Blue",
+            "name": "Blue",
+            "total": 6840
+          },
+          "white": {
+            "label": "White",
+            "name": "White",
+            "total": 6359
+          },
+          "yellow": {
+            "label": "Yellow",
+            "name": "Yellow",
+            "total": 5988
+          },
+          "red": {
+            "label": "Red",
+            "name": "Red",
+            "total": 5200
+          }
+        },
+        "reviewNote": "The current operator PDF prints No. 17 as par 5, inconsistent with its printed 36 and 72. The earlier Disney card reproduced by MyGolfVacation explicitly lists No. 17 as par 4 and Disney Parks independently confirms four par 5s on the current routing. Correct only the printed par. All tee yardages are from the current operator PDF.",
+        "parCorrection": {
+          "hole": 17,
+          "printed": 5,
+          "verified": 4,
+          "evidence": [
+            "https://disneyparksblog.com/wdw/golf-at-disney-world-mini-golfing-and-more/",
+            "https://www.mygolfvacation.com/courseImages/Disne_Palm.pdf"
+          ]
+        }
+      }
+    },
+    {
+      "id": "baseline-golf-course-fl",
+      "name": "Baseline Golf Course",
+      "region": "Ocala, FL",
+      "boundary": "w252834695",
+      "mapRef": "fl/baseline-golf-course",
+      "auditTee": "blue",
+      "osmName": "Baseline Golf Course",
+      "scorecard": {
+        "url": "https://static.wixstatic.com/media/22c840_089d02ccd02d4af1ac4c956856bf9f6e~mv2.png",
+        "sha256": "9f01694283efe5aa1542cb86ab9dfbe1bb46554a52b8749f15fa02d93d00942e",
+        "format": "reviewed-image",
+        "reviewNote": "Standard numbered holes 1–18 from the official club image. Exclude the separately printed Lucky 13 par 3 after No. 4. Printed 19-hole Blue totals of 1,931 and 3,604 minus the included 115 yards yield 1,816 and 3,489; 64 minus 3 is par 61. Red alternatives and 19-hole stroke indexes withheld.",
+        "reviewedRows": {
+          "Blue": [
+            [
+              265,
+              162,
+              143,
+              252,
+              281,
+              172,
+              131,
+              90,
+              320,
+              1816
+            ],
+            [
+              320,
+              133,
+              160,
+              272,
+              112,
+              123,
+              173,
+              140,
+              240,
+              1673,
+              3489
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              3,
+              3,
+              4,
+              4,
+              3,
+              3,
+              3,
+              4,
+              31
+            ],
+            [
+              4,
+              3,
+              3,
+              4,
+              3,
+              3,
+              3,
+              3,
+              4,
+              30,
+              61
+            ]
+          ]
+        },
+        "tees": {
+          "blue": {
+            "label": "Blue"
+          }
+        }
+      }
+    },
+    {
+      "id": "palatka-golf-club-fl",
+      "name": "Palatka Golf Club",
+      "region": "Palatka, FL",
+      "boundary": "w301780787",
+      "mapRef": "fl/palatka-golf-club",
+      "auditTee": "blue",
+      "osmName": "Palatka Golf Club",
+      "scorecard": {
+        "url": "https://vip.teeitup.com/palatkagolfclub/wp-content/uploads/sites/7988/2020/09/scorecard.pdf",
+        "sha256": "a5df109f3d7c93895040f6de94c1404d98c449584ddc5d3557be140eab092312",
+        "format": "reviewed-image",
+        "reviewNote": "Visually transcribed the two numbered PDF pages linked by the club. Blue and White totals reconcile. The Red back-nine row adds to 2,343 while the card prints 2,822 and a 4,748 total, so Red is withheld.",
+        "reviewedRows": {
+          "Blue": [
+            [
+              319,
+              378,
+              189,
+              476,
+              438,
+              147,
+              398,
+              376,
+              367,
+              3088
+            ],
+            [
+              470,
+              357,
+              162,
+              289,
+              178,
+              372,
+              167,
+              368,
+              411,
+              2774,
+              5862
+            ]
+          ],
+          "White": [
+            [
+              309,
+              361,
+              177,
+              463,
+              415,
+              127,
+              380,
+              365,
+              348,
+              2945
+            ],
+            [
+              454,
+              343,
+              147,
+              275,
+              169,
+              355,
+              152,
+              357,
+              392,
+              2644,
+              5589
+            ]
+          ],
+          "Men's Par": [
+            [
+              4,
+              4,
+              3,
+              5,
+              5,
+              3,
+              4,
+              4,
+              4,
+              36
+            ],
+            [
+              5,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              4,
+              34
+            ]
+          ],
+          "Men's Handicap": [
+            [
+              15,
+              7,
+              3,
+              9,
+              13,
+              17,
+              1,
+              5,
+              11
+            ],
+            [
+              14,
+              10,
+              16,
+              18,
+              12,
+              8,
+              4,
+              6,
+              2
+            ]
+          ],
+          "Women's Par": [
+            [
+              4,
+              4,
+              3,
+              4,
+              5,
+              3,
+              5,
+              5,
+              4,
+              37
+            ],
+            [
+              5,
+              4,
+              3,
+              4,
+              3,
+              4,
+              3,
+              4,
+              5,
+              35,
+              72
+            ]
+          ],
+          "Women's Handicap": [
+            [
+              13,
+              7,
+              5,
+              15,
+              1,
+              17,
+              9,
+              11,
+              3
+            ],
+            [
+              2,
+              6,
+              18,
+              16,
+              14,
+              4,
+              12,
+              8,
+              10
+            ]
+          ]
+        },
+        "parLabel": "Men's Par",
+        "handicap": "Men's Handicap",
+        "tees": {
+          "blue": {
+            "label": "Blue",
+            "name": "Blue",
+            "total": 5862
+          },
+          "white": {
+            "label": "White",
+            "name": "White",
+            "total": 5589
+          },
+          "white-women": {
+            "label": "White",
+            "name": "White (Women)",
+            "total": 5589,
+            "parLabel": "Women's Par",
+            "handicap": "Women's Handicap"
+          }
+        }
+      }
+    },
+    {
+      "id": "mount-dora-golf-club-fl",
+      "name": "Mount Dora Golf Club",
+      "region": "Mount Dora, FL",
+      "boundary": "w304039301",
+      "mapRef": "fl/mount-dora-golf-club",
+      "auditTee": "blue",
+      "osmName": "Mount Dora Golf Club",
+      "scorecard": {
+        "url": "https://www.mountdoragolf.com/wp-content/uploads/sites/6218/2017/02/Scorecard-No-Map.jpg",
+        "sha256": "35adb28af60499d9a8110d73c7305fc535d226da59931716a210b9bde13c37c0",
+        "format": "reviewed-image",
+        "reviewNote": "Visually transcribed the club scorecard. Both published yardage subtotals and total match every tee. Red and Gold use the separately printed par and handicap rows.",
+        "reviewedRows": {
+          "Blue Tees": [
+            [
+              320,
+              330,
+              177,
+              358,
+              489,
+              457,
+              136,
+              299,
+              376,
+              2942
+            ],
+            [
+              354,
+              143,
+              398,
+              167,
+              315,
+              360,
+              446,
+              175,
+              419,
+              2777,
+              5719
+            ]
+          ],
+          "White Tees": [
+            [
+              309,
+              322,
+              160,
+              347,
+              473,
+              447,
+              131,
+              286,
+              374,
+              2849
+            ],
+            [
+              344,
+              135,
+              355,
+              148,
+              305,
+              343,
+              420,
+              163,
+              408,
+              2621,
+              5470
+            ]
+          ],
+          "Red Tees": [
+            [
+              299,
+              311,
+              143,
+              333,
+              427,
+              435,
+              127,
+              271,
+              367,
+              2713
+            ],
+            [
+              334,
+              128,
+              348,
+              128,
+              296,
+              335,
+              411,
+              153,
+              392,
+              2525,
+              5238
+            ]
+          ],
+          "Gold Tees": [
+            [
+              200,
+              244,
+              143,
+              261,
+              394,
+              410,
+              127,
+              227,
+              297,
+              2303
+            ],
+            [
+              261,
+              128,
+              302,
+              128,
+              234,
+              278,
+              326,
+              103,
+              347,
+              2107,
+              4410
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              4,
+              3,
+              4,
+              5,
+              5,
+              3,
+              4,
+              4,
+              36
+            ],
+            [
+              4,
+              3,
+              4,
+              3,
+              4,
+              4,
+              5,
+              3,
+              4,
+              34,
+              70
+            ]
+          ],
+          "Men's Handicap": [
+            [
+              13,
+              9,
+              11,
+              7,
+              5,
+              1,
+              17,
+              15,
+              3
+            ],
+            [
+              12,
+              18,
+              6,
+              16,
+              14,
+              10,
+              4,
+              8,
+              2
+            ]
+          ],
+          "Ladies' Par": [
+            [
+              4,
+              4,
+              3,
+              4,
+              5,
+              5,
+              3,
+              4,
+              5,
+              37
+            ],
+            [
+              4,
+              3,
+              4,
+              3,
+              4,
+              4,
+              5,
+              3,
+              5,
+              35,
+              72
+            ]
+          ],
+          "Ladies' Handicap": [
+            [
+              11,
+              9,
+              15,
+              7,
+              1,
+              3,
+              17,
+              13,
+              5
+            ],
+            [
+              8,
+              16,
+              6,
+              18,
+              10,
+              12,
+              2,
+              14,
+              4
+            ]
+          ]
+        },
+        "parLabel": "Par",
+        "handicap": "Men's Handicap",
+        "tees": {
+          "blue": {
+            "label": "Blue Tees",
+            "name": "Blue",
+            "total": 5719
+          },
+          "white": {
+            "label": "White Tees",
+            "name": "White",
+            "total": 5470
+          },
+          "red": {
+            "label": "Red Tees",
+            "name": "Red",
+            "total": 5238,
+            "parLabel": "Ladies' Par",
+            "handicap": "Ladies' Handicap"
+          },
+          "gold": {
+            "label": "Gold Tees",
+            "name": "Gold",
+            "total": 4410,
+            "parLabel": "Ladies' Par",
+            "handicap": "Ladies' Handicap"
+          }
+        }
+      }
+    },
+    {
+      "id": "debary-country-club-fl",
+      "name": "DeBary Country Club",
+      "region": "DeBary, FL",
+      "boundary": "r4013472",
+      "mapRef": "fl/debary-country-club",
+      "auditTee": "blue",
+      "osmName": "DeBary Golf & Country Club",
+      "scorecard": {
+        "url": "https://www.debarycc.com/images/new_scorecard-page-002.jpg",
+        "sha256": "bac295b5cf06163539f4d41429ff602796cd1fb65c489be798020d21acc04138",
+        "format": "reviewed-image",
+        "reviewNote": "Blue and Par visually transcribed from DeBary’s official scorecard image. Both nine-hole sums and the 18-hole totals match the printed card.",
+        "reviewedRows": {
+          "Blue": [
+            [
+              391,
+              419,
+              198,
+              399,
+              551,
+              436,
+              221,
+              404,
+              399,
+              3418
+            ],
+            [
+              388,
+              534,
+              195,
+              425,
+              535,
+              451,
+              193,
+              430,
+              452,
+              3603,
+              7021
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              3,
+              4,
+              4,
+              35
+            ],
+            [
+              4,
+              5,
+              3,
+              4,
+              5,
+              4,
+              3,
+              4,
+              5,
+              37,
+              72
+            ]
+          ]
+        },
+        "tees": {
+          "blue": {
+            "label": "Blue"
+          }
+        }
+      }
+    },
+    {
+      "id": "plantation-otter-creek-fl",
+      "name": "The Plantation Golf Club — Otter Creek",
+      "region": "Leesburg, FL",
+      "boundary": "r4040291",
+      "mapRef": "fl/plantation-otter-creek",
+      "auditTee": null,
+      "osmName": "The Plantation Golf Club - Otter Creek",
+      "scorecard": {
+        "url": "https://ncrdb.usga.org/courseTeeInfo?CourseID=10444",
+        "blocker": "USGA/FSGA ratings identify Otter Creek, but no complete official hole card was acquired."
+      }
+    },
+    {
+      "id": "highlands-reserve-fl",
+      "name": "Highlands Reserve Golf Club",
+      "region": "Davenport, FL",
+      "boundary": "r18266499",
+      "mapRef": "fl/highlands-reserve",
+      "auditTee": null,
+      "osmName": "Highlands Reserve",
+      "scorecard": {
+        "url": "https://www.highlandsreserve-golf.com/",
+        "blocker": "No independently verified official hole-by-hole scorecard acquired."
+      }
+    },
+    {
+      "id": "cimarrone-fl",
+      "name": "Cimarrone Golf Club",
+      "region": "Jacksonville, FL",
+      "boundary": "r17604799",
+      "mapRef": "fl/cimarrone",
+      "auditTee": null,
+      "osmName": "Cimarrone Golf Club",
+      "scorecard": {
+        "url": "https://www.cimarronegolf.com/golf/course",
+        "blocker": "Official card is image-only. No verified numeric transcription available in this batch."
+      }
+    },
+    {
+      "id": "black-bear-fl",
+      "name": "Black Bear Golf Club",
+      "region": "Eustis, FL",
+      "boundary": "r16841057",
+      "mapRef": "fl/black-bear",
+      "auditTee": null,
+      "osmName": "Black Bear Golf Club",
+      "scorecard": {
+        "url": "https://blackbeargolfclub.com/scorecard/",
+        "blocker": "Official course page publishes tee totals but no complete machine-verified hole rows."
+      }
+    },
+    {
+      "id": "waldorf-astoria-fl",
+      "name": "Waldorf Astoria Golf Club",
+      "region": "Orlando, FL",
+      "boundary": "w44540162",
+      "mapRef": "fl/waldorf-astoria",
+      "auditTee": "black",
+      "osmName": "Waldorf Astoria Golf Course",
+      "scorecard": {
+        "url": "https://www.waldorfastoriaorlando.com/wp-content/uploads/2025/02/WAO-SC.pdf",
+        "sha256": "ef36a7709522f2f004d08dce967b9da7ac39ed5c9dbd823465dba7ddf3fdb176",
+        "format": "pdf",
+        "tees": {
+          "black": {
+            "label": "Black",
+            "width": [
+              21
+            ]
+          },
+          "blue": {
+            "label": "Blue",
+            "width": [
+              21
+            ]
+          },
+          "white": {
+            "label": "White",
+            "width": [
+              21
+            ]
+          }
+        },
+        "parWidth": [
+          21
+        ]
+      }
+    },
+    {
+      "id": "disney-magnolia-fl",
+      "name": "Disney's Magnolia Golf Course",
+      "region": "Lake Buena Vista, FL",
+      "boundary": "r11105783",
+      "mapRef": "fl/disney-magnolia",
+      "auditTee": "classic",
+      "osmName": "Disney's Magnolia Golf Course",
+      "scorecard": {
+        "url": "https://www.golfwdw.com/images/Walt_Disney_World_Golf_-_Magnolia_scorecard.pdf",
+        "sha256": "840446975d6cc6eb15f02162e791b31285d12f00c141cc2c5ffea04d5ffae926",
+        "format": "pdf",
+        "tees": {
+          "classic": {
+            "label": "Classic"
+          },
+          "green": {
+            "label": "Green"
+          },
+          "white": {
+            "label": "White"
+          }
+        }
+      }
+    },
+    {
+      "id": "falcons-fire-fl",
+      "name": "Falcon's Fire Golf Club",
+      "region": "Kissimmee, FL",
+      "boundary": "w311994625",
+      "mapRef": "fl/falcons-fire",
+      "auditTee": null,
+      "osmName": "Falcon's Fire Golf Club",
+      "scorecard": {
+        "url": "https://www.falconsfire.com/images/documents/scorecard.pdf",
+        "blocker": "Official scorecard PDF is image-only; verified text rows were unavailable."
+      }
+    },
+    {
+      "id": "ocn-panther-lake-fl",
+      "name": "Orange County National — Panther Lake",
+      "region": "Winter Garden, FL",
+      "boundary": "w727848182",
+      "mapRef": "fl/ocn-panther-lake",
+      "auditTee": "champ",
+      "scorecard": {
+        "url": "https://www.ocngolf.com/panther-lake-yardage-book/",
+        "sha256": "38ea824db230676d291f019adb16acd3711dcf75bd20d3c51de9b5a36739c842",
+        "format": "html",
+        "tees": {
+          "champ": {
+            "label": "Champ"
+          }
+        },
+        "reviewNote": "Champ table and per-hole accordion agree. Other tee rows withheld pending reconciliation between page sections."
+      },
+      "osmName": "Orange County National Golf Center & Lodge",
+      "routeName": "Panther"
+    },
+    {
+      "id": "ocn-crooked-cat-fl",
+      "name": "Orange County National — Crooked Cat",
+      "region": "Winter Garden, FL",
+      "boundary": "w727848182",
+      "mapRef": "fl/ocn-crooked-cat",
+      "auditTee": "champ",
+      "scorecard": {
+        "url": "https://www.ocngolf.com/crooked-cat-yardage-book/",
+        "sha256": "e7f5492cf1bc8eaabef8438752665cbd5118a960900ffb13e13cd5c140b95164",
+        "format": "html",
+        "tees": {
+          "champ": {
+            "label": "Champ"
+          }
+        },
+        "reviewNote": "Champ table and per-hole accordion agree. Other tee rows withheld pending reconciliation between page sections."
+      },
+      "osmName": "Orange County National Golf Center & Lodge",
+      "routeName": "Crooked Cat"
+    },
+    {
+      "id": "streamsong-black-fl",
+      "name": "Streamsong Black",
+      "region": "Bowling Green, FL",
+      "boundary": "w1351613366",
+      "mapRef": "fl/streamsong-black",
+      "auditTee": null,
+      "osmName": "Streamsong Resort - Black Course",
+      "scorecard": {
+        "url": "https://www.streamsongresort.com/content/uploads/2026/02/Black-2021-Scorecard.pdf",
+        "blocker": "Official 2021 scorecard PDF is image-only; the OCR output did not establish trustworthy hole rows."
+      }
+    },
+    {
+      "id": "tpc-sawgrass-stadium-fl",
+      "name": "TPC Sawgrass — The Players Stadium Course",
+      "region": "Ponte Vedra Beach, FL",
+      "boundary": null,
+      "mapRef": "fl/tpc-sawgrass-stadium",
+      "auditTee": "the-players",
+      "geometryBlocker": "No verified isolated Stadium boundary in the dated shard. Preserve identity separately from Dye’s Valley.",
+      "scorecard": {
+        "url": "https://tpc.com/sawgrass/wp-content/uploads/sites/51/2022/12/ThePlayersStadium.pdf",
+        "sha256": "2c91d3aa79da4a6e5f3dde15b92982cc1e4c69bcadf36f270f50007ecaa8036a",
+        "format": "pdf",
+        "tees": {
+          "the-players": {
+            "label": "THE PLAYERS",
+            "width": [
+              21
+            ],
+            "skip": 1,
+            "name": "The Players"
+          },
+          "blue": {
+            "label": "BLUE",
+            "width": [
+              21
+            ],
+            "skip": 1,
+            "name": "Blue"
+          },
+          "white": {
+            "label": "WHITE",
+            "width": [
+              21
+            ],
+            "skip": 1,
+            "name": "White"
+          },
+          "green": {
+            "label": "GREEN",
+            "width": [
+              21
+            ],
+            "skip": 1,
+            "name": "Green"
+          }
+        },
+        "parWidth": [
+          21
+        ]
+      }
+    },
+    {
+      "id": "disney-lake-buena-vista-fl",
+      "name": "Disney's Lake Buena Vista Golf Course",
+      "region": "Lake Buena Vista, FL",
+      "boundary": null,
+      "mapRef": "fl/disney-lake-buena-vista",
+      "auditTee": "blue",
+      "geometryBlocker": "No independently matched Lake Buena Vista boundary in the dated shard.",
+      "scorecard": {
+        "url": "https://www.golfwdw.com/images/documents/10135_144600_Walt_Disney_World-Lake_Buena_Vista.pdf",
+        "sha256": "0fcadd047f7b160b7024c35838478f21938abee233efefa967505ee264f41353",
+        "format": "pdf",
+        "tees": {
+          "blue": {
+            "label": "Blue"
+          },
+          "white": {
+            "label": "White"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,231 @@
+{
+  "course": {
+    "provider": "dagger-founder",
+    "providerCourseId": "kings-grant-fayetteville-nc",
+    "name": "King's Grant Golf & Country Club",
+    "region": "Fayetteville, NC"
+  },
+  "tee": {
+    "providerTeeId": "blue",
+    "name": "Blue",
+    "totalYards": 5893
+  },
+  "scorecard": "https://kingsgrantgolfcc.com/course-details/",
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-78.909,35.126,-78.872,35.160",
+  "sourceSha256": "83aa2e038308c36fe764c2ffc89846d7032e4bac08d7ba8cb18676e56d589927",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "boundary": "6446970",
+  "pass": false,
+  "referenceReady": true,
+  "referenceTees": [
+    9,
+    13
+  ],
+  "reason": "reviewed-reference-tees",
+  "ratioErrors": [],
+  "mappedHoles": 16,
+  "fairwayHoles": 18,
+  "teeHoles": 16,
+  "greenHoles": 18,
+  "routes": 18,
+  "holes": [
+    {
+      "number": 1,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 376,
+      "routeYards": 369
+    },
+    {
+      "number": 2,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 417,
+      "routeYards": 420
+    },
+    {
+      "number": 3,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 351,
+      "routeYards": 329
+    },
+    {
+      "number": 4,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 180,
+      "routeYards": 188
+    },
+    {
+      "number": 5,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 394,
+      "routeYards": 379
+    },
+    {
+      "number": 6,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 509,
+      "routeYards": 511
+    },
+    {
+      "number": 7,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 159,
+      "routeYards": 160
+    },
+    {
+      "number": 8,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 388,
+      "routeYards": 385
+    },
+    {
+      "number": 9,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": false,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 288,
+      "routeYards": 291
+    },
+    {
+      "number": 10,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 330,
+      "routeYards": 330
+    },
+    {
+      "number": 11,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 156,
+      "routeYards": 152
+    },
+    {
+      "number": 12,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 370,
+      "routeYards": 366
+    },
+    {
+      "number": 13,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": false,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 132,
+      "routeYards": 102
+    },
+    {
+      "number": 14,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 348,
+      "routeYards": 353
+    },
+    {
+      "number": 15,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 468,
+      "routeYards": 456
+    },
+    {
+      "number": 16,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 205,
+      "routeYards": 197
+    },
+    {
+      "number": 17,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 352,
+      "routeYards": 309
+    },
+    {
+      "number": 18,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 470,
+      "routeYards": 484
+    }
+  ]
+}

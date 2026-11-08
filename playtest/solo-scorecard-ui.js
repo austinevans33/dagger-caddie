@@ -97,7 +97,8 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   const scored=state.scores.slice(range.start-1,range.end).filter(Number.isInteger).length;
   launch.textContent='OPEN SCORECARD  ·  '+scored+'/'+(state.length===9?9:18)+' HOLES SCORED';
   const length=state.length===9?9:18,scorecard=readCourseScorecard(storage,active.selection);
-  const coverage=scorecardCoverage(scorecard?.holes);
+  const nativeNine=active.selection.course.holeCount===9;
+  const coverage=scorecardCoverage(scorecard?.holes,nativeNine?9:18);
   const coverageEl=$('dcc-paper-coverage');
   coverageEl.replaceChildren();
   const coverageTitle=doc.createElement('strong');coverageTitle.textContent=coverage.label;
@@ -106,6 +107,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   const pars=Array.from({length:18},(_,i)=>scorecard?.holes.find(h=>h.number===i+1)?.par??null);
   $('dcc-paper-course').textContent=active.selection.course.name+' · '+active.selection.tee.name;
   $('dcc-paper-length').value=String(length);
+  $('dcc-paper-length').disabled=nativeNine;
   $('dcc-paper-progress').textContent='HOLE '+state.hole+'  ·  ENTER STROKES';
   $('dcc-paper-prev').disabled=state.hole<=range.start;$('dcc-paper-next').disabled=state.hole>=range.end;
   const grid=$('dcc-paper-grid');grid.replaceChildren();

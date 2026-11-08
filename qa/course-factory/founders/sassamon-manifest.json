@@ -1,0 +1,21 @@
+{
+  "reviewDate": "2026-11-07",
+  "source": "https://download.geofabrik.de/north-america/us/massachusetts-261106.osm.pbf",
+  "pbfSha256": "92f05e955da8f4c6d94e518029592d3064837ce9fb5925f4fcaf4d19209765e4",
+  "snapshotSha256": "772318fd0e6b3829424aefb257846928600d8fcb59af75cb702afc3a086bcfb3",
+  "courses": [
+    {
+      "id": "sassamon-trace-natick-ma",
+      "boundary": "w311190601",
+      "osmName": "Sassamon Trace Golf Course",
+      "mapRef": "ma/sassamon-trace",
+      "holeCount": 9
+    }
+  ],
+  "bbox": [
+    -71.383,
+    42.251,
+    -71.348,
+    42.281
+  ]
+}

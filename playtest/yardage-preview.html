@@ -106,9 +106,9 @@ import {pocketCaddyNotes} from './pocket-caddy-notes.js';
 import {readActiveRound,ACTIVE_ROUND_KEY} from './starters-desk-session.js';
 import {readCourseScorecard} from './active-course-context.js';
 import {readYardageCaddy,describeSketchTrouble} from './yardage-caddy-notes.js?v=friday-book-1';
-import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=friday-book-1';
+import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-reference-2';
 import {bayonetOsmTrouble} from './bayonet-osm-trouble.js';
-import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=friday-book-1';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=founders-reference-2';
 import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
@@ -120,7 +120,6 @@ function cachedState(){
  return resolveYardageState({active,context,holeNumber:number});
 }
 let latest=cachedState();let spatialGeneration=0;let spatialPending=null;let activeAnnotations=null;let currentSketch=null;let roundGeneration=0;let mapMode='all';let mapSelected=null;
-for(let i=1;i<=18;i++)$('hole').add(new Option('Hole '+i,String(i)));
 function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
 function renderAttack(features=[],annotations=null){
  activeAnnotations=annotations;
@@ -134,11 +133,16 @@ function renderAttack(features=[],annotations=null){
 function draw({refreshSketch=true}={}){
  const {selection,coverage,state,hasCourse}=latest;
  const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
+ const holeCount=coverage.expectedHoles;
+ number=page.holeNumber;
+ if($('hole').options.length!==holeCount){
+  $('hole').replaceChildren(...Array.from({length:holeCount},(_,i)=>new Option('Hole '+(i+1),String(i+1))));
+ }
  if(refreshSketch)currentSketch=null;
  renderAttack(currentSketch?.shapes,currentSketch?.annotations);
  $('askHoleCaddy').disabled=!selection?.course||!selection?.tee;
  $('askHoleCaddy').title=selection?.course&&selection?.tee?'Prepare an editable question for your caddy':'Select a course and tee at the Starter’s Desk first';
- $('hole').value=String(number);$('position').textContent='HOLE '+number+' / 18';
+ $('hole').value=String(number);$('position').textContent='HOLE '+number+' / '+holeCount;
  $('name').textContent=page.courseName+' · '+page.teeName;
  $('courseTitle').textContent=hasCourse?page.courseName:'Yardage Book';
  $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage';
@@ -232,12 +236,12 @@ function updateSketch(selection,hole){
   const foot=document.createElement('p');foot.className='geometry-foot';
   foot.textContent=annotations.route?'Illustrative layout · approximate tee area and trouble. Confirm carries on course. ':'Partial mapped shapes · No invented fairway or hazard outlines. ';
   if(sketch.source){const credit=document.createElement('a');credit.href=sketch.source;credit.textContent=sketch.credit;foot.append(credit)}
-  if(annotations.reference)foot.append(' · * Club booklet reference');
+  if(annotations.reference)foot.append(annotations.approximateTee?' · * Aerial reference':' · * Club booklet reference');
   box.append(foot);
  }).catch(error=>{if(spatialPending===controller)spatialPending=null;if(!controller.signal.aborted)unavailable()});
 }
 $('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
-$('next').onclick=()=>{number=Math.min(18,number+1);draw()};
+$('next').onclick=()=>{number=Math.min(latest.coverage.expectedHoles,number+1);draw()};
 $('hole').onchange=()=>{number=Number($('hole').value);draw()};
 $('askHoleCaddy').onclick=()=>{
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});

@@ -1,0 +1,226 @@
+{
+  "course": {
+    "provider": "dagger-founder",
+    "providerCourseId": "chimneys-winder-ga",
+    "name": "The Chimneys Golf Course",
+    "region": "Winder, GA"
+  },
+  "tee": {
+    "providerTeeId": "gold",
+    "name": "Gold",
+    "totalYards": 6384
+  },
+  "scorecard": "https://maps.golf/courses/the-chimneys-golf-course",
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-83.728,33.943,-83.697,33.969",
+  "sourceSha256": "61697b6b9a237124d702fe16d25220d09844a6bce8ee5f65dd8306ae91cbf787",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "boundary": "143005",
+  "pass": true,
+  "reason": "structural-parity",
+  "ratioErrors": [],
+  "mappedHoles": 18,
+  "fairwayHoles": 17,
+  "teeHoles": 18,
+  "greenHoles": 18,
+  "routes": 18,
+  "holes": [
+    {
+      "number": 1,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 340,
+      "routeYards": 339
+    },
+    {
+      "number": 2,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 261,
+      "routeYards": 260
+    },
+    {
+      "number": 3,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 416,
+      "routeYards": 376
+    },
+    {
+      "number": 4,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 261,
+      "routeYards": 246
+    },
+    {
+      "number": 5,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 150,
+      "routeYards": 153
+    },
+    {
+      "number": 6,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 518,
+      "routeYards": 513
+    },
+    {
+      "number": 7,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 371,
+      "routeYards": 360
+    },
+    {
+      "number": 8,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 382,
+      "routeYards": 389
+    },
+    {
+      "number": 9,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 344,
+      "routeYards": 327
+    },
+    {
+      "number": 10,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 383,
+      "routeYards": 359
+    },
+    {
+      "number": 11,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": false,
+      "par": 3,
+      "cardYards": 216,
+      "routeYards": 195
+    },
+    {
+      "number": 12,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 380,
+      "routeYards": 385
+    },
+    {
+      "number": 13,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 348,
+      "routeYards": 359
+    },
+    {
+      "number": 14,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 415,
+      "routeYards": 418
+    },
+    {
+      "number": 15,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 411,
+      "routeYards": 400
+    },
+    {
+      "number": 16,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 557,
+      "routeYards": 559
+    },
+    {
+      "number": 17,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 164,
+      "routeYards": 145
+    },
+    {
+      "number": 18,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 467,
+      "routeYards": 465
+    }
+  ]
+}

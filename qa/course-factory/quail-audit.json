@@ -1,0 +1,226 @@
+{
+  "course": {
+    "provider": "dagger-founder",
+    "providerCourseId": "quail-ridge-sanford-nc",
+    "name": "The Golf Club at Quail Ridge",
+    "region": "Sanford, NC"
+  },
+  "tee": {
+    "providerTeeId": "black",
+    "name": "Black",
+    "totalYards": 6783
+  },
+  "scorecard": "https://www.hitthepin.com/courses/quail-ridge-golf-course-sanford-nc",
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-79.257,35.377,-79.222,35.408",
+  "sourceSha256": "538f156994965afbb882cae4b0dbc5bf359caca2d585cbd229dfa803f86a91af",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "boundary": "6400453",
+  "pass": true,
+  "reason": "structural-parity",
+  "ratioErrors": [],
+  "mappedHoles": 18,
+  "fairwayHoles": 18,
+  "teeHoles": 18,
+  "greenHoles": 18,
+  "routes": 18,
+  "holes": [
+    {
+      "number": 1,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 409,
+      "routeYards": 391
+    },
+    {
+      "number": 2,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 397,
+      "routeYards": 410
+    },
+    {
+      "number": 3,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 178,
+      "routeYards": 191
+    },
+    {
+      "number": 4,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 507,
+      "routeYards": 510
+    },
+    {
+      "number": 5,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 392,
+      "routeYards": 402
+    },
+    {
+      "number": 6,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 374,
+      "routeYards": 382
+    },
+    {
+      "number": 7,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 193,
+      "routeYards": 201
+    },
+    {
+      "number": 8,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 483,
+      "routeYards": 496
+    },
+    {
+      "number": 9,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 405,
+      "routeYards": 414
+    },
+    {
+      "number": 10,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 410,
+      "routeYards": 416
+    },
+    {
+      "number": 11,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 189,
+      "routeYards": 201
+    },
+    {
+      "number": 12,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 459,
+      "routeYards": 470
+    },
+    {
+      "number": 13,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 3,
+      "cardYards": 203,
+      "routeYards": 214
+    },
+    {
+      "number": 14,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 496,
+      "routeYards": 505
+    },
+    {
+      "number": 15,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 386,
+      "routeYards": 370
+    },
+    {
+      "number": 16,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 5,
+      "cardYards": 456,
+      "routeYards": 458
+    },
+    {
+      "number": 17,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 447,
+      "routeYards": 454
+    },
+    {
+      "number": 18,
+      "scorecard": true,
+      "route": true,
+      "green": true,
+      "tee": true,
+      "fairway": true,
+      "par": 4,
+      "cardYards": 399,
+      "routeYards": 405
+    }
+  ]
+}

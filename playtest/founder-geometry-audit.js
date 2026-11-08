@@ -30,14 +30,14 @@ export function mappedRouteYards(records,holeNumber){
  }
  return Number.isFinite(yards)?yards:null;
 }
-export function auditFounderGeometry({records,holes,metadata,expectedRef}={}){
+export function auditFounderGeometry({records,holes,metadata,expectedRef,referenceTees=[],holeCount=18}={}){
  const empty={pass:false,reason:'unverified-map',quality:null,ratioErrors:[]};
- if(!Array.isArray(records)||!Array.isArray(holes)||holes.length!==18||
+ if(![9,18].includes(holeCount)||!Array.isArray(records)||!Array.isArray(holes)||holes.length!==holeCount||
     metadata?.course_ref!==expectedRef||typeof expectedRef!=='string'||!expectedRef)
   return Object.freeze({...empty,reason:'wrong-course-or-scorecard'});
  const sketches=[];
  const ratioErrors=[];
- for(let number=1;number<=18;number++){
+ for(let number=1;number<=holeCount;number++){
   const yardage=holes[number-1];
   if(yardage?.number!==number||!Number.isInteger(yardage.yards)||yardage.yards<50)return Object.freeze({...empty,reason:'invalid-hole-card'});
   const route=mappedRouteYards(records,number);
@@ -49,11 +49,18 @@ export function auditFounderGeometry({records,holes,metadata,expectedRef}={}){
   if(ratio<0.7||ratio>1.6)ratioErrors.push(number);
   sketches.push(buildHoleSketch(courseArtFeatures(records,number)));
  }
- const quality=auditFounderBook({holes,sketches,source:metadata.course_ref});
+ const quality=auditFounderBook({holes,sketches,source:metadata.course_ref,holeCount});
+ const permittedReferenceTees=quality.checks.filter(hole=>!hole.tee&&hole.green&&hole.route&&
+  referenceTees.includes(hole.number)&&records.some(record=>record.properties?.layer==='hole'&&
+   record.properties?.holes?.includes(hole.number)&&record.properties?.reference_tee?.source&&
+   record.properties?.reference_tee?.method)).map(hole=>hole.number);
+ const referenceReady=ratioErrors.length===0&&quality.scorecardComplete&&quality.fairwayHoles>=17&&
+  quality.mappedHoles+permittedReferenceTees.length===18&&permittedReferenceTees.length>0;
  return Object.freeze({
   pass:quality.ghostOnSameHoleReady&&ratioErrors.length===0,
+  referenceReady,referenceTees:Object.freeze(permittedReferenceTees),
   reason:ratioErrors.length?'route-yardage-mismatch':
-    quality.ghostOnSameHoleReady?'structural-parity':'incomplete-hole-art',
+    quality.ghostOnSameHoleReady?'structural-parity':referenceReady?'reviewed-reference-tees':'incomplete-hole-art',
   quality,
   ratioErrors:Object.freeze(ratioErrors)
  });

@@ -34,8 +34,13 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
  // Provider fairway, rough, bunker and water first; route/labels stay readable.
  shapes.forEach((shape,i)=>{
   if(!PENCIL_PALETTE[shape.type]||!Array.isArray(shape.points))return;
-  const polygon=item('polygon',{
-   points:shape.points.map(p=>p.join(',')).join(' '),
+  const points=ring=>ring.map(p=>p.join(',')).join(' ');
+  const cutouts=shape.interiors;
+  const geometry=cutouts?.length
+   ? {d:[shape.points,...cutouts].map(ring=>'M '+points(ring)+' Z').join(' '),'fill-rule':'evenodd'}
+   : {points:points(shape.points)};
+  const polygon=item(cutouts?.length?'path':'polygon',{
+   ...geometry,
    fill:'url(#pencil-'+shape.type+')',stroke:PENCIL_PALETTE[shape.type][1],
    'stroke-width':shape.type==='fairway'?1.6:1.1,'stroke-linejoin':'round',
    'data-map-feature':i
@@ -47,7 +52,7 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
   const {tee,green,path=[tee,green]}=annotations.route;
   svg.append(item('path',{d:'M '+path.map(point=>point.join(' ')).join(' L '),class:'route-mark',fill:'none',stroke:'#42584a','stroke-width':1,'stroke-dasharray':'3 5','stroke-opacity':.65}));
   svg.append(item('circle',{cx:tee[0],cy:tee[1],r:3,class:'route-target',fill:'#f7f0dd',stroke:'#42584a'}));
-  svg.append(item('text',{x:Math.min(tee[0]+8,254),y:Math.min(tee[1]+4,height-4),class:'pencil-map-label',fill:'#304a3a','font-size':11},'TEE'));
+  svg.append(item('text',{x:Math.min(tee[0]+8,annotations.approximateTee?218:254),y:Math.min(tee[1]+4,height-4),class:'pencil-map-label',fill:'#304a3a','font-size':11},annotations.approximateTee?'TEE (APPROX.)':'TEE'));
   svg.append(item('text',{x:Math.min(green[0]+8,width-56),y:Math.max(green[1]-7,12),class:'pencil-map-label',fill:'#304a3a','font-size':11},'GREEN'));
  }
  const labels=[];
@@ -59,7 +64,8 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
  }
  if(annotations.reference){
   const {point,label}=annotations.reference;
-  svg.append(item('text',{x:Math.min(point[0]+8,width-96),y:point[1]-9,class:'hazard-tag',
+  const atGreen=point===annotations.route?.green;
+  svg.append(item('text',{x:Math.min(point[0]+8,width-(atGreen?112:96)),y:atGreen?Math.min(point[1]+22,height-8):point[1]-9,class:'hazard-tag',
    fill:'#3b5c68','font-size':10,'font-style':'italic','paint-order':'stroke',stroke:'#f7f0dd','stroke-width':2},label+' *'));
  }
  return polygons;
