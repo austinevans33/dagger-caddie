@@ -1,0 +1,134 @@
+{
+  "status": "review-only",
+  "source": "naip.json",
+  "coordinateSystem": "zero-based pixel column and row in the pinned crop",
+  "classification": "visually associated green centers; approximate QA anchors only",
+  "greens": [
+    {
+      "hole": 1,
+      "pixel": [
+        343,
+        1703
+      ]
+    },
+    {
+      "hole": 2,
+      "pixel": [
+        997,
+        1374
+      ]
+    },
+    {
+      "hole": 3,
+      "pixel": [
+        1185,
+        909
+      ]
+    },
+    {
+      "hole": 4,
+      "pixel": [
+        700,
+        708
+      ]
+    },
+    {
+      "hole": 5,
+      "pixel": [
+        969,
+        916
+      ]
+    },
+    {
+      "hole": 6,
+      "pixel": [
+        655,
+        1345
+      ]
+    },
+    {
+      "hole": 7,
+      "pixel": [
+        636,
+        472
+      ]
+    },
+    {
+      "hole": 8,
+      "pixel": [
+        539,
+        1133
+      ]
+    },
+    {
+      "hole": 9,
+      "pixel": [
+        349,
+        1051
+      ]
+    },
+    {
+      "hole": 10,
+      "pixel": [
+        197,
+        156
+      ]
+    },
+    {
+      "hole": 11,
+      "pixel": [
+        541,
+        405
+      ]
+    },
+    {
+      "hole": 12,
+      "pixel": [
+        774,
+        495
+      ]
+    },
+    {
+      "hole": 13,
+      "pixel": [
+        1197,
+        802
+      ]
+    },
+    {
+      "hole": 14,
+      "pixel": [
+        1346,
+        1256
+      ]
+    },
+    {
+      "hole": 15,
+      "pixel": [
+        670,
+        1633
+      ]
+    },
+    {
+      "hole": 16,
+      "pixel": [
+        728,
+        1874
+      ]
+    },
+    {
+      "hole": 17,
+      "pixel": [
+        140,
+        1952
+      ]
+    },
+    {
+      "hole": 18,
+      "pixel": [
+        207,
+        1136
+      ]
+    }
+  ]
+}
