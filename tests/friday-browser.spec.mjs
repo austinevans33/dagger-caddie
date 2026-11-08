@@ -1018,6 +1018,33 @@ test('Pelican Pointe preserves its selected pairing and official White tee throu
  await expect(page.locator('#yards')).toContainText('329');
 });
 
+test('Seven Lakes carries a verified combo tee into the scorecard-only Yardage Book',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/');
+ await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('7 Lakes');
+ await page.locator('#dcc-starter-search').click();
+ const choices=page.locator('#dcc-starter-results button');
+ await expect(choices).toHaveCount(1);
+ await expect(choices.first()).toContainText('Seven Lakes');
+ await choices.first().click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'White/Gold · 5640 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+ await expect(page.locator('#dcc-starter-dialog')).toBeHidden();
+ await page.goto('/playtest/yardage-preview.html?hole=12');
+ await expect(page.locator('#yards')).toContainText('319');
+ await expect(page.locator('#mapPar')).toContainText('Par 4');
+ await expect(page.locator('.field-sketch')).toContainText('Hole 12 · Scorecard notes');
+ await expect(page.locator('.field-sketch svg')).toHaveCount(0);
+ await page.locator('#askHoleCaddy').click();
+ await page.waitForURL('**/playtest/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#aiInput')).toHaveValue(/Seven Lakes/i);
+ await expect(page.locator('#aiInput')).toHaveValue(/hole 12/i);
+ await expect(page.locator('#aiInput')).toHaveValue(/319 yards/i);
+});
+
 for(const course of [
  {query:'The Chimneys',region:'Winder, GA',tee:'Gold',hole:11,yards:216,par:3},
  {query:'Pine Hills',region:'Winder, GA',tee:'Red',hole:18,yards:360,par:5},

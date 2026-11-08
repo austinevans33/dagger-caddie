@@ -1110,6 +1110,59 @@
           }
         ]
       }
+    },
+    {
+      "id": "seven-lakes-west-end-nc",
+      "name": "Seven Lakes Golf Club",
+      "region": "West End, NC",
+      "boundary": "r6390097",
+      "osmName": "7 Lakes Golf Club",
+      "mapRef": "nc/seven-lakes",
+      "auditTee": "black",
+      "scorecard": {
+        "url": "https://www.golf7lakes.com/scorecard",
+        "sha256": "d74ce02f5199ef050d73f5c98d32ed76c44115a70cf82bfd452f0b9db59e4638",
+        "format": "html",
+        "namedHoleHeaders": true,
+        "handicap": "Men’s HandicapBlack–Gold tees",
+        "tees": {
+          "black": {
+            "label": "Black",
+            "total": 6856
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6552
+          },
+          "white": {
+            "label": "White",
+            "total": 6062
+          },
+          "white-gold": {
+            "label": "White/Gold",
+            "total": 5640
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5197
+          },
+          "red": {
+            "label": "Red",
+            "total": 4830,
+            "handicap": "Ladies’ HandicapRed & Green tees"
+          },
+          "green": {
+            "label": "Green",
+            "total": 4144,
+            "handicap": "Ladies’ HandicapRed & Green tees"
+          },
+          "green-red": {
+            "label": "Green/Red",
+            "total": 4533,
+            "handicap": "Ladies’ HandicapRed & Green tees"
+          }
+        }
+      }
     }
   ]
 }

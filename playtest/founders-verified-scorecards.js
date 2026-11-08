@@ -279,7 +279,8 @@ export function founderCatalogRecords(query=''){
  if(term.length<2)return [];
  return courseBooks.filter(f=>(f.name+' '+f.region).toLowerCase().includes(term)||
   (f.id==='kings-grant-fayetteville-nc'&&/kings?\s+grant|king.s\s+grant/i.test(term))||
-  (f.id==='quail-ridge-sanford-nc'&&/quail\s+ridge/i.test(term))
+  (f.id==='quail-ridge-sanford-nc'&&/quail\s+ridge/i.test(term))||
+  (f.id==='seven-lakes-west-end-nc'&&('7 lakes golf club '+f.region.toLowerCase()).includes(term))
  ).map(f=>({provider:founderProvider,providerCourseId:f.id,name:f.name,region:f.region,...(f.holeCount?{holeCount:f.holeCount}:{})}));
 }
 export function founderTeesForCourse(course){
