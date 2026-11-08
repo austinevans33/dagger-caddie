@@ -145,6 +145,80 @@
         "gold": 5164,
         "women": 4882
       }
+    },
+    {
+      "id": "pudding-ridge-mocksville-nc",
+      "name": "Pudding Ridge Golf Club",
+      "region": "Mocksville, NC",
+      "boundary": "r6876532",
+      "mapRef": "nc/pudding-ridge",
+      "auditTee": "black",
+      "scorecard": "https://www.puddingridge.com/wp-content/uploads/2017/08/scorecard.pdf",
+      "cardSha256": "60c077bfbc1e4dce973fa7b481339e8d567f84e7991aa517fda2124b844fe96b",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "22af6698a99a64326c53cd6fa91f8a32174f6f7857c7683a0389052c339c4e09",
+      "teeTotals": {
+        "black": 6713,
+        "blue": 6132,
+        "gold": 4835,
+        "red": 4110
+      }
+    },
+    {
+      "id": "oak-island-nc",
+      "name": "Oak Island Golf Club",
+      "region": "Caswell Beach, NC",
+      "boundary": "w292129109",
+      "mapRef": "nc/oak-island",
+      "auditTee": "blue",
+      "scorecard": "https://oakislandgolf.com/wp-content/uploads/2021/01/Oak-Island-Scorecard-In.png",
+      "cardSha256": "51829e8ca6c92e65fe8809bba961da33bc3d3691e1385f74f9b87e74eed83f38",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 3,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "aa153ec475958d00ad2cf950174c99b6e5193eb6712e53cc4bcc6ab992713577",
+      "teeTotals": {
+        "blue": 6717,
+        "black": 6401,
+        "white": 5940,
+        "gold": 5423,
+        "red": 4903
+      }
     }
   ]
 }

@@ -22,6 +22,11 @@ for(const {state,id,query,totals,example,fairways=18,handicap=true} of [
   example:{number:13,par:4,yards:380}},
  {state:'north-carolina',id:'sanford-municipal-nc',query:'Sanford Municipal',
   totals:{mens:6304,white:5901,gold:5164,women:4882},example:{number:13,par:4,yards:409},handicap:false},
+ {state:'north-carolina',id:'pudding-ridge-mocksville-nc',query:'Pudding Ridge',
+  totals:{black:6713,blue:6132,gold:4835,red:4110},example:{number:13,par:4,yards:445}},
+ {state:'north-carolina',id:'oak-island-nc',query:'Oak Island',
+  totals:{blue:6717,black:6401,white:5940,gold:5423,red:4903},
+  example:{number:13,par:4,yards:391},fairways:17},
 ]){
  test(`${query} promotes only the source-pinned 18-hole course and official tee card`,()=>{
   const root='../qa/course-factory/'+state+'/';
@@ -62,3 +67,13 @@ for(const {state,id,query,totals,example,fairways=18,handicap=true} of [
   assert.ok(!features.some(feature=>feature.properties.reference_tee||feature.properties.tee_alignment));
  });
 }
+
+test('Oak Island Red preserves the ladies par and stroke indexes',()=>{
+ const course=founderCatalogRecords('Oak Island').find(({providerCourseId})=>providerCourseId==='oak-island-nc');
+ const tee=founderTeesForCourse(course).find(({providerTeeId})=>providerTeeId==='red');
+ const {holes}=founderVerifiedScorecard({course,tee});
+ assert.equal(holes[8].par,5);
+ assert.equal(holes[8].handicapMen,11);
+ assert.equal(holes[13].par,4);
+ assert.equal(holes[13].handicapMen,2);
+});

@@ -1,5 +1,6 @@
-"""Network-free tests for the Florida Course Factory source adapters."""
+"""Network-free tests for the Course Factory source adapters."""
 import hashlib
+import json
 from pathlib import Path
 import runpy
 import tempfile
@@ -16,7 +17,51 @@ snapshot = runpy.run_path(str(SCRIPTS / "course-factory-snapshot.py"))["snapshot
 GolfSnapshot = runpy.run_path(str(SCRIPTS / "course-factory-review.py"))["GolfSnapshot"]
 
 
+review_greens = runpy.run_path(str(SCRIPTS / "course-factory-green-review.py"))["review"]
+checked_range = runpy.run_path(str(SCRIPTS / "course-factory-imagery.py"))["checked_range"]
+
+
 class CourseFactoryPipeline(unittest.TestCase):
+    def test_imagery_cache_rejects_wrong_and_missing_bytes(self):
+        with tempfile.TemporaryDirectory() as temp:
+            cache = Path(temp)
+            data = b"pinned aerial tile"
+            digest = hashlib.sha256(data).hexdigest()
+            spec = {"offset": 123, "length": len(data), "sha256": digest}
+            with self.assertRaisesRegex(ValueError, "Missing cached range"):
+                checked_range(spec, cache)
+            tile = cache / (digest + ".range")
+            tile.write_bytes(data)
+            self.assertEqual(checked_range(spec, cache), (123, data))
+            tile.write_bytes(b"x" * len(data))
+            with self.assertRaisesRegex(ValueError, "checksum differs"):
+                checked_range(spec, cache)
+
+    def test_ryder_anchors_cover_all_eighteen_holes_inside_the_pinned_crop(self):
+        folder = SCRIPTS.parent / "qa" / "course-factory" / "founders" / "ryder"
+        review = json.loads((folder / "green-review.json").read_text())
+        source = json.loads((folder / review["source"]).read_text())
+        left, top, right, bottom = source["crop"]
+        self.assertEqual(review["status"], "review-only")
+        self.assertEqual([g["hole"] for g in review["greens"]], list(range(1, 19)))
+        pixels = {tuple(g["pixel"]) for g in review["greens"]}
+        self.assertEqual(len(pixels), 18)
+        self.assertTrue(all(0 <= x < right - left and 0 <= y < bottom - top for x, y in pixels))
+
+    def test_ryder_green_outlines_match_anchors_and_reject_swapped_holes(self):
+        folder = SCRIPTS.parent / "qa" / "course-factory" / "founders" / "ryder"
+        traces = json.loads((folder / "green-footprints.json").read_text())
+        source = json.loads((folder / traces["cropManifest"]).read_text())
+        anchors = json.loads((folder / "green-review.json").read_text())["greens"]
+        self.assertEqual(list(review_greens(source, anchors, traces)), list(range(1, 19)))
+        first, second = traces["polygons"][:2]
+        first["ring"], second["ring"] = second["ring"], first["ring"]
+        with self.assertRaisesRegex(ValueError, "Hole 1: invalid green or missing its review anchor"):
+            review_greens(source, anchors, traces)
+        first["ring"].pop()
+        with self.assertRaisesRegex(ValueError, "Hole 1: green ring is open or incomplete"):
+            review_greens(source, anchors, traces)
+
     def test_all_parts_of_an_official_card_are_required(self):
         with tempfile.TemporaryDirectory() as temp:
             front = Path(temp) / "card"
