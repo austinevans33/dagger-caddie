@@ -78,7 +78,9 @@ def build_bundle(review, osm):
     polygons = [polygon(part) for part in boundary_parts]
     boundary = polygons[0] if len(polygons) == 1 else MultiPolygon(polygons)
     require(boundary.is_valid, "Overlapping or invalid course boundary parts")
-    require(len(review["holes"]) == 18, "Expected all 18 hole entries in course review")
+    hole_count = review.get("holeCount", 18)
+    require(hole_count in (9, 18) and len(review["holes"]) == hole_count,
+            "Expected every physical hole in the reviewed 9- or 18-hole course")
     output = []
     used = {}
 

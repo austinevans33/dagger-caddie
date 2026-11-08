@@ -7247,6 +7247,19 @@ async function dccGhostSyncPar(){
 }
 
 function dccGhostRender() {
+  const lengthSelect = document.getElementById('dccGhostLength');
+  const eighteen = lengthSelect.querySelector('option[value="18"]');
+  const locked = dccGhostHoles.length > 0 || !!dccGhostPending;
+  if (!locked) {
+    let nativeNine = false;
+    try {
+      nativeNine = JSON.parse(localStorage.getItem('dcc_active_round_course_v1'))?.selection?.course?.holeCount === 9;
+    } catch {}
+    if (nativeNine) dccGhostLength = 9;
+    else if (eighteen.disabled) dccGhostLength = 18;
+    eighteen.disabled = nativeNine;
+    lengthSelect.value = String(dccGhostLength);
+  }
   const scores = dccGhostHoles.map(h => [h.player, h.ghost]);
   
   const result = dccMatchPlay(scores, dccGhostLength);
@@ -7274,7 +7287,7 @@ function dccGhostRender() {
 
   // Keep one opponent for the whole match.
   tierSelect.disabled = dccGhostHoles.length > 0 || !!dccGhostPending;
-  document.getElementById('dccGhostLength').disabled = tierSelect.disabled;
+  lengthSelect.disabled = locked || eighteen.disabled;
   document.getElementById('dccGhostPar').disabled = !!dccGhostPending;
   void dccGhostSyncPar();
   const playButton = document.getElementById('dccGhostPlay');
@@ -7704,6 +7717,8 @@ function dccGhostRenderArchive() {
 }
 
 // Preserve the existing Ghost startup render.
+document.addEventListener('dcc:course-selected', dccGhostRender);
+document.addEventListener('dcc:course-cleared', dccGhostRender);
 dccGhostRender();
 dccGhostUpdateActions();
 dccGhostRenderArchive();

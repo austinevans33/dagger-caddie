@@ -70,7 +70,7 @@ export function buildHoleSketch(features, provenance = {}) {
 
 export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, signal} = {}) {
   const course = selection?.course;
-  if (!course || !Number.isInteger(holeNumber) || holeNumber < 1 || holeNumber > 18) {
+  if (!course || !Number.isInteger(holeNumber) || holeNumber < 1 || holeNumber > (course.holeCount ?? 18)) {
     return buildHoleSketch([]);
   }
   const identity = course.provider + ':' + course.providerCourseId;
@@ -101,7 +101,8 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
         const {auditFounderGeometry}=await import('./founder-geometry-audit.js');
         const audit=bundledAudits.get(records) || auditFounderGeometry({
           records,holes:official.holes,
-          metadata:{course_ref:entry.ref},expectedRef:entry.ref,referenceTees:bundled?mappedFounder.referenceTees:undefined
+          metadata:{course_ref:entry.ref},expectedRef:entry.ref,referenceTees:bundled?mappedFounder.referenceTees:undefined,
+          holeCount:course.holeCount??18
         });
         if(bundled)bundledAudits.set(records,audit);
         if(!audit.pass&&!audit.referenceReady)return buildHoleSketch([]);
