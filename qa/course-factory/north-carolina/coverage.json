@@ -38,6 +38,42 @@
         "gold": 5506,
         "red": 5365
       }
+    },
+    {
+      "id": "tanglewood-championship-clemmons-nc",
+      "name": "Tanglewood Park Championship Course",
+      "region": "Clemmons, NC",
+      "boundary": "w1104673360",
+      "mapRef": "nc/tanglewood-championship",
+      "auditTee": "gold",
+      "scorecard": "https://golf.tanglewoodpark.org/assets/img/scorecard_championship.jpg",
+      "cardSha256": "6cbea8e536971d496e4e854d332999284de546be91931c7b391841be300711bb",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "8f22597f47eeb6614bac367530faadcdc6cf0da97319032633969e4570d190d0",
+      "teeTotals": {
+        "gold": 7101,
+        "blue": 6637,
+        "white": 6014,
+        "black": 5333,
+        "red": 4562,
+        "family": 3404
+      }
     }
   ]
 }

@@ -39,6 +39,47 @@
         "finch": 5092,
         "heron": 4599
       }
+    },
+    {
+      "id": "hidden-cypress-bluffton-sc",
+      "name": "Hidden Cypress Golf Club",
+      "region": "Bluffton, SC",
+      "boundary": "r15700840",
+      "mapRef": "sc/hidden-cypress",
+      "auditTee": "gold",
+      "scorecard": "https://www.golfinsuncity.com/wp-content/uploads/sites/8949/2023/06/Hidden_Cypress_Scorecard.pdf",
+      "cardSha256": "6d222812fbcb39e532221a9a8e0b95088defe3fe52496a07f7572cbd2b7b96fe",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 12,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "37658dffe113783d56d340cc501d59fd8fa768d3ad29a8b857d60d7cb4e2f1aa",
+      "teeTotals": {
+        "red": 6953,
+        "gold": 6549,
+        "blue": 6051,
+        "white": 5556,
+        "black": 4974,
+        "orange": 4227
+      }
     }
   ]
 }
