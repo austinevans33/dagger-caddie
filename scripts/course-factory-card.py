@@ -37,6 +37,8 @@ class TableRows(HTMLParser):
 
 
 def validate_nines(rows, totals):
+    if not totals and len(rows) == 1 and len(rows[0]) == 18:
+        return rows[0]
     if len(rows) == 1 and len(rows[0]) == 21:
         rows = [rows[0][:10], rows[0][10:]]
     if len(rows) != 2 or any(len(row) < 9 for row in rows):
@@ -67,6 +69,17 @@ def load_card(path, spec):
     elif spec["format"] == "pdf":
         content = subprocess.run(["pdftotext", "-layout", str(path), "-"], check=True,
                                  capture_output=True, text=True).stdout
+        pages = content.split("\f")
+        if "page" in spec:
+            page = spec["page"]
+            if not isinstance(page, int) or page < 1 or page > len(pages) or not pages[page - 1].strip():
+                raise ValueError("reviewed scorecard page is unavailable")
+            content = pages[page - 1]
+            if "pageHeading" in spec:
+                heading = "".join(content.strip().splitlines()[0].casefold().split())
+                expected = "".join(spec["pageHeading"].casefold().split())
+                if not expected or not heading.startswith(expected):
+                    raise ValueError("reviewed scorecard page heading differs")
 
         def read(label, width, skip=0, unlabeled_back=None):
             start = re.compile(r"^\s*(?:\d+\.\d+/\d+\s+)?" + re.escape(label) + r"\s+", re.IGNORECASE)
@@ -83,7 +96,7 @@ def load_card(path, spec):
                         count = width[len(rows)] if len(rows) < len(width) else 0
                         rows.append(numbers[offset:offset + count])
             if unlabeled_back is not None and len(rows) == 1:
-                page = content.split("\f")[unlabeled_back["page"] - 1]
+                page = pages[unlabeled_back["page"] - 1]
                 line = [line for line in page.splitlines() if line.strip()][unlabeled_back["line"]]
                 numbers = [int(value.replace(",", "")) for value in NUMBER.findall(line)]
                 rows.append([numbers[index] for index in unlabeled_back["columns"]])
@@ -115,7 +128,7 @@ def load_card(path, spec):
         raise ValueError("no complete official tee")
     card = {"par": par, "tees": tees}
     if "handicap" in spec:
-        handicap = validate_nines(read(spec["handicap"], [9, 9]), False)
+        handicap = validate_nines(read(spec["handicap"], spec.get("handicapWidth", [9, 9])), False)
         if sorted(handicap) != list(range(1, 19)):
             raise ValueError("stroke indexes must use 1 through 18 once")
         card["handicapMen"] = handicap

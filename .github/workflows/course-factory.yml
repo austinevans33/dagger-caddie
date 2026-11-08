@@ -7,6 +7,8 @@ on:
       - 'qa/course-factory/**'
       - 'playtest/course-art/**'
       - 'playtest/florida-course-factory.js'
+      - 'playtest/north-carolina-course-factory.js'
+      - 'playtest/south-carolina-course-factory.js'
       - 'tests/course-factory-*'
       - '.github/workflows/course-factory.yml'
 permissions:
@@ -25,4 +27,4 @@ jobs:
           node-version: '22'
       - run: python3 -m pip install shapely==2.1.2 osmium==4.2.0
       - run: python3 tests/course-factory-pipeline.test.py
-      - run: node --test tests/course-factory-florida.test.mjs
+      - run: node --test tests/course-factory-*.test.mjs

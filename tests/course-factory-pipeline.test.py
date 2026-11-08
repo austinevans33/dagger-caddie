@@ -4,6 +4,7 @@ from pathlib import Path
 import runpy
 import tempfile
 import unittest
+from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
 import osmium
@@ -16,6 +17,30 @@ GolfSnapshot = runpy.run_path(str(SCRIPTS / "course-factory-review.py"))["GolfSn
 
 
 class CourseFactoryPipeline(unittest.TestCase):
+    def test_pdf_page_selection_prevents_adjacent_course_mixups(self):
+        def row(label, value):
+            nine = [value] * 9 + [value * 9]
+            return label + " " + " ".join(map(str, nine + nine + [value * 18]))
+
+        def page(name, yards):
+            return "\n".join([name, row("Par", 4), row("Blue", yards),
+                              "Handicap " + " ".join(map(str, range(1, 19)))])
+
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "pinned.pdf"
+            path.write_bytes(b"pinned fixture")
+            spec = {"format": "pdf", "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    "page": 2, "pageHeading": "Wanted Course", "parWidth": [21],
+                    "handicap": "Handicap", "handicapWidth": [18],
+                    "tees": {"blue": {"label": "Blue", "width": [21]}}}
+            with patch("subprocess.run") as extract:
+                extract.return_value.stdout = page("Other Course", 410) + "\f" + page("W anted C ourse", 390)
+                card = load_card(path, spec)
+                self.assertEqual(card["tees"]["blue"]["yards"], [390] * 18)
+                self.assertEqual(card["handicapMen"], list(range(1, 19)))
+                with self.assertRaisesRegex(ValueError, "heading differs"):
+                    load_card(path, {**spec, "page": 1})
+
     def test_disconnected_boundary_with_touching_cutouts(self):
         points = {
             "1": [(0, 0), (5, 0), (5, 5), (0, 5), (0, 0)],

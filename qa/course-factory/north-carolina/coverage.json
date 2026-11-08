@@ -1,0 +1,43 @@
+{
+  "source": "https://download.geofabrik.de/north-america/us/north-carolina-261106.osm.pbf",
+  "pbfSha256": "0dcda9e83ab1f7babd5a1622e9bed815864ef58ff6df9ecad409e48fa7759c31",
+  "snapshotSha256": "2cde2ef5b5018c45515e200f478551aa914b5bbb3fb73d01c7ab358ffe0dcc7b",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "courses": [
+    {
+      "id": "gates-four-fayetteville-nc",
+      "name": "Gates Four Golf & Country Club",
+      "region": "Fayetteville, NC",
+      "boundary": "r6377450",
+      "mapRef": "nc/gates-four",
+      "auditTee": "black",
+      "scorecard": "https://www.gatesfour.com/wp-content/uploads/scorecard.pdf",
+      "cardSha256": "228b5c6eb87b0c3ee36244511c0c09c5def8d0269af185b43440d9172cca05b0",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "5af25aa30b010ce9117f320f42f4b5195c3cfe44f9cb90b468ca6d9081fcad39",
+      "teeTotals": {
+        "black": 6895,
+        "blue": 6433,
+        "white": 6072,
+        "gold": 5506,
+        "red": 5365
+      }
+    }
+  ]
+}

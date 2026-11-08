@@ -1,0 +1,44 @@
+{
+  "source": "https://download.geofabrik.de/north-america/us/south-carolina-261106.osm.pbf",
+  "pbfSha256": "c535fa40a87db476baac57c4d4dc10ed071076b9584c8ddb36baf26e34661ef7",
+  "snapshotSha256": "d6fa5271c37773535f814aea8b26ab5b3f697a3664042d6984e2490777445976",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "courses": [
+    {
+      "id": "crooked-oaks-seabrook-sc",
+      "name": "Crooked Oaks at Seabrook Island Club",
+      "region": "Seabrook Island, SC",
+      "boundary": "w1552133154",
+      "mapRef": "sc/seabrook-crooked-oaks",
+      "auditTee": "hawk",
+      "scorecard": "https://www.seabrookisland.com/wp-content/uploads/2024/01/2023-scorecard-revision_final96.pdf",
+      "cardSha256": "c15e0d2c19d3a541d485b9e0acd6e9d9ebf96fa296d000af089fae564804cba2",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "116ed2a6a98bf2bfa792bd4c89337b0bc549259c7b293116a84d2fa4d292a151",
+      "teeTotals": {
+        "hawk": 6706,
+        "mallard": 6367,
+        "osprey": 5980,
+        "egret": 5622,
+        "finch": 5092,
+        "heron": 4599
+      }
+    }
+  ]
+}

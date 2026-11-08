@@ -4,6 +4,8 @@
 // per-hole card comes from the Sanford-specific Zomma source; its printed
 // total rows conflict with their hole sums, so we expose sums only.
 import {floridaCourses} from './florida-course-factory.js';
+import {courseFactoryCourses as northCarolinaCourses} from './north-carolina-course-factory.js';
+import {courseFactoryCourses as southCarolinaCourses} from './south-carolina-course-factory.js';
 
 const founderProvider='dagger-founder';
 const holeRange=Array.from({length:18},(_,i)=>i+1);
@@ -230,7 +232,7 @@ const founders=Object.freeze([
 
 ]);
 const sum=values=>values.reduce((n,x)=>n+x,0);
-const courseBooks=Object.freeze([...founders,...floridaCourses]);
+const courseBooks=Object.freeze([...founders,...floridaCourses,...northCarolinaCourses,...southCarolinaCourses]);
 const courseBooksById=new Map(courseBooks.map(course=>[course.id,course]));
 if(courseBooksById.size!==courseBooks.length)throw Error('Duplicate course book identity');
 for(const founder of courseBooks){

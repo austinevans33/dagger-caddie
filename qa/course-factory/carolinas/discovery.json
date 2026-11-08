@@ -1,0 +1,508 @@
+{
+  "north-carolina": {
+    "source": "https://download.geofabrik.de/north-america/us/north-carolina-261106.osm.pbf",
+    "pbfSha256": "0dcda9e83ab1f7babd5a1622e9bed815864ef58ff6df9ecad409e48fa7759c31",
+    "snapshotSha256": "2cde2ef5b5018c45515e200f478551aa914b5bbb3fb73d01c7ab358ffe0dcc7b",
+    "screenedBoundaries": 151,
+    "geometryCandidates": [
+      {
+        "name": "Gates Four Golf & Country Club",
+        "boundary": "r6377450",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "The Woods Golf Club",
+        "boundary": "r6386358",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Longleaf Golf & Family Club",
+        "boundary": "r6387132",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Quail Ridge Golf Club",
+        "boundary": "r6400453",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Emerald Lake Golf Club",
+        "boundary": "r6451891",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "River Run Country Club",
+        "boundary": "r6479184",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Pudding Ridge Golf Club",
+        "boundary": "r6876532",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Mill Creek Country Club",
+        "boundary": "w1034946285",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Tanglewood Championship Course",
+        "boundary": "w1104673360",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Southern Wayne Country Club",
+        "boundary": "w1567463294",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Boone Golf Club",
+        "boundary": "w207486501",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Hillandale Golf Course",
+        "boundary": "w24487227",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Highland Country Club",
+        "boundary": "w32880249",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Brevofield Golf Links",
+        "boundary": "w375327006",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Sanford Municipal Golf Course",
+        "boundary": "w430087361",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Carolina Golf Club",
+        "boundary": "w435851149",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Country Hills Golf Course",
+        "boundary": "w844109202",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Catawba Creek Golf Course",
+        "boundary": "w881174475",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Pine Island Country Club",
+        "boundary": "r16549890",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Carolina Colours Golf Club",
+        "boundary": "r21911975",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Hope Valley Country Club",
+        "boundary": "r2789076",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Bradford Creek Public Golf Course",
+        "boundary": "r4253215",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "7 Lakes Golf Club",
+        "boundary": "r6390097",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "12 Oaks",
+        "boundary": "r6396830",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Mill Creek Golf Club",
+        "boundary": "r6413045",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Cramer Mountain Club",
+        "boundary": "w1075632933",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Greesnboro National Golf Course",
+        "boundary": "w1196861933",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Mill Creek",
+        "boundary": "w1550646771",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Cedarwood Country Club",
+        "boundary": "w215648877",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Oak Island Golf Club",
+        "boundary": "w292129109",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Statesville Country Club",
+        "boundary": "w351674356",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Carolina Lakes Golf Club",
+        "boundary": "w429556557",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Pine Lake Country Club",
+        "boundary": "w435238113",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Dan Valley Golf Course",
+        "boundary": "w675848624",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Quail Hollow Club",
+        "boundary": "w877659537",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Cleghorn Golf & Sports Club",
+        "boundary": "w911711494",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Elk River Club",
+        "boundary": "w998199584",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      }
+    ]
+  },
+  "south-carolina": {
+    "source": "https://download.geofabrik.de/north-america/us/south-carolina-261106.osm.pbf",
+    "pbfSha256": "c535fa40a87db476baac57c4d4dc10ed071076b9584c8ddb36baf26e34661ef7",
+    "snapshotSha256": "d6fa5271c37773535f814aea8b26ab5b3f697a3664042d6984e2490777445976",
+    "screenedBoundaries": 113,
+    "geometryCandidates": [
+      {
+        "name": "Heathland Golf Course",
+        "boundary": "w1519743912",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Seabrook Island Club - Crooked Oaks",
+        "boundary": "w1552133154",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 18
+        }
+      },
+      {
+        "name": "Dolphin Head Golf Club",
+        "boundary": "r13307194",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Sun City - Hidden Cypress Golf Club",
+        "boundary": "r15700840",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Olde Beaufort Golf Club",
+        "boundary": "r17001917",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Fox Creek Golf Club",
+        "boundary": "r21256379",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "The Legends Golf Course",
+        "boundary": "w1021787817",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Parkland Golf Course",
+        "boundary": "w1519743913",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Azalea Sands Golf Club",
+        "boundary": "w1554507690",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Northwoods Golf Club",
+        "boundary": "w347401283",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Yeaman's Hall Club Golf Course",
+        "boundary": "w440277605",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      },
+      {
+        "name": "Dunes Golf & Beach Club",
+        "boundary": "w793663795",
+        "counts": {
+          "route": 18,
+          "tee": 18,
+          "green": 18,
+          "fairway": 17
+        }
+      }
+    ]
+  }
+}
