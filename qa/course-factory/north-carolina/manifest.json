@@ -629,6 +629,487 @@
           }
         }
       }
+    },
+    {
+      "id": "pudding-ridge-mocksville-nc",
+      "name": "Pudding Ridge Golf Club",
+      "region": "Mocksville, NC",
+      "boundary": "r6876532",
+      "osmName": "Pudding Ridge Golf Club",
+      "mapRef": "nc/pudding-ridge",
+      "auditTee": "black",
+      "scorecard": {
+        "url": "https://www.puddingridge.com/wp-content/uploads/2017/08/scorecard.pdf",
+        "sha256": "60c077bfbc1e4dce973fa7b481339e8d567f84e7991aa517fda2124b844fe96b",
+        "format": "reviewed-image",
+        "reviewNote": "Official PDF places the back nine before the front nine. Front yardage subtotal boxes are blank. Computed front subtotals reconcile with the printed back nine and full-round totals for four tees. White is withheld because its hole values disagree with the published subtotals and round total.",
+        "reviewedRows": {
+          "Black": [
+            [
+              418,
+              153,
+              387,
+              401,
+              544,
+              408,
+              217,
+              381,
+              364,
+              3273
+            ],
+            [
+              372,
+              582,
+              203,
+              445,
+              488,
+              382,
+              406,
+              184,
+              378,
+              3440,
+              6713
+            ]
+          ],
+          "Blue": [
+            [
+              373,
+              143,
+              347,
+              375,
+              500,
+              362,
+              193,
+              353,
+              347,
+              2993
+            ],
+            [
+              339,
+              552,
+              146,
+              404,
+              456,
+              344,
+              373,
+              175,
+              350,
+              3139,
+              6132
+            ]
+          ],
+          "Gold": [
+            [
+              304,
+              110,
+              281,
+              231,
+              408,
+              261,
+              142,
+              324,
+              287,
+              2348
+            ],
+            [
+              290,
+              434,
+              116,
+              320,
+              394,
+              280,
+              241,
+              119,
+              293,
+              2487,
+              4835
+            ]
+          ],
+          "Red": [
+            [
+              266,
+              108,
+              216,
+              201,
+              360,
+              235,
+              111,
+              280,
+              205,
+              1982
+            ],
+            [
+              242,
+              380,
+              112,
+              273,
+              318,
+              247,
+              205,
+              114,
+              237,
+              2128,
+              4110
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              3,
+              4,
+              4,
+              5,
+              4,
+              3,
+              4,
+              4,
+              35
+            ],
+            [
+              4,
+              5,
+              3,
+              4,
+              5,
+              4,
+              4,
+              3,
+              4,
+              36,
+              71
+            ]
+          ],
+          "Handicap": [
+            [
+              14,
+              18,
+              4,
+              6,
+              12,
+              2,
+              10,
+              16,
+              8
+            ],
+            [
+              17,
+              3,
+              13,
+              1,
+              11,
+              5,
+              7,
+              15,
+              9
+            ]
+          ]
+        },
+        "tees": {
+          "black": {
+            "label": "Black",
+            "total": 6713
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6132
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 4835
+          },
+          "red": {
+            "label": "Red",
+            "total": 4110
+          }
+        },
+        "handicap": "Handicap"
+      }
+    },
+    {
+      "id": "oak-island-nc",
+      "name": "Oak Island Golf Club",
+      "region": "Caswell Beach, NC",
+      "boundary": "w292129109",
+      "osmName": "Oak Island Golf Club",
+      "mapRef": "nc/oak-island",
+      "auditTee": "blue",
+      "scorecard": {
+        "url": "https://oakislandgolf.com/wp-content/uploads/2021/01/Oak-Island-Scorecard-In.png",
+        "sha256": "51829e8ca6c92e65fe8809bba961da33bc3d3691e1385f74f9b87e74eed83f38",
+        "format": "reviewed-image",
+        "reviewNote": "Checked the hole grid and the companion card cover. Red uses the published ladies par and stroke indexes. All printed nine and round totals reconcile.",
+        "reviewedRows": {
+          "Blue": [
+            [
+              494,
+              412,
+              189,
+              560,
+              386,
+              409,
+              204,
+              355,
+              426,
+              3435
+            ],
+            [
+              336,
+              399,
+              170,
+              391,
+              515,
+              371,
+              363,
+              188,
+              549,
+              3282,
+              6717
+            ]
+          ],
+          "Black": [
+            [
+              476,
+              397,
+              165,
+              546,
+              371,
+              392,
+              188,
+              328,
+              415,
+              3278
+            ],
+            [
+              329,
+              374,
+              154,
+              381,
+              492,
+              353,
+              334,
+              174,
+              532,
+              3123,
+              6401
+            ]
+          ],
+          "White": [
+            [
+              437,
+              353,
+              155,
+              472,
+              360,
+              380,
+              161,
+              304,
+              400,
+              3022
+            ],
+            [
+              321,
+              361,
+              144,
+              371,
+              455,
+              342,
+              306,
+              159,
+              459,
+              2918,
+              5940
+            ]
+          ],
+          "Gold": [
+            [
+              421,
+              323,
+              147,
+              466,
+              347,
+              307,
+              155,
+              297,
+              325,
+              2788
+            ],
+            [
+              285,
+              325,
+              132,
+              295,
+              429,
+              302,
+              298,
+              139,
+              430,
+              2635,
+              5423
+            ]
+          ],
+          "Red": [
+            [
+              387,
+              321,
+              125,
+              421,
+              308,
+              283,
+              134,
+              262,
+              351,
+              2592
+            ],
+            [
+              279,
+              309,
+              117,
+              289,
+              262,
+              287,
+              272,
+              114,
+              382,
+              2311,
+              4903
+            ]
+          ],
+          "Par": [
+            [
+              5,
+              4,
+              3,
+              5,
+              4,
+              4,
+              3,
+              4,
+              4,
+              36
+            ],
+            [
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              4,
+              3,
+              5,
+              36,
+              72
+            ]
+          ],
+          "Handicap": [
+            [
+              11,
+              1,
+              13,
+              5,
+              15,
+              7,
+              9,
+              17,
+              3
+            ],
+            [
+              14,
+              8,
+              18,
+              6,
+              2,
+              10,
+              16,
+              12,
+              4
+            ]
+          ],
+          "Ladies Par": [
+            [
+              5,
+              4,
+              3,
+              5,
+              4,
+              4,
+              3,
+              4,
+              5,
+              37
+            ],
+            [
+              4,
+              4,
+              3,
+              4,
+              4,
+              4,
+              4,
+              3,
+              5,
+              35,
+              72
+            ]
+          ],
+          "Ladies Handicap": [
+            [
+              9,
+              1,
+              15,
+              5,
+              3,
+              13,
+              7,
+              17,
+              11
+            ],
+            [
+              12,
+              6,
+              18,
+              8,
+              2,
+              10,
+              16,
+              14,
+              4
+            ]
+          ]
+        },
+        "tees": {
+          "blue": {
+            "label": "Blue",
+            "total": 6717
+          },
+          "black": {
+            "label": "Black",
+            "total": 6401
+          },
+          "white": {
+            "label": "White",
+            "total": 5940
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5423
+          },
+          "red": {
+            "label": "Red",
+            "total": 4903,
+            "parLabel": "Ladies Par",
+            "handicap": "Ladies Handicap"
+          }
+        },
+        "handicap": "Handicap",
+        "additionalSources": [
+          {
+            "suffix": "cover",
+            "url": "https://oakislandgolf.com/wp-content/uploads/2021/01/Oak-Island-Scorecard-Out.png",
+            "sha256": "c33c96de46f9c6347939a7628cd8d91d794deeb8a2b7f7c5de9317ae9eb5da87"
+          }
+        ]
+      }
     }
   ]
 }
