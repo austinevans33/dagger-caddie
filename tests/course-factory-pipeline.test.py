@@ -7,6 +7,7 @@ import unittest
 import xml.etree.ElementTree as ET
 
 import osmium
+from shapely.geometry import Point
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 load_card = runpy.run_path(str(SCRIPTS / "course-factory-card.py"))["load_card"]
@@ -15,6 +16,31 @@ GolfSnapshot = runpy.run_path(str(SCRIPTS / "course-factory-review.py"))["GolfSn
 
 
 class CourseFactoryPipeline(unittest.TestCase):
+    def test_disconnected_boundary_with_touching_cutouts(self):
+        points = {
+            "1": [(0, 0), (5, 0), (5, 5), (0, 5), (0, 0)],
+            "2": [(7, 0), (9, 0), (9, 2), (7, 2), (7, 0)],
+            "3": [(1, 1), (2, 1), (2, 2), (1, 2), (1, 1)],
+            "4": [(2, 1), (3, 1), (3, 2), (2, 2), (2, 1)],
+        }
+        relation = ET.Element("relation")
+        ways = {}
+        nodes = {}
+        for ref, ring in points.items():
+            ET.SubElement(relation, "member", type="way", ref=ref, role="outer" if ref in ("1", "2") else "inner")
+            ways[ref] = ET.Element("way")
+            for i, point in enumerate(ring):
+                node_id = ref + str(i)
+                nodes[node_id] = point
+                ET.SubElement(ways[ref], "nd", ref=node_id)
+        boundary = GolfSnapshot.geometry(relation, "boundary", ways, nodes)
+        self.assertTrue(boundary.is_valid)
+        self.assertTrue(boundary.covers(Point(8, 1)))
+        self.assertFalse(boundary.covers(Point(6, 1)))
+        self.assertFalse(boundary.covers(Point(2, 1.5)))
+        ET.SubElement(relation, "member", type="way", ref="3", role="inner")
+        self.assertIsNone(GolfSnapshot.geometry(relation, "boundary", ways, nodes))
+
     def test_html_card_requires_order_and_exact_totals(self):
         rows = [
             ["Hole", *range(1, 10), "Out"], ["Par", *([4] * 9), 36],
@@ -61,6 +87,7 @@ class CourseFactoryPipeline(unittest.TestCase):
                     (4, [7, 8, 9, 10, 7], {"golf": "tee"}),
                     (5, [11, 12, 13, 14, 11], {"golf": "green"}),
                     (6, [15, 5], {"golf": "hole", "ref": "2"}),
+                    (7, [5, 6], {"golf": "hole", "ref": "20"}),
                 ]:
                     writer.add_way(osmium.osm.mutable.Way(id=ref, nodes=nodes, tags=tags))
             output = path / "snapshot.osm"
@@ -74,7 +101,12 @@ class CourseFactoryPipeline(unittest.TestCase):
             self.assertEqual(output.read_bytes(), original)
             data = GolfSnapshot(output)
             self.assertEqual(list(data.discover("fixture"))[0]["unique_numbered_routes"], 1)
+            self.assertEqual(list(data.discover("fixture", 27))[0]["unique_numbered_routes"], 2)
             review, issues = data.review({"boundary": "w1", "osmName": "Fixture Golf", "mapRef": "fl/fixture"}, "fixture")
+            extended, _ = data.review({"boundary": "w1", "osmName": "Fixture Golf",
+                                       "mapRef": "fl/fixture", "holeCount": 27}, "fixture")
+            self.assertEqual(len(review["holes"]), 18)
+            self.assertEqual(extended["holes"][19]["route"], "7")
             self.assertEqual(review["holes"][0]["green"], ["w5"])
             self.assertNotIn("tee", review["holes"][0])
             self.assertIn({"hole": 1, "issue": "tee-ambiguous", "candidates": ["w3", "w4"]}, issues)

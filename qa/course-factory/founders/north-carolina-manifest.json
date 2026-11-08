@@ -1,0 +1,39 @@
+{
+  "reviewDate": "2026-11-07",
+  "source": "https://download.geofabrik.de/north-america/us/north-carolina-261106.osm.pbf",
+  "pbfSha256": "0dcda9e83ab1f7babd5a1622e9bed815864ef58ff6df9ecad409e48fa7759c31",
+  "snapshotSha256": "2cde2ef5b5018c45515e200f478551aa914b5bbb3fb73d01c7ab358ffe0dcc7b",
+  "courses": [
+    {
+      "id": "ryder-fort-bragg-nc",
+      "boundary": "w429532934",
+      "osmName": "Ryder Golf Course",
+      "mapRef": "nc/ryder-golf-course"
+    },
+    {
+      "id": "hyland-southern-pines-nc",
+      "boundary": "r6385379",
+      "osmName": "Hyland Golf Club",
+      "mapRef": "nc/hyland-golf-club"
+    },
+    {
+      "id": "tobacco-road-sanford-nc",
+      "boundary": "w430227508",
+      "osmName": "Tobacco Road Golf Club",
+      "mapRef": "nc/tobacco-road-golf-club"
+    },
+    {
+      "id": "pinehurst-no-3-nc",
+      "boundary": null,
+      "osmName": "Pinehurst No. 3",
+      "mapRef": "nc/pinehurst-no-3",
+      "geometryBlocker": "No standalone named No. 3 boundary in the pinned NC extract; resort boundary combines courses."
+    },
+    {
+      "id": "quail-ridge-sanford-nc",
+      "boundary": "r6400453",
+      "osmName": "Quail Ridge Golf Club",
+      "mapRef": "nc/quail-ridge-golf-club"
+    }
+  ]
+}
