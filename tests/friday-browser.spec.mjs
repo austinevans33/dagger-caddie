@@ -1029,6 +1029,8 @@ for(const course of [
  {query:'Mount Dora Golf Club',region:'Mount Dora, FL',tee:'Red',hole:18,yards:392,par:5,caddy:true},
  {query:'Gates Four',region:'Fayetteville, NC',tee:'Black',hole:13,yards:536,par:5,caddy:true},
  {query:'Crooked Oaks',region:'Seabrook Island, SC',tee:'Hawk',hole:13,yards:175,par:3,caddy:true},
+ {query:'Tanglewood Park Championship',region:'Clemmons, NC',tee:'Red',hole:17,yards:292,par:5,caddy:true},
+ {query:'Hidden Cypress',region:'Bluffton, SC',tee:'Gold',hole:12,yards:165,par:3,caddy:true},
 ]){
  test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
   await page.setViewportSize({width:390,height:844});

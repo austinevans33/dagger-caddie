@@ -1,6 +1,6 @@
 {
   "catalogSlug": "north-carolina",
-  "reviewDate": "2026-11-07",
+  "reviewDate": "2026-11-08",
   "source": "https://download.geofabrik.de/north-america/us/north-carolina-261106.osm.pbf",
   "pbfSha256": "0dcda9e83ab1f7babd5a1622e9bed815864ef58ff6df9ecad409e48fa7759c31",
   "snapshotSha256": "2cde2ef5b5018c45515e200f478551aa914b5bbb3fb73d01c7ab358ffe0dcc7b",
@@ -60,6 +60,317 @@
             "width": [
               21
             ]
+          }
+        }
+      }
+    },
+    {
+      "id": "tanglewood-championship-clemmons-nc",
+      "name": "Tanglewood Park Championship Course",
+      "region": "Clemmons, NC",
+      "boundary": "w1104673360",
+      "osmName": "Tanglewood Championship Course",
+      "mapRef": "nc/tanglewood-championship",
+      "auditTee": "gold",
+      "scorecard": {
+        "url": "https://golf.tanglewoodpark.org/assets/img/scorecard_championship.jpg",
+        "sha256": "6cbea8e536971d496e4e854d332999284de546be91931c7b391841be300711bb",
+        "format": "reviewed-image",
+        "reviewNote": "Visually reviewed on the county’s labeled Championship course card. Preserve the separate Red and Family par 74 and Red handicap row.",
+        "reviewedRows": {
+          "Gold": [
+            [
+              364,
+              490,
+              235,
+              418,
+              424,
+              374,
+              198,
+              580,
+              435,
+              3518
+            ],
+            [
+              377,
+              190,
+              481,
+              400,
+              614,
+              387,
+              243,
+              456,
+              435,
+              3583,
+              7101
+            ]
+          ],
+          "Blue": [
+            [
+              344,
+              467,
+              210,
+              395,
+              383,
+              359,
+              183,
+              540,
+              418,
+              3299
+            ],
+            [
+              364,
+              178,
+              421,
+              382,
+              575,
+              372,
+              208,
+              420,
+              418,
+              3338,
+              6637
+            ]
+          ],
+          "White": [
+            [
+              327,
+              393,
+              182,
+              330,
+              336,
+              330,
+              135,
+              500,
+              387,
+              2920
+            ],
+            [
+              347,
+              161,
+              389,
+              362,
+              556,
+              290,
+              190,
+              400,
+              399,
+              3094,
+              6014
+            ]
+          ],
+          "Black": [
+            [
+              325,
+              340,
+              181,
+              330,
+              278,
+              310,
+              130,
+              460,
+              290,
+              2644
+            ],
+            [
+              340,
+              145,
+              327,
+              352,
+              500,
+              275,
+              155,
+              292,
+              303,
+              2689,
+              5333
+            ]
+          ],
+          "Red": [
+            [
+              281,
+              337,
+              130,
+              291,
+              266,
+              230,
+              112,
+              400,
+              289,
+              2336
+            ],
+            [
+              250,
+              130,
+              327,
+              230,
+              340,
+              212,
+              142,
+              292,
+              303,
+              2226,
+              4562
+            ]
+          ],
+          "Family": [
+            [
+              150,
+              238,
+              92,
+              200,
+              176,
+              150,
+              112,
+              326,
+              215,
+              1659
+            ],
+            [
+              214,
+              90,
+              207,
+              228,
+              260,
+              150,
+              88,
+              258,
+              250,
+              1745,
+              3404
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              4,
+              3,
+              4,
+              4,
+              4,
+              3,
+              5,
+              4,
+              35
+            ],
+            [
+              4,
+              3,
+              4,
+              4,
+              5,
+              4,
+              3,
+              4,
+              4,
+              35,
+              70
+            ]
+          ],
+          "Red and Family Par": [
+            [
+              4,
+              5,
+              3,
+              4,
+              4,
+              4,
+              3,
+              5,
+              5,
+              37
+            ],
+            [
+              4,
+              3,
+              4,
+              4,
+              5,
+              4,
+              3,
+              5,
+              5,
+              37,
+              74
+            ]
+          ],
+          "Championship Handicap": [
+            [
+              13,
+              3,
+              15,
+              9,
+              7,
+              11,
+              17,
+              1,
+              5
+            ],
+            [
+              12,
+              18,
+              4,
+              10,
+              2,
+              14,
+              16,
+              6,
+              8
+            ]
+          ],
+          "Red Handicap": [
+            [
+              13,
+              3,
+              15,
+              9,
+              5,
+              11,
+              17,
+              1,
+              7
+            ],
+            [
+              12,
+              18,
+              4,
+              10,
+              2,
+              14,
+              16,
+              6,
+              8
+            ]
+          ]
+        },
+        "handicap": "Championship Handicap",
+        "tees": {
+          "gold": {
+            "label": "Gold",
+            "total": 7101
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6637
+          },
+          "white": {
+            "label": "White",
+            "total": 6014
+          },
+          "black": {
+            "label": "Black",
+            "total": 5333
+          },
+          "red": {
+            "label": "Red",
+            "total": 4562,
+            "parLabel": "Red and Family Par",
+            "handicap": "Red Handicap"
+          },
+          "family": {
+            "label": "Family",
+            "total": 3404,
+            "parLabel": "Red and Family Par"
           }
         }
       }

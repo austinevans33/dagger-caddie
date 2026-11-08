@@ -189,7 +189,7 @@ export const courseFactoryCourses = [
       "source": "Official course scorecard",
       "url": "https://www.seabrookisland.com/wp-content/uploads/2024/01/2023-scorecard-revision_final96.pdf",
       "sourceSha256": "c15e0d2c19d3a541d485b9e0acd6e9d9ebf96fa296d000af089fae564804cba2",
-      "checked": "2026-11-07",
+      "checked": "2026-11-08",
       "geography": "Seabrook Island, SC",
       "teeYardageIsNotPinDistance": true
     },
@@ -199,6 +199,207 @@ export const courseFactoryCourses = [
       "ref": "sc/seabrook-crooked-oaks",
       "status": "bundled-reviewed-osm",
       "auditTee": "hawk"
+    }
+  },
+  {
+    "id": "hidden-cypress-bluffton-sc",
+    "name": "Hidden Cypress Golf Club",
+    "region": "Bluffton, SC",
+    "par": [
+      4,
+      3,
+      5,
+      4,
+      5,
+      4,
+      3,
+      4,
+      4,
+      4,
+      4,
+      3,
+      5,
+      4,
+      5,
+      4,
+      3,
+      4
+    ],
+    "tees": {
+      "red": {
+        "label": "Red",
+        "yards": [
+          406,
+          165,
+          534,
+          455,
+          549,
+          369,
+          198,
+          407,
+          402,
+          388,
+          456,
+          178,
+          546,
+          422,
+          511,
+          375,
+          231,
+          361
+        ]
+      },
+      "gold": {
+        "label": "Gold",
+        "yards": [
+          394,
+          159,
+          527,
+          430,
+          524,
+          345,
+          183,
+          381,
+          387,
+          360,
+          428,
+          165,
+          512,
+          391,
+          476,
+          355,
+          194,
+          338
+        ]
+      },
+      "blue": {
+        "label": "Blue",
+        "yards": [
+          365,
+          148,
+          497,
+          395,
+          467,
+          321,
+          160,
+          348,
+          370,
+          335,
+          395,
+          151,
+          472,
+          359,
+          440,
+          345,
+          172,
+          311
+        ]
+      },
+      "white": {
+        "label": "White",
+        "yards": [
+          329,
+          108,
+          391,
+          354,
+          450,
+          303,
+          144,
+          336,
+          339,
+          322,
+          349,
+          138,
+          457,
+          342,
+          427,
+          319,
+          149,
+          299
+        ]
+      },
+      "black": {
+        "label": "Black",
+        "yards": [
+          270,
+          100,
+          379,
+          316,
+          406,
+          276,
+          124,
+          298,
+          293,
+          281,
+          333,
+          109,
+          409,
+          302,
+          380,
+          303,
+          128,
+          267
+        ]
+      },
+      "orange": {
+        "label": "Orange",
+        "yards": [
+          247,
+          91,
+          344,
+          272,
+          382,
+          218,
+          79,
+          229,
+          258,
+          242,
+          272,
+          85,
+          357,
+          238,
+          315,
+          268,
+          116,
+          214
+        ]
+      }
+    },
+    "handicapMen": [
+      7,
+      17,
+      15,
+      1,
+      13,
+      11,
+      9,
+      5,
+      3,
+      8,
+      6,
+      16,
+      4,
+      2,
+      18,
+      14,
+      12,
+      10
+    ],
+    "source": "course-factory-official-scorecard",
+    "provenance": {
+      "source": "Official course scorecard",
+      "url": "https://www.golfinsuncity.com/wp-content/uploads/sites/8949/2023/06/Hidden_Cypress_Scorecard.pdf",
+      "sourceSha256": "6d222812fbcb39e532221a9a8e0b95088defe3fe52496a07f7572cbd2b7b96fe",
+      "checked": "2026-11-08",
+      "geography": "Bluffton, SC",
+      "teeYardageIsNotPinDistance": true
+    },
+    "map": {
+      "file": "hidden-cypress-bluffton-sc.json",
+      "source": "https://www.openstreetmap.org/relation/15700840",
+      "ref": "sc/hidden-cypress",
+      "status": "bundled-reviewed-osm",
+      "auditTee": "gold"
     }
   }
 ];

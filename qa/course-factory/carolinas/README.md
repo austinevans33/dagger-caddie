@@ -1,4 +1,4 @@
-# Carolinas Course Factory batch 1
+# Carolinas Course Factory batches 1 and 2
 
 Stacked on the Founders source review. The regional catalogs use the same runtime geometry gate as Bayonet and the existing Yardage Book, AI Caddy handoff and House Ghost drawing. The release branch is outside this change.
 
@@ -6,16 +6,20 @@ Stacked on the Founders source review. The regional catalogs use the same runtim
 |---|---:|---|---|
 | Gates Four Golf & Country Club, Fayetteville NC | 5 | 18 / 18 / 18 / 18 | Black, 6,895 yards, par 72 |
 | Crooked Oaks at Seabrook Island Club, Seabrook Island SC | 6 | 18 / 18 / 18 / 18 | Hawk, 6,706 yards, par 72 |
+| Tanglewood Park Championship Course, Clemmons NC | 6 | 18 / 18 / 18 / 18 | Gold, 7,101 yards, par 70 |
+| Hidden Cypress Golf Club, Bluffton SC | 6 | 18 / 18 / 18 / 17 | Gold, 6,549 yards, par 72 |
 
 Each region's manifest pins the original scorecard PDF, Geofabrik PBF and derived golf-only snapshot. Each coverage report pins the promoted bundle. No synthetic tee, fairway, hazard or live pin yardage was added.
 
 Crooked Oaks shares a PDF with Ocean Winds. The importer matches the Crooked Oaks page heading before reading any rows. The linked hole card's Hawk row sums to 6,706. The club's course description gives 6,780 without matching hole values. Use the scorecard figures and preserve that distinction. Eagle and Pelican are totals-only rows without their own hole values in the printed card, so the catalog does not expose them.
 
+Tanglewood uses the [county’s Championship card](https://golf.tanglewoodpark.org/courses/), a separate venue from Reynolds and the Par 3 course. Red and Family use the published par 74 row. The sample browser check uses Red No. 17, par 5 at 292 yards. Hidden Cypress uses the [club’s scorecard](https://www.golfinsuncity.com/hidden-cypress/). Its Gold No. 12 is par 3 at 165 yards, with a verified route, tee and green and no accepted fairway polygon. The printed Red row totals 6,953, which differs from the course summary’s 6,946. The reviewed hole row and printed total agree.
+
 ## Discovery
 
 The statewide extracts yielded 151 NC and 113 SC named boundaries with at least 17 uniquely numbered, contained routes. Among these, 37 NC and 12 SC met the geometry count screen. The counts include some existing courses. `discovery.json` lists the exact OSM boundaries that made this first screen. Every queued candidate still needs independent course identity and official card review, source import, route-to-yardage checks and browser acceptance.
 
-Next source checks include [Longleaf](https://www.longleafgfc.com/longleaf-scorecard/) and [Tanglewood Championship](https://golf.tanglewoodpark.org/courses/) in NC. In SC, review Dolphin Head, Hidden Cypress and Olde Beaufort. Heathland has complete geometry counts, but the indexed Legends PDF returned HTTP 404 when fetched. Locate a current club card before promotion.
+Next source checks include [Longleaf](https://www.longleafgfc.com/longleaf-scorecard/) in NC and Dolphin Head and Olde Beaufort in SC. Heathland has complete geometry counts, but the indexed Legends PDF returned HTTP 404 when fetched. Locate a current club card before promotion.
 
 ## Reproduction
 

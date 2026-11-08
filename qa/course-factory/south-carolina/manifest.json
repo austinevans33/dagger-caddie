@@ -1,6 +1,6 @@
 {
   "catalogSlug": "south-carolina",
-  "reviewDate": "2026-11-07",
+  "reviewDate": "2026-11-08",
   "source": "https://download.geofabrik.de/north-america/us/south-carolina-261106.osm.pbf",
   "pbfSha256": "c535fa40a87db476baac57c4d4dc10ed071076b9584c8ddb36baf26e34661ef7",
   "snapshotSha256": "d6fa5271c37773535f814aea8b26ab5b3f697a3664042d6984e2490777445976",
@@ -70,6 +70,263 @@
           }
         },
         "pageHeading": "Crooked Oaks"
+      }
+    },
+    {
+      "id": "hidden-cypress-bluffton-sc",
+      "name": "Hidden Cypress Golf Club",
+      "region": "Bluffton, SC",
+      "boundary": "r15700840",
+      "osmName": "Sun City - Hidden Cypress Golf Club",
+      "mapRef": "sc/hidden-cypress",
+      "auditTee": "gold",
+      "scorecard": {
+        "url": "https://www.golfinsuncity.com/wp-content/uploads/sites/8949/2023/06/Hidden_Cypress_Scorecard.pdf",
+        "sha256": "6d222812fbcb39e532221a9a8e0b95088defe3fe52496a07f7572cbd2b7b96fe",
+        "format": "reviewed-image",
+        "reviewNote": "Reviewed the club’s labeled scorecard PDF and checked the individual tee sums. The Red hole sum and printed total are 6,953; a prose summary uses 6,946.",
+        "reviewedRows": {
+          "Red": [
+            [
+              406,
+              165,
+              534,
+              455,
+              549,
+              369,
+              198,
+              407,
+              402,
+              3485
+            ],
+            [
+              388,
+              456,
+              178,
+              546,
+              422,
+              511,
+              375,
+              231,
+              361,
+              3468,
+              6953
+            ]
+          ],
+          "Gold": [
+            [
+              394,
+              159,
+              527,
+              430,
+              524,
+              345,
+              183,
+              381,
+              387,
+              3330
+            ],
+            [
+              360,
+              428,
+              165,
+              512,
+              391,
+              476,
+              355,
+              194,
+              338,
+              3219,
+              6549
+            ]
+          ],
+          "Blue": [
+            [
+              365,
+              148,
+              497,
+              395,
+              467,
+              321,
+              160,
+              348,
+              370,
+              3071
+            ],
+            [
+              335,
+              395,
+              151,
+              472,
+              359,
+              440,
+              345,
+              172,
+              311,
+              2980,
+              6051
+            ]
+          ],
+          "White": [
+            [
+              329,
+              108,
+              391,
+              354,
+              450,
+              303,
+              144,
+              336,
+              339,
+              2754
+            ],
+            [
+              322,
+              349,
+              138,
+              457,
+              342,
+              427,
+              319,
+              149,
+              299,
+              2802,
+              5556
+            ]
+          ],
+          "Black": [
+            [
+              270,
+              100,
+              379,
+              316,
+              406,
+              276,
+              124,
+              298,
+              293,
+              2462
+            ],
+            [
+              281,
+              333,
+              109,
+              409,
+              302,
+              380,
+              303,
+              128,
+              267,
+              2512,
+              4974
+            ]
+          ],
+          "Orange": [
+            [
+              247,
+              91,
+              344,
+              272,
+              382,
+              218,
+              79,
+              229,
+              258,
+              2120
+            ],
+            [
+              242,
+              272,
+              85,
+              357,
+              238,
+              315,
+              268,
+              116,
+              214,
+              2107,
+              4227
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              3,
+              5,
+              4,
+              5,
+              4,
+              3,
+              4,
+              4,
+              36
+            ],
+            [
+              4,
+              4,
+              3,
+              5,
+              4,
+              5,
+              4,
+              3,
+              4,
+              36,
+              72
+            ]
+          ],
+          "Handicap": [
+            [
+              7,
+              17,
+              15,
+              1,
+              13,
+              11,
+              9,
+              5,
+              3
+            ],
+            [
+              8,
+              6,
+              16,
+              4,
+              2,
+              18,
+              14,
+              12,
+              10
+            ]
+          ]
+        },
+        "handicap": "Handicap",
+        "tees": {
+          "red": {
+            "label": "Red",
+            "total": 6953
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 6549
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6051
+          },
+          "white": {
+            "label": "White",
+            "total": 5556
+          },
+          "black": {
+            "label": "Black",
+            "total": 4974
+          },
+          "orange": {
+            "label": "Orange",
+            "total": 4227
+          }
+        }
       }
     }
   ]
