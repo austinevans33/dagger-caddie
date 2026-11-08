@@ -1033,6 +1033,8 @@ for(const course of [
  {query:'Hidden Cypress',region:'Bluffton, SC',tee:'Gold',hole:12,yards:165,par:3,caddy:true},
  {query:'Longleaf',region:'Southern Pines, NC',tee:'Tee 6',hole:5,yards:509,par:5,caddy:true},
  {query:'Sanford Municipal',region:'Sanford, NC',tee:'Men’s',hole:16,yards:522,par:5,caddy:true},
+ {query:'Pudding Ridge',region:'Mocksville, NC',tee:'Black',hole:13,yards:445,par:4,caddy:true},
+ {query:'Oak Island',region:'Caswell Beach, NC',tee:'Red',hole:14,yards:262,par:4,caddy:true},
 ]){
  test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
   await page.setViewportSize({width:390,height:844});

@@ -10,12 +10,18 @@ Stacked on the Founders source review. The regional catalogs use the same runtim
 | Hidden Cypress Golf Club, Bluffton SC | 6 | 18 / 18 / 18 / 17 | Gold, 6,549 yards, par 72 |
 | Longleaf Golf & Family Club, Southern Pines NC | 7 | 18 / 18 / 18 / 18 | Tee 6, 6,153 yards, par 72 |
 | Sanford Municipal Golf Course, Sanford NC | 4 | 18 / 18 / 18 / 18 | Men’s, 6,304 yards, par 71 |
+| Pudding Ridge Golf Club, Mocksville NC | 4 | 18 / 18 / 18 / 18 | Black, 6,713 yards, par 71 |
+| Oak Island Golf Club, Caswell Beach NC | 5 | 18 / 18 / 18 / 17 | Blue, 6,717 yards, par 72 |
 
 Each region's manifest pins the original scorecard sources, Geofabrik PBF and derived golf-only snapshot. Each coverage report pins the promoted bundle. No synthetic tee, fairway, hazard or live pin yardage was added.
 
 Crooked Oaks shares a PDF with Ocean Winds. The importer matches the Crooked Oaks page heading before reading any rows. The linked hole card's Hawk row sums to 6,706. The club's course description gives 6,780 without matching hole values. Use the scorecard figures and preserve that distinction. Eagle and Pelican are totals-only rows without their own hole values in the printed card, so the catalog does not expose them.
 
 Tanglewood uses the [county’s Championship card](https://golf.tanglewoodpark.org/courses/), a separate venue from Reynolds and the Par 3 course. Red and Family use the published par 74 row. The sample browser check uses Red No. 17, par 5 at 292 yards. Hidden Cypress uses the [club’s scorecard](https://www.golfinsuncity.com/hidden-cypress/). Its Gold No. 12 is par 3 at 165 yards, with a verified route, tee and green and no accepted fairway polygon. The printed Red row totals 6,953, which differs from the course summary’s 6,946. The reviewed hole row and printed total agree.
+
+Pudding Ridge’s [club-issued scorecard](https://www.puddingridge.com/wp-content/uploads/2017/08/scorecard.pdf) prints the back nine first and leaves the front-nine yardage subtotals blank. Four tee rows reconcile with the printed back-nine and round totals. White’s individual holes sum to 5,474 yards while the card prints 5,374, so the White row is withheld. The club’s course overview cites 6,813 yards. The catalog follows the checked Black hole grid and its printed total of 6,713.
+
+Oak Island’s [official card](https://oakislandgolf.com/course-scorecard/) pins both the hole grid and the companion cover. Red uses the printed ladies par and stroke index, including par 5 on No. 9 and par 4 on No. 14. Par-3 No. 3 has a verified route, tee and green. Its fairway remains unrendered.
 
 ## Discovery
 
