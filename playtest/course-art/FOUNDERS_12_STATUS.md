@@ -6,14 +6,14 @@ A complete book requires an identified course, validated par + hole yards for ea
 | # | Founder course | Verified 18-hole scorecard | 18 matched pencil maps | Status |
 |---|---|---|---|---|
 | 1 | Bayonet at Puppy Creek, Raeford NC | Five club-verified tee sets | 18 mapped routes, bundled | Complete; iPhone field-tested |
-| 2 | Ryder Golf Course, Fort Bragg NC | Three published tee sets with 18 hole values | No hole-specific OSM outlines | Scorecard functional; actual hole maps need survey or other verified source |
+| 2 | Ryder Golf Course, Fort Bragg NC | Three published tee sets with 18 hole values | Named OSM boundary, no matched numbered routes in the pinned extract | Scorecard functional. Army MWR has a routing reference; confirm its reuse rights and pair with licensed geometry before importing |
 | 3 | King's Grant Golf & Country Club, Fayetteville NC | Six tee sets from club source | 18 routes, greens and fairway holes; 16 mapped tee outlines and two approximate tee points | Playable with disclosed reference tees on Nos. 9 and 13 |
 | 4 | The Chimneys Golf Course, Winder GA | Four 18-hole tee cards with published par and stroke index | 18 matched routes, tees and greens; 17 fairways bundled | Passes Bayonet parity on Gold. No fairway drawn on par-3 No. 11 |
-| 5 | Pelican Pointe Golf and Country Club | Provider fallback only | Provider fallback only | Resolve three nine-hole loops before assigning 18 holes |
-| 6 | Hyland Golf Club | White/Gold/Red all 18 holes; Black/Blue totals conflict with source row sums | No hole-specific OSM outlines | Scorecard functional for three tees; map sourcing and remaining tee audit needed |
+| 5 | Pelican Pointe Golf and Country Club | Club-published Gold, Blue, White, Black and Red for all three rated pairings | 17 of 27 physical holes meet route containment and have matched tee, green and fairway | Scorecard playable in review candidate. Ten routes cross gaps in the mapped club boundary; artwork withheld for all three pairings |
+| 6 | Hyland Golf Club | Five official tees, including reconciled Black 6,934 and Blue 6,700 | 17 routes/tees/greens and 15 fairway holes; No. 10 route missing | Scorecard functional. Holes 3 and 6 have no uniquely assigned fairway; artwork withheld |
 | 7 | Tobacco Road Golf Course | Five verified-sum published tee rows covering all 18 | 18 routes and greens, 16 tees, 14 fairways in QA | Scorecard functional; artwork gated off pending verified starts for Nos. 1/10 and fairway coverage |
 | 8 | Pine Hills Golf Club, Winder GA | Blue/White 18-hole par 72; Red 18-hole par 73, all published hole yards | 18 matched routes, tees and greens; 17 fairways bundled | Passes Bayonet parity on Blue. Red keeps its tee-specific par 5 on No. 18 |
-| 9 | Sassamon Trace Golf Course | Provider fallback only | Provider fallback only | Needs sources and hole-map QA |
+| 9 | Sassamon Trace Golf Course | Official nine-hole card: par 32, Blue 2,383, White 2,167, Yellow 2,011, Red 1,744 | Nine routes, tees and greens; eight matched fairways | Source review only. No. 3 fairway unassigned; native nine-hole selection and runtime tests are still required |
 | 10 | The Golf Club at Quail Ridge, Sanford NC | Black 6,783 yards, par 72, USGA total cross-check. Existing White, Gold and Red are source-listed legacy cards | 18 matched routes, tees, greens and fairways bundled from OSM | Passes Bayonet parity on Black; current White, Gold and Red hole cards still need confirmation |
 | 11 | Pinehurst No. 3 | Official course card: all 18 holes across White/Green/Red/Yellow | 18 candidate routes and greens, 10 tees, no validated fairways | Scorecard ready; separate No. 3 boundary and missing shapes require source review |
 | 12 | The Ocean Course, Kiawah Island SC | Six complete published 18-hole tee rows; Carolina excluded for conflicting total | 18 matched routes, tees and greens; 17 fairway holes bundled | Passes Bayonet parity on the club Black card. The club diagram corroborates No. 16’s tee |
@@ -29,7 +29,9 @@ A complete book requires an identified course, validated par + hole yards for ea
 
 - Ryder published card: https://zommagolf.com/courses/nc/ryder-golf-course — three sets, 18 holes; published source has no stroke index or mapped holes.
 - Tobacco Road published card/map: https://zommagolf.com/courses/nc/tobacco-road-golf-club — five separate tee sets with cross-checked sums and 18 mapped course routes.
-- Hyland published card: https://zommagolf.com/courses/nc/hyland-golf-club — White/Gold/Red rows sum properly. Source Blue/Black aggregate totals disagree with hole values; those rows remain withheld.
+- Hyland [official club card](https://www.hylandgolfclub.com/course-details/) resolves the conflicting third-party Blue and Black yardages. Existing White/Gold/Red hole yardages and tee IDs match.
+- Pelican Pointe [official club layout and scorecards](https://www.pelicanpointeclub.com/-course-layout) and [FSGA pairing order](https://www.fsga.org/Club/Detail/20426cb1-7488-42db-9818-9268bcfcb311). Routing IDs are separate and no per-nine handicap index is converted to a pairing index.
+- [Founders source review and reproduction steps](../../qa/course-factory/founders/README.md) record the dated ODbL extracts, exact route issues, and which changes are withheld.
 
 - Pinehurst No. 3 official four-tee par-68 scorecard: https://www.pinehurst.com/golf/courses/no-3/ — 18 holes and tee-specific stroke index.
 - Ocean Course Kiawah official card: https://kiawahresort.com/wp-content/uploads/2025/03/Ocean-Course-SC25.pdf — Black/Gold/Silver/Red club-checked yardages, plus Dye/Kiawah reported. Carolina total disagrees with row sum and is withheld.

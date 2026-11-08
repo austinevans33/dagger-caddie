@@ -7,7 +7,55 @@ import {floridaCourses} from './florida-course-factory.js';
 
 const founderProvider='dagger-founder';
 const holeRange=Array.from({length:18},(_,i)=>i+1);
+// Club-published nine-hole cards use physical hole numbers 1–27.
+const pelicanLoops={
+ meadows:{
+  par:[4,4,5,4,3,4,5,3,4],
+  gold:[353,375,595,452,209,435,521,228,448],
+  blue:[336,336,556,420,189,396,492,191,413],
+  white:[307,293,516,391,169,369,459,177,389],
+  black:[280,265,460,379,138,351,434,166,342],
+  red:[249,257,457,344,133,322,391,139,337]
+ },
+ preserve:{
+  par:[4,3,5,4,4,4,3,5,4],
+  gold:[391,213,530,385,435,414,238,520,450],
+  blue:[360,186,482,354,419,367,208,489,420],
+  white:[329,171,435,325,390,328,182,454,338],
+  black:[320,156,427,290,325,315,170,424,330],
+  red:[273,110,363,207,318,241,128,418,252]
+ },
+ hatchett:{
+  par:[4,3,4,5,4,3,4,4,5],
+  gold:[358,197,393,539,448,150,425,402,521],
+  blue:[336,176,370,501,419,131,389,370,500],
+  white:[301,159,349,474,392,128,359,327,477],
+  black:[261,129,315,421,337,97,307,267,435],
+  red:[246,115,304,408,323,83,294,254,419]
+ }
+};
+function pelicanPair(name,front,back){
+ const id='pelican-pointe-'+front+'-'+back+'-venice-fl';
+ const join=field=>[...pelicanLoops[front][field],...pelicanLoops[back][field]];
+ return {
+  id,name:'Pelican Pointe · '+name,region:'Venice, FL',
+  par:join('par'),
+  tees:Object.fromEntries(['Gold','Blue','White','Black','Red'].map(label=>{
+   const key=label.toLowerCase();
+   return [key,{label,yards:join(key)}];
+  })),
+  source:'pelican-pointe-club-loop-scorecards',
+  provenance:{source:'Pelican Pointe club-published nine-hole scorecards',
+   url:'https://www.pelicanpointeclub.com/-course-layout',checked:'2026-11-07',
+   geography:'Venice, Florida',teeYardageIsNotPinDistance:true,
+   audit:'Official nine-hole yardages in rated pairing order. Nine-hole stroke indices are not combined into an 18-hole handicap allocation.'},
+  map:{ref:'fl/'+id,status:'source-review-blocked'}
+ };
+}
 const founders=Object.freeze([
+ pelicanPair('Meadows / Preserve','meadows','preserve'),
+ pelicanPair('Preserve / Hatchett Creek','preserve','hatchett'),
+ pelicanPair('Hatchett Creek / Meadows','hatchett','meadows'),
  {
   id:'kings-grant-fayetteville-nc',name:"King's Grant Golf & Country Club",region:'Fayetteville, NC',
   par:[4,5,4,3,4,5,3,4,4,4,3,4,3,4,5,3,4,5],
@@ -91,13 +139,15 @@ const founders=Object.freeze([
   tees:{
    white:{label:'White',yards:[370,365,172,386,395,135,465,346,475,167,364,528,170,371,382,332,508,342]},
    gold:{label:'Gold',yards:[339,348,155,321,385,115,439,332,455,149,349,486,156,348,370,319,488,321]},
-   red:{label:'Red',yards:[293,288,137,277,314,95,371,275,394,103,298,260,129,286,321,313,409,221]}
+   red:{label:'Red',yards:[293,288,137,277,314,95,371,275,394,103,298,260,129,286,321,313,409,221]},
+   black:{label:'Black',yards:[393,446,205,439,421,169,488,372,521,192,407,562,214,395,421,362,555,372]},
+   blue:{label:'Blue',yards:[391,395,188,417,410,162,481,364,500,187,388,549,201,390,412,359,539,367]}
   },
   source:'hyland-published-hole-card',
-  provenance:{source:'Hyland Golf Club 18-hole published listing (source describes figures as public data)',
-   url:'https://zommagolf.com/courses/nc/hyland-golf-club',checked:'2026-11-07',
+  provenance:{source:'Hyland Golf Club official scorecard',
+   url:'https://www.hylandgolfclub.com/course-details/',checked:'2026-11-07',
    geography:'Southern Pines, North Carolina',teeYardageIsNotPinDistance:true,
-   audit:'Black and Blue published per-hole totals conflict with listed aggregate yardages; both sets withheld pending reconciliation. Hole maps not present in OSM.'},
+   audit:'All five tee yardage rows agree with the club totals. Black and Blue use the club card to resolve conflicting third-party rows.'},
   map:{source:'https://zommagolf.com/courses/nc/hyland-golf-club/geo.json',ref:'nc/hyland-golf-club',status:'outline-only'}
  }
   ,

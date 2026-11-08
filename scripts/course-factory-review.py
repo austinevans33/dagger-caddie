@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 
 from shapely.affinity import affine_transform
 from shapely.geometry import LineString, MultiPolygon, Point, Polygon
-from shapely.ops import substring
+from shapely.ops import substring, unary_union
 from shapely.strtree import STRtree
 
 KINDS = {"tee", "green", "fairway", "bunker", "water_hazard", "lateral_water_hazard"}
@@ -63,11 +63,27 @@ class GolfSnapshot:
         inner = [closed(ways[m.get("ref")]) for m in members if m.get("role") == "inner"]
         if len(outer) == 1:
             return Polygon(outer[0], inner)
-        if layer == "boundary" and outer and not inner:
-            return MultiPolygon([Polygon(points) for points in outer])
+        if layer == "boundary" and outer:
+            shells = [Polygon(points) for points in outer]
+            holes_by_shell = defaultdict(list)
+            for ring in inner:
+                cutout = Polygon(ring)
+                if not cutout.is_valid:
+                    return None
+                owners = [i for i, shell in enumerate(shells) if shell.contains_properly(cutout)]
+                if len(owners) != 1:
+                    return None
+                cutouts = holes_by_shell[owners[0]]
+                if any(cutout.relate_pattern(other, "T********") for other in cutouts):
+                    return None
+                cutouts.append(cutout)
+            # Adjacent excluded parcels can share edges. Union only their
+            # interiors' exclusions and retain every original outer boundary.
+            return MultiPolygon([shell.difference(unary_union(holes_by_shell[i])) if holes_by_shell[i] else shell
+                                 for i, shell in enumerate(shells)])
         return None
 
-    def discover(self, query=""):
+    def discover(self, query="", hole_count=18):
         for ref, (layer, tags, shape) in sorted(self.objects.items()):
             name = tags.get("name", "")
             if layer != "boundary" or not name or query.casefold() not in name.casefold():
@@ -79,13 +95,17 @@ class GolfSnapshot:
                 if kind == "hole" and shape.covers(other_shape)
             )
             yield {"boundary": ref, "name": name, "tags": tags, "center": list(shape.centroid.coords[0]),
-                   "unique_numbered_routes": sum(route_refs[str(i)] == 1 for i in range(1, 19))}
+                   "unique_numbered_routes": sum(route_refs[str(i)] == 1 for i in range(1, hole_count + 1))}
 
     def review(self, course, source_url):
         ref = course["boundary"]
         kind, tags, area = self.objects[ref]
         if kind != "boundary" or tags.get("name") != course["osmName"]:
             raise ValueError("boundary name does not match reviewed venue")
+        hole_count = course.get("holeCount", 18)
+        if hole_count not in (9, 18, 27):
+            raise ValueError("physical hole count must be 9, 18 or 27")
+        valid_numbers = {str(n) for n in range(1, hole_count + 1)}
         center = area.centroid
         sx, sy = 111195 * math.cos(math.radians(center.y)), 111195
 
@@ -95,6 +115,7 @@ class GolfSnapshot:
         boundary = meters(area)
         route_boundary = boundary.buffer(3)
         routes = defaultdict(list)
+        outside_routes = defaultdict(list)
         layers = defaultdict(dict)
         for i in self.index.query(area.buffer(0.0001)):
             obj_ref = self.refs[i]
@@ -102,17 +123,27 @@ class GolfSnapshot:
             shape = meters(raw)
             if layer == "hole":
                 number = obj_tags.get("ref")
-                if number and number in {str(n) for n in range(1, 19)} and route_boundary.covers(shape):
+                if number not in valid_numbers:
+                    continue
+                if route_boundary.covers(shape):
                     routes[int(number)].append((obj_ref, shape, obj_tags.get("par")))
+                elif all(route_boundary.covers(Point(p)) for p in (shape.coords[0], shape.coords[-1])):
+                    outside_routes[int(number)].append(obj_ref)
             elif boundary.covers(shape.representative_point()):
                 layers["water" if layer in WATER else layer][obj_ref] = shape
         lines = {n: row[0] for n, row in routes.items() if len(row) == 1}
-        holes = [{} for _ in range(18)]
+        holes = [{} for _ in range(hole_count)]
         diagnostics = []
         assignments = defaultdict(list)
         for n, entry in enumerate(holes, 1):
             if n not in lines:
-                diagnostics.append({"hole": n, "issue": "duplicate-route" if n in routes else "missing-route"})
+                if n in routes:
+                    diagnostics.append({"hole": n, "issue": "duplicate-route"})
+                elif n in outside_routes:
+                    diagnostics.append({"hole": n, "issue": "route-crosses-boundary",
+                                        "candidates": sorted(outside_routes[n])})
+                else:
+                    diagnostics.append({"hole": n, "issue": "missing-route"})
                 continue
             ref_id, route, mapped_par = lines[n]
             if not ref_id.startswith("w") or route.length <= 0:
@@ -178,17 +209,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("snapshot", type=Path)
     parser.add_argument("--query", default="")
+    parser.add_argument("--hole-count", type=int, choices=(9, 18, 27), default=18,
+                        help="Physical hole count for discovery only")
     parser.add_argument("--rank", action="store_true", help="Rank named boundaries by route and polygon coverage")
     parser.add_argument("--manifest", type=Path)
     parser.add_argument("--subsets", type=Path)
     args = parser.parse_args()
     data = GolfSnapshot(args.snapshot)
     if not args.manifest:
-        rows = list(data.discover(args.query))
+        rows = list(data.discover(args.query, args.hole_count))
         if args.rank:
-            rows = [row for row in rows if row["unique_numbered_routes"] >= 17]
+            rows = [row for row in rows if row["unique_numbered_routes"] >= args.hole_count - 1]
             for row in rows:
-                review, _ = data.review({**row, "osmName": row["name"], "mapRef": ""}, "")
+                review, _ = data.review({**row, "osmName": row["name"], "mapRef": "",
+                                         "holeCount": args.hole_count}, "")
                 row["counts"] = {layer: sum(bool(hole.get(layer)) for hole in review["holes"])
                                  for layer in ("route", "tee", "green", "fairway")}
             rows.sort(key=lambda row: (min(row["counts"].values()), sum(row["counts"].values())),
@@ -206,7 +240,7 @@ def main():
             continue
         try:
             review, issues = data.review(course, manifest["source"])
-            if args.subsets and all("route" in hole for hole in review["holes"]):
+            if args.subsets and len(review["holes"]) == 18 and all("route" in hole for hole in review["holes"]):
                 data.write_subset(review, args.subsets / (course["id"] + ".osm"))
             output[course["id"]] = {"review": review, "issues": issues}
         except (KeyError, ValueError) as error:

@@ -1,0 +1,267 @@
+{
+  "pelican-pointe-venice-fl": {
+    "counts": {
+      "route": 17,
+      "tee": 17,
+      "green": 17,
+      "fairway": 17
+    },
+    "issues": [
+      {
+        "hole": 3,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470358"
+        ]
+      },
+      {
+        "hole": 9,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470352"
+        ]
+      },
+      {
+        "hole": 11,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470350"
+        ]
+      },
+      {
+        "hole": 12,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470349"
+        ]
+      },
+      {
+        "hole": 15,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470346"
+        ]
+      },
+      {
+        "hole": 16,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470345"
+        ]
+      },
+      {
+        "hole": 18,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470343"
+        ]
+      },
+      {
+        "hole": 22,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470339"
+        ]
+      },
+      {
+        "hole": 23,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470338"
+        ]
+      },
+      {
+        "hole": 24,
+        "issue": "route-crosses-boundary",
+        "candidates": [
+          "w987470337"
+        ]
+      }
+    ]
+  },
+  "sassamon-trace-natick-ma": {
+    "counts": {
+      "route": 9,
+      "tee": 9,
+      "green": 9,
+      "fairway": 8
+    },
+    "issues": [
+      {
+        "hole": 3,
+        "issue": "no-unambiguous-fairway"
+      }
+    ]
+  },
+  "ryder-fort-bragg-nc": {
+    "counts": {
+      "route": 0,
+      "tee": 0,
+      "green": 0,
+      "fairway": 0
+    },
+    "issues": [
+      {
+        "hole": 1,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 2,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 3,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 4,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 5,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 6,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 7,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 8,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 9,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 10,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 11,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 12,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 13,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 14,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 15,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 16,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 17,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 18,
+        "issue": "missing-route"
+      }
+    ]
+  },
+  "hyland-southern-pines-nc": {
+    "counts": {
+      "route": 17,
+      "tee": 17,
+      "green": 17,
+      "fairway": 15
+    },
+    "issues": [
+      {
+        "hole": 10,
+        "issue": "missing-route"
+      },
+      {
+        "hole": 3,
+        "issue": "no-unambiguous-fairway"
+      },
+      {
+        "hole": 6,
+        "issue": "no-unambiguous-fairway"
+      }
+    ]
+  },
+  "tobacco-road-sanford-nc": {
+    "counts": {
+      "route": 18,
+      "tee": 16,
+      "green": 18,
+      "fairway": 12
+    },
+    "issues": [
+      {
+        "hole": 1,
+        "issue": "tee-missing",
+        "candidates": []
+      },
+      {
+        "hole": 10,
+        "issue": "tee-missing",
+        "candidates": []
+      },
+      {
+        "hole": 3,
+        "issue": "no-unambiguous-fairway"
+      },
+      {
+        "hole": 6,
+        "issue": "no-unambiguous-fairway"
+      },
+      {
+        "hole": 14,
+        "issue": "no-unambiguous-fairway"
+      },
+      {
+        "hole": 15,
+        "issue": "no-unambiguous-fairway"
+      },
+      {
+        "hole": 16,
+        "issue": "no-unambiguous-fairway"
+      },
+      {
+        "hole": 17,
+        "issue": "no-unambiguous-fairway"
+      }
+    ]
+  },
+  "pinehurst-no-3-nc": {
+    "counts": {
+      "route": 0,
+      "tee": 0,
+      "green": 0,
+      "fairway": 0
+    },
+    "issues": [
+      {
+        "issue": "boundary-unverified",
+        "detail": "No standalone named No. 3 boundary in the pinned NC extract; resort boundary combines courses."
+      }
+    ]
+  },
+  "quail-ridge-sanford-nc": {
+    "counts": {
+      "route": 18,
+      "tee": 18,
+      "green": 18,
+      "fairway": 18
+    },
+    "issues": []
+  }
+}
