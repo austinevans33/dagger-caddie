@@ -114,6 +114,14 @@ test('Hyland Blue and Black use the current club card',()=>{
  }
 });
 
+test('Hyland preserves both published stroke index rows on its White card',()=>{
+ const course=find('Hyland');
+ const tee=founderTeesForCourse(course).find(t=>t.providerTeeId==='white');
+ const {holes}=founderVerifiedScorecard({course,tee});
+ assert.deepEqual(holes.map(hole=>hole.handicapWomen),[11,7,15,5,3,17,9,13,1,18,14,8,16,6,4,10,2,12]);
+ assert.deepEqual(holes[9],{number:10,par:3,yards:167,handicapMen:16,handicapWomen:18,hazards:[]});
+});
+
 test('Pelican Pointe builds three distinct 18-hole cards from the correct nine-hole loops',()=>{
  const courses=founderCatalogRecords('Pelican Pointe');
  assert.equal(courses.length,3);

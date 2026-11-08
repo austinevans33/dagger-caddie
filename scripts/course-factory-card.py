@@ -55,6 +55,13 @@ def validate_nines(rows, totals):
 def load_card(path, spec):
     if hashlib.sha256(path.read_bytes()).hexdigest() != spec["sha256"]:
         raise ValueError("official scorecard checksum differs")
+    for part in spec.get("additionalSources", []):
+        suffix = part["suffix"]
+        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", suffix):
+            raise ValueError("invalid scorecard part suffix")
+        source = path.with_name(path.name + "-" + suffix)
+        if hashlib.sha256(source.read_bytes()).hexdigest() != part["sha256"]:
+            raise ValueError("official scorecard part checksum differs: " + suffix)
     if spec["format"] == "html":
         table = TableRows()
         table.feed(path.read_text(encoding="utf-8"))

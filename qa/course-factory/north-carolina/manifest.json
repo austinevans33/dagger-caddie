@@ -374,6 +374,261 @@
           }
         }
       }
+    },
+    {
+      "id": "longleaf-southern-pines-nc",
+      "name": "Longleaf Golf & Family Club",
+      "region": "Southern Pines, NC",
+      "boundary": "r6387132",
+      "osmName": "Longleaf Golf & Family Club",
+      "mapRef": "nc/longleaf",
+      "auditTee": "tee-6",
+      "scorecard": {
+        "url": "https://longleafgfc.com/wp-content/uploads/sites/9351/2024/02/Longleaf-ScoreCard-2020-1.pdf",
+        "sha256": "a787dd3b6a546afe04e3b8f1f72c638d57cf0a9733ff2970f1d2a8df345689e8",
+        "format": "pdf",
+        "page": 2,
+        "parWidth": [
+          21
+        ],
+        "handicap": "Handicap",
+        "handicapWidth": [
+          18
+        ],
+        "reviewNote": "The club links the PDF. Right Start and numbered tees 1–6 reconcile. Tee 7 hole values sum to 6,685 while the card prints 6,682, so Tee 7 is withheld. Intermediate half-number tees publish totals only and are also withheld.",
+        "tees": {
+          "right-start": {
+            "label": "Right Start",
+            "total": 2423,
+            "width": [
+              21
+            ]
+          },
+          "tee-1": {
+            "label": "Tee 1",
+            "total": 3103,
+            "width": [
+              21
+            ]
+          },
+          "tee-2": {
+            "label": "Tee 2",
+            "total": 3702,
+            "width": [
+              21
+            ]
+          },
+          "tee-3": {
+            "label": "Tee 3",
+            "total": 4316,
+            "width": [
+              21
+            ]
+          },
+          "tee-4": {
+            "label": "Tee 4",
+            "total": 4872,
+            "width": [
+              21
+            ]
+          },
+          "tee-5": {
+            "label": "Tee 5",
+            "total": 5491,
+            "width": [
+              21
+            ]
+          },
+          "tee-6": {
+            "label": "Tee 6",
+            "total": 6153,
+            "width": [
+              21
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "sanford-municipal-nc",
+      "name": "Sanford Municipal Golf Course",
+      "region": "Sanford, NC",
+      "boundary": "w430087361",
+      "osmName": "Sanford Municipal Golf Course",
+      "mapRef": "nc/sanford-municipal",
+      "auditTee": "mens",
+      "scorecard": {
+        "url": "https://www.sanfordnc.net/ImageRepository/Document?documentID=2321",
+        "sha256": "d98f4a5be32dcb77b03c7e3f38d1571deb0f88f67c4ea58ffa905218130161ae",
+        "additionalSources": [
+          {
+            "suffix": "back",
+            "url": "https://www.sanfordnc.net/ImageRepository/Document?documentID=2322",
+            "sha256": "e1b92b658fefeb4bfdea1a2693888913bcdd13b7dc5a1256ad28c8becad96f9e"
+          }
+        ],
+        "format": "reviewed-image",
+        "reviewNote": "Transcribed both numbered images from the City of Sanford. All four tee rows match both subtotals and total. The card has split men’s handicap entries without a tee legend, so those indexes are withheld.",
+        "reviewedRows": {
+          "Mens": [
+            [
+              368,
+              195,
+              309,
+              362,
+              333,
+              137,
+              388,
+              329,
+              473,
+              2894
+            ],
+            [
+              390,
+              205,
+              428,
+              409,
+              150,
+              372,
+              522,
+              451,
+              483,
+              3410,
+              6304
+            ]
+          ],
+          "White": [
+            [
+              354,
+              175,
+              286,
+              341,
+              306,
+              124,
+              377,
+              318,
+              445,
+              2726
+            ],
+            [
+              347,
+              181,
+              410,
+              381,
+              121,
+              344,
+              496,
+              423,
+              472,
+              3175,
+              5901
+            ]
+          ],
+          "Gold": [
+            [
+              328,
+              162,
+              270,
+              313,
+              286,
+              114,
+              311,
+              308,
+              425,
+              2517
+            ],
+            [
+              308,
+              163,
+              303,
+              212,
+              106,
+              332,
+              462,
+              371,
+              390,
+              2647,
+              5164
+            ]
+          ],
+          "Women": [
+            [
+              312,
+              150,
+              258,
+              284,
+              279,
+              110,
+              306,
+              300,
+              415,
+              2414
+            ],
+            [
+              282,
+              136,
+              300,
+              203,
+              101,
+              315,
+              380,
+              367,
+              384,
+              2468,
+              4882
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              3,
+              4,
+              4,
+              4,
+              3,
+              4,
+              4,
+              5,
+              35
+            ],
+            [
+              4,
+              3,
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              5,
+              36,
+              71
+            ]
+          ]
+        },
+        "tees": {
+          "mens": {
+            "label": "Mens",
+            "name": "Men’s",
+            "total": 6304
+          },
+          "white": {
+            "label": "White",
+            "name": "White",
+            "total": 5901
+          },
+          "gold": {
+            "label": "Gold",
+            "name": "Gold",
+            "total": 5164
+          },
+          "women": {
+            "label": "Women",
+            "name": "Women’s",
+            "total": 4882
+          }
+        }
+      }
     }
   ]
 }

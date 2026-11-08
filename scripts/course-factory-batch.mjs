@@ -106,8 +106,10 @@ export function buildBatch(manifestPath, snapshotPath, scorecardCache, outputPat
              ref:mapRef,status:'bundled-reviewed-osm',auditTee}
           : {ref:mapRef,status:'source-review-blocked'};
         report.teeTotals = Object.fromEntries(Object.entries(card.tees).map(([key, row])=>[key,sum(row.yards)]));
+        const additionalSources = scorecard.additionalSources?.map(({url,sha256})=>({url,sha256}));
         catalog.push({id,name,region,...card,source:'course-factory-official-scorecard',
           provenance:{source:'Official course scorecard',url:scorecard.url,sourceSha256:scorecard.sha256,
+            ...(additionalSources?.length?{additionalSources}:{}),
             checked:manifest.reviewDate,geography:region,teeYardageIsNotPinDistance:true},map});
       }
       coverage.push(report);

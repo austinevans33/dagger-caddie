@@ -8,7 +8,7 @@ import {founderCatalogRecords,founderMapRecord,founderTeesForCourse,founderVerif
 const read = name => readFileSync(new URL(name,import.meta.url));
 const json = name => JSON.parse(read(name));
 
-for(const {state,id,query,totals,example,fairways=18} of [
+for(const {state,id,query,totals,example,fairways=18,handicap=true} of [
  {state:'north-carolina',id:'gates-four-fayetteville-nc',query:'Gates Four',
   totals:{black:6895,blue:6433,white:6072,gold:5506,red:5365},example:{number:13,par:5,yards:536}},
  {state:'south-carolina',id:'crooked-oaks-seabrook-sc',query:'Crooked Oaks',
@@ -17,6 +17,11 @@ for(const {state,id,query,totals,example,fairways=18} of [
   totals:{gold:7101,blue:6637,white:6014,black:5333,red:4562,family:3404},example:{number:13,par:4,yards:400}},
  {state:'south-carolina',id:'hidden-cypress-bluffton-sc',query:'Hidden Cypress',
   totals:{red:6953,gold:6549,blue:6051,white:5556,black:4974,orange:4227},example:{number:13,par:5,yards:512},fairways:17},
+ {state:'north-carolina',id:'longleaf-southern-pines-nc',query:'Longleaf',
+  totals:{'right-start':2423,'tee-1':3103,'tee-2':3702,'tee-3':4316,'tee-4':4872,'tee-5':5491,'tee-6':6153},
+  example:{number:13,par:4,yards:380}},
+ {state:'north-carolina',id:'sanford-municipal-nc',query:'Sanford Municipal',
+  totals:{mens:6304,white:5901,gold:5164,women:4882},example:{number:13,par:4,yards:409},handicap:false},
 ]){
  test(`${query} promotes only the source-pinned 18-hole course and official tee card`,()=>{
   const root='../qa/course-factory/'+state+'/';
@@ -34,10 +39,13 @@ for(const {state,id,query,totals,example,fairways=18} of [
   const tees=founderTeesForCourse(course);
   assert.deepEqual(Object.fromEntries(tees.map(tee=>[tee.providerTeeId,tee.totalYards])),totals);
   const tee=tees.find(tee=>tee.providerTeeId===row.auditTee);
-  const {holes}=founderVerifiedScorecard({course,tee});
+  const {holes,provenance}=founderVerifiedScorecard({course,tee});
+  const source=manifest.courses.find(course=>course.id===id).scorecard;
+  assert.deepEqual(provenance.additionalSources,source.additionalSources?.map(({url,sha256})=>({url,sha256})));
   const {number,par,yards}=holes[12];
   assert.deepEqual({number,par,yards},example);
-  assert.equal(new Set(holes.map(hole=>hole.handicapMen)).size,18);
+  if(handicap) assert.equal(new Set(holes.map(hole=>hole.handicapMen)).size,18);
+  else assert.ok(holes.every(hole=>hole.handicapMen===undefined));
   const map=founderMapRecord(course);
   const bytes=read('../playtest/course-art/'+map.file);
   assert.equal(createHash('sha256').update(bytes).digest('hex'),row.bundleSha256);

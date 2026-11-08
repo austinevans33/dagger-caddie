@@ -438,5 +438,370 @@ export const courseFactoryCourses = [
       "status": "bundled-reviewed-osm",
       "auditTee": "gold"
     }
+  },
+  {
+    "id": "longleaf-southern-pines-nc",
+    "name": "Longleaf Golf & Family Club",
+    "region": "Southern Pines, NC",
+    "par": [
+      4,
+      4,
+      3,
+      3,
+      5,
+      3,
+      4,
+      5,
+      4,
+      4,
+      3,
+      4,
+      4,
+      5,
+      4,
+      5,
+      4,
+      4
+    ],
+    "tees": {
+      "right-start": {
+        "label": "Right Start",
+        "yards": [
+          178,
+          117,
+          61,
+          63,
+          210,
+          50,
+          150,
+          195,
+          142,
+          141,
+          60,
+          123,
+          153,
+          176,
+          128,
+          199,
+          135,
+          142
+        ]
+      },
+      "tee-1": {
+        "label": "Tee 1",
+        "yards": [
+          205,
+          146,
+          77,
+          89,
+          291,
+          81,
+          188,
+          263,
+          177,
+          155,
+          81,
+          168,
+          177,
+          222,
+          188,
+          249,
+          169,
+          177
+        ]
+      },
+      "tee-2": {
+        "label": "Tee 2",
+        "yards": [
+          256,
+          188,
+          102,
+          95,
+          316,
+          92,
+          220,
+          296,
+          202,
+          189,
+          95,
+          207,
+          224,
+          298,
+          224,
+          282,
+          200,
+          216
+        ]
+      },
+      "tee-3": {
+        "label": "Tee 3",
+        "yards": [
+          281,
+          260,
+          135,
+          118,
+          364,
+          121,
+          238,
+          340,
+          220,
+          218,
+          104,
+          277,
+          257,
+          332,
+          246,
+          323,
+          241,
+          241
+        ]
+      },
+      "tee-4": {
+        "label": "Tee 4",
+        "yards": [
+          317,
+          288,
+          153,
+          141,
+          390,
+          130,
+          267,
+          386,
+          242,
+          247,
+          127,
+          302,
+          295,
+          396,
+          291,
+          375,
+          255,
+          270
+        ]
+      },
+      "tee-5": {
+        "label": "Tee 5",
+        "yards": [
+          343,
+          319,
+          171,
+          153,
+          478,
+          138,
+          297,
+          446,
+          280,
+          286,
+          141,
+          330,
+          337,
+          455,
+          324,
+          420,
+          269,
+          304
+        ]
+      },
+      "tee-6": {
+        "label": "Tee 6",
+        "yards": [
+          385,
+          363,
+          187,
+          178,
+          509,
+          164,
+          338,
+          497,
+          308,
+          350,
+          182,
+          363,
+          380,
+          487,
+          352,
+          461,
+          305,
+          344
+        ]
+      }
+    },
+    "handicapMen": [
+      13,
+      5,
+      15,
+      17,
+      1,
+      11,
+      3,
+      9,
+      7,
+      12,
+      14,
+      8,
+      2,
+      4,
+      6,
+      18,
+      10,
+      16
+    ],
+    "source": "course-factory-official-scorecard",
+    "provenance": {
+      "source": "Official course scorecard",
+      "url": "https://longleafgfc.com/wp-content/uploads/sites/9351/2024/02/Longleaf-ScoreCard-2020-1.pdf",
+      "sourceSha256": "a787dd3b6a546afe04e3b8f1f72c638d57cf0a9733ff2970f1d2a8df345689e8",
+      "checked": "2026-11-08",
+      "geography": "Southern Pines, NC",
+      "teeYardageIsNotPinDistance": true
+    },
+    "map": {
+      "file": "longleaf-southern-pines-nc.json",
+      "source": "https://www.openstreetmap.org/relation/6387132",
+      "ref": "nc/longleaf",
+      "status": "bundled-reviewed-osm",
+      "auditTee": "tee-6"
+    }
+  },
+  {
+    "id": "sanford-municipal-nc",
+    "name": "Sanford Municipal Golf Course",
+    "region": "Sanford, NC",
+    "par": [
+      4,
+      3,
+      4,
+      4,
+      4,
+      3,
+      4,
+      4,
+      5,
+      4,
+      3,
+      4,
+      4,
+      3,
+      4,
+      5,
+      4,
+      5
+    ],
+    "tees": {
+      "mens": {
+        "label": "Men’s",
+        "yards": [
+          368,
+          195,
+          309,
+          362,
+          333,
+          137,
+          388,
+          329,
+          473,
+          390,
+          205,
+          428,
+          409,
+          150,
+          372,
+          522,
+          451,
+          483
+        ]
+      },
+      "white": {
+        "label": "White",
+        "yards": [
+          354,
+          175,
+          286,
+          341,
+          306,
+          124,
+          377,
+          318,
+          445,
+          347,
+          181,
+          410,
+          381,
+          121,
+          344,
+          496,
+          423,
+          472
+        ]
+      },
+      "gold": {
+        "label": "Gold",
+        "yards": [
+          328,
+          162,
+          270,
+          313,
+          286,
+          114,
+          311,
+          308,
+          425,
+          308,
+          163,
+          303,
+          212,
+          106,
+          332,
+          462,
+          371,
+          390
+        ]
+      },
+      "women": {
+        "label": "Women’s",
+        "yards": [
+          312,
+          150,
+          258,
+          284,
+          279,
+          110,
+          306,
+          300,
+          415,
+          282,
+          136,
+          300,
+          203,
+          101,
+          315,
+          380,
+          367,
+          384
+        ]
+      }
+    },
+    "source": "course-factory-official-scorecard",
+    "provenance": {
+      "source": "Official course scorecard",
+      "url": "https://www.sanfordnc.net/ImageRepository/Document?documentID=2321",
+      "sourceSha256": "d98f4a5be32dcb77b03c7e3f38d1571deb0f88f67c4ea58ffa905218130161ae",
+      "additionalSources": [
+        {
+          "url": "https://www.sanfordnc.net/ImageRepository/Document?documentID=2322",
+          "sha256": "e1b92b658fefeb4bfdea1a2693888913bcdd13b7dc5a1256ad28c8becad96f9e"
+        }
+      ],
+      "checked": "2026-11-08",
+      "geography": "Sanford, NC",
+      "teeYardageIsNotPinDistance": true
+    },
+    "map": {
+      "file": "sanford-municipal-nc.json",
+      "source": "https://www.openstreetmap.org/way/430087361",
+      "ref": "nc/sanford-municipal",
+      "status": "bundled-reviewed-osm",
+      "auditTee": "mens"
+    }
   }
 ];

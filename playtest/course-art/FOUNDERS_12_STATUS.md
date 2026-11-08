@@ -1,16 +1,16 @@
 # Dagger Country Club — Founders' Twelve Course Coverage
-Updated 2026-11-07. Course discovery in OpenGolfAPI is NOT the same as a complete book.
+Updated 2026-11-08. Course discovery in OpenGolfAPI is NOT the same as a complete book.
 
-A complete book requires an identified course, validated par + hole yards for each supported tee, 18 verified hole-specific drawings, and two short useful chosen-caddy notes. Caddy, Ghost, and paper scorecard must use the same facts.
+A complete book requires an identified course, validated par + hole yards for each supported tee, one verified drawing per physical hole (nine or 18), and two short useful chosen-caddy notes. Caddy, Ghost, and paper scorecard must use the same facts.
 
-| # | Founder course | Verified 18-hole scorecard | 18 matched pencil maps | Status |
+| # | Founder course | Verified scorecard | Matched pencil maps | Status |
 |---|---|---|---|---|
 | 1 | Bayonet at Puppy Creek, Raeford NC | Five club-verified tee sets | 18 mapped routes, bundled | Complete; iPhone field-tested |
 | 2 | Ryder Golf Course, Fort Bragg NC | Three published tee sets with 18 hole values | Named OSM boundary, no matched numbered routes in the pinned extract | Scorecard functional. Army MWR has a routing reference; confirm its reuse rights and pair with licensed geometry before importing |
 | 3 | King's Grant Golf & Country Club, Fayetteville NC | Six tee sets from club source | 18 routes, greens and fairway holes; 16 mapped tee outlines and two approximate tee points | Playable with disclosed reference tees on Nos. 9 and 13 |
 | 4 | The Chimneys Golf Course, Winder GA | Four 18-hole tee cards with published par and stroke index | 18 matched routes, tees and greens; 17 fairways bundled | Passes Bayonet parity on Gold. No fairway drawn on par-3 No. 11 |
 | 5 | Pelican Pointe Golf and Country Club | Club-published Gold, Blue, White, Black and Red for all three rated pairings | 17 of 27 physical holes meet route containment and have matched tee, green and fairway | Scorecard playable in review candidate. Ten routes cross gaps in the mapped club boundary; artwork withheld for all three pairings |
-| 6 | Hyland Golf Club | Five official tees, including reconciled Black 6,934 and Blue 6,700 | No. 10 route located in an excluded parcel; 18 route/tee/green matches in outer-ring QA only, 15 fairway holes | Scorecard functional. Holes 3, 6 and 10 have no uniquely assigned fairway; artwork withheld |
+| 6 | Hyland Golf Club | Five official tees and both published stroke index rows, including reconciled Black 6,934 and Blue 6,700 | No. 10 route located in an excluded parcel; 18 route/tee/green matches in outer-ring QA only, 15 fairway holes | Scorecard functional. Holes 3, 6 and 10 have no uniquely assigned fairway; artwork withheld |
 | 7 | Tobacco Road Golf Course | Five verified-sum published tee rows covering all 18 | 18 routes and greens, 16 tees, 14 fairways in QA | Scorecard functional; artwork gated off pending verified starts for Nos. 1/10 and fairway coverage |
 | 8 | Pine Hills Golf Club, Winder GA | Blue/White 18-hole par 72; Red 18-hole par 73, all published hole yards | 18 matched routes, tees and greens; 17 fairways bundled | Passes Bayonet parity on Blue. Red keeps its tee-specific par 5 on No. 18 |
 | 9 | Sassamon Trace Golf Course | Official nine-hole card: par 32, Blue 2,383, White 2,167, Yellow 2,011, Red 1,744 | Nine routes, tees and greens; eight matched fairways | Native nine-hole book and Ghost. No. 3 is a par 3 with no fairway drawn |
@@ -28,8 +28,8 @@ A complete book requires an identified course, validated par + hole yards for ea
 - Preserve existing round, Ghost, games, and ledger identities when switching courses. Never silently move an old round to a new provider identity.
 
 - Ryder published card: https://zommagolf.com/courses/nc/ryder-golf-course — three sets, 18 holes; published source has no stroke index or mapped holes.
-- Tobacco Road published card/map: https://zommagolf.com/courses/nc/tobacco-road-golf-club — five separate tee sets with cross-checked sums and 18 mapped course routes.
-- Hyland [official club card](https://www.hylandgolfclub.com/course-details/) resolves the conflicting third-party Blue and Black yardages. Existing White/Gold/Red hole yardages and tee IDs match.
+- Tobacco Road published card/map: https://zommagolf.com/courses/nc/tobacco-road-golf-club — five separate tee sets with cross-checked sums and 18 mapped course routes. The [club’s current page](https://tobaccoroadgolf.com/golf/) confirms the published pars. Its unlabeled 6,532-yard row differs from the named 6,557-yard Ripper row on Nos. 2 and 4. The two rows remain separate.
+- Hyland [official club card](https://www.hylandgolfclub.com/course-details/) resolves the conflicting third-party Blue and Black yardages. Existing White/Gold/Red hole yardages and tee IDs match. Both published stroke index rows are now included. On No. 10, the official White card has par 3, 167 yards, men’s index 16 and women’s index 18.
 - Pelican Pointe [official club layout and scorecards](https://www.pelicanpointeclub.com/-course-layout) and [FSGA pairing order](https://www.fsga.org/Club/Detail/20426cb1-7488-42db-9818-9268bcfcb311). Routing IDs are separate and no per-nine handicap index is converted to a pairing index.
 - [Founders source review and reproduction steps](../../qa/course-factory/founders/README.md) record the dated ODbL extracts, exact route issues, and which changes are withheld.
 

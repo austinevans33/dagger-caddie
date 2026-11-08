@@ -146,7 +146,9 @@ const founders=Object.freeze([
   source:'tobacco-road-published-hole-card',
   provenance:{source:'Tobacco Road Golf Club published 18-hole open-data card',
    url:'https://zommagolf.com/courses/nc/tobacco-road-golf-club',checked:'2026-11-07',
-   geography:'Sanford, North Carolina',teeYardageIsNotPinDistance:true},
+   geography:'Sanford, North Carolina',teeYardageIsNotPinDistance:true,
+   parSource:'https://tobaccoroadgolf.com/golf/',
+   audit:'The club’s unlabeled 6,532-yard row confirms all pars. It differs from the published Ripper row on Nos. 2 and 4 and does not replace it.'},
   map:{ref:'nc/tobacco-road-golf-club',status:'source-review-blocked'}
  }
   ,
@@ -154,6 +156,7 @@ const founders=Object.freeze([
   id:'hyland-southern-pines-nc',name:'Hyland Golf Club',region:'Southern Pines, NC',
   par:[4,4,3,4,4,3,5,4,5,3,4,5,3,4,4,4,5,4],
   handicapMen:[11,7,17,1,5,15,9,13,3,16,10,2,14,8,6,18,4,12],
+  handicapWomen:[11,7,15,5,3,17,9,13,1,18,14,8,16,6,4,10,2,12],
   tees:{
    white:{label:'White',yards:[370,365,172,386,395,135,465,346,475,167,364,528,170,371,382,332,508,342]},
    gold:{label:'Gold',yards:[339,348,155,321,385,115,439,332,455,149,349,486,156,348,370,319,488,321]},
