@@ -23,6 +23,12 @@ Pudding Ridge’s [club-issued scorecard](https://www.puddingridge.com/wp-conten
 
 Oak Island’s [official card](https://oakislandgolf.com/course-scorecard/) pins both the hole grid and the companion cover. Red uses the printed ladies par and stroke index, including par 5 on No. 9 and par 4 on No. 14. Par-3 No. 3 has a verified route, tee and green. Its fairway remains unrendered.
 
+## Seven Lakes scorecard and geometry review
+
+[Seven Lakes Golf Club in West End](https://www.golf7lakes.com/scorecard) has eight verified tee sets, including both combo rows. The men's and ladies' stroke indexes are preserved according to the club's groups. The importer accepts numbered hole names only when enabled for the pinned scorecard and still requires the exact 1–18 sequence.
+
+The published OSM boundary yields 18 routes, 18 tees, 18 greens and 17 matched fairways. Par-3 No. 7 lacks a unique fairway. On No. 16, [OSM way 1113464356](https://www.openstreetmap.org/way/1113464356) measures about 119 yards. The club card lists Black and Blue at 188 and White at 174. These rows fail the route-length check for that hole. A shorter tee can fit the coarse length test but does not establish which pad starts the mapped route. The runtime offers the verified scorecard and withholds the entire drawing bundle until the tee start is independently confirmed.
+
 ## Discovery
 
 The statewide extracts yielded 151 NC and 113 SC named boundaries with at least 17 uniquely numbered, contained routes. Among these, 37 NC and 12 SC met the geometry count screen. The counts include some existing courses. `discovery.json` lists the exact OSM boundaries that made this first screen. Every queued candidate still needs independent course identity and official card review, source import, route-to-yardage checks and browser acceptance.

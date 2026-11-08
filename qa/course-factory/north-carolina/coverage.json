@@ -219,6 +219,50 @@
         "gold": 5423,
         "red": 4903
       }
+    },
+    {
+      "id": "seven-lakes-west-end-nc",
+      "name": "Seven Lakes Golf Club",
+      "region": "West End, NC",
+      "boundary": "r6390097",
+      "mapRef": "nc/seven-lakes",
+      "auditTee": "black",
+      "scorecard": "https://www.golf7lakes.com/scorecard",
+      "cardSha256": "d74ce02f5199ef050d73f5c98d32ed76c44115a70cf82bfd452f0b9db59e4638",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 7,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "route-yardage-mismatch",
+        "ratioErrors": [
+          16
+        ],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "teeTotals": {
+        "black": 6856,
+        "blue": 6552,
+        "white": 6062,
+        "white-gold": 5640,
+        "gold": 5197,
+        "red": 4830,
+        "green": 4144,
+        "green-red": 4533
+      }
     }
   ]
 }

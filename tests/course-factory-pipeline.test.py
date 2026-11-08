@@ -62,6 +62,26 @@ class CourseFactoryPipeline(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Hole 1: green ring is open or incomplete"):
             review_greens(source, anchors, traces)
 
+    def test_named_html_holes_still_require_a_complete_ordered_card(self):
+        def row(title, cells):
+            return "<tr><th>" + title + "</th>" + "".join(f"<td>{value}</td>" for value in cells) + "</tr>"
+
+        with tempfile.TemporaryDirectory() as temp:
+            card = Path(temp) / "card"
+            def write(first):
+                front = row("Hole", [first, *range(2, 10), "Out"])
+                back = row("Hole", [*range(10, 19), "In"])
+                facts = row("Par", [4] * 9 + [36]) + row("Black", [400] * 9 + [3600])
+                card.write_text("<table>" + front + facts + back + facts + "</table>")
+                return {"format": "html", "sha256": hashlib.sha256(card.read_bytes()).hexdigest(),
+                        "tees": {"black": {"label": "Black", "total": 7200}}}
+            spec = write("1Over the Hill")
+            with self.assertRaisesRegex(ValueError, "hole headings"):
+                load_card(card, spec)
+            self.assertEqual(load_card(card, dict(spec, namedHoleHeaders=True))["par"], [4] * 18)
+            with self.assertRaisesRegex(ValueError, "hole headings"):
+                load_card(card, dict(write("2Over the Hill"), namedHoleHeaders=True))
+
     def test_all_parts_of_an_official_card_are_required(self):
         with tempfile.TemporaryDirectory() as temp:
             front = Path(temp) / "card"

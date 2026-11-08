@@ -77,3 +77,22 @@ test('Oak Island Red preserves the ladies par and stroke indexes',()=>{
  assert.equal(holes[13].par,4);
  assert.equal(holes[13].handicapMen,2);
 });
+
+
+test('Seven Lakes keeps verified tees selectable while withholding its unaudited map',()=>{
+ const course=founderCatalogRecords('7 Lakes').find(({providerCourseId})=>providerCourseId==='seven-lakes-west-end-nc');
+ assert.ok(course);
+ assert.deepEqual(founderCatalogRecords('Seven Lakes'),[course]);
+ const tees=founderTeesForCourse(course);
+ assert.deepEqual(Object.fromEntries(tees.map(tee=>[tee.providerTeeId,tee.totalYards])),
+  {black:6856,blue:6552,white:6062,'white-gold':5640,gold:5197,red:4830,green:4144,'green-red':4533});
+ const coverage=json('../qa/course-factory/north-carolina/coverage.json').courses.find(({id})=>id===course.providerCourseId);
+ assert.equal(coverage.cardVerified,true);
+ assert.equal(coverage.status,'playable-partial');
+ assert.deepEqual(coverage.audit.ratioErrors,[16]);
+ assert.equal(founderMapRecord(course).status,'source-review-blocked');
+ const tee=tees.find(({providerTeeId})=>providerTeeId==='green-red');
+ const {holes}=founderVerifiedScorecard({course,tee});
+ assert.equal(holes[11].yards,319);
+ assert.equal(holes[11].handicapMen,4);
+});
