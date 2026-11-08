@@ -111,6 +111,12 @@
   .bet-log td:last-child,.bet-log th:last-child{text-align:right}
   .tabbar button.active{background:#17372a;color:#fff7e8}
   .hidden-panel{display:none !important}
+  /* Late-mounted panels obey the selected tab even before the next switchTab pass. */
+  body[data-active-tab="play"] main [data-tab]:not([data-tab="play"]),
+  body[data-active-tab="games"] main [data-tab]:not([data-tab="games"]),
+  body[data-active-tab="bets"] main [data-tab]:not([data-tab="bets"]),
+  body[data-active-tab="bag"] main [data-tab]:not([data-tab="bag"]),
+  body[data-active-tab="settings"] main [data-tab]:not([data-tab="settings"]){display:none!important}
   .card.green .callout{color:#1d3125}
   .card.green .callout p,.card.green .callout .keith,.card.green .callout .target,.card.green .callout strong{color:#233b2e}
   .card.green .callout .note{color:#665e4c}
@@ -2682,6 +2688,8 @@ section[data-tab="bets"] #actionRecords.action-records[open] > summary {
   font: 700 27px Georgia,serif;
 }
 
+#dccGhostPlay {margin:10px 0}
+#dccGhostPlayback iframe {display:block;width:100%;border:0;border-radius:12px;background:#f5f0e5}
 #dccGhostRecord {
   width: 100%;
   margin-top: 13px;
@@ -4275,8 +4283,10 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 #dccPropBets #dccPropFormWrap>summary.dcc-r163-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;padding:0!important;border:0!important;margin:-1px!important}
 #dccPropFormWrap[open]{margin-top:12px!important}
 </style>
+<link rel="stylesheet" href="clubhouse-home.css?v=clubhouse-recap-4"/>
+<style>.dcc-yardage-caddy-arrival{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:11px 12px;margin:8px 0;border:1px solid #b79c62;border-radius:10px;background:#ede4cb;color:#183d2f;font:700 13px/1.35 system-ui,sans-serif}.dcc-yardage-caddy-arrival button{min-height:44px;flex-shrink:0;border:1px solid #38634b;background:#183d2f;color:#fff4e1;border-radius:10px;padding:9px;font:700 12px system-ui,sans-serif}</style>
 </head>
-<body>
+<body data-active-tab="play">
 <main>
 <div class="app-shell">
 <header aria-label="Dagger Country Club" class="mast dcc-r62-header">
@@ -4585,7 +4595,8 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
    
     Analyzing your recorded shots...
   </div>
-</div><section class="card dcc-r58-member-room" data-tab="bag" id="playersLocker"><div class="over" style="color:#756344">DAGGER COUNTRY CLUB · MEMBER ARCHIVES</div><h2 class="dcc-r62-visually-hidden">Players Locker</h2><p class="muted">Your actual entered yardages, launch monitor summaries, voice descriptions and on-course shot feedback. Saved to this profile on this phone.</p><div class="bet-summary" id="lockerStats" style="grid-template-columns:repeat(3,1fr)"></div><details open=""><summary>On-course shot records</summary><div id="lockerShots"></div></details><details style="margin-top:12px"><summary>Range sessions and club numbers</summary><div id="lockerRange"></div></details><div class="grid" style="margin-top:12px"><button class="btn-secondary" id="lockerExport">Export locker JSON</button><button class="btn-ghost" id="lockerRebuild">Refresh records</button></div><div style="margin-top:12px;border:1px solid #973f39;border-radius:12px;padding:12px;background:#f8eee4"><strong style="color:#7c342c">DANGER · CLEAR PERSONAL SHOT DATA</strong><p class="note">This destroys the active profile’s club distance overrides, shot logs, range histories and course notes. Games and money ledgers are preserved. Export a backup first.</p><button class="btn-primary" id="wyndhamPunch" style="background:#7c342c">WYNDHAM PUNCH</button><p class="note" id="punchStatus"></p></div>
+</div>
+<section class="card dcc-r58-member-room" data-tab="bag" id="playersLocker"><div class="over" style="color:#756344">DAGGER COUNTRY CLUB · MEMBER ARCHIVES</div><h2 class="dcc-r62-visually-hidden">Players Locker</h2><p class="muted">Your actual entered yardages, launch monitor summaries, voice descriptions and on-course shot feedback. Saved to this profile on this phone.</p><div class="bet-summary" id="lockerStats" style="grid-template-columns:repeat(3,1fr)"></div><details open=""><summary>On-course shot records</summary><div id="lockerShots"></div></details><details style="margin-top:12px"><summary>Range sessions and club numbers</summary><div id="lockerRange"></div></details><div class="grid" style="margin-top:12px"><button class="btn-secondary" id="lockerExport">Export locker JSON</button><button class="btn-ghost" id="lockerRebuild">Refresh records</button></div><div style="margin-top:12px;border:1px solid #973f39;border-radius:12px;padding:12px;background:#f8eee4"><strong style="color:#7c342c">DANGER · CLEAR PERSONAL SHOT DATA</strong><p class="note">This destroys the active profile’s club distance overrides, shot logs, range histories and course notes. Games and money ledgers are preserved. Export a backup first.</p><button class="btn-primary" id="wyndhamPunch" style="background:#7c342c">WYNDHAM PUNCH</button><p class="note" id="punchStatus"></p></div>
 
 </section>
 <section class="card" data-tab="bag">
@@ -4706,9 +4717,10 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <!-- DCC R10-B — COMPACT SHARED COMPETITION INSPECTOR -->
 
 <section class="dcc-r66-betdesk" data-tab="bets" id="dccPropBets" aria-label="Independent side bets ledger">
- <header class="dcc-r94-ledger-header" aria-label="The Ledger"><span>DAGGER COUNTRY CLUB / WAGERS</span><h2>The Ledger</h2><p>Put it on the books.</p></header>
- <div class="dcc-r66-intro dcc-r94-ledger-action"><div><strong>The Ticket Window</strong><p>All bets are gentlemen's agreements. Allegedly.</p></div><button id="dccPropNew" class="dcc-r66-mainbtn" type="button">+ New Bet</button></div>
- <div class="dcc-r66-stats"><div><small>OPEN BETS</small><strong id="dccPropOpenCount">0</strong></div><div><small>UNSETTLED RESULTS</small><strong id="dccPropUnsettled">0</strong></div><div><small>NET PAID POSITION</small><strong id="dccPropTotal">$0.00</strong></div></div>
+ <header class="dcc-r94-ledger-header" aria-label="The Ledger"><span>DAGGER COUNTRY CLUB / WAGERS</span><h2>The Ledger</h2><p>Tickets, balances, and club records.</p></header>
+ <div class="dcc-r66-stats"><div><small>OPEN BETS</small><strong id="dccPropOpenCount">0</strong></div><div><small>ALL-TIME NET POSITION</small><strong id="dccPropTotal">$0.00</strong></div></div>
+ <div id="dccVisibleTickets" aria-labelledby="dccTicketHeading"><div class="dcc-ticket-heading"><h3 id="dccTicketHeading">Ticket Window</h3><button id="dccPropNew" class="dcc-r66-mainbtn" type="button">+ New Bet</button></div>
+
  <details id="dccPropFormWrap" class="dcc-r66-formwrap" style="display:none!important"><summary class="dcc-r163-visually-hidden" style="display:none!important">New bet form</summary><form id="dccPropForm" novalidate>
  <label>What are you betting on?<input id="dccPropText" maxlength="120" required placeholder="Lon makes par or better on 7" /></label>
  <div class="dcc-r66-fields"><label>Your name<input id="dccPropMe" maxlength="30" required placeholder="You" /></label><label>Opponent<input id="dccPropOther" maxlength="30" required placeholder="Lon" /></label></div>
@@ -4717,7 +4729,10 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
  <div class="dcc-r66-preview" id="dccPropPreview">Agreed odds only. No automated predictions.</div>
  <button class="dcc-r66-mainbtn" type="submit">ISSUE TICKET</button><p class="dcc-r66-note">Odds must be agreed by both golfers. No payments are processed; the amounts are bookkeeping only.</p>
  </form></details>
- <section class="dcc-r70-accounts" aria-label="Open balances by member"><div class="dcc-r70-account-head"><strong>Outstanding Debts</strong><small>Unpaid resolved bets · saved on this device</small></div><div id="dccPropBalances" aria-live="polite"></div></section><details id="dccPropHistoryWrap" class="dcc-r95-history"><summary>The Archives</summary><div id="dccPropList" class="dcc-r66-list" aria-live="polite"></div></details>
+ <div id="dccPropList" class="dcc-r66-list" aria-live="polite"></div>
+ <details id="dccRecordedSettlements" hidden><summary>Recorded game settlements</summary><div id="dccBbbArchiveReceipts" class="dcc-r66-list" aria-label="Bingo Bango Bongo archived results" aria-live="polite"></div></details>
+ <details id="dccPropHistoryWrap" class="dcc-ticket-balances"><summary>Outstanding balances <span id="dccPropUnsettled"></span></summary><div id="dccPropBalances" aria-live="polite"></div></details>
+ </div>
  <details class="dcc-r66-archive"><summary>The Vault · Backups</summary><p class="dcc-r66-note">Side bets on this screen are saved only on this device and browser, separate from Firebase games and the shared Live Room. Export before changing devices or clearing browser data.</p><button id="dccPropExport" type="button" class="dcc-r66-secondary">Export side bets JSON</button> <button id="dccPropImport" type="button" class="dcc-r66-secondary">Import saved bets JSON</button><input id="dccPropImportFile" type="file" accept=".json,application/json" hidden aria-label="Choose a previously exported Dagger side bets file" /></details>
  <p id="dccPropMessage" class="dcc-r66-message" role="status"></p>
 </section>
@@ -4761,7 +4776,7 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <div class="room-controls"><button class="btn-primary" id="roomSaveHole" type="button">Save hole</button><button class="btn-secondary" id="roomUndoHole" type="button">Undo last hole</button><button class="btn-secondary" id="roomFinish" type="button">Finish match</button></div>
 </div><div class="spectator-banner" hidden="" id="roomSpectator"><strong>WATCHING LIVE</strong><p>Only the designated scorekeeper can enter or change scores. Your view updates automatically.</p></div><div class="notice-card" id="roomStandings"></div><div aria-live="polite" class="notice-card" id="roomCaddieBanter">Your caddie is studying the scoreboard and preparing a totally unnecessary remark.</div>
 <div class="tiny-print" id="roomAudit"></div>
-<div class="game-live"><h3>Hole-by-hole live ledger</h3><p class="game-note">Official strokes, hole result, and running payouts. Unscored holes stay blank; skins carry forward on ties.</p><div aria-live="polite" class="ledger-cards" id="roomLedgerCards" role="list"><p>Waiting for the live scorecard…</p></div><details class="ledger-detail"><summary>Expanded payout table</summary><div style="overflow-x:auto"><table class="room-table" id="roomLedgerTable"><thead id="roomLedgerHead"></thead><tbody id="roomLedgerBody"></tbody></table></div></details></div>
+<details class="game-live"><summary>Hole-by-hole results</summary><div aria-live="polite" class="ledger-cards" id="roomLedgerCards" role="list"><p>Waiting for the live scorecard…</p></div><details class="ledger-detail"><summary>Expanded payout table</summary><div style="overflow-x:auto"><table class="room-table" id="roomLedgerTable"><thead id="roomLedgerHead"></thead><tbody id="roomLedgerBody"></tbody></table></div></details></details>
 <div class="action-room-utilities">
 <div class="action-room-utilities-heading">
 <span>THE CLUB SECRETARY</span>
@@ -4778,9 +4793,11 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 </div>
 </div>
 </div>
-<p class="tiny-print" style="margin-top:10px">Scorekeeper alone can change scores; members can view. One gross-score entry per golfer per hole powers the chosen format. Live mode needs internet and an authenticated Firebase connection. No money transfers.</p>
-<details id="roomMatchHistory" class="ledger-detail" style="margin:12px 0"><summary>Money Room match history · <span id="roomMatchHistoryCount">0 saved on this phone</span></summary><div id="roomMatchHistoryList" style="padding:8px 0"></div></details>
-</section><details class="dcc-r60-legacy-ticket" data-tab="bets"><summary>Optional · Legacy wagering &amp; match ticket</summary><section aria-label="The Action wager ticket" class="card dcc-bet-ticket">
+
+
+</section>
+
+<details class="dcc-r60-legacy-ticket" data-tab="bets"><summary>Optional · Legacy wagering &amp; match ticket</summary><section aria-label="The Action wager ticket" class="card dcc-bet-ticket">
 <div class="dcc-bet-ticket__mast"><span>DCC / OFFICIAL MATCH TICKET</span><span>NO. 018 — AS IT LIES</span></div>
 <div class="dcc-bet-ticket__heading"><div><span class="dcc-bet-ticket__eyebrow">THE DAILY ACTION / 01</span><h2>Make it<br/><em>interesting.</em></h2><p>One opponent. Eighteen holes. Every dollar accounted for.</p></div><span aria-hidden="true" class="dcc-bet-ticket__stamp">DCC<span>18</span></span></div>
 <div class="dcc-bet-ticket__strip"><span>HOLE-BY-HOLE MATCH</span><span>LIVE SCORE SLIP ↓</span></div>
@@ -4863,7 +4880,7 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <p class="note" hidden="" id="dccRecordsEmpty">No archived games match your search.</p>
 <section aria-live="polite" class="dcc-archive-inspect" hidden="" id="dccArchiveInspect"><div class="dcc-archive-head"><strong id="dccArchiveTitle">Game record</strong><button class="btn-ghost" id="dccArchiveClose" type="button">Close details</button></div><p class="note" id="dccArchiveMeta"></p><div class="dcc-record-table-wrap"><table><thead><tr><th>Hole</th><th id="dccArchivePlayerA">Player 1</th><th id="dccArchivePlayerB">Player 2</th></tr></thead><tbody id="dccArchiveHoles"></tbody></table></div><p class="note" id="dccArchiveFoot"></p></section><button class="btn-ghost" id="wExport" type="button">Export wager history CSV</button><div style="margin-top:9px"><label>Restore games &amp; bets backup</label><input accept=".json,application/json" id="restoreGames" type="file"/></div><p class="note" id="restoreGamesStatus"></p></details>
 </section></details>
-<details class="dcc-r60-archives" data-tab="bets"><summary>Competition links &amp; connected match records</summary><section class="action-games-link dcc-games-compact">
+<details class="dcc-r60-archives" data-tab="bets" hidden><summary>Competition links &amp; connected match records</summary><section class="action-games-link dcc-games-compact">
 <div class="dcc-games-compact-copy">
 <strong>Got a game going?</strong>
 <small>Formats &amp; scorecards</small>
@@ -5003,17 +5020,22 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <option value="9">9 Holes</option>
 <option selected="" value="18">18 Holes</option>
 </select>
-<label for="dccGhostPar">Hole par</label>
+<p id="dccGhostAutoPar" hidden aria-live="polite" style="margin:10px 0 0;font:700 14px/1.4 system-ui;color:#decc9c"></p>
+<div id="dccGhostManualPar">
+<label for="dccGhostPar">Hole par · manual fallback</label>
 <select id="dccGhostPar">
 <option value="3">Par 3</option>
 <option selected="" value="4">Par 4</option>
 <option value="5">Par 5</option>
 </select>
 </div>
+</div>
+</div>
+<button id="dccGhostPlay" class="btn-primary" type="button">Start round</button>
+<div id="dccGhostPlayback"></div>
 <div>
 <label for="dccGhostPlayerScore">Your strokes</label>
 <input id="dccGhostPlayerScore" inputmode="numeric" max="20" min="1" placeholder="Enter your score" type="number"/>
-</div>
 </div>
 <div class="dcc-ghost-board">
 <span>MATCH STATUS</span>
@@ -5038,26 +5060,6 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <div class="dcc-ghost-history" id="dccGhostHistory">
 <p class="note">Your hole-by-hole duel will appear here.</p>
 </div>
-<!-- DCC STEP 30K-D — SAVED GHOST MATCHES -->
-<!-- DCC R8-UI — PREMIUM HOUSE GHOST ARCHIVE -->
-<details class="dcc-vw-ledger-panel dcc-game-archive" id="dccGhostArchivePanel">
-<summary>
-<span>
-      SAVED GHOST MATCHES
-      <span id="dccGhostArchiveCount">(0)</span>
-</span>
-<small>Lifetime results</small>
-</summary>
-<div class="dcc-game-archive-body">
-<p class="note">
-      Completed House Ghost matches saved on this device.
-      Your current match is kept separately.
-    </p>
-<div aria-live="polite" class="dcc-ghost-history" id="dccGhostArchiveList">
-      Your saved Ghost matches will appear here.
-    </div>
-</div>
-</details>
 </div>
 </section>
 <!-- DCC — GAMES TO THE ACTION -->
@@ -5477,8 +5479,7 @@ Wagering and settlement integration are coming next.
 </summary>
 <div class="dcc-saved-games-inner">
 <p class="note">
-        Locally stored competition records. These are not yet
-        official club results or Firebase-synced matches.
+        Competition records saved on this device. Shared Money Room records appear here once saved.
       </p>
 <button class="btn-secondary" id="dccSavedGamesRefresh" type="button">
         Refresh Saved Competitions
@@ -5491,6 +5492,71 @@ Wagering and settlement integration are coming next.
 <div aria-live="polite" id="dccSavedGamesList">
         Open the archive to view saved matches.
       </div>
+<details id="roomMatchHistory" class="ledger-detail" style="margin:12px 0"><summary>Money Room matches · <span id="roomMatchHistoryCount">0 saved on this phone</span></summary><div id="roomMatchHistoryList" style="padding:8px 0"></div></details>
+<details class="dcc-vw-ledger-panel dcc-game-archive" id="dccGhostArchivePanel">
+<summary>
+<span>
+      SAVED GHOST MATCHES
+      <span id="dccGhostArchiveCount">(0)</span>
+</span>
+<small>Lifetime results</small>
+</summary>
+<div class="dcc-game-archive-body">
+<p class="note">
+      Completed House Ghost matches saved on this device.
+      Your current match is kept separately.
+    </p>
+<div aria-live="polite" class="dcc-ghost-history" id="dccGhostArchiveList">
+      Your saved Ghost matches will appear here.
+    </div>
+</div>
+</details>
+<details class="dcc-vw-ledger-panel dcc-game-archive" id="bbbArchivePanel">
+<summary>
+<span>PAST BINGO GAMES</span>
+<small>Lifetime results</small>
+</summary>
+<div class="dcc-game-archive-body">
+<div class="note" id="gLifetime"></div>
+<div class="note" id="gHistory"></div>
+</div>
+</details>
+<details class="dcc-vw-ledger-panel dcc-game-archive" id="vwArchivePanel">
+<summary>
+<span id="vwLifetimeLabel">VEGAS LIFETIME RECORDS</span>
+<small>Lifetime results</small>
+</summary>
+<div class="dcc-game-archive-body">
+<div class="note" id="vwLifetime"></div>
+</div>
+</details>
+<details class="dcc-vw-ledger-panel" id="hmArchivePanel">
+<summary>
+<span>PAST HAMMER GAMES</span>
+<small>Lifetime results</small>
+</summary>
+<div class="note" id="hmLifetime" style="padding:12px">
+    No Hammer sessions archived yet.
+  </div>
+</details>
+<details class="dcc-vw-ledger-panel dcc-game-archive" id="rrArchivePanel">
+<summary>
+<span>PAST 6-6-6 GAMES</span>
+<small>Lifetime results</small>
+</summary>
+<div class="dcc-game-archive-body">
+<div class="note" id="rrLifetime"></div>
+</div>
+</details>
+<details class="dcc-vw-ledger-panel dcc-game-archive" id="snArchivePanel">
+<summary>
+<span>PAST SNAKE SESSIONS</span>
+<small>Lifetime results</small>
+</summary>
+<div class="dcc-game-archive-body">
+<div class="note" id="snLifetime"></div>
+</div>
+</details>
 </div>
 </details>
 </section>
@@ -5525,16 +5591,7 @@ Wagering and settlement integration are coming next.
 </details>
 <p class="status" id="gStatus"></p></div>
 <!-- DCC R7-B — BINGO ARCHIVE -->
-<details class="dcc-vw-ledger-panel dcc-game-archive" id="bbbArchivePanel">
-<summary>
-<span>PAST BINGO GAMES</span>
-<small>Lifetime results</small>
-</summary>
-<div class="dcc-game-archive-body">
-<div class="note" id="gLifetime"></div>
-<div class="note" id="gHistory"></div>
-</div>
-</details>
+
 </section>
 <section class="card" data-tab="games" id="vwGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · FEATURED MATCH</div><h2 id="vwGameHeading">Vegas</h2>
 <div id="vegasRules"><details>
@@ -5565,15 +5622,7 @@ Wagering and settlement integration are coming next.
 <!-- END DCC R3-B LEDGER PANEL -->
 <div class="grid" style="margin-top:10px"><button class="btn-secondary" id="vwArchive">Archive game</button><button class="btn-ghost" id="vwDiscard">Discard game</button></div></div>
 <!-- DCC R7-B — VEGAS / WOLF ARCHIVE -->
-<details class="dcc-vw-ledger-panel dcc-game-archive" id="vwArchivePanel">
-<summary>
-<span id="vwLifetimeLabel">VEGAS LIFETIME RECORDS</span>
-<small>Lifetime results</small>
-</summary>
-<div class="dcc-game-archive-body">
-<div class="note" id="vwLifetime"></div>
-</div>
-</details>
+
 </section>
 <section class="card game-hidden" data-tab="games" id="hammerGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · SIDE ACTION</div><h2>Hammer</h2><p class="muted">This simplified house version records the <em>final multiplier</em> on each hole. If somebody hammers mid-hole, just bump the multiplier before you save.</p><details><summary>How to play · Hammer</summary><p class="note">Two teams of two. Each hole starts at 1 unit. Any hammer during the hole increases the multiplier. At the end of the hole, record who won and what the hole was worth. Halves score zero.</p></details>
 <!-- DCC R5-A — HAMMER PRE-ROUND SETUP -->
@@ -5599,15 +5648,7 @@ Wagering and settlement integration are coming next.
 </details>
 <div class="grid" style="margin-top:10px"><button class="btn-secondary" id="hmArchive">Archive game</button><button class="btn-ghost" id="hmDiscard">Discard game</button></div></div>
 <!-- DCC R5-H.2 — HISTORICAL HAMMER RESULTS -->
-<details class="dcc-vw-ledger-panel" id="hmArchivePanel">
-<summary>
-<span>PAST HAMMER GAMES</span>
-<small>Lifetime results</small>
-</summary>
-<div class="note" id="hmLifetime" style="padding:12px">
-    No Hammer sessions archived yet.
-  </div>
-</details>
+
 </section>
 <section class="card game-hidden" data-tab="games" id="robinGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MEMBER FAVORITE</div><h2>6-6-6 / Round Robin</h2><p class="muted">Better-ball teams rotate every six holes: 1–6, 7–12, then 13–18. Great for a foursome where nobody wants the same partner all day.</p> <details><summary>How to play · 6-6-6</summary><p class="note">Use four players. Teams are 1+2 vs 3+4 on holes 1–6, 1+3 vs 2+4 on holes 7–12, and 1+4 vs 2+3 on holes 13–18. Record gross strokes; the lower best-ball score wins the hole. Winning teammates receive +1 point each, losers -1. Halves are zero.</p></details>
 <!-- DCC R6-A — 6-6-6 PRE-ROUND SETUP -->
@@ -5637,15 +5678,7 @@ Wagering and settlement integration are coming next.
 </details>
 <div class="grid" style="margin-top:10px"><button class="btn-secondary" id="rrArchive">Archive round</button><button class="btn-ghost" id="rrDiscard">Discard round</button></div></div>
 <!-- DCC R7-C — 6-6-6 ARCHIVE -->
-<details class="dcc-vw-ledger-panel dcc-game-archive" id="rrArchivePanel">
-<summary>
-<span>PAST 6-6-6 GAMES</span>
-<small>Lifetime results</small>
-</summary>
-<div class="dcc-game-archive-body">
-<div class="note" id="rrLifetime"></div>
-</div>
-</details>
+
 </section>
 <section class="card game-hidden" data-tab="games" id="snakeGameCard"><div class="over" style="color:#756344">COMPETITION COMMITTEE · MINOR CRIMES UNIT</div><h2>Snake</h2><p class="muted">The quickest way to punish a three-putt without turning the round into a tax audit.</p> <details><summary>How to play · Snake</summary><p class="note">Record a snake every time someone three-putts. Most groups simply charge a fixed amount per snake to the player who earned it. Use this tracker as a ledger of shame.</p></details>
 <!-- DCC R7-A — SNAKE PRE-ROUND SETUP -->
@@ -5672,15 +5705,7 @@ Wagering and settlement integration are coming next.
 </details>
 <div class="grid" style="margin-top:10px"><button class="btn-secondary" id="snArchive">Archive session</button><button class="btn-ghost" id="snDiscard">Discard session</button></div></div>
 <!-- DCC R7-C — SNAKE ARCHIVE -->
-<details class="dcc-vw-ledger-panel dcc-game-archive" id="snArchivePanel">
-<summary>
-<span>PAST SNAKE SESSIONS</span>
-<small>Lifetime results</small>
-</summary>
-<div class="dcc-game-archive-body">
-<div class="note" id="snLifetime"></div>
-</div>
-</details>
+
 </section>
 <section class="card dcc-r90-records" data-tab="bets" id="clubRecordsSection" aria-label="Club Record">
   <div class="dcc-r90-records-top"><h3>Club Record</h3><small>Completed competitions · recorded results only</small></div>
@@ -5692,6 +5717,10 @@ Wagering and settlement integration are coming next.
     <div id="reportCard" hidden><div id="reportText"></div><button id="shareReport" type="button">Share text</button><button id="imageReport" type="button">Save image</button></div>
   </div>
 </section>
+<div role="navigation" id="dccLedgerRecordsLinks" data-tab="bets" aria-label="Round records">
+  <button id="dccLedgerArchive" type="button">Competition Archive <span aria-hidden="true">›</span></button>
+  <a id="dcc19thHole" href="19th-hole.html">19th Hole Recap <span aria-hidden="true">›</span></a>
+</div>
 <section class="card dcc-r58-member-room" data-tab="settings"><div class="dcc-r58-eyebrow">MEMBERSHIP OFFICE / IDENTITY</div><h2>Member Profiles</h2><p class="muted">Each golfer can keep a separate locker, bag and games on this phone. Profile switching reloads the page. Different phones already have separate browser storage; accounts syncing across devices would need a server.</p><label>Current profile</label><select id="memberSelect"></select><div class="grid" style="margin-top:10px"><div><input id="memberNewName" maxlength="30" placeholder="New member name"/></div><button class="btn-secondary" id="memberCreate">Create member</button></div><button class="btn-secondary" id="memberSwitch" style="margin-top:9px">Switch to selected profile</button><p class="note" id="memberStatus"></p></section>
 <section class="card" data-tab="settings" id="memberRecapSection"><div class="over" style="color:#7a6847">DAGGER COUNTRY CLUB · MEMBER RECAP</div><h2>Round &amp; Member Recap</h2><p class="muted">A quick pulse check on your scoring choices, gambling habits and documented ball-striking crimes.</p><div class="recap-grid" id="recapGrid"></div><button class="btn-secondary" id="buildRecap" style="margin-top:10px" type="button">Refresh recap</button><div class="notice-card" id="recapNarrative" style="margin-top:10px">No recap generated yet. Press refresh and let the committee speak.</div></section><div class="footer">Dagger Caddie · Members Script Edition · Personal practice tool · Dagger Country Club styling · No subscription required</div>
 </div>
@@ -5712,6 +5741,7 @@ function switchTab(tab) {
   }
   // Keep the visual tab state and keyboard accessibility in sync. Off-screen
   // panels must not retain reachable controls or accessible hidden content.
+  document.body.dataset.activeTab = tab;
   document.querySelectorAll('[data-tab]').forEach(el => {
     const isCurrent = el.dataset.tab === tab;
     el.classList.toggle('hidden-panel', !isCurrent);
@@ -6244,7 +6274,7 @@ async function init(){
   loggedShots=read('dagger_shot_log',[]);
   betState=read('dagger_bet_state',betState);
   if(!Array.isArray(betState.results)||betState.results.length!==18) betState.results=Array(18).fill(null);
-  showLog();switchTab('play');render();
+  showLog();switchTab(new URLSearchParams(location.search).get('view')==='ledger'?'bets':'play');render();
 }
 
 $('manualclub').onchange=syncManualField;
@@ -6561,7 +6591,7 @@ $('voiceShot').onclick=()=>{
 const freshWager=()=>({players:[],format:'skins',stake:5,holes:[],started:Date.now()});
 let activeW=read('dagger_foursome_active',null),wHistory=read('dagger_foursome_history',[]);
 const wStore=()=>{store('dagger_foursome_active',activeW);store('dagger_foursome_history',wHistory);};
-const wVal=(n)=>Number.isFinite(+n)&&+n>0?+n:null;
+const wVal=(n)=>n!==''&&Number.isInteger(Number(n))&&Number(n)>=1&&Number(n)<=15?Number(n):null;
 
 // DCC STEP 27A — SHARED COMPETITION RECORD FOUNDATION
 // Schema only: no Firebase writes or wager settlement yet.
@@ -7080,6 +7110,45 @@ let dccGhostHoles = [];
 // DCC STEP 30E — Existing drafts are 18-hole matches.
 let dccGhostLength = 18;
 let dccGhostCondition = null;
+let dccGhostPending = null;
+let dccGhostCourse;
+let dccGhostResizeObserver;
+
+// A Ghost match uses a same-origin iframe so its animated hole remains
+// independent of match scoring. On iOS, a swipe inside that frame can trap
+// the parent scroll. Accept scroll deltas only from the active Ghost frame.
+window.addEventListener('message', event => {
+  if (event.origin !== window.location.origin ||
+      event.data?.type !== 'dcc:ghost-parent-scroll') return;
+  const frame = document.querySelector('#dccGhostPlayback iframe');
+  if (!frame || event.source !== frame.contentWindow) return;
+  const delta = event.data.deltaY;
+  if (typeof delta !== 'number' || !Number.isFinite(delta) ||
+      Math.abs(delta) > 150) return;
+  window.scrollBy(0, delta);
+});
+
+function dccGhostShowPlayback() {
+  const target = document.getElementById('dccGhostPlayback');
+  dccGhostResizeObserver?.disconnect();
+  target.replaceChildren();
+  if (!dccGhostPending) return;
+
+  const frame = document.createElement('iframe');
+  frame.title = 'House Ghost playing this hole';
+  frame.src = 'ghost-preview.html?match=1&v=3';
+  frame.height = '440';
+  frame.addEventListener('load', () => {
+    const card = frame.contentDocument?.querySelector('main');
+    if (!card || !frame.isConnected) return;
+    dccGhostResizeObserver = new ResizeObserver(() => {
+      frame.height = String(Math.ceil(card.getBoundingClientRect().height));
+    });
+    dccGhostResizeObserver.observe(card);
+  }, {once:true});
+  target.append(frame);
+  target.scrollIntoView({block:'start'});
+}
 
 
 try {
@@ -7103,6 +7172,14 @@ try {
     
     dccGhostLength = saved.holesPlanned === 9 ? 9 : 18;
     dccGhostHoles = saved.holes;
+    dccGhostCourse = saved.course;
+    const pending = saved.pending;
+    if (pending?.hole === saved.holes.length + 1 &&
+        pending.hole <= dccGhostLength && [3,4,5].includes(pending.par) &&
+        Number.isInteger(pending.ghost) && pending.ghost >= 1 && pending.ghost <= 20) {
+      dccGhostPending = pending;
+      document.getElementById('dccGhostPar').value = String(pending.par);
+    }
 
     // Legacy drafts use normal scoring without rewriting
     // any previously recorded Ghost holes.
@@ -7122,7 +7199,67 @@ try {
   console.warn('House Ghost draft could not be loaded:', error);
 }
 
+// Auto-read the EXACT selected course/hole tee scorecard. The active
+// Ghost draft keeps its course snapshot, so changing Starter Desk mid-match
+// cannot rewrite an earlier opponent's hole par.
+let dccGhostParRenderToken=0;
+async function dccGhostSyncPar(){
+ const token=++dccGhostParRenderToken;
+ const hole=dccGhostPending?.hole??(dccGhostHoles.length+1);
+ const snapshot=dccGhostCourse===undefined
+   ?localStorage.getItem('dcc_active_round_course_v1'):dccGhostCourse;
+ let par=dccGhostPending?.par;
+ let verified=false;
+ try{
+  const selection=JSON.parse(snapshot||'null')?.selection;
+  if(selection){
+   const {readCourseScorecard}=await import('./active-course-context.js');
+   const card=readCourseScorecard(localStorage,selection);
+   const coursePar=card?.holes?.find(facts=>facts.number===hole)?.par;
+   if([3,4,5].includes(coursePar)){
+    // An existing pending Ghost score is immutable, even if a card changed.
+    if(!dccGhostPending||dccGhostPending.par===coursePar){
+     par=coursePar;verified=true;
+    }
+   }
+  }
+ }catch(error){console.warn('Ghost hole par lookup unavailable',error)}
+ if(token!==dccGhostParRenderToken)return;
+ const manual=document.getElementById('dccGhostManualPar');
+ const automatic=document.getElementById('dccGhostAutoPar');
+ const field=document.getElementById('dccGhostPar');
+ if(!manual||!automatic||!field)return;
+ if(verified){
+  field.value=String(par);
+  manual.hidden=true;
+  automatic.hidden=false;
+  automatic.textContent='HOLE '+hole+' · PAR '+par+' · FROM YOUR SCORECARD';
+ }else if([3,4,5].includes(dccGhostPending?.par)){
+  field.value=String(dccGhostPending.par);
+  manual.hidden=true;
+  automatic.hidden=false;
+  automatic.textContent='HOLE '+hole+' · PAR '+dccGhostPending.par+' · GHOST SHOT SAVED';
+ }else{
+  manual.hidden=false;
+  automatic.hidden=true;
+  automatic.textContent='';
+ }
+}
+
 function dccGhostRender() {
+  const lengthSelect = document.getElementById('dccGhostLength');
+  const eighteen = lengthSelect.querySelector('option[value="18"]');
+  const locked = dccGhostHoles.length > 0 || !!dccGhostPending;
+  if (!locked) {
+    let nativeNine = false;
+    try {
+      nativeNine = JSON.parse(localStorage.getItem('dcc_active_round_course_v1'))?.selection?.course?.holeCount === 9;
+    } catch {}
+    if (nativeNine) dccGhostLength = 9;
+    else if (eighteen.disabled) dccGhostLength = 18;
+    eighteen.disabled = nativeNine;
+    lengthSelect.value = String(dccGhostLength);
+  }
   const scores = dccGhostHoles.map(h => [h.player, h.ghost]);
   
   const result = dccMatchPlay(scores, dccGhostLength);
@@ -7149,10 +7286,14 @@ function dccGhostRender() {
 
 
   // Keep one opponent for the whole match.
-  tierSelect.disabled = dccGhostHoles.length > 0;
-  
-  document.getElementById('dccGhostLength').disabled =
-    dccGhostHoles.length > 0;
+  tierSelect.disabled = dccGhostHoles.length > 0 || !!dccGhostPending;
+  lengthSelect.disabled = locked || eighteen.disabled;
+  document.getElementById('dccGhostPar').disabled = !!dccGhostPending;
+  void dccGhostSyncPar();
+  const playButton = document.getElementById('dccGhostPlay');
+  playButton.disabled = result.decided;
+  playButton.textContent = dccGhostPending ? 'Replay Hole ' + dccGhostPending.hole :
+    (result.played ? 'Watch Hole ' + (result.played + 1) : 'Start round');
 
 
   const position = document.getElementById('dccGhostPosition');
@@ -7198,7 +7339,7 @@ function dccGhostRender() {
 
   if (!dccGhostHoles.length) {
     history.textContent =
-      'No holes recorded yet. Enter your score to challenge the house.';
+      'Your match results will appear here after you record your score.';
   }
 
   let lead = 0;
@@ -7230,11 +7371,51 @@ function dccGhostRender() {
   });
 }
 
+document.getElementById('dccGhostPlay').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  const message = document.getElementById('dccGhostMessage');
+  if (dccGhostPending) {
+    dccGhostShowPlayback();
+    return;
+  }
+  button.disabled = true;
+  const hole = dccGhostHoles.length + 1;
+  try {
+    const {readCourseScorecard} = await import('./active-course-context.js');
+    if (hole !== dccGhostHoles.length + 1) return;
+    const tier = document.getElementById('dccGhostTier').value;
+    const parField = document.getElementById('dccGhostPar');
+    const course = dccGhostCourse === undefined
+      ? localStorage.getItem('dcc_active_round_course_v1') : dccGhostCourse;
+    const selection = JSON.parse(course)?.selection;
+    const cached = selection && readCourseScorecard(localStorage, selection);
+    const officialPar = cached?.holes.find(facts => facts.number === hole)?.par;
+    const par = [3,4,5].includes(officialPar) ? officialPar : Number(parField.value);
+    const condition = dccGhostCondition || dccGhostPickCondition();
+    const pending = {hole, par, ghost: dccGhostConditionScore(par, tier, condition)};
+    localStorage.setItem(DCC_GHOST_DRAFT_KEY, JSON.stringify({
+      version: 1, tier, holesPlanned: dccGhostLength, condition,
+      course, holes: dccGhostHoles, pending
+    }));
+    dccGhostCourse = course;
+    dccGhostPending = pending;
+    dccGhostCondition = condition;
+    parField.value = String(par);
+    message.textContent = 'Watch the Ghost, then record your score below.';
+    dccGhostShowPlayback();
+  } catch (error) {
+    console.warn('House Ghost playback could not start:', error);
+    message.textContent = 'Could not start Ghost playback. Your recorded scores are safe.';
+  } finally {
+    dccGhostRender();
+  }
+});
+
 document.getElementById('dccGhostRecord')
   .addEventListener('click', () => {
     const scoreInput =
       document.getElementById('dccGhostPlayerScore');
-    const par = Number(document.getElementById('dccGhostPar').value);
+    const par = dccGhostPending?.par ?? Number(document.getElementById('dccGhostPar').value);
     const tier = document.getElementById('dccGhostTier').value;
     const message = document.getElementById('dccGhostMessage');
     const value = scoreInput.value.trim();
@@ -7261,7 +7442,7 @@ document.getElementById('dccGhostRecord')
       const condition =
         dccGhostCondition || dccGhostPickCondition();
 
-      const ghostScore = dccGhostConditionScore(
+      const ghostScore = dccGhostPending?.ghost ?? dccGhostConditionScore(
         par,
         tier,
         condition
@@ -7282,12 +7463,15 @@ document.getElementById('dccGhostRecord')
           tier,
           holesPlanned: dccGhostLength,
           condition,
+          course: dccGhostCourse,
           holes: next
 
         })
       );
 
       dccGhostHoles = next;
+      dccGhostPending = null;
+      dccGhostShowPlayback();
 
       dccGhostCondition = condition;
 
@@ -7318,7 +7502,7 @@ document.getElementById('dccGhostRecord')
 // DCC STEP 30E — LOCK MATCH LENGTH AFTER FIRST HOLE
 document.getElementById('dccGhostLength')
   .addEventListener('change', event => {
-    if (dccGhostHoles.length > 0) {
+    if (dccGhostHoles.length > 0 || dccGhostPending) {
       event.target.value = String(dccGhostLength);
       return;
     }
@@ -7347,12 +7531,15 @@ document.getElementById('dccGhostUndo')
          
           holesPlanned: dccGhostLength,
           condition: dccGhostCondition,
+          course: dccGhostCourse,
           holes: next
 
         })
       );
 
       dccGhostHoles = next;
+      dccGhostPending = null;
+      dccGhostShowPlayback();
 
       message.textContent =
         'Last hole removed. Earlier Ghost scores are unchanged.';
@@ -7411,6 +7598,9 @@ document.getElementById('dccGhostUndo')
 
         dccGhostHoles = [];
         dccGhostCondition = null;
+        dccGhostPending = null;
+        dccGhostCourse = undefined;
+        dccGhostShowPlayback();
         document.getElementById('dccGhostPlayerScore').value = '';
 
         message.textContent = finished
@@ -7527,6 +7717,8 @@ function dccGhostRenderArchive() {
 }
 
 // Preserve the existing Ghost startup render.
+document.addEventListener('dcc:course-selected', dccGhostRender);
+document.addEventListener('dcc:course-cleared', dccGhostRender);
 dccGhostRender();
 dccGhostUpdateActions();
 dccGhostRenderArchive();
@@ -8448,40 +8640,108 @@ dccMpRender();
 dccMpUpdateEditorPermissions();
 
 function wagerMath(game){
- const names=game.players,score=names.map(()=>0),stake=Number(game.stake)||0;
- let carry=1;
+ const names=Array.isArray(game?.players)?game.players:[];
+ const score=names.map(()=>0),stake=Number(game?.stake);
+ if(names.length<2||names.length>4||!Number.isFinite(stake)||stake<0||
+    !Array.isArray(game?.holes)||game.holes.length>18)return {score,carry:1,pending:[],invalid:true};
+ let carry=1;const pending=[];
+ const holes=game.holes;
+ if(holes.some(h=>!Array.isArray(h)||h.length!==names.length||h.some(n=>!Number.isInteger(n)||n<1||n>15)))return {score,carry,pending,invalid:true};
  if(game.format==='skins'){
-  game.holes.forEach(h=>{const vals=h.filter(x=>x!==null);if(vals.length!==names.length)return;const low=Math.min(...vals),winners=h.map((v,i)=>v===low?i:-1).filter(i=>i>=0);if(winners.length===1){const wi=winners[0];score[wi]+=stake*carry*(names.length-1);score.forEach((_,j)=>{if(j!==wi)score[j]-=stake*carry;});carry=1;}else carry++;});
- }else if(game.format==='hole'){
-  game.holes.forEach(h=>{if(h[0]===null||h[1]===null)return;if(h[0]<h[1]){score[0]+=stake;score[1]-=stake;}if(h[0]>h[1]){score[0]-=stake;score[1]+=stake;}});
- }else{
-  for(const [start,end] of [[0,9],[9,18],[0,18]]){
-    let wins=0;game.holes.slice(start,end).forEach(h=>{if(h[0]!==null&&h[1]!==null)wins+=h[0]<h[1]?1:h[0]>h[1]?-1:0;});
-    if(wins){score[0]+=Math.sign(wins)*stake;score[1]-=Math.sign(wins)*stake;}
+  for(const hole of holes){
+   const low=Math.min(...hole),winners=hole.flatMap((n,i)=>n===low?[i]:[]);
+   if(winners.length===1){
+    const winner=winners[0],value=stake*carry;
+    score[winner]+=value*(names.length-1);
+    score.forEach((_,i)=>{if(i!==winner)score[i]-=value});
+    carry=1;
+   }else carry++;
   }
+  return {score,carry,pending};
  }
- return {score,carry};
+ if(names.length!==2||!['hole','nassau'].includes(game.format))return {score,carry,pending,invalid:true};
+ if(game.format==='hole'){
+  holes.forEach(h=>{const winner=h[0]<h[1]?0:h[1]<h[0]?1:-1;
+   if(winner>=0){score[winner]+=stake;score[1-winner]-=stake}
+  });
+  return {score,carry,pending};
+ }
+ for(const [start,end,label] of [[0,9,'Front nine'],[9,18,'Back nine'],[0,18,'Overall']]){
+  const played=Math.max(0,Math.min(holes.length,end)-start);
+  const lead=holes.slice(start,end).reduce((n,h)=>n+(h[0]<h[1]?1:h[0]>h[1]?-1:0),0);
+  if(played<end-start){pending.push({label,played,required:end-start,leader:Math.sign(lead)});continue}
+  if(lead>0){score[0]+=stake;score[1]-=stake}
+  if(lead<0){score[0]-=stake;score[1]+=stake}
+ }
+ return {score,carry,pending};
 }
 function money(v){return(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);}
 function renderFoursome(){
  $('wPlaying').hidden=!activeW;
- if(activeW){const g=activeW,idx=Math.min(g.holes.length,17);$('wHole').textContent=String(idx+1);const result=wagerMath(g);$('wLead').textContent=money(result.score[0])+(g.format==='skins'&&result.carry>1?' · '+result.carry+' skins at stake':'');
-  $('wScoreFields').innerHTML='';g.players.forEach((p,i)=>{const d=document.createElement('div'),l=document.createElement('label'),inpt=document.createElement('input');l.textContent=p+' strokes';inpt.id='ws'+i;inpt.type='number';inpt.min='1';inpt.max='20';inpt.placeholder='Strokes';d.append(l,inpt);$('wScoreFields').append(d);});
+ if(activeW){const g=activeW,idx=Math.min(g.holes.length,17);$('wHole').textContent=String(idx+1);const result=wagerMath(g);$('wLead').textContent=result.invalid?'Invalid historic game scores · review backup':money(result.score[0])+(g.format==='skins'&&result.carry>1?' · '+result.carry+' skins at stake':'')+(g.format==='nassau'&&result.pending.length?' · '+result.pending.length+' matches pending':'');
+  $('wScoreFields').innerHTML='';g.players.forEach((p,i)=>{const d=document.createElement('div'),l=document.createElement('label'),inpt=document.createElement('input');l.textContent=p+' strokes';inpt.id='ws'+i;inpt.type='number';inpt.min='1';inpt.max='15';inpt.step='1';inpt.placeholder='Strokes';d.append(l,inpt);$('wScoreFields').append(d);});
   $('wInstruction').textContent=g.format==='skins'?'Lowest unique gross score wins the skin; ties carry over.':g.format==='nassau'?'Front 9, back 9 and overall are three separate matches.':'Every hole won or lost changes the balance by the stake.';
  }
  $('wHistory').innerHTML='';let total=0;
- wHistory.forEach((g,archiveIndex)=>{const net=wagerMath(g).score[0];total+=net;const row=document.createElement('tr');row.dataset.archiveIndex=String(archiveIndex);[new Date(g.ended).toLocaleDateString(),g.format,money(net)].forEach(v=>{const cell=document.createElement('td');cell.textContent=v;row.append(cell)});$('wHistory').append(row);});
- $('wLifetime').textContent=wHistory.length+' archived games · lifetime net '+money(total)+'. Saved only on this device; back up your app data.';
+ wHistory.forEach((g,archiveIndex)=>{const result=wagerMath(g),complete=!result.invalid&&(!result.pending||!result.pending.length),net=complete?result.score[0]:null;if(net!==null)total+=net;const row=document.createElement('tr');row.dataset.archiveIndex=String(archiveIndex);[new Date(g.ended).toLocaleDateString(),g.format,net===null?'Incomplete / review':money(net)].forEach(v=>{const cell=document.createElement('td');cell.textContent=v;row.append(cell)});$('wHistory').append(row);});
+ $('wLifetime').textContent=wHistory.length+' archived games · completed-game net '+money(total)+'. Incomplete or invalid games excluded; saved on this device. Back up your app data.';
 }
-$('wStart').onclick=()=>{if(activeW&&!confirm('Replace your current unarchived foursome game?'))return;const names=[$('wMyName').value,$('wP2').value,$('wP3').value,$('wP4').value].map(x=>x.trim()).filter(Boolean),format=$('wFormat').value,stake=Number($('wStake').value);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length||stake<0||!Number.isFinite(stake)){alert('Enter at least two different player names and a valid stake.');return;}const players=format==='skins'?names:names.slice(0,2);activeW={...freshWager(),players,format,stake};wStore();renderFoursome();};
+function dccCurrentRoundIdentity(){
+try{
+ const round=JSON.parse(localStorage.getItem('dcc_active_round_course_v1')||'null');
+ const c=round?.selection?.course?.providerCourseId,t=round?.selection?.tee?.providerTeeId;
+ if(round?.version===1&&typeof c==='string'&&c&&typeof t==='string'&&t&&Number.isSafeInteger(round.selectedAt))
+  return c+'|'+t+'|'+round.selectedAt;
+}catch{}
+}
+$('wStart').onclick=()=>{if(activeW&&!confirm('Replace your current unarchived foursome game?'))return;const names=[$('wMyName').value,$('wP2').value,$('wP3').value,$('wP4').value].map(x=>x.trim()).filter(Boolean),format=$('wFormat').value,stake=Number($('wStake').value);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length||stake<0||!Number.isFinite(stake)){alert('Enter at least two different player names and a valid stake.');return;}const players=format==='skins'?names:names.slice(0,2);const roundIdentity=dccCurrentRoundIdentity();
+activeW={...freshWager(),players,format,stake,...(roundIdentity?{roundIdentity}:{})};wStore();renderFoursome();};
 $('wSaveHole').onclick=()=>{if(!activeW)return;if(activeW.holes.length>=18){$('wStatus').textContent='18 holes completed. Archive the match.';return;}const h=activeW.players.map((_,i)=>wVal($('ws'+i).value));if(h.some(x=>x===null)){ $('wStatus').textContent='Enter a valid stroke score for every player.';return;}activeW.holes.push(h);wStore();renderFoursome();$('wStatus').textContent='Hole saved. Nice work, accountants.';};
+// Explicit single-player paper-score prefill for the next game hole. No wager write.
+(function mountPaperGamePrefill(){
+ const fields=document.getElementById('wScoreFields');if(!fields||document.getElementById('dccPaperGamePrefill'))return;
+ const area=document.createElement('div');area.id='dccPaperGamePrefill';area.style.cssText='margin:9px 0;padding:10px;border:1px solid #b7a777;border-radius:10px;background:#f2ead8';
+ const select=document.createElement('select');select.id='dccPaperGamePlayer';select.setAttribute('aria-label','Match your paper scorecard to a player');select.style.cssText='max-width:100%;min-height:44px';
+ const button=document.createElement('button');button.type='button';button.id='dccPaperGameUse';button.className='btn-secondary';button.textContent='Use my paper score for this hole';button.style.cssText='margin-top:8px;min-height:44px';
+ const status=document.createElement('p');status.id='dccPaperGameStatus';status.setAttribute('role','status');status.style.cssText='font:12px/1.5 system-ui,sans-serif;margin:7px 0';
+ const label=document.createElement('p');label.textContent='Copy one stroke score from your paper card. Review every player, then Save hole scores as usual.';label.style.cssText='font:12px/1.45 system-ui,sans-serif;margin:0 0 7px';
+ area.append(label,select,button,status);fields.after(area);
+ function refresh(){
+  const saved=select.value;
+  select.replaceChildren(new Option('Choose your player',''));
+  if(activeW?.players)activeW.players.forEach((name,i)=>select.add(new Option(String(name),String(i))));
+  select.value=[...select.options].some(o=>o.value===saved)?saved:'';
+  area.hidden=!activeW||!['skins','nassau','hole'].includes(activeW.format);
+ }
+ button.addEventListener('click',async()=>{
+  const game=activeW,index=select.value;
+  if(!game||index===''){status.textContent='Select your game player first.';return}
+  const holeNumber=game.holes.length+1;
+  try{
+   const [{readRoundScoreSnapshot},{paperStrokeForGameHole}]=await Promise.all([
+    import('./round-score-snapshot.js'),import('./paper-to-game-prefill.js')
+   ]);
+   if(game!==activeW||holeNumber!==game.holes.length+1){status.textContent='Game changed. Please try again.';return}
+   const candidate=paperStrokeForGameHole(readRoundScoreSnapshot(localStorage),game,{playerIndex:Number(index),holeNumber});
+   if(!candidate.ok){status.textContent=candidate.reason;return}
+   const input=document.getElementById('ws'+index);
+   if(!input){status.textContent='Game score fields changed. Please reopen the game.';return}
+   input.value=String(candidate.score);
+   status.textContent='Hole '+holeNumber+': '+candidate.score+' strokes copied for '+game.players[Number(index)]+'. Review and tap Save hole scores to record.';
+  }catch{status.textContent='Paper score unavailable. You can still enter scores manually.'}
+ });
+ const observer=new MutationObserver(refresh);observer.observe(fields,{childList:true});
+ refresh();
+})();
 $('wUndoHole').onclick=()=>{if(activeW&&activeW.holes.length){activeW.holes.pop();wStore();renderFoursome();}};
-$('wFinish').onclick=()=>{if(!activeW||!activeW.holes.length)return;if(!confirm('Archive this game and its current results?'))return;activeW.ended=Date.now();wHistory.push(activeW);activeW=null;wStore();renderFoursome();};
+$('wFinish').onclick=()=>{if(!activeW||!activeW.holes.length)return;const result=wagerMath(activeW);if(result.invalid){$('wStatus').textContent='Invalid game scores: review entries before archiving.';return;}if(result.pending.length){$('wStatus').textContent='Nassau still has '+result.pending.length+' unsettled matches. Finish 18 holes before archiving.';return;}if(!confirm('Archive this game and its current results?'))return;activeW.ended=Date.now();wHistory.push(activeW);activeW=null;wStore();renderFoursome();};
 $('wAbandon').onclick=()=>{if(activeW&&confirm('Discard the active game without adding it to lifetime history?')){activeW=null;wStore();renderFoursome();}};
-$('wExport').onclick=()=>{const csv=['date,format,players,holes,your_net',...wHistory.map(g=>[new Date(g.ended).toISOString().slice(0,10),g.format,'"'+g.players.join(' vs ').replaceAll('"','""')+'"',g.holes.length,wagerMath(g).score[0].toFixed(2)].join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='dagger-lifetime-wagers.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);};
+$('wExport').onclick=()=>{const csv=['date,format,players,holes,your_net',...wHistory.map(g=>[new Date(g.ended).toISOString().slice(0,10),g.format,'"'+g.players.join(' vs ').replaceAll('"','""')+'"',g.holes.length,((x)=>x.invalid||x.pending.length?'INCOMPLETE':x.score[0].toFixed(2))(wagerMath(g))].join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='dagger-lifetime-wagers.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);};
 const freshGame=()=>({players:[],holes:[],started:Date.now()});
 let activeG=read('dagger_bbb_active',null),gHistory=read('dagger_bbb_history',[]);
 const gStore=()=>{store('dagger_bbb_active',activeG);store('dagger_bbb_history',gHistory);};
+// A Yardage Book page transition must never cost a live local money game.
+window.addEventListener('pagehide',()=>{try{wStore();gStore();}catch(e){console.warn('Round backup on navigation failed',e);}});
 function bbbScore(game){const pts=game.players.map(()=>0);game.holes.forEach(h=>h.forEach(i=>{if(i!==null&&i>=0&&i<pts.length)pts[i]++;}));return pts;}
 
 function renderBBB() {
@@ -8615,7 +8875,7 @@ function dccRenderBBBLedger() {
   }
 }
 
-$('gStart').onclick=()=>{if(activeG&&!confirm('Replace the active Bingo Bango Bongo game?'))return;const names=[$('gP1').value,$('gP2').value,$('gP3').value,$('gP4').value].map(x=>x.trim()).filter(Boolean);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length){alert('Enter two to four distinct players.');return;}activeG={...freshGame(),players:names};gStore();renderBBB();};
+$('gStart').onclick=()=>{if(activeG&&!confirm('Replace the active Bingo Bango Bongo game?'))return;const names=[$('gP1').value,$('gP2').value,$('gP3').value,$('gP4').value].map(x=>x.trim()).filter(Boolean);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length){alert('Enter two to four distinct players.');return;}const roundIdentity=dccCurrentRoundIdentity();activeG={...freshGame(),players:names,...(roundIdentity?{roundIdentity}:{})};gStore();renderBBB();};
 $('gSave').onclick=()=>{if(!activeG)return;if(activeG.holes.length>=18){$('gStatus').textContent='All 18 holes scored. Archive the game.';return;}activeG.holes.push(['gBingo','gBango','gBongo'].map(id=>$(id).value===''?null:Number($(id).value)));gStore();renderBBB();$('gStatus').textContent='Hole recorded. Three opportunities for glory; zero for dignity.';};
 $('gUndo').onclick=()=>{if(activeG&&activeG.holes.length){activeG.holes.pop();gStore();renderBBB();}};
 $('gFinish').onclick=()=>{if(activeG&&activeG.holes.length&&confirm('Archive this Bingo Bango Bongo game?')){activeG.ended=Date.now();gHistory.push(activeG);activeG=null;gStore();renderBBB();}};
@@ -10025,7 +10285,6 @@ document.querySelectorAll('.game-pick[data-game]').forEach(button => {
   );
   const ghost = document.getElementById('dccGhostCard');
   if (ghost) ghostPanel.appendChild(ghost);
-
   // Place playable options before reference material.
   picks.after(gamePanel, matchPanel, ghostPanel);
 
@@ -10428,8 +10687,8 @@ $('roastOpponent').onclick=()=>{
  $('opponentRoastLine').textContent=CADDIES[selectedCaddie].name+': “'+lines[(roastIndex++)%lines.length].replaceAll('{name}',name)+'”';
 };
 </script>
-<script src="money-room.js?v=match-finish-4" type="module"></script>
-<script src="ai-chat.js?v=location-shapes-23" type="module"></script>
+<script src="money-room.js?v=ledger-layout-1" type="module"></script>
+<script src="ai-chat.js?v=friday-book-1" type="module"></script>
 <script src="golfer-account.js" type="module"></script>
 <script src="golfer-profile.js" type="module"></script>
 <script src="golfer-bag-sync.js" type="module"></script>
@@ -10905,10 +11164,20 @@ function balances(a){
   const prior=totals.get(key); if(prior)prior.cents+=Math.round(d.amount*100);else totals.set(key,{from:d.from,to:d.to,cents:Math.round(d.amount*100)});
  }
  const rows=[...totals.values()].sort((a,b)=>b.cents-a.cents||a.from.localeCompare(b.from));
- $('dccPropBalances').innerHTML=rows.length?rows.map(x=>`<div class="dcc-r70-account-row"><span>${esc(x.from)} <small>owes</small> ${esc(x.to)}</span><strong>${money(x.cents/100)}</strong></div>`).join(''):'<p class="dcc-r70-clear">No unpaid resolved bets. Open predictions will appear here once scored.</p>';
+ $('dccPropBalances').innerHTML=rows.length?rows.map(x=>`<div class="dcc-r70-account-row"><span>${esc(x.from)} <small>owes</small> ${esc(x.to)}</span><strong>${money(x.cents/100)}</strong></div>`).join(''):'<p class="dcc-r70-clear">No unpaid balances.</p>';
 }
-function render(){const a=read();const history=$('dccPropHistoryWrap');if(history&&a.length&&!history.dataset.initialized){history.open=true;history.dataset.initialized='1';}balances(a);const paidNet=a.reduce((sum,b)=>{const d=obligation(b);if(!d||!b.settled)return sum;return sum+(d.to.trim().toLowerCase()===b.me.trim().toLowerCase()?d.amount:-d.amount);},0);$('dccPropTotal').textContent=(paidNet>0?'+':paidNet<0?'−':'')+money(Math.abs(paidNet));$('dccPropTotal').dataset.position=paidNet>0?'up':paidNet<0?'down':'even';$('dccPropOpenCount').textContent=a.filter(b=>b.result==='open').length;$('dccPropUnsettled').textContent=a.filter(b=>obligation(b)&&!b.settled).length;
-$('dccPropList').innerHTML=a.length?a.slice().reverse().map(b=>{const due=obligation(b);return `<article class="dcc-r66-slip"><header><strong>${esc(b.text)}</strong><span class="dcc-r66-pill">${due?(b.settled?'SETTLED':'UNSETTLED'):outcome(b)}</span></header><p>${esc(b.me)} vs ${esc(b.other)}${b.hole?' · Hole '+b.hole:''}</p><p class="dcc-r66-small">${money(b.stake)} stake · ${b.odds}:1 agreed odds · ${esc(b.me)} backed ${b.side.toUpperCase()}</p>${due?`<p><b>${esc(due.from)} owes ${esc(due.to)} ${money(due.amount)}</b>${b.settled?' · marked paid':''}</p>`:''}<div class="dcc-r66-actions">${b.result==='open'?`<button data-bid="${esc(b.id)}" data-result="yes">YES happened</button><button data-bid="${esc(b.id)}" data-result="no">NO didn't</button><button data-bid="${esc(b.id)}" data-result="void">Void</button>`:due?`<button data-bid="${esc(b.id)}" data-toggle="1">${b.settled?'Undo paid':'Mark paid'}</button>`:''}${b.result==='open'?`<button data-bid="${esc(b.id)}" data-delete="1">Cancel draft</button>`:''}</div></article>`}).join(''):'<p class="dcc-r66-empty">No side bets yet. Tap <b>+ New Bet</b> to record the first one.</p>';
+function render(){const a=read();balances(a);const netCents=a.reduce((sum,bet)=>{
+ const due=obligation(bet);
+ if(!due)return sum;
+ const direction=bet.result===bet.side?1:-1;
+ return sum+direction*Math.round(due.amount*100);
+},0);
+const net=netCents/100;
+$('dccPropTotal').textContent=(net>0?'+':net<0?'−':'')+money(Math.abs(net));
+$('dccPropTotal').dataset.position=net>0?'up':net<0?'down':'even';
+$('dccPropTotal').title='Net of all resolved local tickets, including outstanding payments';
+$('dccPropOpenCount').textContent=a.filter(b=>b.result==='open').length;$('dccPropUnsettled').textContent=a.filter(b=>obligation(b)&&!b.settled).length||'';
+$('dccPropList').innerHTML=a.length?a.slice().reverse().map(b=>{const due=obligation(b);return `<article class="dcc-r66-slip"><header><strong>${esc(b.text)}</strong><span class="dcc-r66-pill">${due?(b.settled?'SETTLED':'UNSETTLED'):outcome(b)}</span></header><p>${esc(b.me)} vs ${esc(b.other)}${b.hole?' · Hole '+b.hole:''}</p><p class="dcc-r66-small">${money(b.stake)} stake · ${b.odds}:1 agreed odds · ${esc(b.me)} backed ${b.side.toUpperCase()}</p>${due?`<p><b>${esc(due.from)} owes ${esc(due.to)} ${money(due.amount)}</b>${b.settled?' · marked paid':''}</p>`:''}<div class="dcc-r66-actions">${b.result==='open'?`<button data-bid="${esc(b.id)}" data-result="yes">YES happened</button><button data-bid="${esc(b.id)}" data-result="no">NO didn't</button><button data-bid="${esc(b.id)}" data-result="void">Void</button>`:due?`<button data-bid="${esc(b.id)}" data-paid="${b.settled?'0':'1'}">${b.settled?'Undo paid':'Mark paid'}</button>`:''}${b.result==='open'?`<button data-bid="${esc(b.id)}" data-delete="1">Cancel draft</button>`:''}</div></article>`}).join(''):'<p class="dcc-r66-empty">No tickets yet.</p>';
 }
 function preview(){let stake=Number($('dccPropStake').value),odds=Number($('dccPropOdds').value);$('dccPropPreview').textContent=stake>0&&odds>0?`If your prediction wins: opponent owes ${money(Math.round(stake*odds*100)/100)}. If it loses: you owe ${money(stake)}. These are agreed odds, not a statistical prediction.`:'Set the stake and agreed odds to preview the financial exposure.'}
 function init(){if(!$('dccPropForm'))return;render();const newBetButton=$('dccPropNew'),betFormWrap=$('dccPropFormWrap');
@@ -10917,7 +11186,12 @@ newBetButton.setAttribute('aria-controls','dccPropFormWrap');betFormWrap.addEven
 newBetButton.addEventListener('click',()=>{betFormWrap.open=!betFormWrap.open;syncBetForm();if(betFormWrap.open)$('dccPropText').focus();else newBetButton.focus()});['dccPropStake','dccPropOdds'].forEach(id=>$(id).addEventListener('input',preview));preview();
 $('dccPropForm').addEventListener('submit',e=>{e.preventDefault();const text=$('dccPropText').value.trim(),me=$('dccPropMe').value.trim(),other=$('dccPropOther').value.trim(),stake=Number($('dccPropStake').value),odds=Number($('dccPropOdds').value),hole=$('dccPropHole').value; if(!text||!me||!other||me.toLowerCase()===other.toLowerCase()||!Number.isFinite(stake)||stake<.01||stake>100000||!Number.isFinite(odds)||odds<.01||odds>1000||(hole&&(!Number.isInteger(Number(hole))||Number(hole)<1||Number(hole)>18))){status('Please enter a proposition, two different names, valid stake, agreed odds, and an optional hole 1–18.');return}
 const a=read();a.push({id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),text,me,other,stake:Math.round(stake*100)/100,odds,hole:hole||'',side:$('dccPropSide').value,result:'open',settled:false,created:new Date().toISOString()});try{write(a);$('dccPropForm').reset();$('dccPropFormWrap').open=false;render();status('Side bet recorded on this device.')}catch{status('Could not save this bet. Check browser storage settings.')}});
-$('dccPropList').addEventListener('click',e=>{const btn=e.target.closest('button[data-bid]');if(!btn)return;const a=read(),b=a.find(x=>x.id===btn.dataset.bid);if(!b)return;if(btn.dataset.delete){if(b.result!=='open'){status('Resolved bets cannot be deleted. Export your ledger for a permanent record.');return;}if(!confirm('Discard this open prediction? This cannot be undone.'))return;a.splice(a.indexOf(b),1)}else if(btn.dataset.result&&b.result==='open'){if(!confirm('Record this result? Once scored, the bet remains in the history.'))return;b.result=btn.dataset.result;b.resolvedAt=new Date().toISOString()}else if(btn.dataset.toggle&&obligation(b)){if(!confirm(b.settled?'Reopen this payment as outstanding?':'Confirm this amount has actually been paid?'))return;b.settled=!b.settled;b.settledAt=b.settled?new Date().toISOString():null}else return;try{write(a);render();status('Local ledger updated.')}catch{status('Could not save change.')}});
+$('dccPropList').addEventListener('click',e=>{const btn=e.target.closest('button[data-bid]');if(!btn)return;const a=read(),b=a.find(x=>x.id===btn.dataset.bid);if(!b)return;if(btn.dataset.delete){if(b.result!=='open'){status('Resolved bets cannot be deleted. Export your ledger for a permanent record.');return;}if(!confirm('Discard this open prediction? This cannot be undone.'))return;a.splice(a.indexOf(b),1)}else if(btn.dataset.result&&b.result==='open'){if(!confirm('Record this result? Once scored, the bet remains in the history.'))return;b.result=btn.dataset.result;b.resolvedAt=new Date().toISOString()}else if(['0','1'].includes(btn.dataset.paid)&&obligation(b)){
+ const paid=btn.dataset.paid==='1';
+ if(Boolean(b.settled)===paid)return;
+ if(!confirm(paid?'Confirm this amount has actually been paid?':'Reopen this payment as outstanding?'))return;
+ b.settled=paid;b.settledAt=paid?new Date().toISOString():null;
+}else return;try{write(a);render();status('Local ledger updated.')}catch{status('Could not save change.')}});
 // R74: Explicit, merge-only local backup import. Never overwrite existing records.
 $('dccPropImport').addEventListener('click',()=>$('dccPropImportFile').click());
 $('dccPropImportFile').addEventListener('change',async e=>{
@@ -11309,8 +11583,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const heading=menu.querySelector('.games-desk-heading h2');
   if(heading)heading.textContent='Choose a Game';
  }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(organize,80),{once:true});
- else setTimeout(organize,80);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',organize,{once:true});
+ else organize();
 })();
 </script>
 <script id="dcc-r93-one-game-one-scorecard">
@@ -11413,7 +11687,7 @@ function install(){
  // Existing room setup and listeners are preserved; one entrance opens the actual form.
  const room=document.getElementById('moneyRoomSection');
  const head=room?.querySelector('.dcc-r95-live-head');
- if(room&&head){head.querySelector('strong').textContent='The Money Room';const p=head.querySelector('p');if(p)p.textContent='Good friends. Bad decisions. Accurate accounting.';const button=head.querySelector('button');if(button)button.textContent='OPEN THE ROOM';room.classList.add('dcc-r106-money');}
+ if(room&&head){head.querySelector('strong').textContent='The Money Room';const p=head.querySelector('p');if(p)p.textContent='Host or join a match.';const button=head.querySelector('button');if(button)button.textContent='Open room';room.classList.add('dcc-r106-money');}
  const balances=document.querySelector('#dccPropBalances');if(balances){balances.setAttribute('aria-label','Outstanding unpaid bet settlements');}
  // Use the existing saved profile input as the source of truth; do not invent handicap.
  const header=document.querySelector('.dcc-r62-header');const account=document.getElementById('dccR62Account');
@@ -11673,6 +11947,60 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  else setTimeout(install,850);
 })();
 </script>
+
+<!-- Friday QA: read-only Yardage Book access -->
+<script id="dccFridayYardageLink">
+(function(){function add(){if(document.getElementById('dccFridayYardage'))return;const panel=document.querySelector('[data-tab="play"].ai-card')||document.querySelector('section[data-tab="play"]');if(!panel)return;const details=document.createElement('details');details.id='dccFridayYardage';details.style.cssText='margin:12px 0;padding:10px 13px;border:1px solid #c8ba9d;border-radius:12px;background:#f8f2e6;color:#143126';const title=document.createElement('summary');title.textContent='Friday QA · Yardage Book';const picker=document.createElement('select');picker.setAttribute('aria-label','Yardage Book hole');picker.style.cssText='display:block;width:100%;min-height:44px;margin-top:10px';for(let n=1;n<=18;n++)picker.add(new Option('Hole '+n,String(n)));try{const n=Number(sessionStorage.getItem('dccFridayYardageHole'));if(Number.isInteger(n)&&n>=1&&n<=18)picker.value=String(n)}catch{}const link=document.createElement('a');link.href='yardage-preview.html?hole='+picker.value;link.textContent='Open selected hole in Yardage Book →';link.style.cssText='display:block;margin-top:10px;color:#143126;font-weight:700';picker.addEventListener('change',()=>{link.href='yardage-preview.html?hole='+picker.value;try{sessionStorage.setItem('dccFridayYardageHole',picker.value)}catch{}});details.append(title,picker,link);panel.append(details)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add()})();
+</script>
+
+<!-- Direct Yardage Book access while playing Games — no score or bet changes. -->
+<script id="dccGamesYardageAccess">(function(){
+ function mount(){
+  if(document.getElementById('dccGamesYardageAccessLink'))return;
+  const panel=document.querySelector('[data-tab="games"]');if(!panel)return;
+  const row=document.createElement('p');row.id='dccGamesYardageAccessLink';row.style.cssText='margin:12px 0;text-align:center';
+  const link=document.createElement('a');link.textContent='⛳ Check the Yardage Book';link.style.cssText='font-weight:700;color:inherit;text-decoration:underline';
+  link.href='yardage-preview.html';
+  link.addEventListener('click',()=>{let hole=1;try{const n=Number(sessionStorage.getItem('dccFridayYardageHole'));if(Number.isInteger(n)&&n>=1&&n<=18)hole=n}catch{}link.href='yardage-preview.html?hole='+hole;});
+  const ticket=document.createElement('button');ticket.id='dccGamesTicketWindow';ticket.type='button';
+  ticket.textContent='🎟 Open Ticket Window';ticket.className='btn-secondary';
+  ticket.style.cssText='display:block;margin:10px auto 0;min-height:44px';
+  ticket.addEventListener('click',()=>{
+   const ledgerTab=document.getElementById('tab-bets');
+   const openTicket=document.getElementById('dccPropNew');
+   const ticketForm=document.getElementById('dccPropFormWrap');
+   if(!ledgerTab||!openTicket||!ticketForm)return;
+   ledgerTab.click();
+   // Let the Ticket Window's own handler manage form visibility and focus.
+   if(!ticketForm.open)openTicket.click();
+   document.getElementById('dccPropText')?.focus();
+  });
+  const room=document.createElement('button');room.id='dccGamesMoneyRoom';room.type='button';
+  room.textContent='👥 Join / Open Money Room';room.className='btn-secondary';
+  room.style.cssText='display:block;margin:10px auto 0;min-height:44px';
+  room.addEventListener('click',()=>{
+   const ledgerTab=document.getElementById('tab-bets');
+   const destination=document.getElementById('moneyRoomSection');
+   if(!ledgerTab||!destination)return;
+   ledgerTab.click();
+   // Reuse the active room; do not reset form fields, session, or score data.
+   destination.scrollIntoView({block:'start'});
+   const launch=destination.querySelector('.dcc-r95-open-room');
+   if(launch&&document.getElementById('roomScoreSection')?.hidden)launch.focus();
+  });
+  row.append(link,ticket,room);panel.append(row);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();</script>
+
+<link rel="stylesheet" href="ledger-layout.css?v=3">
+<script type="module" src="clubhouse-home.js?v=clubhouse-recap-5"></script>
+<script type="module" src="yardage-return.js?v=roundtrip1"></script>
+<script type="module" src="yardage-caddy-arrival.js?v=friday-ledger-2"></script>
+<script type="module" src="round-score-pulse.js?v=score-bridge1"></script>
+<link rel="stylesheet" href="ledger-simple.css?v=ledger-connected-4"><script src="ledger-simple.js?v=ledger-connected-2" defer></script>
+<link rel="stylesheet" href="on-course-simple.css?v=caddy-turn-1">
+<script src="on-course-simple.js?v=caddy-turn-1" defer></script>
 </body>
 </html>
 

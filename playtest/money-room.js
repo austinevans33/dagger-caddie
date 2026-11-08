@@ -1,4 +1,4 @@
-import {installBingoMoney} from './bbb-money.js';
+import {installBingoMoney} from './bbb-money.js?v=ledger-layout-1';
 import {installLedgerSettlement} from './ledger-settlement.js';
 installLedgerSettlement(window);
 installBingoMoney();
@@ -15,7 +15,7 @@ const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const money=v=>(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);
 const isConfigured=firebaseConfig&&firebaseConfig.apiKey&&firebaseConfig.projectId;
 let db=null,auth=null,functions=null,room=null,roomId='',invite='',roomUnsub=null,user=null,host=false,session=null;
-let connectionVersion=0,actionVersion=0,navigationVersion=0,authInitialized=false;
+let connectionVersion=0,actionVersion=0,navigationVersion=0,authInitialized=false,roomServerFresh=false;
 document.addEventListener('click',event=>{
  if(!event.isTrusted)return;
  if(event.target.closest?.('[id^="tab-"]'))navigationVersion++;
@@ -31,7 +31,7 @@ function syncHostQr() {
  const anchor = $('roomShareCurrent')?.closest('.action-room-utilities');
  if (!anchor) return;
  let panel = $('roomHostQr');
- if (!host || !roomId || !invite || room?.archived) {
+ if (!host || !roomServerFresh || !roomId || !invite || room?.archived) {
   if (panel) panel.remove();
   displayedQrLink = '';
   return;
@@ -66,16 +66,23 @@ function compute(model){
  const players=model.players||[];const n=players.length,holes=model.holes||{},stake=Number(model.stake)||0;
  const totals=Array(n).fill(0),ledger=[];let carry=1,settled=0;
  let cumulativeMatch=0;
+ // Skins cannot award later holes until every preceding hole is scored.
+ // Otherwise a late score correction can rewrite money already shown as won.
+ let skinsSequenceComplete=true,skinsBlockedByGap=false;
  const segs=[{from:1,to:9,finished:false},{from:10,to:18,finished:false},{from:1,to:18,finished:false}];
  for(let hole=1;hole<=18;hole++){
    const scores=holes[hole];const valid=Array.isArray(scores)&&scores.length===n&&scores.every(v=>Number.isInteger(v)&&v>=1&&v<=20);
    let event='—';
+   if(!valid&&model.format==='skins')skinsSequenceComplete=false;
    if(valid){
      settled++;
      if(model.format==='skins'){
-       const low=Math.min(...scores), winners=scores.map((x,i)=>x===low?i:-1).filter(i=>i>=0);
-       if(winners.length===1){const win=winners[0],pot=stake*carry;totals[win]+=(n-1)*pot;for(let i=0;i<n;i++)if(i!==win)totals[i]-=pot;event=players[win]+' · '+carry+' skin'+(carry===1?'':'s');carry=1;}
-       else{event='Tie · carry '+carry+' → '+(carry+1);carry++;}
+       if(!skinsSequenceComplete){skinsBlockedByGap=true;event='Pending earlier hole · skins not settled';}
+       else {
+        const low=Math.min(...scores), winners=scores.map((x,i)=>x===low?i:-1).filter(i=>i>=0);
+        if(winners.length===1){const win=winners[0],pot=stake*carry;totals[win]+=(n-1)*pot;for(let i=0;i<n;i++)if(i!==win)totals[i]-=pot;event=players[win]+' · '+carry+' skin'+(carry===1?'':'s');carry=1;}
+        else{event='Tie · carry '+carry+' → '+(carry+1);carry++;}
+       }
      } else if(model.format==='hole'){
        if(scores[0]===scores[1])event='Halved';else{const w=scores[0]<scores[1]?0:1;totals[w]+=stake;totals[1-w]-=stake;cumulativeMatch+=w===0?1:-1;event=players[w]+' wins';}
      } else if(model.format==='vegas'){
@@ -91,18 +98,25 @@ function compute(model){
        if(count===seg.to-seg.from+1){seg.finished=true;if(diff!==0){const w=diff>0?0:1;totals[w]+=stake;totals[1-w]-=stake;event+=' · Nassau segment settled';}}}}
    ledger.push({hole,scores:valid?scores:null,event,totals:[...totals],carry});
  }
- return {totals,carry,settled,ledger,matchDiff:cumulativeMatch};
+ return {totals,carry,settled,ledger,matchDiff:cumulativeMatch,skinsPending:model.format==='skins'&&skinsBlockedByGap};
 }
 function roomLabel(){const me=user?.uid||'';return (me===room?.hostUid?'Scorekeeper':'Read-only member');}
+let lastRenderedRoomId=null;
 function render(){
  if(!room)return;
+ const sameRoom=lastRenderedRoomId===roomId;
+ const selectedHole=sameRoom?Number($('roomHole').value):NaN;
+ // Keep a scorekeeper's unsaved draft intact if a background snapshot arrives.
+ const editingScore=sameRoom&&$('roomScoreRows')?.contains(document.activeElement);
+ const draftScores=editingScore?[...$('roomScoreRows').querySelectorAll('input')].map(input=>input.value):null;
+ lastRenderedRoomId=roomId;
  host=!!(user?.uid===room.hostUid);
  invitationSharing.prepare(roomLink());
  if(user?.uid&&roomId&&invite){
   if(!room.archived&&!rememberRoom(roomStore,{uid:user.uid,id:roomId,invite,name:($('roomMe').value.trim()||room.hostName||'Guest').slice(0,24)}))status('Live room connected. Save your invitation link; this browser cannot remember the room.');
  }
  $('roomScoreSection').hidden=false;
- $('roomEditor').hidden=!host||!!room.archived; $('roomSpectator').hidden=host;
+ $('roomEditor').hidden=!host||!!room.archived||!roomServerFresh; $('roomSpectator').hidden=host;
  syncHostQr();
  $('roomInvitationBanner').hidden=true;
  $('roomSetup').open=false;
@@ -126,14 +140,19 @@ function render(){
   $('roomWho').style.padding = '14px';
 
  $('roomHostName').value=room.hostName||'Scorekeeper';
- $('roomHole').innerHTML=Array.from({length:18},(_,i)=>`<option value="${i+1}">Hole ${i+1}</option>`).join('');
+ if(!sameRoom||$('roomHole').options.length!==18){
+  $('roomHole').innerHTML=Array.from({length:18},(_,i)=>`<option value="${i+1}">Hole ${i+1}</option>`).join('');
+ }
  const pending=Array.from({length:18},(_,i)=>i+1).find(i=>!room.holes?.[i])||18;
- $('roomHole').value=String(pending);
+ $('roomHole').value=String(Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:pending);
  $('roomScoreHead').innerHTML='<tr><th>Player</th><th>Strokes</th></tr>';
- const h=Number($('roomHole').value);buildInputs(h);
+ const h=Number($('roomHole').value);
+ // Leave the currently focused score input mounted. Rebuilding its DOM would
+ // dismiss the phone keyboard and interrupt the scorekeeper mid-entry.
+ if(!(draftScores&&host&&!room.archived&&h===selectedHole&&draftScores.length===room.players.length))buildInputs(h);
  const x=compute(room);
  renderFinishSummary(room,x);
- $('roomStandings').textContent=room.players.map((name,i)=>`${name}: ${money(x.totals[i])}`).join(' · ')+(room.format==='skins'?` · ${x.carry} skin(s) in next pot`:'')+` · ${x.settled} holes scored`;
+ $('roomStandings').textContent=room.players.map((name,i)=>`${name}: ${money(x.totals[i])}`).join(' · ')+(room.format==='skins'?(x.skinsPending?' · Later skins awaiting missing earlier scores':` · ${x.carry} skin(s) in next pot`):'')+` · ${x.settled} holes scored`;
  $('roomFormatDisplay').textContent=room.format.toUpperCase();$('roomStakeDisplay').textContent='$'+room.stake;$('roomNextDisplay').textContent=String(pending);
  const lead=x.totals.reduce((a,v,i)=>v>x.totals[a]?i:a,0);
  const leader=room.players[lead], loser=room.players.reduce((a,n,i)=>x.totals[i]<x.totals[a]?i:a,0);
@@ -190,13 +209,13 @@ function render(){
     ledgerRoot.prepend(emptyMessage);
   }
  $('roomAudit').textContent=room.lastChange?`Last updated ${new Date(room.lastChange).toLocaleString()} by ${room.lastEditor||'scorekeeper'}. Score history includes the current official value for each hole.`:'';
- $('roomSaveHole').disabled=!host||room.archived;
- $('roomUndoHole').disabled=!host||room.archived||!x.settled;
- $('roomFinish').disabled=!host||room.archived;
- $('roomHole').disabled=!host||room.archived;
+ $('roomSaveHole').disabled=!host||room.archived||!roomServerFresh;
+ $('roomUndoHole').disabled=!host||room.archived||!x.settled||!roomServerFresh;
+ $('roomFinish').disabled=!host||room.archived||!roomServerFresh;
+ $('roomHole').disabled=!host||room.archived||!roomServerFresh;
  }
-function buildInputs(h){const scores=room?.holes?.[h]||[];$('roomScoreRows').innerHTML='';(room?.players||[]).forEach((name,i)=>{const tr=document.createElement('tr'),first=document.createElement('td'),td=document.createElement('td'),input=document.createElement('input'),wrap=document.createElement('div');first.textContent=name;input.type='number';input.min='1';input.max='20';input.inputMode='numeric';input.dataset.player=String(i);input.value=scores[i]||'';input.disabled=!host||room.archived;wrap.className='room-score-step';
-const step=(sign)=>{const b=document.createElement('button');b.type='button';b.textContent=sign===1?'+':'−';b.disabled=!host||room.archived;b.setAttribute('aria-label',(sign===1?'Increase ':'Decrease ')+name+' score');b.onclick=()=>{input.value=String(Math.max(1,Math.min(20,(Number(input.value)||4)+sign)));};return b;};wrap.append(step(-1),input,step(1));td.append(wrap);tr.append(first,td);$('roomScoreRows').append(tr);});}
+function buildInputs(h){const scores=room?.holes?.[h]||[];$('roomScoreRows').innerHTML='';(room?.players||[]).forEach((name,i)=>{const tr=document.createElement('tr'),first=document.createElement('td'),td=document.createElement('td'),input=document.createElement('input'),wrap=document.createElement('div');first.textContent=name;input.type='number';input.min='1';input.max='20';input.inputMode='numeric';input.dataset.player=String(i);input.value=scores[i]||'';input.disabled=!host||room.archived||!roomServerFresh;wrap.className='room-score-step';
+const step=(sign)=>{const b=document.createElement('button');b.type='button';b.textContent=sign===1?'+':'−';b.disabled=!host||room.archived||!roomServerFresh;b.setAttribute('aria-label',(sign===1?'Increase ':'Decrease ')+name+' score');b.onclick=()=>{input.value=String(Math.max(1,Math.min(20,(Number(input.value)||4)+sign)));};return b;};wrap.append(step(-1),input,step(1));td.append(wrap);tr.append(first,td);$('roomScoreRows').append(tr);});}
 $('roomHole').onchange=()=>{if(room)buildInputs(Number($('roomHole').value));};
 function archiveLocal(){
  if(!room||!roomId)return;
@@ -210,7 +229,7 @@ function archiveLocal(){
  }catch(e){status('Match ended, but this phone could not save a local copy: '+e.message);}
 }
 function settlementLabel(model,x){
- const pending=model.format==='skins'&&x.carry>1?' · '+(x.carry-1)+' carried skin(s) unawarded':'';
+ const pending=model.format==='skins'?(x.skinsPending?' · later skins pending earlier hole scores':x.carry>1?' · '+(x.carry-1)+' carried skin(s) unawarded':''):'';
  return x.settled+'/18 holes scored'+pending;
 }
 function renderFinishSummary(model,x){
@@ -218,9 +237,11 @@ function renderFinishSummary(model,x){
  if(!panel)return;
  panel.hidden=!model.archived;
  if(!model.archived)return;
- $('roomFinalStatus').textContent=x.settled===18?'OFFICIAL FINAL RESULT':'ARCHIVED · PARTIAL MATCH';
+ $('roomFinalStatus').textContent=x.skinsPending?'ARCHIVED · INCOMPLETE SKINS':x.settled===18?'OFFICIAL FINAL RESULT':'ARCHIVED · PARTIAL MATCH';
  $('roomFinalMeta').textContent=model.format.toUpperCase()+' · '+settlementLabel(model,x)+' · $'+model.stake+' per unit';
  $('roomFinalPayouts').replaceChildren();
+ if(model.format==='nassau'&&x.settled<18){$('roomFinalStatus').textContent='ARCHIVED · INCOMPLETE NASSAU';$('roomFinalMeta').textContent='Not a final settlement · '+settlementLabel(model,x)+' · back-nine/overall may be pending';}
+ if(model.format==='skins'&&x.skinsPending)$('roomFinalMeta').textContent='Not a final settlement · '+settlementLabel(model,x);
  model.players.forEach((name,i)=>{
   const row=document.createElement('div');row.className='ledger-line';
   const player=document.createElement('span');player.textContent=name;
@@ -243,7 +264,7 @@ function renderMatchHistory(){
   card.append(title);
   const body=document.createElement('div');body.className='ledger-hole';
   const x=compute(record);
-  const note=document.createElement('p');note.className='game-note';note.textContent=settlementLabel(record,x);body.append(note);
+  const note=document.createElement('p');note.className='game-note';note.textContent=((record.format==='nassau'&&x.settled<18)?'INCOMPLETE NASSAU · NOT FINAL · ':x.skinsPending?'INCOMPLETE SKINS · NOT FINAL · ':'')+settlementLabel(record,x);body.append(note);
   record.players.forEach((name,i)=>{const line=document.createElement('div');line.className='ledger-line';const label=document.createElement('span');label.textContent=name;const amount=document.createElement('strong');amount.textContent=money(x.totals[i]);line.append(label,amount);body.append(line);});
   const holes=document.createElement('details');holes.className='ledger-detail';
   const holeTitle=document.createElement('summary');holeTitle.textContent='Review hole-by-hole results';holes.append(holeTitle);
@@ -260,9 +281,92 @@ function renderMatchHistory(){
 function roomLink(){const url=new URL(window.location.href);url.search='';url.hash='';url.searchParams.set('room',roomId);url.searchParams.set('invite',invite);return url.toString();}
 function parseInvite(input){return invitationFrom(input)||{id:'',code:''};}
 const rand=(size)=>{const a=new Uint8Array(size);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('');};
-async function connect(id){if(roomUnsub)roomUnsub();roomId=id;const version=++connectionVersion;
- const {doc,onSnapshot}=functions;
- roomUnsub=onSnapshot(doc(db,'rooms',id),snap=>{if(version!==connectionVersion||auth.currentUser?.uid!==user?.uid)return;if(!snap.exists()){status('Room not found, or access denied.');return;}room=snap.data();if(room.archived&&!snap.metadata?.hasPendingWrites&&!snap.metadata?.fromCache){archiveLocal();forgetRoom(roomStore,user.uid,roomId);}status('LIVE · Updates delivered across connected phones · '+roomLabel());render();},err=>{if(version===connectionVersion)status('Could not subscribe: '+err.message);});
+async function connect(id){
+ if(roomUnsub)roomUnsub();
+ roomUnsub=null;
+ // A previous room's controls must never survive the gap while connecting
+ // to a different room, even before Firestore sends its first snapshot.
+ roomServerFresh=false;
+ $('roomEditor').hidden=true;
+ $('roomSaveHole').disabled=true;
+ $('roomUndoHole').disabled=true;
+ $('roomFinish').disabled=true;
+ $('roomHole').disabled=true;
+ $('roomHostQr')?.remove();displayedQrLink='';
+ roomId=id;
+ const version=++connectionVersion,uid=auth.currentUser?.uid;
+ // Do not report a room as connected until a non-cached Firebase snapshot
+ // confirms the listener is permitted and the shared document exists.
+ let firstConfirmed=false;
+ try{
+  await readWithDeadline(()=>new Promise((resolve,reject)=>{
+   const {doc,onSnapshot}=functions;
+   let settled=false;
+   const fail=error=>{if(settled)return;settled=true;reject(error);};
+   const succeed=()=>{if(settled)return;settled=true;resolve();};
+   const disconnect=message=>{
+    if(version!==connectionVersion)return;
+    ++connectionVersion;
+    if(roomUnsub){roomUnsub();roomUnsub=null;}
+    roomId='';room=null;host=false;roomServerFresh=false;
+    $('roomScoreSection').hidden=true;
+    $('roomEditor').hidden=true;
+    $('roomSaveHole').disabled=true;
+    $('roomUndoHole').disabled=true;
+    $('roomFinish').disabled=true;
+    $('roomHostQr')?.remove();displayedQrLink='';
+    status(message+' Open the invitation again or reload to reconnect.');
+   };
+   // Firestore must emit metadata-only cache/server transitions, not just score changes.
+   // Without this option the offline lockout can miss a lost connection.
+   const unsubscribe=onSnapshot(doc(db,'rooms',id),{includeMetadataChanges:true},snap=>{
+    if(version!==connectionVersion||auth.currentUser?.uid!==uid)return;
+    // Firebase can initially report an empty local cache before the server
+    // confirms a perfectly valid room. Never reject an invite from cache alone.
+    // Cache-only snapshots mean the server is unverified: lock scoring and QR.
+    if(snap.metadata?.fromCache){
+     roomServerFresh=false;
+     $('roomEditor').hidden=true;
+     $('roomSaveHole').disabled=true;
+     $('roomUndoHole').disabled=true;
+     $('roomFinish').disabled=true;
+     $('roomHostQr')?.remove();displayedQrLink='';
+     status('Waiting for the live Money Room server… Scoring is locked until reconnected.');
+     return;
+    }
+    if(!snap.exists()){
+     if(firstConfirmed)disconnect('Live room disappeared. Scoring has stopped.');
+     else fail(Error('Money Room no longer exists or access was denied.'));
+     return;
+    }
+    // A local score write may temporarily have pendingWrites even with an
+    // established live server connection. Do not flash the host QR or editor
+    // off for a normal save; also never promote an unconfirmed room to LIVE.
+    if(snap.metadata?.hasPendingWrites){
+     status(roomServerFresh?'Saving to the connected Money Room…':'Waiting for the live Money Room server…');
+     return;
+    }
+    roomServerFresh=true;
+    room=snap.data();
+    if(!firstConfirmed&&room.archived){fail(Error('This Money Room has already finished. Ask the host for a new QR code.'));return;}
+    firstConfirmed=true;
+    if(room.archived){archiveLocal();forgetRoom(roomStore,uid,id);}
+    render();
+    status('LIVE · Server-confirmed room · '+roomLabel());
+    succeed();
+   },error=>{if(firstConfirmed)disconnect('Live room disconnected: '+error.message+'. Scoring has stopped.');else fail(error);});
+   roomUnsub=unsubscribe;
+  }));
+ }catch(error){
+  if(version===connectionVersion&&!firstConfirmed){
+   ++connectionVersion;
+   if(roomUnsub){roomUnsub();roomUnsub=null;}
+   if(roomId===id){roomId='';room=null;host=false;roomServerFresh=false;}
+   $('roomScoreSection').hidden=true;
+   $('roomEditor').hidden=true;
+  }
+  throw error;
+ }
 }
 async function create(){const attempt=++actionVersion;try{
  await initialization;
@@ -274,8 +378,8 @@ async function create(){const attempt=++actionVersion;try{
  if(needed&&players.length!==needed)throw Error(`${format} requires ${needed} players.`);
  const stake=Number($('roomStake').value);if(!Number.isFinite(stake)||stake<0||stake>10000)throw Error('Invalid stake.');
  const {doc,setDoc}=functions;const id=rand(16),code=rand(8);const model={name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
- await setDoc(doc(db,'rooms',id),model);assertOperation(attempt,operationUid);await setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()});assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);status('Money Room created. You are the ONLY scorekeeper. Share the invitation link.');
- }catch(e){if(attempt===actionVersion)status('Could not create room: '+e.message);}}
+ await readWithDeadline(()=>setDoc(doc(db,'rooms',id),model));assertOperation(attempt,operationUid);await readWithDeadline(()=>setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()}));assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);assertOperation(attempt,operationUid);status('Money Room created and LIVE. You are the ONLY scorekeeper. Share the QR invitation.');
+ }catch(e){if(attempt===actionVersion)status('Could not confirm room creation: '+e.message+(e.code==='unavailable'?' The network timed out; check your connection before starting another room.':'')+' No new room was confirmed on this phone.');}}
 async function join(){
  const attempt=++actionVersion;
  let stage='validation';
@@ -292,19 +396,20 @@ async function join(){
   const name=$('roomMe').value.trim()||'Guest';if(name.length>24)throw Error('Name is too long.');
   if(!user?.uid)throw Error('Anonymous authentication did not finish. Reload the app.');
   stage='member-registration';status('Verifying invitation and registering your membership…');
-  const {doc,setDoc,getDoc}=functions;
+  const {doc,setDoc,getDocFromServer}=functions;
   const memberRef=doc(db,'rooms',id,'members',user.uid);
-  await setDoc(memberRef,{uid:operationUid,name,invite:code,joined:Date.now()});
+  await readWithDeadline(()=>setDoc(memberRef,{uid:operationUid,name,invite:code,joined:Date.now()}));
   assertOperation(attempt,operationUid);
-  stage='room-access';status('Membership accepted. Opening the live scorecard…');
-  const snapshot=await getDoc(doc(db,'rooms',id));
+  stage='room-access';status('Membership accepted. Verifying the live scorecard…');
+  const snapshot=await readWithDeadline(()=>getDocFromServer(doc(db,'rooms',id)));
   assertOperation(attempt,operationUid);
   if(!snapshot.exists())throw Error('Room not found. Ask the scorekeeper for a new invitation.');
+  if(snapshot.data()?.archived)throw Error('This Money Room is already archived. Ask the host to start a new room.');
   invite=code;roomId=id;room=snapshot.data();
-  await connect(id);status('Membership verified. Connecting live updates…');
+  stage='live-subscription';await connect(id);assertOperation(attempt,operationUid);status('LIVE · Membership verified and shared scorecard connected.');
  }catch(e){
   if(attempt!==actionVersion)return;
-  let hint='';
+  let hint=e.code==='unavailable'?' Connection verification timed out. Check your signal and tap Join again.':'';
   if(e.code==='permission-denied'||/permissions/i.test(e.message)){
    hint=stage==='member-registration'?' The invite may be old or the member security rules may need updating. Confirm that your host sent the link for the currently active room.':' The membership was accepted, but the room read was denied. Check the published Firestore rules.';
   }
@@ -329,7 +434,7 @@ renderMatchHistory();
 $('roomSaveHole').onclick=singleFlight(async()=>{
  const savingRoomId=roomId,scorekeeperUid=auth?.currentUser?.uid;
  try{
- if(!host||!room||room.archived)throw Error('Only the active scorekeeper may edit.');
+ if(!host||!room||room.archived||!roomServerFresh)throw Error('Scoring requires a fresh server connection and the active scorekeeper.');
  session.assertIdentity(room.hostUid);
  const hole=Number($('roomHole').value);
  if(!Number.isInteger(hole)||hole<1||hole>18)throw Error('Choose a hole from 1 to 18.');
@@ -338,12 +443,20 @@ $('roomSaveHole').onclick=singleFlight(async()=>{
  await functions.updateDoc(functions.doc(db,'rooms',savingRoomId),{
   ['holes.'+hole]:scores,lastEditor:room.hostName,lastChange:Date.now()
  });
- if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Hole '+hole+' recorded and sent to connected members.');
+ if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid){
+  // Advance only when the scorekeeper still has the saved hole selected.
+  // Never jump away from a correction or a hole the user switched to mid-save.
+  if(hole<18&&Number($('roomHole').value)===hole){
+   $('roomHole').value=String(hole+1);
+   buildInputs(hole+1);
+  }
+  status('Hole '+hole+' recorded and sent to connected members.');
+ }
  }catch(e){if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid)status('Save failed: '+e.message);}
 });
 $('roomUndoHole').onclick=singleFlight(async()=>{
  const id=roomId,uid=auth?.currentUser?.uid;
- if(!host||!room||room.archived||uid!==room.hostUid)return;
+ if(!host||!room||room.archived||!roomServerFresh||uid!==room.hostUid)return;
  const recorded=Object.keys(room.holes||{}).map(Number).filter(h=>Number.isInteger(h)&&h>=1&&h<=18&&Array.isArray(room.holes[h]));
  const last=Math.max(0,...recorded);
  if(!last)return;
@@ -355,15 +468,28 @@ $('roomUndoHole').onclick=singleFlight(async()=>{
  }catch(e){if(roomId===id)status('Undo failed: '+e.message);}
 });
 $('roomFinish').onclick=singleFlight(async()=>{
- if(!host||!room||room.archived||auth.currentUser?.uid!==room.hostUid)return;
+ if(!host||!room||room.archived||!roomServerFresh||auth.currentUser?.uid!==room.hostUid)return;
  const id=roomId,uid=auth.currentUser.uid,x=compute(room);
+ if(room.format==='nassau'&&x.settled<18){status('Nassau is not fully settled. Enter all 18 holes before finishing the Money Room. No results were archived.');return;}
+ if(room.format==='skins'&&x.skinsPending){status('Skins cannot finish while a later scored hole is blocked by an earlier missing score. Fill the missing hole first. No results were archived.');return;}
  const incomplete=x.settled<18?' Only '+x.settled+' of 18 holes are scored.':'';
- const carry=room.format==='skins'&&x.carry>1?' '+(x.carry-1)+' carried skin(s) remain unawarded.':'';
+ const carry=room.format==='skins'?(x.skinsPending?' Later skins are pending earlier unscored holes.':x.carry>1?' '+(x.carry-1)+' carried skin(s) remain unawarded.':''):'';
  if(!confirm('Finish and archive this match for everyone?'+incomplete+carry+' Final payouts will be shown. This cannot be undone.'))return;
  try{
   session.assertIdentity(room.hostUid);
-  await functions.updateDoc(functions.doc(db,'rooms',id),{archived:true,lastChange:Date.now()});
-  if(roomId===id&&auth.currentUser?.uid===uid)status('Match finished. Final settlement is displayed below and saved to match history on this phone.');
+  // Commit only against the current server document. A second tab or stale
+  // snapshot must never finalize a partially scored Nassau.
+  await functions.runTransaction(db,async transaction=>{
+   const ref=functions.doc(db,'rooms',id),snap=await transaction.get(ref);
+   if(!snap.exists())throw Error('Money Room no longer exists.');
+   const current=snap.data();
+   if(current.hostUid!==uid)throw Error('Only the current scorekeeper may finish this match.');
+   if(current.archived)throw Error('This Money Room is already archived.');
+   if(current.format==='nassau'&&compute(current).settled!==18)throw Error('Nassau still has unscored holes. Refresh the room before finishing.');
+   if(current.format==='skins'&&compute(current).skinsPending)throw Error('Skins has an unscored hole before a later result. Complete the missing hole first.');
+   transaction.update(ref,{archived:true,lastChange:Date.now(),lastEditor:current.hostName||'Scorekeeper'});
+  });
+  if(roomId===id&&auth.currentUser?.uid===uid)status('Match archived on the server. Final settlement will appear after the confirmed room update.');
  }catch(e){if(roomId===id)status('Finish failed: '+e.message);}
 });
 async function init(){if(!isConfigured){status('Local mode · Live sync is not configured. See SETUP_FIREBASE.md. Local games and Betting still work.');return;}
@@ -377,7 +503,7 @@ async function init(){if(!isConfigured){status('Local mode · Live sync is not c
    if(user?.uid!==next?.uid){
      if(user?.uid){++actionVersion;forgetRoom(roomStore,user.uid);}
      ++connectionVersion;if(roomUnsub)roomUnsub();roomUnsub=null;
-     room=null;roomId='';invite='';host=false;invitationSharing.clear();
+     room=null;roomId='';invite='';host=false;roomServerFresh=false;invitationSharing.clear();
      $('roomHostQr')?.remove(); displayedQrLink='';
      $('roomScoreSection').hidden=true;
      $('roomEditor').hidden=true;

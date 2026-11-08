@@ -1,0 +1,249 @@
+name: Friday Ghost QA
+on:
+  push:
+    branches:
+      - release/friday-staging-20261106
+  pull_request:
+    paths:
+      - 'house-ghost-*.js'
+      - 'playtest/ghost-preview.html'
+      - 'playtest/index.html'
+      - 'tests/*ghost*.test.mjs'
+      - 'tests/friday-money-room-guard.test.mjs'
+      - 'tests/friday-room-recovery.test.mjs'
+      - 'tests/friday-ledger-settlement.test.mjs'
+      - 'ledger-settlement.js'
+      - 'bbb-money.js'
+      - 'tests/friday-bbb-settlement.test.mjs'
+      - 'tests/friday-course-switch.test.mjs'
+      - 'course-catalog.js'
+      - 'course-identity.js'
+      - 'yardage-book.js'
+      - 'tests/friday-yardage-book.test.mjs'
+      - 'tests/friday-yardage-entry.test.mjs'
+      - 'playtest/yardage-preview.html'
+      - 'yardage-selection.js'
+      - 'round-yardage-transition.js'
+      - 'tests/friday-round-yardage-transition.test.mjs'
+      - 'tests/friday-yardage-roundtrip.test.mjs'
+      - 'tests/friday-yardage-navigation.test.mjs'
+      - 'playtest/yardage-navigation.js'
+      - 'playtest/course-pencil-geometry.js'
+      - 'playtest/yardage-pencil-orientation.js'
+      - 'tests/friday-pencil-orientation.test.mjs'
+      - 'tests/friday-yardage-attack-plan.test.mjs'
+      - 'tests/friday-bayonet-osm-trouble.test.mjs'
+      - 'playtest/bayonet-osm-trouble.js'
+      - 'tests/friday-pencil-book-annotations.test.mjs'
+      - 'tests/friday-shared-hole-sketch.test.mjs'
+      - 'tests/friday-ghost-tier-preview.test.mjs'
+      - 'playtest/shared-hole-sketch.js'
+      - 'playtest/pencil-book-annotations.js'
+      - 'tests/friday-course-pencil-geometry.test.mjs'
+      - 'playtest/clubhouse-home.js'
+      - 'playtest/yardage-caddy-handoff.js'
+      - 'playtest/round-score-snapshot.js'
+      - 'playtest/paper-to-game-prefill.js'
+      - 'tests/friday-paper-game-prefill.test.mjs'
+      - 'playtest/foursome-money-math.js'
+      - 'tests/friday-foursome-money-math.test.mjs'
+      - 'tests/friday-round-score-snapshot.test.mjs'
+      - 'playtest/round-score-pulse.js'
+      - 'tests/friday-round-score-pulse.test.mjs'
+      - 'tests/friday-round-game-score-adapter.test.mjs'
+      - 'playtest/bayonet-verified-scorecard.js'
+      - 'tests/friday-bayonet-scorecard.test.mjs'
+      - 'playtest/course-scorecard-reconcile.js'
+      - 'tests/friday-course-scorecard-reconcile.test.mjs'
+      - 'playtest/yardage-caddy-arrival.js'
+      - 'tests/friday-yardage-caddy-handoff.test.mjs'
+      - 'tests/friday-release-entrypoints.test.mjs'
+      - 'tests/friday-release-gate.test.mjs'
+      - 'round-receipt.js'
+      - 'playtest/19th-hole.html'
+      - 'tests/friday-round-receipt.test.mjs'
+      - 'tests/friday-playable-code-parity.test.mjs'
+      - 'tests/friday-game-yardage-roundtrip.test.mjs'
+      - 'playtest/bbb-money.js'
+      - 'playtest/ledger-settlement.js'
+      - 'playtest/room-recovery.js'
+      - 'playtest/invitation-qr.js'
+      - 'tests/friday-yardage-selection.test.mjs'
+      - 'money-room.js'
+      - 'playtest/money-room.js'
+      - 'playtest/room-session.js'
+      - 'tests/friday-game-score-preview.spec.mjs'
+      - 'tests/friday-browser.spec.mjs'
+      - 'invitation-qr.js'
+      - 'room-recovery.js'
+      - '.github/workflows/friday-ghost-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ghost-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and deterministic House Ghost test suite
+        run: |
+          node --check house-ghost-trail.js
+          node --check house-ghost-round.js
+          node --check house-ghost-ledger.js
+          node --check house-ghost-playback.js
+          node --test tests/*.test.mjs
+
+      - name: Check staging-only deploy helper syntax
+        run: bash -n qa/deploy-friday-preview.sh
+      - name: Package tested Friday candidate
+        if: success()
+        run: |
+          mkdir -p candidate
+          cp -R playtest candidate/playtest
+          cp yardage-book.js yardage-selection.js course-weather-context.js course-identity.js round-yardage-transition.js candidate/
+          cp house-ghost-trail.js house-ghost-round.js house-ghost-ledger.js house-ghost-playback.js candidate/
+          cp round-receipt.js candidate/
+          git rev-parse HEAD > candidate/FRIDAY_CHECKED_OUT_SHA.txt
+          printf '%s\n' "${{ github.event.pull_request.head.sha || github.sha }}" > candidate/FRIDAY_BRANCH_SHA.txt
+          printf '%s\n' "${{ github.event_name }}" > candidate/FRIDAY_BUILD_EVENT.txt
+          printf '%s\n' 'PR builds use a GitHub merge commit; BRANCH_SHA identifies the proposed branch, CHECKED_OUT_SHA identifies exact tested bytes.' > candidate/README_SHA.txt
+      - name: Validate candidate local assets and module imports
+        run: python3 tests/friday-bundle-integrity.py
+      - name: Upload preflight-only candidate for browser verification
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dagger-friday-preflight
+          path: candidate/
+          retention-days: 14
+
+  browser-smoke:
+    needs: ghost-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium test runner
+        timeout-minutes: 12
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Download exactly the preflight candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: dagger-friday-preflight
+          path: candidate
+      - name: Verify browser checkout matches packaged candidate
+        run: |
+          test "$(git rev-parse HEAD)" = "$(cat candidate/FRIDAY_CHECKED_OUT_SHA.txt)"
+          python3 tests/friday-bundle-integrity.py candidate
+      - name: Serve Friday candidate locally
+        run: python3 -m http.server 8765 --bind 127.0.0.1 --directory candidate > /tmp/dagger-http.log 2>&1 &
+      - name: Verify packaged candidate HTTP server is ready
+        run: |
+          python3 - <<'PY'
+          import time
+          import urllib.request
+          url = 'http://127.0.0.1:8765/playtest/'
+          for attempt in range(30):
+              try:
+                  with urllib.request.urlopen(url, timeout=1) as response:
+                      body = response.read()
+                      if response.status == 200 and b'Dagger' in body:
+                          print('Friday candidate served successfully')
+                          break
+              except Exception:
+                  pass
+              time.sleep(0.25)
+          else:
+              raise SystemExit('Friday candidate HTTP server did not become ready')
+          PY
+      - name: Run real-browser Games and Yardage Book acceptance
+        timeout-minutes: 12
+        run: npx playwright test tests/friday-browser.spec.mjs tests/friday-game-score-preview.spec.mjs --project=chromium --workers=2 --reporter=line --trace=retain-on-failure
+      - name: Publish browser failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dagger-friday-browser-failure
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Stamp browser-verified provenance on this exact candidate
+        if: success()
+        run: |
+          test "$(git rev-parse HEAD)" = "$(cat candidate/FRIDAY_CHECKED_OUT_SHA.txt)"
+          cp candidate/FRIDAY_CHECKED_OUT_SHA.txt candidate/FRIDAY_BROWSER_VERIFIED_SHA.txt
+
+      - name: Publish verified Friday candidate only after browser smoke passes
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dagger-friday-candidate
+          path: candidate/
+          retention-days: 14
+
+      - name: Upload visual smoke snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dagger-friday-visuals
+          path: candidate-screenshots/
+          retention-days: 14
+
+  staging-preview:
+    needs: browser-smoke
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release/friday-staging-20261106'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: dagger-friday-candidate
+          path: candidate
+      - name: Check exact verified candidate before staging authorization
+        run: |
+          test "$GITHUB_SHA" = "$(cat candidate/FRIDAY_CHECKED_OUT_SHA.txt)"
+          test "$GITHUB_SHA" = "$(cat candidate/FRIDAY_BROWSER_VERIFIED_SHA.txt)"
+          python3 tests/friday-bundle-integrity.py candidate
+          node --input-type=module -e "import {firebaseConfig} from './candidate/playtest/firebase-config.js'; if (firebaseConfig.projectId !== 'dagger-country-club-staging') process.exit(1)"
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+      - name: Publish isolated exact-commit Firebase preview
+        run: |
+          set -euo pipefail
+          npm install --global firebase-tools@14.22.0
+          export DCC_FRIDAY_CHANNEL="friday-${GITHUB_SHA:0:10}"
+          printf '%s\n' 'DEPLOY STAGING' | bash qa/deploy-friday-preview.sh "$PWD/candidate" | tee "$RUNNER_TEMP/dagger-preview.log"
+          preview_url="$(python3 - "$RUNNER_TEMP/dagger-preview.log" <<'PYTHON'
+          import re
+          import sys
+          from pathlib import Path
+          found = re.search(r'https://dagger-country-club-staging--friday-[a-f0-9]{10}-[a-z0-9-]+\.web\.app', Path(sys.argv[1]).read_text())
+          if not found:
+              raise SystemExit('No isolated staging preview URL returned')
+          print(found.group())
+          PYTHON
+          )"
+          curl --fail --retry-all-errors --retry 8 --retry-delay 2 --max-time 20 "$preview_url/FRIDAY_BROWSER_VERIFIED_SHA.txt" -o "$RUNNER_TEMP/hosted-sha.txt"
+          cmp candidate/FRIDAY_BROWSER_VERIFIED_SHA.txt "$RUNNER_TEMP/hosted-sha.txt"
+          curl --fail --retry-all-errors --retry 8 --retry-delay 2 --max-time 20 "$preview_url/playtest/hole-sketch.js" -o "$RUNNER_TEMP/hosted-sketch.js"
+          cmp candidate/playtest/hole-sketch.js "$RUNNER_TEMP/hosted-sketch.js"
+          printf 'Verified staging preview %s/playtest/ for %s\n' "$preview_url" "$GITHUB_SHA" | tee -a "$GITHUB_STEP_SUMMARY"

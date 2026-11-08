@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>House Ghost · Shot Trail | Dagger Country Club</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f5f0e5;color:#143126;font:16px/1.5 Georgia,serif}
+main{max-width:530px;margin:auto;padding:20px 15px 50px}header{border-bottom:3px solid #b79c62;padding-bottom:14px}h1{margin:6px 0;font-size:29px}
+small,.note{color:#5c645e}.notice{padding:12px;border:1px solid #bdad8a;background:#fff9e9;border-radius:12px;margin:17px 0}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}label{display:block;font-size:13px;font-weight:bold}
+select,button{width:100%;min-height:44px;border-radius:9px;padding:9px;border:1px solid #b6a680;background:#fff;color:#143126;font-size:16px}
+button{background:#143126;color:white;font-weight:700}button:disabled{opacity:.4}
+svg{display:block;width:100%;height:auto;background:#d8dfcf;border:1px solid #97a58a;border-radius:14px}
+article{border:1px solid #cfc2a6;border-radius:13px;background:#fffdf7;padding:13px;margin:12px 0}
+ol{padding-left:24px}li{padding:5px 0}a{color:#143126}
+.dcc-ghost-tracer{filter:drop-shadow(0 0 4px rgba(255,230,124,.7))}@keyframes dcc-trace-draw{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}.ghost-watch{background:#b79c62;color:#142c22}.ghost-note{font:12px/1.45 system-ui,sans-serif;color:#5c645e}
+.ghost-hole-paper{background:#f4ecd5;border:1px solid #b6aa88;border-radius:12px;padding:12px;margin:12px 0}
+.ghost-hole-paper #trail{background:#f4ecd5;border:1px dashed #a8a084;border-radius:6px;max-height:none}
+.ghost-hole-paper #ghostHoleSketch{border:0;background:transparent;border-radius:0;max-height:none}
+.ghost-hole-paper small{display:block;margin:6px 0;color:#455548;font:12px/1.4 system-ui,sans-serif}
+
+body.match {background:#f5f0e5}
+.match main {padding:0;max-width:none}
+.match header,.match .notice,.match #practiceControls {display:none}
+.match article {border:0;border-radius:0;margin:0;padding:10px;background:transparent}
+.match .ghost-hole-paper {margin:8px 0;padding:6px}
+.match #ghostStageTitle {display:none}
+.match article + article {border-top:1px solid #cfc2a6}
+.match #summary,.match #progress {margin:4px 0;font:13px/1.45 system-ui,sans-serif}
+@media(prefers-reduced-motion:reduce){.dcc-ghost-tracer{animation:none!important;stroke-dashoffset:0!important}}
+.ghost-info{margin:5px 0 13px;font:12px/1.4 system-ui,sans-serif;color:#647268}
+.ghost-info>summary{cursor:pointer;display:inline-block;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.ghost-info p{font-size:12px;margin:7px 0 0;padding:9px 10px;background:#f9f4e8;border-left:2px solid #b79c62;border-radius:4px}
+</style></head><body><main><header><small>DAGGER COUNTRY CLUB · HOUSE GHOST</small><h1>House Ghost · Shot Trail</h1><a id="ghostBack" href="./">← Back to The Clubhouse</a></header>
+<details class="ghost-info"><summary>About Ghost play</summary><p>Ghost shots are simulated, not measured ball flights. This playback does not change scores, games, or wagers.</p></details>
+<div class="controls" id="practiceControls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
+<article><strong id="headline">Loading…</strong><p id="summary"></p>
+<div class="ghost-hole-paper" aria-label="Shared caddy-book sketch with illustrative Ghost flight"><strong id="ghostStageTitle">✎ Caddy book · Ghost on the hole</strong>
+<svg id="trail" viewBox="0 0 300 220" role="img" aria-label="One pencil hole sketch with simulated Ghost shot trails, not GPS">
+ <svg id="ghostHoleSketch" x="0" y="0" width="300" height="220" viewBox="0 0 300 220" aria-label="Mapped hole features, when available"></svg>
+ <g id="traces" transform="scale(0.9375 0.51162790698)"></g>
+ <g id="markers" transform="scale(0.9375 0.51162790698)"></g>
+</svg><small id="ghostMapStatus">Ghost shots are illustrative overlays, not measured GPS positions.</small></div>
+<div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button>
+<p id="progress" role="status"></p></article>
+<article><strong>Shots played</strong><ol id="shots"></ol></article>
+</main><script type="module">
+import {ghostShotPlayback} from '../house-ghost-playback.js?v=ghost-match-1';
+import {ACTIVE_ROUND_KEY,readActiveRound} from './starters-desk-session.js';
+import {loadYardageState} from './yardage-live.js';
+import {drawGhostTracer} from './ghost-tracer.js?v=friday-book-1';
+import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-reference-2';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=founders-reference-2';
+import {readYardageHole} from './yardage-navigation.js';
+import {pencilOrientation} from './yardage-pencil-orientation.js';
+const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
+const TIER_NAMES=Object.freeze({scratch:'The Undertaker',fiveTen:'The Sandbagger',tenFifteen:'The Weekend Menace',fifteenTwenty:'The Liability'});
+const params=new URLSearchParams(location.search);
+let matchDraft=null;
+if(params.get('match')==='1'){
+ document.body.classList.add('match');
+ try {
+  const draft=JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'));
+  const pending=draft?.pending;
+  if(pending&&Object.hasOwn(TIER_NAMES,draft.tier)&&[9,18].includes(draft.holesPlanned)&&
+     Number.isInteger(pending.hole)&&pending.hole>=1&&pending.hole<=draft.holesPlanned&&
+     [3,4,5].includes(pending.par)&&Number.isInteger(pending.ghost)&&pending.ghost>=1&&pending.ghost<=20)matchDraft=draft;
+ } catch {}
+}
+// iOS Safari does not reliably hand a vertical swipe from a tall same-origin
+// iframe back to its parent page. Relay touch scrolling only when the Ghost
+// player is embedded; keep the shot controls clickable and the tracer intact.
+if(window.parent!==window&&document.body.classList.contains('match')){
+ let lastTouchY=null,lastTouchX=null;
+ document.addEventListener('touchstart',event=>{
+  if(event.touches.length!==1)return;
+  lastTouchY=event.touches[0].clientY;
+  lastTouchX=event.touches[0].clientX;
+ },{passive:true});
+ document.addEventListener('touchmove',event=>{
+  if(event.touches.length!==1||lastTouchY===null)return;
+  const y=event.touches[0].clientY,x=event.touches[0].clientX;
+  const dy=y-lastTouchY,dx=x-lastTouchX;
+  lastTouchY=y;lastTouchX=x;
+  if(Math.abs(dy)<=Math.abs(dx)||Math.abs(dy)<1)return;
+  // A gesture that starts over a control still scrolls the page, but taps
+  // keep native behavior because they do not trigger touchmove.
+  if(event.cancelable)event.preventDefault();
+  window.parent.postMessage({type:'dcc:ghost-parent-scroll',deltaY:-dy},location.origin);
+ },{passive:false});
+ document.addEventListener('touchend',()=>{lastTouchY=null;lastTouchX=null},{passive:true});
+ document.addEventListener('touchcancel',()=>{lastTouchY=null;lastTouchX=null},{passive:true});
+}
+const matchHole=matchDraft?.pending;
+const nativeNine=!matchDraft&&readActiveRound(localStorage)?.selection.course.holeCount===9;
+const requestedTier=matchDraft?.tier??params.get('tier');
+const requestedHole=Number(params.get('hole'));
+const firstHole=Number.isInteger(requestedHole)&&requestedHole>=1&&requestedHole<=18
+ ?requestedHole:readYardageHole({session:sessionStorage,local:localStorage});
+let savedTier=null;try{savedTier=sessionStorage.getItem('dccGhostPreviewTier')}catch{}
+const ghostTier=Object.hasOwn(TIER_NAMES,requestedTier)?requestedTier:
+ Object.hasOwn(TIER_NAMES,savedTier)?savedTier:'tenFifteen';
+let selectedCourse=null;let verifiedHoles=[];let courseIdentity='friday-qa';
+let activeCourseSelection=null,sketchGeneration=0;
+let currentRoute=null,sketchPending=null;
+function sizeStage(height){
+ $('trail').setAttribute('viewBox','0 0 '+SKETCH_WIDTH+' '+height);
+ $('ghostHoleSketch').setAttribute('height',height);
+ const scale='scale('+(SKETCH_WIDTH/320)+' '+(height/430)+')';
+ for(const id of ['traces','markers'])$(id).setAttribute('transform',scale);
+}
+function showUnmappedPencil(holeNumber){
+ const svg=$('ghostHoleSketch');
+ const facts=verifiedHoles.find(h=>h.number===holeNumber);
+ sizeStage(220);
+ svg.setAttribute('viewBox','0 0 300 220');
+ svg.innerHTML=pencilOrientation({holeNumber,par:facts?.par,yards:facts?.yards}).svg;
+}
+async function updateGhostHoleSketch(){
+ const generation=++sketchGeneration;
+ sketchPending?.abort();
+ currentRoute=null;
+ const holeNumber=Number($('hole').value);
+ if(params.get('from')==='yardage')$('ghostBack').href='yardage-preview.html?hole='+holeNumber;
+ const svg=$('ghostHoleSketch'),status=$('ghostMapStatus');
+ showUnmappedPencil(holeNumber);
+ render();
+ if(!activeCourseSelection){
+  status.textContent='Hole geography unavailable · simulated strokes.';
+  return;
+ }
+ const controller=new AbortController();
+ sketchPending=controller;
+ status.textContent='Checking course artwork for hole '+holeNumber+'…';
+ try{
+  const sketch=await loadHoleSketch(activeCourseSelection,holeNumber,{signal:controller.signal});
+  if(generation!==sketchGeneration)return;
+  if(sketch.coverage==='scorecard'){
+   status.textContent='No mapped hole outlines available. Simulated strokes.';
+   return;
+  }
+  sizeStage(SKETCH_HEIGHT);
+  renderSharedHoleSketch(svg,sketch.shapes,sketch.annotations,{height:SKETCH_HEIGHT});
+  currentRoute=sketch.annotations.route;
+  status.textContent='Same mapped pencil drawing as Yardage Book. Simulated flights. ';
+  if(sketch.source){
+   const credit=document.createElement('a');
+   credit.href=sketch.source;credit.textContent=sketch.credit;status.append(credit);
+  }
+  render();
+ }catch{
+  if(generation===sketchGeneration)status.textContent='Hole geography unavailable · simulated strokes.';
+ }
+}
+
+if(matchHole){$('back').textContent='Previous shot';$('next').textContent='Next shot';}
+function stopWatch(){if(watchTimer!==null){clearInterval(watchTimer);watchTimer=null;}$('watch').textContent=matchHole?'▶ Replay hole':'▶ Watch Ghost play the hole'}
+for(let n=1;n<=(nativeNine?9:18);n++)$('hole').add(new Option('Hole '+n,n));
+$('hole').value=String(matchHole?.hole??(nativeNine?Math.min(firstHole,9):firstHole));
+if(matchDraft)$('length').value=String(matchDraft.holesPlanned);
+if(nativeNine){$('length').value='9';$('length').disabled=true}
+if(params.get('from')==='yardage')$('ghostBack').textContent='← Back to Yardage Book';
+function render(){
+ const count=Number($('length').value),holeNumber=Number($('hole').value);
+ const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity,tier:ghostTier,matchHole});
+ revealed=state.shotsRevealed;
+ $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par+(state.complete?' · Ghost '+state.score:' · Ghost playing');
+ $('summary').textContent=(selectedCourse?selectedCourse+' · ':'Practice defaults · ')+(matchHole?'':state.coverage==='scorecard'?'selected-tee par & yards verified · ':'unverified hole facts · ')+state.label;
+ const placement=placeGhostShots(state.visibleShots,currentRoute);
+ drawGhostTracer($('trail'),placement.shots,{start:placement.start,animateLast:revealed>lastRendered});lastRendered=revealed;
+ $('markers').replaceChildren();
+ const ns='http://www.w3.org/2000/svg';
+ placement.shots.forEach((shot,i)=>{
+  const dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',String(shot.x*320));dot.setAttribute('cy',String(shot.y*430));dot.setAttribute('r','10');dot.setAttribute('fill','#143126');dot.setAttribute('stroke','#fff');dot.setAttribute('stroke-width','2');
+  const label=document.createElementNS(ns,'text');label.setAttribute('x',String(shot.x*320));label.setAttribute('y',String(shot.y*430+4));label.setAttribute('text-anchor','middle');label.setAttribute('font-size','12');label.setAttribute('fill','#fff');label.textContent=String(i+1);
+  $('markers').append(dot,label);
+ });
+ $('shots').replaceChildren();state.visibleShots.forEach(s=>{const li=document.createElement('li');li.textContent=s.club+' · '+s.distanceLabel+' · '+s.lie;$('shots').append(li)});
+ $('progress').textContent=state.complete?'Holed out in '+state.score+' strokes':revealed===0?'Ghost on the tee':revealed+' '+(revealed===1?'stroke':'strokes')+' played · still on the hole';
+ $('back').disabled=!state.canRewind;$('next').disabled=!state.canAdvance;
+ if(state.complete)stopWatch();
+}
+$('next').addEventListener('click',()=>{stopWatch();revealed++;render()});$('back').addEventListener('click',()=>{stopWatch();revealed=Math.max(0,revealed-1);render()});
+$('watch').addEventListener('click',()=>{if(watchTimer!==null){stopWatch();return;}if($('next').disabled){revealed=0;lastRendered=0;render();}revealed++;render();if($('next').disabled)return;$('watch').textContent='Ⅱ Pause Ghost';watchTimer=setInterval(()=>{revealed++;render()},1500)});
+$('hole').addEventListener('change',()=>{stopWatch();revealed=0;lastRendered=0;render();void updateGhostHoleSketch()});$('length').addEventListener('change',()=>{stopWatch();if(Number($('hole').value)>9)$('hole').value='1';for(const o of $('hole').options)o.disabled=Number(o.value)>Number($('length').value);revealed=0;render();void updateGhostHoleSketch()});render();void updateGhostHoleSketch();
+// Read only the Starter's Desk course selection and validated hole facts; no wager or score writes.
+const storage=matchDraft?{
+ getItem:key=>key===ACTIVE_ROUND_KEY?matchDraft.course:localStorage.getItem(key),
+ setItem:(key,value)=>localStorage.setItem(key,value)
+}:localStorage;
+const timeout=new AbortController();
+const timeoutId=setTimeout(()=>timeout.abort(),3000);
+loadYardageState({storage,signal:timeout.signal,holeNumber:matchHole?.hole??firstHole}).then(async context=>{
+ if(!context?.hasCourse)return;
+ const selection=context.selection;
+ selectedCourse=selection.course?.name||'Selected course';
+ const tee=selection.tee?.name||'Selected tees';
+ selectedCourse+=' · '+tee;
+ courseIdentity=String(selection.course?.providerCourseId||selectedCourse)+'|'+String(selection.tee?.providerTeeId||tee);
+ verifiedHoles=context.holes||[];
+ activeCourseSelection=selection;
+ stopWatch();revealed=0;lastRendered=0;render();await updateGhostHoleSketch();
+}).catch(()=>{/* Existing labeled practice fallback remains available offline. */}).finally(()=>{
+ clearTimeout(timeoutId);
+ if(matchHole&&revealed===0&&watchTimer===null)$('watch').click();
+});
+</script></body></html>

@@ -1,0 +1,299 @@
+{
+  "course_ref": "nc/pudding-ridge",
+  "boundary_type": "relation",
+  "boundary": "6876532",
+  "identity": {
+    "addr:city": "Mocksville",
+    "addr:housenumber": "224",
+    "addr:street": "Cornwallis Drive",
+    "leisure": "golf_course",
+    "name": "Pudding Ridge Golf Club"
+  },
+  "source": "https://download.geofabrik.de/north-america/us/north-carolina-261106.osm.pbf",
+  "sha256": "00895c2182ec9f15fe5a63b806f404523a03d6d3d94e3aacf008f33ec5cafdc2",
+  "holes": [
+    {
+      "route": "1065886227",
+      "mappedPar": "4",
+      "green": [
+        "w1065877527"
+      ],
+      "tee": [
+        "w1065886222"
+      ],
+      "fairway": [
+        "r19301834"
+      ]
+    },
+    {
+      "route": "1065886232",
+      "mappedPar": "3",
+      "green": [
+        "w1065877528"
+      ],
+      "tee": [
+        "w1065886229"
+      ],
+      "fairway": [
+        "r19301831"
+      ],
+      "bunker": [
+        "w1065877541"
+      ]
+    },
+    {
+      "route": "1065886237",
+      "mappedPar": "4",
+      "green": [
+        "w1065877520"
+      ],
+      "tee": [
+        "w1065886233"
+      ],
+      "fairway": [
+        "w1065886239"
+      ],
+      "bunker": [
+        "w1065877542",
+        "w1065877543"
+      ],
+      "water": [
+        "w1065886240"
+      ]
+    },
+    {
+      "route": "1065886245",
+      "mappedPar": "4",
+      "green": [
+        "w1065877521"
+      ],
+      "tee": [
+        "w1065886244"
+      ],
+      "fairway": [
+        "r19301850"
+      ],
+      "bunker": [
+        "w1065877549"
+      ]
+    },
+    {
+      "route": "1065886252",
+      "mappedPar": "5",
+      "green": [
+        "w1065877516"
+      ],
+      "tee": [
+        "w1065886246"
+      ],
+      "fairway": [
+        "r19301848"
+      ],
+      "bunker": [
+        "w1065877548"
+      ]
+    },
+    {
+      "route": "1065886259",
+      "mappedPar": "4",
+      "green": [
+        "w1065877518"
+      ],
+      "tee": [
+        "w1065886253"
+      ],
+      "fairway": [
+        "r19301847"
+      ]
+    },
+    {
+      "route": "1065886263",
+      "mappedPar": "3",
+      "green": [
+        "w1065877517"
+      ],
+      "tee": [
+        "w1065886260"
+      ],
+      "fairway": [
+        "r19301846"
+      ],
+      "bunker": [
+        "w1065877547"
+      ]
+    },
+    {
+      "route": "1065886265",
+      "mappedPar": "4",
+      "green": [
+        "w1065877519"
+      ],
+      "tee": [
+        "w1065877588"
+      ],
+      "fairway": [
+        "r19301852"
+      ],
+      "bunker": [
+        "w1065877544",
+        "w1065877545",
+        "w1065877546"
+      ]
+    },
+    {
+      "route": "1065886271",
+      "mappedPar": "4",
+      "green": [
+        "w1065877526"
+      ],
+      "tee": [
+        "w1065886266"
+      ],
+      "fairway": [
+        "r19301832"
+      ],
+      "bunker": [
+        "w1065877540"
+      ]
+    },
+    {
+      "route": "1065877536",
+      "mappedPar": "4",
+      "green": [
+        "w1065877524"
+      ],
+      "tee": [
+        "w1065877531"
+      ],
+      "fairway": [
+        "r19301833"
+      ],
+      "bunker": [
+        "w1065877537"
+      ]
+    },
+    {
+      "route": "1065886211",
+      "mappedPar": "5",
+      "green": [
+        "w1065877514"
+      ],
+      "tee": [
+        "w1065877557"
+      ],
+      "fairway": [
+        "w1065877560",
+        "w1065877561"
+      ],
+      "bunker": [
+        "w1065877550"
+      ]
+    },
+    {
+      "route": "1065886212",
+      "mappedPar": "3",
+      "green": [
+        "w1065877515"
+      ],
+      "tee": [
+        "w1065877577"
+      ],
+      "fairway": [
+        "r19301844"
+      ],
+      "water": [
+        "w1065877554"
+      ]
+    },
+    {
+      "route": "1065886213",
+      "mappedPar": "4",
+      "green": [
+        "w1065877585"
+      ],
+      "tee": [
+        "w1065877580"
+      ],
+      "fairway": [
+        "w1065877584"
+      ]
+    },
+    {
+      "route": "1065886219",
+      "mappedPar": "5",
+      "green": [
+        "w1065877513"
+      ],
+      "tee": [
+        "w1065886218"
+      ],
+      "fairway": [
+        "r19301845"
+      ],
+      "bunker": [
+        "w1065877574"
+      ]
+    },
+    {
+      "route": "1065886220",
+      "mappedPar": "4",
+      "green": [
+        "w1065877512"
+      ],
+      "tee": [
+        "w1065877573"
+      ],
+      "fairway": [
+        "w1065877563"
+      ]
+    },
+    {
+      "route": "1065886221",
+      "mappedPar": "4",
+      "green": [
+        "w1065877522"
+      ],
+      "tee": [
+        "w1065877569"
+      ],
+      "fairway": [
+        "r19301830"
+      ],
+      "bunker": [
+        "w1065877552"
+      ]
+    },
+    {
+      "route": "1065886203",
+      "mappedPar": "3",
+      "green": [
+        "w1065877523"
+      ],
+      "tee": [
+        "w1065886202"
+      ],
+      "fairway": [
+        "r19301828"
+      ],
+      "bunker": [
+        "w1065877538"
+      ]
+    },
+    {
+      "route": "1065886209",
+      "mappedPar": "4",
+      "green": [
+        "w1065877525"
+      ],
+      "tee": [
+        "w1065886204"
+      ],
+      "fairway": [
+        "w1065886207"
+      ],
+      "bunker": [
+        "w1065877539"
+      ]
+    }
+  ]
+}

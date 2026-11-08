@@ -1,0 +1,873 @@
+{
+  "source": "https://download.geofabrik.de/north-america/us/florida-261106.osm.pbf",
+  "pbfSha256": "96bbbf94612bef9b717985dd961b14b9e2104d53ca03c64b81f6aa9585c33aa2",
+  "snapshotSha256": "55a7899898b372fddc49452f3e773ccacbd65c3206e69a7b75474431d8d81554",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "courses": [
+    {
+      "id": "orange-blossom-hills-fl",
+      "name": "Orange Blossom Hills Golf & Country Club",
+      "region": "The Villages, FL",
+      "boundary": "w252838512",
+      "mapRef": "fl/orange-blossom-hills",
+      "auditTee": "gold",
+      "scorecard": "https://www.golfthevillages.com/championship-golf/images/scorecards/ORANGE%20BLOSSOM%20HILLS.pdf",
+      "cardSha256": "17ceddc099dba307665eee65b373c656993b625fa142c1f0790e7583f00cd394",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "1253e82776608a7c9ffb7359d8808054e31755616f8be002d7bb63208818b76b",
+      "teeTotals": {
+        "gold": 6198,
+        "blue": 5805,
+        "white": 5265,
+        "green": 4694,
+        "friendly": 3857
+      }
+    },
+    {
+      "id": "disney-palm-fl",
+      "name": "Disney's Palm Golf Course",
+      "region": "Lake Buena Vista, FL",
+      "boundary": "w44643367",
+      "mapRef": "fl/disney-palm",
+      "auditTee": "blue",
+      "scorecard": "https://www.golfwdw.com/images/documents/10134_144601_Walt_Disney_World_Golf-Palm.pdf",
+      "cardSha256": "326c361bb91c7069e3c7562b34044617485e538c6a7c86f21cd633d2342b52f2",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 16,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "f552860c93ced0a5020be7a32b06934b36c3f00c0e0fbe0f24da23cc0ed787ec",
+      "teeTotals": {
+        "blue": 6840,
+        "white": 6359,
+        "yellow": 5988,
+        "red": 5200
+      }
+    },
+    {
+      "id": "baseline-golf-course-fl",
+      "name": "Baseline Golf Course",
+      "region": "Ocala, FL",
+      "boundary": "w252834695",
+      "mapRef": "fl/baseline-golf-course",
+      "auditTee": "blue",
+      "scorecard": "https://static.wixstatic.com/media/22c840_089d02ccd02d4af1ac4c956856bf9f6e~mv2.png",
+      "cardSha256": "9f01694283efe5aa1542cb86ab9dfbe1bb46554a52b8749f15fa02d93d00942e",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "3fa80b50bdb7bc2d6a3e9354be0ed6f9b1bcf54e9f1d6fbcd8e7c36106e7a7a5",
+      "teeTotals": {
+        "blue": 3489
+      }
+    },
+    {
+      "id": "palatka-golf-club-fl",
+      "name": "Palatka Golf Club",
+      "region": "Palatka, FL",
+      "boundary": "w301780787",
+      "mapRef": "fl/palatka-golf-club",
+      "auditTee": "blue",
+      "scorecard": "https://vip.teeitup.com/palatkagolfclub/wp-content/uploads/sites/7988/2020/09/scorecard.pdf",
+      "cardSha256": "a5df109f3d7c93895040f6de94c1404d98c449584ddc5d3557be140eab092312",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 18,
+          "issue": "mapped-par-tee-variant",
+          "mappedPar": "5",
+          "officialPar": 4,
+          "alternateTees": [
+            "white-women"
+          ]
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "d36ffc4d3f6c78af75d9123519a318d3b41cc557881763af37f46ed8fefdfd5c",
+      "teeTotals": {
+        "blue": 5862,
+        "white": 5589,
+        "white-women": 5589
+      }
+    },
+    {
+      "id": "mount-dora-golf-club-fl",
+      "name": "Mount Dora Golf Club",
+      "region": "Mount Dora, FL",
+      "boundary": "w304039301",
+      "mapRef": "fl/mount-dora-golf-club",
+      "auditTee": "blue",
+      "scorecard": "https://www.mountdoragolf.com/wp-content/uploads/sites/6218/2017/02/Scorecard-No-Map.jpg",
+      "cardSha256": "35adb28af60499d9a8110d73c7305fc535d226da59931716a210b9bde13c37c0",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "b5eb319f1852752da42b4021a937231db452f43c03c3d21ca9794acbcc4a329f",
+      "teeTotals": {
+        "blue": 5719,
+        "white": 5470,
+        "red": 5238,
+        "gold": 4410
+      }
+    },
+    {
+      "id": "debary-country-club-fl",
+      "name": "DeBary Country Club",
+      "region": "DeBary, FL",
+      "boundary": "r4013472",
+      "mapRef": "fl/debary-country-club",
+      "auditTee": "blue",
+      "scorecard": "https://www.debarycc.com/images/new_scorecard-page-002.jpg",
+      "cardSha256": "bac295b5cf06163539f4d41429ff602796cd1fb65c489be798020d21acc04138",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 1,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "5",
+          "officialPar": 4
+        },
+        {
+          "hole": 2,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "3",
+          "officialPar": 4
+        },
+        {
+          "hole": 3,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "4",
+          "officialPar": 3
+        },
+        {
+          "hole": 5,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "4",
+          "officialPar": 5
+        },
+        {
+          "hole": 6,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "5",
+          "officialPar": 4
+        },
+        {
+          "hole": 14,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "4",
+          "officialPar": 5
+        },
+        {
+          "hole": 16,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "5",
+          "officialPar": 3
+        },
+        {
+          "hole": 17,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "3",
+          "officialPar": 4
+        },
+        {
+          "hole": 18,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "4",
+          "officialPar": 5
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "route-yardage-mismatch",
+        "ratioErrors": [
+          2,
+          3,
+          16,
+          17
+        ],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "teeTotals": {
+        "blue": 7021
+      }
+    },
+    {
+      "id": "plantation-otter-creek-fl",
+      "name": "The Plantation Golf Club — Otter Creek",
+      "region": "Leesburg, FL",
+      "boundary": "r4040291",
+      "mapRef": "fl/plantation-otter-creek",
+      "auditTee": null,
+      "scorecard": "https://ncrdb.usga.org/courseTeeInfo?CourseID=10444",
+      "cardSha256": null,
+      "cardVerified": false,
+      "issues": [
+        {
+          "issue": "scorecard-unverified",
+          "detail": "USGA/FSGA ratings identify Otter Creek, but no complete official hole card was acquired."
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "blocked"
+    },
+    {
+      "id": "highlands-reserve-fl",
+      "name": "Highlands Reserve Golf Club",
+      "region": "Davenport, FL",
+      "boundary": "r18266499",
+      "mapRef": "fl/highlands-reserve",
+      "auditTee": null,
+      "scorecard": "https://www.highlandsreserve-golf.com/",
+      "cardSha256": null,
+      "cardVerified": false,
+      "issues": [
+        {
+          "hole": 4,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 6,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 12,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 17,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "issue": "scorecard-unverified",
+          "detail": "No independently verified official hole-by-hole scorecard acquired."
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 14
+      },
+      "status": "blocked"
+    },
+    {
+      "id": "cimarrone-fl",
+      "name": "Cimarrone Golf Club",
+      "region": "Jacksonville, FL",
+      "boundary": "r17604799",
+      "mapRef": "fl/cimarrone",
+      "auditTee": null,
+      "scorecard": "https://www.cimarronegolf.com/golf/course",
+      "cardSha256": null,
+      "cardVerified": false,
+      "issues": [
+        {
+          "hole": 2,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 9,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 17,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "issue": "scorecard-unverified",
+          "detail": "Official card is image-only. No verified numeric transcription available in this batch."
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 15
+      },
+      "status": "blocked"
+    },
+    {
+      "id": "black-bear-fl",
+      "name": "Black Bear Golf Club",
+      "region": "Eustis, FL",
+      "boundary": "r16841057",
+      "mapRef": "fl/black-bear",
+      "auditTee": null,
+      "scorecard": "https://blackbeargolfclub.com/scorecard/",
+      "cardSha256": null,
+      "cardVerified": false,
+      "issues": [
+        {
+          "hole": 3,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 5,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 11,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 15,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "issue": "scorecard-unverified",
+          "detail": "Official course page publishes tee totals but no complete machine-verified hole rows."
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 14
+      },
+      "status": "blocked"
+    },
+    {
+      "id": "waldorf-astoria-fl",
+      "name": "Waldorf Astoria Golf Club",
+      "region": "Orlando, FL",
+      "boundary": "w44540162",
+      "mapRef": "fl/waldorf-astoria",
+      "auditTee": "black",
+      "scorecard": "https://www.waldorfastoriaorlando.com/wp-content/uploads/2025/02/WAO-SC.pdf",
+      "cardSha256": "ef36a7709522f2f004d08dce967b9da7ac39ed5c9dbd823465dba7ddf3fdb176",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 7,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 16,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 17,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "4",
+          "officialPar": 5
+        },
+        {
+          "hole": 18,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "5",
+          "officialPar": 4
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 16
+      },
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "incomplete-hole-art",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 16
+      },
+      "teeTotals": {
+        "black": 7104,
+        "blue": 6638,
+        "white": 6257
+      }
+    },
+    {
+      "id": "disney-magnolia-fl",
+      "name": "Disney's Magnolia Golf Course",
+      "region": "Lake Buena Vista, FL",
+      "boundary": "r11105783",
+      "mapRef": "fl/disney-magnolia",
+      "auditTee": "classic",
+      "scorecard": "https://www.golfwdw.com/images/Walt_Disney_World_Golf_-_Magnolia_scorecard.pdf",
+      "cardSha256": "840446975d6cc6eb15f02162e791b31285d12f00c141cc2c5ffea04d5ffae926",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 1,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 2,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 3,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 4,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 5,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 6,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 7,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 8,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 9,
+          "issue": "duplicate-route"
+        },
+        {
+          "hole": 12,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 14,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "5",
+          "officialPar": 4
+        },
+        {
+          "hole": 15,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "3",
+          "officialPar": 5
+        },
+        {
+          "hole": 17,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "4",
+          "officialPar": 3
+        }
+      ],
+      "counts": {
+        "route": 9,
+        "tee": 9,
+        "green": 9,
+        "fairway": 8
+      },
+      "status": "playable-partial",
+      "teeTotals": {
+        "classic": 7505,
+        "green": 6965,
+        "white": 6574
+      }
+    },
+    {
+      "id": "falcons-fire-fl",
+      "name": "Falcon's Fire Golf Club",
+      "region": "Kissimmee, FL",
+      "boundary": "w311994625",
+      "mapRef": "fl/falcons-fire",
+      "auditTee": null,
+      "scorecard": "https://www.falconsfire.com/images/documents/scorecard.pdf",
+      "cardSha256": null,
+      "cardVerified": false,
+      "issues": [
+        {
+          "hole": 3,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 8,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 15,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "issue": "scorecard-unverified",
+          "detail": "Official scorecard PDF is image-only; verified text rows were unavailable."
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 15
+      },
+      "status": "blocked"
+    },
+    {
+      "id": "ocn-panther-lake-fl",
+      "name": "Orange County National — Panther Lake",
+      "region": "Winter Garden, FL",
+      "boundary": "w727848182",
+      "mapRef": "fl/ocn-panther-lake",
+      "auditTee": "champ",
+      "scorecard": "https://www.ocngolf.com/panther-lake-yardage-book/",
+      "cardSha256": "38ea824db230676d291f019adb16acd3711dcf75bd20d3c51de9b5a36739c842",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 12,
+          "issue": "route-crosses-boundary",
+          "candidates": [
+            "w1207899275"
+          ]
+        },
+        {
+          "hole": 17,
+          "issue": "missing-route"
+        },
+        {
+          "hole": 4,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 6,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 11,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 15,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 16,
+        "tee": 16,
+        "green": 16,
+        "fairway": 12
+      },
+      "status": "playable-partial",
+      "teeTotals": {
+        "champ": 7269
+      }
+    },
+    {
+      "id": "ocn-crooked-cat-fl",
+      "name": "Orange County National — Crooked Cat",
+      "region": "Winter Garden, FL",
+      "boundary": "w727848182",
+      "mapRef": "fl/ocn-crooked-cat",
+      "auditTee": "champ",
+      "scorecard": "https://www.ocngolf.com/crooked-cat-yardage-book/",
+      "cardSha256": "e7f5492cf1bc8eaabef8438752665cbd5118a960900ffb13e13cd5c140b95164",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 6,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 8,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 13,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 15,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 14
+      },
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "incomplete-hole-art",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 14
+      },
+      "teeTotals": {
+        "champ": 7388
+      }
+    },
+    {
+      "id": "streamsong-black-fl",
+      "name": "Streamsong Black",
+      "region": "Bowling Green, FL",
+      "boundary": "w1351613366",
+      "mapRef": "fl/streamsong-black",
+      "auditTee": null,
+      "scorecard": "https://www.streamsongresort.com/content/uploads/2026/02/Black-2021-Scorecard.pdf",
+      "cardSha256": null,
+      "cardVerified": false,
+      "issues": [
+        {
+          "hole": 1,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 2,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 3,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 4,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 5,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 6,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 7,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 8,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 9,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 10,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 11,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 12,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 13,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 14,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 15,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 16,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 17,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 18,
+          "issue": "tee-missing",
+          "candidates": []
+        },
+        {
+          "hole": 5,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 7,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 15,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "issue": "scorecard-unverified",
+          "detail": "Official 2021 scorecard PDF is image-only; the OCR output did not establish trustworthy hole rows."
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 0,
+        "green": 18,
+        "fairway": 15
+      },
+      "status": "blocked"
+    },
+    {
+      "id": "tpc-sawgrass-stadium-fl",
+      "name": "TPC Sawgrass — The Players Stadium Course",
+      "region": "Ponte Vedra Beach, FL",
+      "boundary": null,
+      "mapRef": "fl/tpc-sawgrass-stadium",
+      "auditTee": "the-players",
+      "scorecard": "https://tpc.com/sawgrass/wp-content/uploads/sites/51/2022/12/ThePlayersStadium.pdf",
+      "cardSha256": "2c91d3aa79da4a6e5f3dde15b92982cc1e4c69bcadf36f270f50007ecaa8036a",
+      "cardVerified": true,
+      "issues": [
+        {
+          "issue": "boundary-unverified",
+          "detail": "No verified isolated Stadium boundary in the dated shard. Preserve identity separately from Dye’s Valley."
+        }
+      ],
+      "counts": {
+        "route": 0,
+        "tee": 0,
+        "green": 0,
+        "fairway": 0
+      },
+      "status": "scorecard-only",
+      "teeTotals": {
+        "the-players": 7245,
+        "blue": 6670,
+        "white": 6086,
+        "green": 5019
+      }
+    },
+    {
+      "id": "disney-lake-buena-vista-fl",
+      "name": "Disney's Lake Buena Vista Golf Course",
+      "region": "Lake Buena Vista, FL",
+      "boundary": null,
+      "mapRef": "fl/disney-lake-buena-vista",
+      "auditTee": "blue",
+      "scorecard": "https://www.golfwdw.com/images/documents/10135_144600_Walt_Disney_World-Lake_Buena_Vista.pdf",
+      "cardSha256": "0fcadd047f7b160b7024c35838478f21938abee233efefa967505ee264f41353",
+      "cardVerified": true,
+      "issues": [
+        {
+          "issue": "boundary-unverified",
+          "detail": "No independently matched Lake Buena Vista boundary in the dated shard."
+        }
+      ],
+      "counts": {
+        "route": 0,
+        "tee": 0,
+        "green": 0,
+        "fairway": 0
+      },
+      "status": "scorecard-only",
+      "teeTotals": {
+        "blue": 6718,
+        "white": 6389
+      }
+    }
+  ]
+}

@@ -22,11 +22,11 @@ export function describeCaddyConditions(active,environment,{now=Date.now(),fetch
   :'Modeled weather unavailable — ask your caddy using conditions you observe.';
  const age=Number.isFinite(fetchedAt)&&fetchedAt>0&&fetchedAt<=now
   ?' · checked '+Math.max(0,Math.floor((now-fetchedAt)/60000))+'m ago':'';
- const coverage=scorecardCoverage(environment?.holes);
+ const coverage=scorecardCoverage(environment?.holes,course.holeCount);
  const status=loading?'Checking course and conditions…':
   !environment?'Waiting for verified course information…':
-  ['offline-cached','cached-no-provider-holes'].includes(environment.state)?'Previously verified scorecard cache · '+coverage.verifiedHoles+'/18 holes'+age:
-  environment.state==='ready'?'Verified tee data · '+coverage.verifiedHoles+'/18 holes'+age:
+  ['offline-cached','cached-no-provider-holes'].includes(environment.state)?'Previously verified scorecard cache · '+coverage.verifiedHoles+'/'+coverage.expectedHoles+' holes'+age:
+  environment.state==='ready'?'Verified tee data · '+coverage.verifiedHoles+'/'+coverage.expectedHoles+' holes'+age:
   'Course data unavailable'+age;
  const weatherSummary=valid
   ?'Conditions · '+Math.round(w.temperatureF)+'°F · '+Math.round(w.windMph)+' mph wind'

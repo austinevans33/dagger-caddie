@@ -1,0 +1,1115 @@
+{
+  "catalogSlug": "north-carolina",
+  "reviewDate": "2026-11-08",
+  "source": "https://download.geofabrik.de/north-america/us/north-carolina-261106.osm.pbf",
+  "pbfSha256": "0dcda9e83ab1f7babd5a1622e9bed815864ef58ff6df9ecad409e48fa7759c31",
+  "snapshotSha256": "2cde2ef5b5018c45515e200f478551aa914b5bbb3fb73d01c7ab358ffe0dcc7b",
+  "courses": [
+    {
+      "id": "gates-four-fayetteville-nc",
+      "name": "Gates Four Golf & Country Club",
+      "region": "Fayetteville, NC",
+      "boundary": "r6377450",
+      "osmName": "Gates Four Golf & Country Club",
+      "mapRef": "nc/gates-four",
+      "auditTee": "black",
+      "scorecard": {
+        "url": "https://www.gatesfour.com/wp-content/uploads/scorecard.pdf",
+        "sha256": "228b5c6eb87b0c3ee36244511c0c09c5def8d0269af185b43440d9172cca05b0",
+        "format": "pdf",
+        "page": 2,
+        "parWidth": [
+          21
+        ],
+        "handicap": "MEN’S HCP",
+        "handicapWidth": [
+          18
+        ],
+        "tees": {
+          "black": {
+            "label": "Black",
+            "total": 6895,
+            "width": [
+              21
+            ]
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6433,
+            "width": [
+              21
+            ]
+          },
+          "white": {
+            "label": "White",
+            "total": 6072,
+            "width": [
+              21
+            ]
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5506,
+            "width": [
+              21
+            ]
+          },
+          "red": {
+            "label": "Red",
+            "total": 5365,
+            "width": [
+              21
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "tanglewood-championship-clemmons-nc",
+      "name": "Tanglewood Park Championship Course",
+      "region": "Clemmons, NC",
+      "boundary": "w1104673360",
+      "osmName": "Tanglewood Championship Course",
+      "mapRef": "nc/tanglewood-championship",
+      "auditTee": "gold",
+      "scorecard": {
+        "url": "https://golf.tanglewoodpark.org/assets/img/scorecard_championship.jpg",
+        "sha256": "6cbea8e536971d496e4e854d332999284de546be91931c7b391841be300711bb",
+        "format": "reviewed-image",
+        "reviewNote": "Visually reviewed on the county’s labeled Championship course card. Preserve the separate Red and Family par 74 and Red handicap row.",
+        "reviewedRows": {
+          "Gold": [
+            [
+              364,
+              490,
+              235,
+              418,
+              424,
+              374,
+              198,
+              580,
+              435,
+              3518
+            ],
+            [
+              377,
+              190,
+              481,
+              400,
+              614,
+              387,
+              243,
+              456,
+              435,
+              3583,
+              7101
+            ]
+          ],
+          "Blue": [
+            [
+              344,
+              467,
+              210,
+              395,
+              383,
+              359,
+              183,
+              540,
+              418,
+              3299
+            ],
+            [
+              364,
+              178,
+              421,
+              382,
+              575,
+              372,
+              208,
+              420,
+              418,
+              3338,
+              6637
+            ]
+          ],
+          "White": [
+            [
+              327,
+              393,
+              182,
+              330,
+              336,
+              330,
+              135,
+              500,
+              387,
+              2920
+            ],
+            [
+              347,
+              161,
+              389,
+              362,
+              556,
+              290,
+              190,
+              400,
+              399,
+              3094,
+              6014
+            ]
+          ],
+          "Black": [
+            [
+              325,
+              340,
+              181,
+              330,
+              278,
+              310,
+              130,
+              460,
+              290,
+              2644
+            ],
+            [
+              340,
+              145,
+              327,
+              352,
+              500,
+              275,
+              155,
+              292,
+              303,
+              2689,
+              5333
+            ]
+          ],
+          "Red": [
+            [
+              281,
+              337,
+              130,
+              291,
+              266,
+              230,
+              112,
+              400,
+              289,
+              2336
+            ],
+            [
+              250,
+              130,
+              327,
+              230,
+              340,
+              212,
+              142,
+              292,
+              303,
+              2226,
+              4562
+            ]
+          ],
+          "Family": [
+            [
+              150,
+              238,
+              92,
+              200,
+              176,
+              150,
+              112,
+              326,
+              215,
+              1659
+            ],
+            [
+              214,
+              90,
+              207,
+              228,
+              260,
+              150,
+              88,
+              258,
+              250,
+              1745,
+              3404
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              4,
+              3,
+              4,
+              4,
+              4,
+              3,
+              5,
+              4,
+              35
+            ],
+            [
+              4,
+              3,
+              4,
+              4,
+              5,
+              4,
+              3,
+              4,
+              4,
+              35,
+              70
+            ]
+          ],
+          "Red and Family Par": [
+            [
+              4,
+              5,
+              3,
+              4,
+              4,
+              4,
+              3,
+              5,
+              5,
+              37
+            ],
+            [
+              4,
+              3,
+              4,
+              4,
+              5,
+              4,
+              3,
+              5,
+              5,
+              37,
+              74
+            ]
+          ],
+          "Championship Handicap": [
+            [
+              13,
+              3,
+              15,
+              9,
+              7,
+              11,
+              17,
+              1,
+              5
+            ],
+            [
+              12,
+              18,
+              4,
+              10,
+              2,
+              14,
+              16,
+              6,
+              8
+            ]
+          ],
+          "Red Handicap": [
+            [
+              13,
+              3,
+              15,
+              9,
+              5,
+              11,
+              17,
+              1,
+              7
+            ],
+            [
+              12,
+              18,
+              4,
+              10,
+              2,
+              14,
+              16,
+              6,
+              8
+            ]
+          ]
+        },
+        "handicap": "Championship Handicap",
+        "tees": {
+          "gold": {
+            "label": "Gold",
+            "total": 7101
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6637
+          },
+          "white": {
+            "label": "White",
+            "total": 6014
+          },
+          "black": {
+            "label": "Black",
+            "total": 5333
+          },
+          "red": {
+            "label": "Red",
+            "total": 4562,
+            "parLabel": "Red and Family Par",
+            "handicap": "Red Handicap"
+          },
+          "family": {
+            "label": "Family",
+            "total": 3404,
+            "parLabel": "Red and Family Par"
+          }
+        }
+      }
+    },
+    {
+      "id": "longleaf-southern-pines-nc",
+      "name": "Longleaf Golf & Family Club",
+      "region": "Southern Pines, NC",
+      "boundary": "r6387132",
+      "osmName": "Longleaf Golf & Family Club",
+      "mapRef": "nc/longleaf",
+      "auditTee": "tee-6",
+      "scorecard": {
+        "url": "https://longleafgfc.com/wp-content/uploads/sites/9351/2024/02/Longleaf-ScoreCard-2020-1.pdf",
+        "sha256": "a787dd3b6a546afe04e3b8f1f72c638d57cf0a9733ff2970f1d2a8df345689e8",
+        "format": "pdf",
+        "page": 2,
+        "parWidth": [
+          21
+        ],
+        "handicap": "Handicap",
+        "handicapWidth": [
+          18
+        ],
+        "reviewNote": "The club links the PDF. Right Start and numbered tees 1–6 reconcile. Tee 7 hole values sum to 6,685 while the card prints 6,682, so Tee 7 is withheld. Intermediate half-number tees publish totals only and are also withheld.",
+        "tees": {
+          "right-start": {
+            "label": "Right Start",
+            "total": 2423,
+            "width": [
+              21
+            ]
+          },
+          "tee-1": {
+            "label": "Tee 1",
+            "total": 3103,
+            "width": [
+              21
+            ]
+          },
+          "tee-2": {
+            "label": "Tee 2",
+            "total": 3702,
+            "width": [
+              21
+            ]
+          },
+          "tee-3": {
+            "label": "Tee 3",
+            "total": 4316,
+            "width": [
+              21
+            ]
+          },
+          "tee-4": {
+            "label": "Tee 4",
+            "total": 4872,
+            "width": [
+              21
+            ]
+          },
+          "tee-5": {
+            "label": "Tee 5",
+            "total": 5491,
+            "width": [
+              21
+            ]
+          },
+          "tee-6": {
+            "label": "Tee 6",
+            "total": 6153,
+            "width": [
+              21
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "sanford-municipal-nc",
+      "name": "Sanford Municipal Golf Course",
+      "region": "Sanford, NC",
+      "boundary": "w430087361",
+      "osmName": "Sanford Municipal Golf Course",
+      "mapRef": "nc/sanford-municipal",
+      "auditTee": "mens",
+      "scorecard": {
+        "url": "https://www.sanfordnc.net/ImageRepository/Document?documentID=2321",
+        "sha256": "d98f4a5be32dcb77b03c7e3f38d1571deb0f88f67c4ea58ffa905218130161ae",
+        "additionalSources": [
+          {
+            "suffix": "back",
+            "url": "https://www.sanfordnc.net/ImageRepository/Document?documentID=2322",
+            "sha256": "e1b92b658fefeb4bfdea1a2693888913bcdd13b7dc5a1256ad28c8becad96f9e"
+          }
+        ],
+        "format": "reviewed-image",
+        "reviewNote": "Transcribed both numbered images from the City of Sanford. All four tee rows match both subtotals and total. The card has split men’s handicap entries without a tee legend, so those indexes are withheld.",
+        "reviewedRows": {
+          "Mens": [
+            [
+              368,
+              195,
+              309,
+              362,
+              333,
+              137,
+              388,
+              329,
+              473,
+              2894
+            ],
+            [
+              390,
+              205,
+              428,
+              409,
+              150,
+              372,
+              522,
+              451,
+              483,
+              3410,
+              6304
+            ]
+          ],
+          "White": [
+            [
+              354,
+              175,
+              286,
+              341,
+              306,
+              124,
+              377,
+              318,
+              445,
+              2726
+            ],
+            [
+              347,
+              181,
+              410,
+              381,
+              121,
+              344,
+              496,
+              423,
+              472,
+              3175,
+              5901
+            ]
+          ],
+          "Gold": [
+            [
+              328,
+              162,
+              270,
+              313,
+              286,
+              114,
+              311,
+              308,
+              425,
+              2517
+            ],
+            [
+              308,
+              163,
+              303,
+              212,
+              106,
+              332,
+              462,
+              371,
+              390,
+              2647,
+              5164
+            ]
+          ],
+          "Women": [
+            [
+              312,
+              150,
+              258,
+              284,
+              279,
+              110,
+              306,
+              300,
+              415,
+              2414
+            ],
+            [
+              282,
+              136,
+              300,
+              203,
+              101,
+              315,
+              380,
+              367,
+              384,
+              2468,
+              4882
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              3,
+              4,
+              4,
+              4,
+              3,
+              4,
+              4,
+              5,
+              35
+            ],
+            [
+              4,
+              3,
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              5,
+              36,
+              71
+            ]
+          ]
+        },
+        "tees": {
+          "mens": {
+            "label": "Mens",
+            "name": "Men’s",
+            "total": 6304
+          },
+          "white": {
+            "label": "White",
+            "name": "White",
+            "total": 5901
+          },
+          "gold": {
+            "label": "Gold",
+            "name": "Gold",
+            "total": 5164
+          },
+          "women": {
+            "label": "Women",
+            "name": "Women’s",
+            "total": 4882
+          }
+        }
+      }
+    },
+    {
+      "id": "pudding-ridge-mocksville-nc",
+      "name": "Pudding Ridge Golf Club",
+      "region": "Mocksville, NC",
+      "boundary": "r6876532",
+      "osmName": "Pudding Ridge Golf Club",
+      "mapRef": "nc/pudding-ridge",
+      "auditTee": "black",
+      "scorecard": {
+        "url": "https://www.puddingridge.com/wp-content/uploads/2017/08/scorecard.pdf",
+        "sha256": "60c077bfbc1e4dce973fa7b481339e8d567f84e7991aa517fda2124b844fe96b",
+        "format": "reviewed-image",
+        "reviewNote": "Official PDF places the back nine before the front nine. Front yardage subtotal boxes are blank. Computed front subtotals reconcile with the printed back nine and full-round totals for four tees. White is withheld because its hole values disagree with the published subtotals and round total.",
+        "reviewedRows": {
+          "Black": [
+            [
+              418,
+              153,
+              387,
+              401,
+              544,
+              408,
+              217,
+              381,
+              364,
+              3273
+            ],
+            [
+              372,
+              582,
+              203,
+              445,
+              488,
+              382,
+              406,
+              184,
+              378,
+              3440,
+              6713
+            ]
+          ],
+          "Blue": [
+            [
+              373,
+              143,
+              347,
+              375,
+              500,
+              362,
+              193,
+              353,
+              347,
+              2993
+            ],
+            [
+              339,
+              552,
+              146,
+              404,
+              456,
+              344,
+              373,
+              175,
+              350,
+              3139,
+              6132
+            ]
+          ],
+          "Gold": [
+            [
+              304,
+              110,
+              281,
+              231,
+              408,
+              261,
+              142,
+              324,
+              287,
+              2348
+            ],
+            [
+              290,
+              434,
+              116,
+              320,
+              394,
+              280,
+              241,
+              119,
+              293,
+              2487,
+              4835
+            ]
+          ],
+          "Red": [
+            [
+              266,
+              108,
+              216,
+              201,
+              360,
+              235,
+              111,
+              280,
+              205,
+              1982
+            ],
+            [
+              242,
+              380,
+              112,
+              273,
+              318,
+              247,
+              205,
+              114,
+              237,
+              2128,
+              4110
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              3,
+              4,
+              4,
+              5,
+              4,
+              3,
+              4,
+              4,
+              35
+            ],
+            [
+              4,
+              5,
+              3,
+              4,
+              5,
+              4,
+              4,
+              3,
+              4,
+              36,
+              71
+            ]
+          ],
+          "Handicap": [
+            [
+              14,
+              18,
+              4,
+              6,
+              12,
+              2,
+              10,
+              16,
+              8
+            ],
+            [
+              17,
+              3,
+              13,
+              1,
+              11,
+              5,
+              7,
+              15,
+              9
+            ]
+          ]
+        },
+        "tees": {
+          "black": {
+            "label": "Black",
+            "total": 6713
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6132
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 4835
+          },
+          "red": {
+            "label": "Red",
+            "total": 4110
+          }
+        },
+        "handicap": "Handicap"
+      }
+    },
+    {
+      "id": "oak-island-nc",
+      "name": "Oak Island Golf Club",
+      "region": "Caswell Beach, NC",
+      "boundary": "w292129109",
+      "osmName": "Oak Island Golf Club",
+      "mapRef": "nc/oak-island",
+      "auditTee": "blue",
+      "scorecard": {
+        "url": "https://oakislandgolf.com/wp-content/uploads/2021/01/Oak-Island-Scorecard-In.png",
+        "sha256": "51829e8ca6c92e65fe8809bba961da33bc3d3691e1385f74f9b87e74eed83f38",
+        "format": "reviewed-image",
+        "reviewNote": "Checked the hole grid and the companion card cover. Red uses the published ladies par and stroke indexes. All printed nine and round totals reconcile.",
+        "reviewedRows": {
+          "Blue": [
+            [
+              494,
+              412,
+              189,
+              560,
+              386,
+              409,
+              204,
+              355,
+              426,
+              3435
+            ],
+            [
+              336,
+              399,
+              170,
+              391,
+              515,
+              371,
+              363,
+              188,
+              549,
+              3282,
+              6717
+            ]
+          ],
+          "Black": [
+            [
+              476,
+              397,
+              165,
+              546,
+              371,
+              392,
+              188,
+              328,
+              415,
+              3278
+            ],
+            [
+              329,
+              374,
+              154,
+              381,
+              492,
+              353,
+              334,
+              174,
+              532,
+              3123,
+              6401
+            ]
+          ],
+          "White": [
+            [
+              437,
+              353,
+              155,
+              472,
+              360,
+              380,
+              161,
+              304,
+              400,
+              3022
+            ],
+            [
+              321,
+              361,
+              144,
+              371,
+              455,
+              342,
+              306,
+              159,
+              459,
+              2918,
+              5940
+            ]
+          ],
+          "Gold": [
+            [
+              421,
+              323,
+              147,
+              466,
+              347,
+              307,
+              155,
+              297,
+              325,
+              2788
+            ],
+            [
+              285,
+              325,
+              132,
+              295,
+              429,
+              302,
+              298,
+              139,
+              430,
+              2635,
+              5423
+            ]
+          ],
+          "Red": [
+            [
+              387,
+              321,
+              125,
+              421,
+              308,
+              283,
+              134,
+              262,
+              351,
+              2592
+            ],
+            [
+              279,
+              309,
+              117,
+              289,
+              262,
+              287,
+              272,
+              114,
+              382,
+              2311,
+              4903
+            ]
+          ],
+          "Par": [
+            [
+              5,
+              4,
+              3,
+              5,
+              4,
+              4,
+              3,
+              4,
+              4,
+              36
+            ],
+            [
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              4,
+              3,
+              5,
+              36,
+              72
+            ]
+          ],
+          "Handicap": [
+            [
+              11,
+              1,
+              13,
+              5,
+              15,
+              7,
+              9,
+              17,
+              3
+            ],
+            [
+              14,
+              8,
+              18,
+              6,
+              2,
+              10,
+              16,
+              12,
+              4
+            ]
+          ],
+          "Ladies Par": [
+            [
+              5,
+              4,
+              3,
+              5,
+              4,
+              4,
+              3,
+              4,
+              5,
+              37
+            ],
+            [
+              4,
+              4,
+              3,
+              4,
+              4,
+              4,
+              4,
+              3,
+              5,
+              35,
+              72
+            ]
+          ],
+          "Ladies Handicap": [
+            [
+              9,
+              1,
+              15,
+              5,
+              3,
+              13,
+              7,
+              17,
+              11
+            ],
+            [
+              12,
+              6,
+              18,
+              8,
+              2,
+              10,
+              16,
+              14,
+              4
+            ]
+          ]
+        },
+        "tees": {
+          "blue": {
+            "label": "Blue",
+            "total": 6717
+          },
+          "black": {
+            "label": "Black",
+            "total": 6401
+          },
+          "white": {
+            "label": "White",
+            "total": 5940
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5423
+          },
+          "red": {
+            "label": "Red",
+            "total": 4903,
+            "parLabel": "Ladies Par",
+            "handicap": "Ladies Handicap"
+          }
+        },
+        "handicap": "Handicap",
+        "additionalSources": [
+          {
+            "suffix": "cover",
+            "url": "https://oakislandgolf.com/wp-content/uploads/2021/01/Oak-Island-Scorecard-Out.png",
+            "sha256": "c33c96de46f9c6347939a7628cd8d91d794deeb8a2b7f7c5de9317ae9eb5da87"
+          }
+        ]
+      }
+    }
+  ]
+}

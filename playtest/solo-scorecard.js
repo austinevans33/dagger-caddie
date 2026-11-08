@@ -13,8 +13,13 @@ export function startSoloCard(storage){
  const round=readActiveRound(storage);if(!round)return null;
  const old=readSoloCard(storage);
  const identity=round.selection.course.providerCourseId+'|'+round.selection.tee.providerTeeId+'|'+round.selectedAt;
- if(old?.identity===identity)return old;
- const card={version:1,identity,hole:round.selection.holeNumber,scores:Array(18).fill(null),length:18};
+ const nativeNine=round.selection.course.holeCount===9;
+ if(old?.identity===identity){
+  if(!nativeNine||old.length===9&&old.nineStart!==10&&old.hole<=9)return old;
+  const corrected={...old,hole:Math.min(old.hole,9),length:9,nineStart:1};
+  try{storage.setItem(SOLO_CARD_KEY,JSON.stringify(corrected));return corrected;}catch{return null;}
+ }
+ const card={version:1,identity,hole:round.selection.holeNumber,scores:Array(18).fill(null),length:nativeNine?9:18};
  try{storage.setItem(SOLO_CARD_KEY,JSON.stringify(card));return card;}catch{return null;}
 }
 export function saveSoloScore(storage,score){
@@ -30,7 +35,8 @@ export function setSoloHole(storage,hole){
 
 export function setSoloLength(storage,length){
  const old=startSoloCard(storage);
- if(!old||![9,18].includes(length))return null;
+ if(!old||![9,18].includes(length)||
+    (length===18&&readActiveRound(storage)?.selection.course.holeCount===9))return null;
  // Enter nine-hole mode on the currently selected nine; keep all 18 saved scores.
  const nineStart=length===9&&old.length!==9?(old.hole>=10?10:1):(old.nineStart??1);
  const range=soloRange({length,nineStart});

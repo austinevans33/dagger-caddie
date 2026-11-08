@@ -1,0 +1,85 @@
+{
+  "source": "https://download.geofabrik.de/north-america/us/south-carolina-261106.osm.pbf",
+  "pbfSha256": "c535fa40a87db476baac57c4d4dc10ed071076b9584c8ddb36baf26e34661ef7",
+  "snapshotSha256": "d6fa5271c37773535f814aea8b26ab5b3f697a3664042d6984e2490777445976",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "courses": [
+    {
+      "id": "crooked-oaks-seabrook-sc",
+      "name": "Crooked Oaks at Seabrook Island Club",
+      "region": "Seabrook Island, SC",
+      "boundary": "w1552133154",
+      "mapRef": "sc/seabrook-crooked-oaks",
+      "auditTee": "hawk",
+      "scorecard": "https://www.seabrookisland.com/wp-content/uploads/2024/01/2023-scorecard-revision_final96.pdf",
+      "cardSha256": "c15e0d2c19d3a541d485b9e0acd6e9d9ebf96fa296d000af089fae564804cba2",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "116ed2a6a98bf2bfa792bd4c89337b0bc549259c7b293116a84d2fa4d292a151",
+      "teeTotals": {
+        "hawk": 6706,
+        "mallard": 6367,
+        "osprey": 5980,
+        "egret": 5622,
+        "finch": 5092,
+        "heron": 4599
+      }
+    },
+    {
+      "id": "hidden-cypress-bluffton-sc",
+      "name": "Hidden Cypress Golf Club",
+      "region": "Bluffton, SC",
+      "boundary": "r15700840",
+      "mapRef": "sc/hidden-cypress",
+      "auditTee": "gold",
+      "scorecard": "https://www.golfinsuncity.com/wp-content/uploads/sites/8949/2023/06/Hidden_Cypress_Scorecard.pdf",
+      "cardSha256": "6d222812fbcb39e532221a9a8e0b95088defe3fe52496a07f7572cbd2b7b96fe",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 12,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "37658dffe113783d56d340cc501d59fd8fa768d3ad29a8b857d60d7cb4e2f1aa",
+      "teeTotals": {
+        "red": 6953,
+        "gold": 6549,
+        "blue": 6051,
+        "white": 5556,
+        "black": 4974,
+        "orange": 4227
+      }
+    }
+  ]
+}

@@ -7,7 +7,7 @@ export function normalizeCourse(input){
  const provider=text(input.provider,50),providerCourseId=text(input.providerCourseId,80);
  const name=text(input.name,160),region=text(input.region,120);
  if(!provider||!providerCourseId||!idPattern.test(provider)||!idPattern.test(providerCourseId)||!name||!region)return null;
- return Object.freeze({provider,providerCourseId,name,region});
+ return Object.freeze({provider,providerCourseId,name,region,...(input.holeCount===9?{holeCount:9}:{})});
 }
 export function normalizeTee(input){
  if(!input||typeof input!=='object')return null;
@@ -17,9 +17,11 @@ export function normalizeTee(input){
  if(!Number.isInteger(yards)||yards<900||yards>10000)return null;
  return Object.freeze({providerTeeId,name,totalYards:yards});
 }
-export function normalizeCourseSelection({course,tee,holeNumber}={}){
+export function normalizeCourseSelection(input={}){
+ if(!input||typeof input!=='object')return null;
+ const {course,tee,holeNumber}=input;
  const c=normalizeCourse(course),t=normalizeTee(tee);
- if(!c||!t||!Number.isInteger(holeNumber)||holeNumber<1||holeNumber>18)return null;
+ if(!c||!t||!Number.isInteger(holeNumber)||holeNumber<1||holeNumber>(c.holeCount??18))return null;
  return Object.freeze({course:c,tee:t,holeNumber});
 }
 export function sameCourseSelection(a,b){

@@ -1,0 +1,169 @@
+{
+  "course_ref": "ma/sassamon-trace",
+  "boundary_type": "way",
+  "boundary": "311190601",
+  "identity": {
+    "addr:city": "Natick",
+    "addr:housenumber": "233",
+    "addr:state": "MA",
+    "addr:street": "South Main Street",
+    "leisure": "golf_course",
+    "name": "Sassamon Trace Golf Course"
+  },
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=-71.383,42.251,-71.348,42.281",
+  "sha256": "6a898def91bd8790070283c3de4c1345c96053aeece765b65107585376949499",
+  "holes": [
+    {
+      "route": "1263929540",
+      "mappedPar": "3",
+      "green": [
+        "w978596070"
+      ],
+      "tee": [
+        "w978596067"
+      ],
+      "fairway": [
+        "w978596072"
+      ],
+      "bunker": [
+        "w978596071"
+      ]
+    },
+    {
+      "route": "1263929539",
+      "mappedPar": "4",
+      "green": [
+        "w978596078"
+      ],
+      "tee": [
+        "w978596075"
+      ],
+      "fairway": [
+        "r17361565"
+      ],
+      "bunker": [
+        "w978596077",
+        "w978596079"
+      ]
+    },
+    {
+      "route": "1263929538",
+      "mappedPar": "3",
+      "green": [
+        "w981372192"
+      ],
+      "tee": [
+        "w981372188"
+      ],
+      "bunker": [
+        "w981372193",
+        "w981372194"
+      ]
+    },
+    {
+      "route": "1263929537",
+      "mappedPar": "5",
+      "green": [
+        "w981372204"
+      ],
+      "tee": [
+        "w981372195"
+      ],
+      "fairway": [
+        "w981372200"
+      ],
+      "bunker": [
+        "w981372201",
+        "w981372202",
+        "w981372203"
+      ]
+    },
+    {
+      "route": "1263929536",
+      "mappedPar": "3",
+      "green": [
+        "w981372209"
+      ],
+      "tee": [
+        "w981372205"
+      ],
+      "fairway": [
+        "w981372208"
+      ],
+      "bunker": [
+        "w981372210"
+      ]
+    },
+    {
+      "route": "1263929535",
+      "mappedPar": "4",
+      "green": [
+        "w981372218"
+      ],
+      "tee": [
+        "w981372211"
+      ],
+      "fairway": [
+        "w981372214"
+      ],
+      "bunker": [
+        "w981372215",
+        "w981372217"
+      ]
+    },
+    {
+      "route": "1263929534",
+      "mappedPar": "3",
+      "green": [
+        "w981372226"
+      ],
+      "tee": [
+        "w981372220"
+      ],
+      "fairway": [
+        "w981372225"
+      ],
+      "bunker": [
+        "w981372223"
+      ],
+      "water": [
+        "w974520858"
+      ]
+    },
+    {
+      "route": "1263929533",
+      "mappedPar": "3",
+      "green": [
+        "w981372230"
+      ],
+      "tee": [
+        "w981372213"
+      ],
+      "fairway": [
+        "w981372229"
+      ],
+      "bunker": [
+        "w981372231"
+      ]
+    },
+    {
+      "route": "1263929532",
+      "mappedPar": "4",
+      "green": [
+        "w981372239"
+      ],
+      "tee": [
+        "w981372232"
+      ],
+      "fairway": [
+        "r14071072"
+      ],
+      "bunker": [
+        "w981372236",
+        "w981372237",
+        "w981372238"
+      ]
+    }
+  ],
+  "holeCount": 9
+}

@@ -2,12 +2,13 @@ import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
 import {getRoundEnvironment} from './round-environment.js?v=location-shapes-23';
+import {yardageSelectionKey} from './yardage-navigation.js';
 import {readActiveRound} from './starters-desk-session.js';
 import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js?v=weather-cache-22';
 import {buildCaddyCourseFacts} from './caddy-course-facts.js?v=weather-cache-22';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js?v=weather-cache-22';
-import {createShotRecordContext} from './shot-record-context.js';
+import {createShotRecordContext,recordedMissNotes} from './shot-record-context.js?v=friday-book-1';
 import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
 import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=weather-cache-22';
 import {mountStartersDesk} from './starters-desk-ui.js?v=weather-cache-22';
@@ -50,9 +51,14 @@ let roundEnvironmentLoading=null;
 let roundEnvironmentLoadingSelection=null;
 let conditionsUI=null;
 let golferConfirmedTarget=false;
+let yardageDraftContext=null;
+try{yardageDraftContext=JSON.parse($('aiInput')?.dataset.yardageDraftContext||'null')}catch{}
 let caddyTargetHole=readSoloCard(localStorage)?.hole??null;
 function resetCaddyTarget(){
  golferConfirmedTarget=false;
+ yardageDraftContext=null;
+ const draftField=$('aiInput');
+ if(draftField)delete draftField.dataset.yardageDraftContext;
  // These are all shot-specific distances. Never carry an approach yardage
  // into the next hole, a new course, or a new round.
  for(const id of ['yards','aiShotYards','riskYards']){
@@ -68,7 +74,7 @@ function savedClubProfile(){
 function renderCaddyConditions(loading=false){
  if(!conditionsUI)return;
  const active=readActiveRound(localStorage);
- const selectedHole=readSoloCard(localStorage)?.hole;
+ const selectedHole=caddyDraftHole(active)??readSoloCard(localStorage)?.hole;
  const safe=safeCaddyEnvironment(active,activeRoundEnvironment,roundEnvironmentFetchedAt);
  const data=describeCaddyConditions(active?{...active,holeNumber:selectedHole||active.selection.holeNumber}:null,safe,{fetchedAt:roundEnvironmentFetchedAt,loading});
  const target=golferConfirmedTarget?document.getElementById('yards')?.value:null;
@@ -101,6 +107,11 @@ async function refreshCaddyRoundEnvironment(){
  try{return await pending;}
  finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingSelection=null;}renderCaddyConditions();}
 }
+document.addEventListener('dcc:yardage-caddy-context',event=>{
+ resetCaddyTarget();
+ yardageDraftContext=event.detail;
+ renderCaddyConditions();
+});
 document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;caddyTargetHole=null;resetCaddyTarget();});
 document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;caddyTargetHole=readSoloCard(localStorage)?.hole??null;resetCaddyTarget();void refreshCaddyRoundEnvironment();});
 document.addEventListener('dcc:round-environment',event=>{
@@ -111,7 +122,7 @@ conditionsUI=mountCaddyConditions({onRefresh:refreshCaddyRoundEnvironment});
 document.getElementById('yards')?.addEventListener('input',()=>{golferConfirmedTarget=true;renderCaddyConditions();});
 document.addEventListener('dcc:solo-hole-change',event=>{
  const hole=Number(event.detail?.hole);
- if(Number.isInteger(hole)&&hole>=1&&hole<=18&&hole!==caddyTargetHole){caddyTargetHole=hole;resetCaddyTarget();}
+ if(Number.isInteger(hole)&&hole>=1&&hole<=18&&(hole!==caddyTargetHole||yardageDraftContext)){caddyTargetHole=hole;resetCaddyTarget();}
  else renderCaddyConditions();
 });
 renderCaddyConditions();
@@ -233,7 +244,7 @@ shotReport.record.addEventListener('click', () => {
   if (!shotQuality) return;
 
   const activeShotRound=readActiveRound(localStorage);
-  const shotHole=Number(readSoloCard(localStorage)?.hole??activeShotRound?.selection?.holeNumber);
+  const shotHole=Number(caddyDraftHole(activeShotRound)??readSoloCard(localStorage)?.hole??activeShotRound?.selection?.holeNumber);
   const shotCourseContext=createShotRecordContext(activeShotRound,shotHole,activeRoundEnvironment,roundEnvironmentFetchedAt);
   const report = {
     result: [shotQuality, shotHorizontal, shotVertical]
@@ -241,6 +252,7 @@ shotReport.record.addEventListener('click', () => {
     quality: shotQuality,
     horizontal: shotHorizontal,
     vertical: shotVertical,
+    lie: document.querySelector('#lieButtons .active')?.textContent.trim() || null,
     
 club: document.getElementById('aiShotClub').value || 'Club not selected',
 yards: Number(document.getElementById('aiShotYards').value) || null,
@@ -471,10 +483,23 @@ function add(role,content){
     ui.history.scrollTop=ui.history.scrollHeight;
   }
 }
-function context(){let clubs='';try{const p=JSON.parse(localStorage.getItem('dagger_profile')||'[]');if(Array.isArray(p))clubs=p.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,1200);}catch{};
+function caddyDraftHole(active){
+ return yardageDraftContext?.selectionKey===yardageSelectionKey(active?.selection)?yardageDraftContext?.holeNumber:null;
+}
+function context(){
+ const profile=savedClubProfile().filter(club=>typeof club?.name==='string');
+ let clubs=profile.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,900);
+ try{
+  const shots=JSON.parse(localStorage.getItem('dagger_shot_log')||'[]');
+  const misses=recordedMissNotes(shots,profile.map(club=>club.name)).join('; ');
+  if(misses)clubs+=' | Recorded direction outcomes: '+misses;
+ }catch{}
+ clubs=clubs.slice(0,1200);
 let money='';try{money=$('roomStandings')?.textContent?.slice(0,300)||'';}catch{}
-const holeNumber=Number((readSoloCard(localStorage)?.hole ?? document.getElementById('hole')?.value));
-const safeEnvironment=safeCaddyEnvironment(readActiveRound(localStorage),activeRoundEnvironment,roundEnvironmentFetchedAt);
+const active=readActiveRound(localStorage);
+const draftHole=caddyDraftHole(active);
+const holeNumber=Number(draftHole ?? readSoloCard(localStorage)?.hole ?? document.getElementById('hole')?.value);
+const safeEnvironment=safeCaddyEnvironment(active,activeRoundEnvironment,roundEnvironmentFetchedAt);
 const courseBriefing=createCaddyCourseBriefing(safeEnvironment,holeNumber);
 const courseFacts=buildCaddyCourseFacts(safeEnvironment,holeNumber);
 const aim=buildCaddyTarget({remainingYards:golferConfirmedTarget?$('yards')?.value:null,lie:document.querySelector('#lieButtons .active')?.textContent||''});

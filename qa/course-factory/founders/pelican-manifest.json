@@ -1,0 +1,21 @@
+{
+  "reviewDate": "2026-11-07",
+  "source": "https://download.geofabrik.de/north-america/us/florida-261106.osm.pbf",
+  "pbfSha256": "96bbbf94612bef9b717985dd961b14b9e2104d53ca03c64b81f6aa9585c33aa2",
+  "snapshotSha256": "f678da0acd31b5441492c5f4b0d497501c57421a3686b71907285ebabb6cd284",
+  "courses": [
+    {
+      "id": "pelican-pointe-venice-fl",
+      "boundary": "r12587089",
+      "osmName": "Pelican Pointe Golf & Country Club",
+      "mapRef": "fl/pelican-pointe-venice",
+      "holeCount": 27
+    }
+  ],
+  "bbox": [
+    -82.435,
+    27.059,
+    -82.371,
+    27.109
+  ]
+}
