@@ -942,6 +942,58 @@ test('Sanford Quail Ridge uses all eighteen local drawings and shares hole fourt
  await expect(page.locator('#hole')).toHaveValue('14');
 });
 
+test('Sassamon Trace plays nine real holes through check-in, scoring, Yardage Book and House Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Sassamon Trace');
+ await page.locator('#dcc-starter-search').click();
+ await page.locator('#dcc-starter-results button').filter({hasText:'Natick, MA'}).click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'Blue · 2383 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+ await page.locator('#dccHomeScorecard').click();
+ await expect(page.locator('#dcc-paper-length')).toHaveValue('9');
+ await expect(page.locator('#dcc-paper-length')).toBeDisabled();
+ await expect(page.locator('#dcc-paper-grid .dcc-paper-hole')).toHaveCount(9);
+ await page.getByRole('button',{name:'Select hole 9, not scored'}).click();
+ await page.getByRole('button',{name:'Pencil 4 strokes for hole 9'}).click();
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ await expect(page.getByRole('button',{name:'Select hole 9, 4 strokes'})).toBeVisible();
+ await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
+ await page.locator('#dccClubhouseHome [data-dcc-go="ghost"]').click();
+ await expect(page.locator('#dccGhostLength')).toHaveValue('9');
+ await expect(page.locator('#dccGhostLength')).toBeDisabled();
+ await page.locator('#dccGhostPlay').click();
+ const match=page.frameLocator('#dccGhostPlayback iframe');
+ await expect(match.locator('#length')).toHaveValue('9');
+ await expect(match.locator('#ghostHoleSketch .route-mark')).toBeAttached();
+ await page.goto('/playtest/yardage-preview.html?hole=9');
+ await expect(page.locator('#hole option')).toHaveCount(9);
+ const routes=new Set();
+ const drawing=page.locator('.field-sketch .route-mark');
+ let previous=null;
+ for(let hole=1;hole<=9;hole++){
+  await page.locator('#hole').selectOption(String(hole));
+  if(previous)await expect(drawing).not.toHaveAttribute('d',previous);
+  await expect(drawing).toHaveAttribute('d',/^M/);
+  previous=await drawing.getAttribute('d');
+  routes.add(previous);
+ }
+ expect(routes.size).toBe(9);
+ await expect(page.locator('#next')).toBeDisabled();
+ await expect(page.locator('#yards')).toContainText('367');
+ const route=await drawing.getAttribute('d');
+ await page.locator('#watchGhost').click();
+ await expect(page.locator('#hole option')).toHaveCount(9);
+ await expect(page.locator('#length')).toHaveValue('9');
+ await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+ await page.locator('#next').click();
+ await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+});
+
 test('Pelican Pointe preserves its selected pairing and official White tee through the Yardage Book',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));

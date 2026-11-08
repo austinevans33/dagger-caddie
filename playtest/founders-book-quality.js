@@ -4,12 +4,13 @@
 function shapeCount(sketch,type){
  return Array.isArray(sketch?.shapes)?sketch.shapes.filter(x=>x.type===type&&Array.isArray(x.points)&&x.points.length>=3).length:0;
 }
-export function auditFounderBook({holes=[],sketches=[],source=''}={}){
+export function auditFounderBook({holes=[],sketches=[],source='',holeCount=18}={}){
+ const count=holeCount===9?9:18;
  const checks=[];
- const scorecard=holes.length===18&&holes.every((h,i)=>h?.number===i+1&&
+ const scorecard=holes.length===count&&holes.every((h,i)=>h?.number===i+1&&
   Number.isInteger(h.par)&&h.par>=3&&h.par<=6&&Number.isInteger(h.yards)&&h.yards>=50&&h.yards<=800);
  let routes=0,greens=0,tees=0,fairways=0,mapped=0;
- for(let i=0;i<18;i++){
+ for(let i=0;i<count;i++){
   const sketch=sketches[i];
   const route=sketch?.annotations?.route;
   const oriented=Array.isArray(route?.tee)&&Array.isArray(route?.green)&&
@@ -28,7 +29,10 @@ export function auditFounderBook({holes=[],sketches=[],source=''}={}){
  }
  // Bayonet itself has 18 mapped routes/tee/green and 17 mapped fairways.
  // Do not silently lower that bar to "18 scorecards + generic drawing."
- const bayonetParity=scorecard&&mapped===18&&fairways>=17;
+ // A native nine may omit a single unmapped fairway on a verified par 3.
+ const fairwayPass=count===18?fairways>=17:
+  fairways>=8&&checks.every(hole=>hole.fairway||holes[hole.number-1]?.par===3);
+ const bayonetParity=scorecard&&mapped===count&&fairwayPass;
  return Object.freeze({
   scorecardComplete:scorecard,
   mappedHoles:mapped,

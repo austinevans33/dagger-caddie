@@ -8,7 +8,6 @@ import {courseFactoryCourses as northCarolinaCourses} from './north-carolina-cou
 import {courseFactoryCourses as southCarolinaCourses} from './south-carolina-course-factory.js';
 
 const founderProvider='dagger-founder';
-const holeRange=Array.from({length:18},(_,i)=>i+1);
 // Club-published nine-hole cards use physical hole numbers 1–27.
 const pelicanLoops={
  meadows:{
@@ -58,6 +57,23 @@ const founders=Object.freeze([
  pelicanPair('Meadows / Preserve','meadows','preserve'),
  pelicanPair('Preserve / Hatchett Creek','preserve','hatchett'),
  pelicanPair('Hatchett Creek / Meadows','hatchett','meadows'),
+ {
+  id:'sassamon-trace-natick-ma',name:'Sassamon Trace Golf Course',region:'Natick, MA',holeCount:9,
+  par:[3,4,3,5,3,4,3,3,4],
+  handicapMen:[8,5,3,1,7,6,4,9,2],
+  tees:{
+   blue:{label:'Blue',yards:[158,326,180,529,162,341,177,143,367]},
+   white:{label:'White',yards:[131,322,161,498,139,310,154,125,327]},
+   yellow:{label:'Yellow',yards:[125,312,150,415,128,301,146,114,320]},
+   red:{label:'Red',yards:[93,279,127,380,110,227,130,112,286]}
+  },
+  source:'sassamon-trace-official-scorecard',
+  provenance:{source:'Sassamon Trace official nine-hole scorecard',url:'https://sassamontrace.com/scorecard/',
+   sourceSha256:'1a0b6cd8da0a4c828ffca279c0ea48a92dbcc6a5f2a2105411c6bac51ab8f074',
+   checked:'2026-11-07',geography:'Natick, Massachusetts',teeYardageIsNotPinDistance:true},
+  map:{file:'sassamon-trace-natick-ma.json',source:'https://www.openstreetmap.org/way/311190601',
+   ref:'ma/sassamon-trace',status:'bundled-reviewed-osm',auditTee:'blue'}
+ },
  {
   id:'kings-grant-fayetteville-nc',name:"King's Grant Golf & Country Club",region:'Fayetteville, NC',
   par:[4,5,4,3,4,5,3,4,4,4,3,4,3,4,5,3,4,5],
@@ -236,12 +252,13 @@ const courseBooks=Object.freeze([...founders,...floridaCourses,...northCarolinaC
 const courseBooksById=new Map(courseBooks.map(course=>[course.id,course]));
 if(courseBooksById.size!==courseBooks.length)throw Error('Duplicate course book identity');
 for(const founder of courseBooks){
- if(founder.par.length!==18||founder.par.some(v=>![3,4,5,6].includes(v)))throw Error('Invalid founder pars '+founder.id);
- if(founder.handicapMen&&(founder.handicapMen.length!==18||new Set(founder.handicapMen).size!==18))throw Error('Invalid handicap '+founder.id);
+ const count=founder.holeCount??18;
+ if(![9,18].includes(count)||founder.par.length!==count||founder.par.some(v=>![3,4,5,6].includes(v)))throw Error('Invalid founder pars '+founder.id);
+ if(founder.handicapMen&&(founder.handicapMen.length!==count||new Set(founder.handicapMen).size!==count))throw Error('Invalid handicap '+founder.id);
  for(const [color,tee] of Object.entries(founder.tees)){
-  if(tee.yards.length!==18||tee.yards.some(y=>!Number.isInteger(y)||y<50||y>800))throw Error('Invalid founder tee '+founder.id+':'+color);
-  if(tee.par&&(tee.par.length!==18||tee.par.some(p=>![3,4,5,6].includes(p))))throw Error('Invalid tee-specific par '+founder.id+':'+color);
-  if(tee.handicap&&(tee.handicap.length!==18||new Set(tee.handicap).size!==18))throw Error('Invalid tee stroke index '+founder.id+':'+color);
+  if(tee.yards.length!==count||tee.yards.some(y=>!Number.isInteger(y)||y<50||y>800))throw Error('Invalid founder tee '+founder.id+':'+color);
+  if(tee.par&&(tee.par.length!==count||tee.par.some(p=>![3,4,5,6].includes(p))))throw Error('Invalid tee-specific par '+founder.id+':'+color);
+  if(tee.handicap&&(tee.handicap.length!==count||new Set(tee.handicap).size!==count))throw Error('Invalid tee stroke index '+founder.id+':'+color);
   tee.totalYards=sum(tee.yards);
   Object.freeze(tee.yards);if(tee.provenance)Object.freeze(tee.provenance);if(tee.par)Object.freeze(tee.par);if(tee.handicap)Object.freeze(tee.handicap);Object.freeze(tee);
  }
@@ -251,7 +268,7 @@ for(const founder of courseBooks){
 function exactFounder(course){
  if(course?.provider!==founderProvider)return null;
  const book=courseBooksById.get(course.providerCourseId);
- return book?.name===course.name&&book?.region===course.region?book:null;
+ return book?.name===course.name&&book?.region===course.region&&book?.holeCount===course.holeCount?book:null;
 }
 export const FOUNDERS_READY_COUNT=founders.length;
 export function founderCatalogRecords(query=''){
@@ -260,7 +277,7 @@ export function founderCatalogRecords(query=''){
  return courseBooks.filter(f=>(f.name+' '+f.region).toLowerCase().includes(term)||
   (f.id==='kings-grant-fayetteville-nc'&&/kings?\s+grant|king.s\s+grant/i.test(term))||
   (f.id==='quail-ridge-sanford-nc'&&/quail\s+ridge/i.test(term))
- ).map(f=>({provider:founderProvider,providerCourseId:f.id,name:f.name,region:f.region}));
+ ).map(f=>({provider:founderProvider,providerCourseId:f.id,name:f.name,region:f.region,...(f.holeCount?{holeCount:f.holeCount}:{})}));
 }
 export function founderTeesForCourse(course){
  const f=exactFounder(course);
@@ -273,10 +290,10 @@ export function founderVerifiedScorecard(selection){
  const key=selection?.tee?.providerTeeId;
  const tee=f.tees[key];
  if(!tee||selection.tee.totalYards!==tee.totalYards||selection.tee.name!==tee.label)return null;
- const holes=holeRange.map(number=>Object.freeze({
-  number,par:(tee.par||f.par)[number-1],yards:tee.yards[number-1],
-  ...((tee.handicap||f.handicapMen)?.length?{handicapMen:(tee.handicap||f.handicapMen)[number-1]}:{}),
-  ...(f.handicapWomen?.length?{handicapWomen:f.handicapWomen[number-1]}:{}),
+ const holes=f.par.map((par,index)=>Object.freeze({
+  number:index+1,par:tee.par?.[index]??par,yards:tee.yards[index],
+  ...((tee.handicap||f.handicapMen)?.length?{handicapMen:(tee.handicap||f.handicapMen)[index]}:{}),
+  ...(f.handicapWomen?.length?{handicapWomen:f.handicapWomen[index]}:{}),
   hazards:Object.freeze([])
  }));
  return Object.freeze({version:1,selection,holes:Object.freeze(holes),source:tee.source||f.source,
