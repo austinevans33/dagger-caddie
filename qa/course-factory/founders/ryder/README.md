@@ -25,3 +25,21 @@ python3 scripts/course-factory-imagery.py \
 ```
 
 The full imagery is source evidence for review. Future candidate geometry still goes through the existing Bayonet-parity gate before app use.
+
+## Putting-surface traces
+
+[Green footprints](green-footprints.json) contains manually traced, approximate outlines from the pinned 2022 NAIP crop for all 18 holes. An independent [NC OneMap latest orthophoto](https://services.nconemap.gov/secure/rest/services/Imagery/Orthoimagery_Latest/ImageServer) export corroborated the position of all 18 greens. The catalog item at the course center identifies a February 3, 2024 acquisition. The service can change over time. The comparison was used to check location, while all review vertices come from the pinned NAIP crop. Its leaf-off state and shadows limit precise boundary comparison on some holes.
+
+The comparison crop request used bounding box `682950.6,3890115,683860.2,3891387`, `bboxSR=26917`, `imageSR=26917`, `size=1516,2120`, `format=png`, and `f=image` on the service's `exportImage` endpoint. Returned PNG SHA-256 was `ea22593a292e70eee3dfd00aac2578a8300209ebc83c46a33e1a5a57e5cc19d3`. The archived state imagery is reference-only and is outside the app and this repository.
+
+The validator checks that every closed outline contains its own previously identified anchor, stays inside the crop and is valid and disjoint. The export is WGS 84 GeoJSON for GIS review. Use the same Python environment as the crop, plus Shapely 2.1.2.
+
+```sh
+python3 scripts/course-factory-green-review.py qa/course-factory/founders/ryder /tmp/ryder-greens.geojson
+```
+
+## Tee assignment blocker
+
+[Golfify](https://www.golfify.io/courses/ryder-golf-course) lists Blue 6,415 and Gold 5,415 yards. [TheGrint](https://thegrint.com/golf-courses/us/north-carolina/fort-bragg/ryder) instead lists Blue 5,420 and Red 6,402 yards. On No. 5 alone, those two Blue rows read 195 and 144 yards. The Army MWR diagram numbers the holes but does not associate colors and yardages with individual tee pads. The aerial checks show multiple plausible starts around some adjacent holes. A current club card and hole-by-hole tee references are needed to certify a named tee set. No published rows were changed.
+
+Fairway geometry remains unapproved. The visible corridor and the published routing illustration can guide field review. The vegetation and mowing transitions visible in the available aerials are insufficient to finish the outlines to Bayonet quality in this pass.
