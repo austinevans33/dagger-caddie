@@ -11,11 +11,9 @@ from urllib.request import Request, urlopen
 MAX_CARD_BYTES = 20 * 1024 * 1024
 
 
-def cache_card(course, directory):
-    spec = course["scorecard"]
+def cache_card(key, spec, directory):
     digest = spec["sha256"]
     url = urlsplit(spec["url"])
-    key = course["id"]
     if (not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", key)
             or not re.fullmatch(r"[a-f0-9]{64}", digest)
             or url.scheme != "https" or not url.hostname or url.username or url.password):
@@ -51,7 +49,11 @@ def main():
         if not course.get("scorecard", {}).get("format"):
             continue
         try:
-            print(f"{course['id']}: {cache_card(course, args.cache)}")
+            spec = course["scorecard"]
+            print(f"{course['id']}: {cache_card(course['id'], spec, args.cache)}")
+            for part in spec.get("additionalSources", []):
+                key = course["id"] + "-" + part["suffix"]
+                print(f"{key}: {cache_card(key, part, args.cache)}")
         except (OSError, ValueError) as error:
             print(f"{course['id']}: {error}")
             failed = True

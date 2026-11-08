@@ -1031,6 +1031,8 @@ for(const course of [
  {query:'Crooked Oaks',region:'Seabrook Island, SC',tee:'Hawk',hole:13,yards:175,par:3,caddy:true},
  {query:'Tanglewood Park Championship',region:'Clemmons, NC',tee:'Red',hole:17,yards:292,par:5,caddy:true},
  {query:'Hidden Cypress',region:'Bluffton, SC',tee:'Gold',hole:12,yards:165,par:3,caddy:true},
+ {query:'Longleaf',region:'Southern Pines, NC',tee:'Tee 6',hole:5,yards:509,par:5,caddy:true},
+ {query:'Sanford Municipal',region:'Sanford, NC',tee:'Men’s',hole:16,yards:522,par:5,caddy:true},
 ]){
  test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
   await page.setViewportSize({width:390,height:844});

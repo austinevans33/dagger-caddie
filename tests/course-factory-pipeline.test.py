@@ -17,6 +17,28 @@ GolfSnapshot = runpy.run_path(str(SCRIPTS / "course-factory-review.py"))["GolfSn
 
 
 class CourseFactoryPipeline(unittest.TestCase):
+    def test_all_parts_of_an_official_card_are_required(self):
+        with tempfile.TemporaryDirectory() as temp:
+            front = Path(temp) / "card"
+            back = Path(temp) / "card-back"
+            front.write_bytes(b"front")
+            back.write_bytes(b"back")
+            spec = {
+                "sha256": hashlib.sha256(b"front").hexdigest(),
+                "additionalSources": [{"suffix": "back", "sha256": hashlib.sha256(b"back").hexdigest()}],
+                "format": "reviewed-image", "reviewNote": "Both numbered images checked",
+                "reviewedRows": {"Par": [[4] * 9 + [36], [4] * 9 + [36, 72]],
+                                 "Blue": [[400] * 9 + [3600], [400] * 9 + [3600, 7200]]},
+                "tees": {"blue": {"label": "Blue"}},
+            }
+            self.assertEqual(load_card(front, spec)["tees"]["blue"]["yards"], [400] * 18)
+            back.write_bytes(b"wrong course")
+            with self.assertRaisesRegex(ValueError, "scorecard part checksum differs"):
+                load_card(front, spec)
+            back.unlink()
+            with self.assertRaises(FileNotFoundError):
+                load_card(front, spec)
+
     def test_reviewed_par_correction_checks_printed_value_and_totals(self):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "pinned.pdf"

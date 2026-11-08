@@ -74,6 +74,77 @@
         "red": 4562,
         "family": 3404
       }
+    },
+    {
+      "id": "longleaf-southern-pines-nc",
+      "name": "Longleaf Golf & Family Club",
+      "region": "Southern Pines, NC",
+      "boundary": "r6387132",
+      "mapRef": "nc/longleaf",
+      "auditTee": "tee-6",
+      "scorecard": "https://longleafgfc.com/wp-content/uploads/sites/9351/2024/02/Longleaf-ScoreCard-2020-1.pdf",
+      "cardSha256": "a787dd3b6a546afe04e3b8f1f72c638d57cf0a9733ff2970f1d2a8df345689e8",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "0d612c7f903384b609a6849a0476df80a9a9749c2ac54cf9bf1ed029bd8a5600",
+      "teeTotals": {
+        "right-start": 2423,
+        "tee-1": 3103,
+        "tee-2": 3702,
+        "tee-3": 4316,
+        "tee-4": 4872,
+        "tee-5": 5491,
+        "tee-6": 6153
+      }
+    },
+    {
+      "id": "sanford-municipal-nc",
+      "name": "Sanford Municipal Golf Course",
+      "region": "Sanford, NC",
+      "boundary": "w430087361",
+      "mapRef": "nc/sanford-municipal",
+      "auditTee": "mens",
+      "scorecard": "https://www.sanfordnc.net/ImageRepository/Document?documentID=2321",
+      "cardSha256": "d98f4a5be32dcb77b03c7e3f38d1571deb0f88f67c4ea58ffa905218130161ae",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "6a80242b3aa4e46206b9b3cfcb86f220d4fc234c844d42538055f9ff87985e77",
+      "teeTotals": {
+        "mens": 6304,
+        "white": 5901,
+        "gold": 5164,
+        "women": 4882
+      }
     }
   ]
 }

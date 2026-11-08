@@ -1,4 +1,4 @@
-# Carolinas Course Factory batches 1 and 2
+# Carolinas Course Factory
 
 Stacked on the Founders source review. The regional catalogs use the same runtime geometry gate as Bayonet and the existing Yardage Book, AI Caddy handoff and House Ghost drawing. The release branch is outside this change.
 
@@ -8,8 +8,10 @@ Stacked on the Founders source review. The regional catalogs use the same runtim
 | Crooked Oaks at Seabrook Island Club, Seabrook Island SC | 6 | 18 / 18 / 18 / 18 | Hawk, 6,706 yards, par 72 |
 | Tanglewood Park Championship Course, Clemmons NC | 6 | 18 / 18 / 18 / 18 | Gold, 7,101 yards, par 70 |
 | Hidden Cypress Golf Club, Bluffton SC | 6 | 18 / 18 / 18 / 17 | Gold, 6,549 yards, par 72 |
+| Longleaf Golf & Family Club, Southern Pines NC | 7 | 18 / 18 / 18 / 18 | Tee 6, 6,153 yards, par 72 |
+| Sanford Municipal Golf Course, Sanford NC | 4 | 18 / 18 / 18 / 18 | Men’s, 6,304 yards, par 71 |
 
-Each region's manifest pins the original scorecard PDF, Geofabrik PBF and derived golf-only snapshot. Each coverage report pins the promoted bundle. No synthetic tee, fairway, hazard or live pin yardage was added.
+Each region's manifest pins the original scorecard sources, Geofabrik PBF and derived golf-only snapshot. Each coverage report pins the promoted bundle. No synthetic tee, fairway, hazard or live pin yardage was added.
 
 Crooked Oaks shares a PDF with Ocean Winds. The importer matches the Crooked Oaks page heading before reading any rows. The linked hole card's Hawk row sums to 6,706. The club's course description gives 6,780 without matching hole values. Use the scorecard figures and preserve that distinction. Eagle and Pelican are totals-only rows without their own hole values in the printed card, so the catalog does not expose them.
 
@@ -19,14 +21,15 @@ Tanglewood uses the [county’s Championship card](https://golf.tanglewoodpark.o
 
 The statewide extracts yielded 151 NC and 113 SC named boundaries with at least 17 uniquely numbered, contained routes. Among these, 37 NC and 12 SC met the geometry count screen. The counts include some existing courses. `discovery.json` lists the exact OSM boundaries that made this first screen. Every queued candidate still needs independent course identity and official card review, source import, route-to-yardage checks and browser acceptance.
 
-Next source checks include [Longleaf](https://www.longleafgfc.com/longleaf-scorecard/) in NC and Dolphin Head and Olde Beaufort in SC. Heathland has complete geometry counts, but the indexed Legends PDF returned HTTP 404 when fetched. Locate a current club card before promotion.
+The Founders and NC pass kept the South Carolina batch as-is. See the [Founders and NC handoff](../../../docs/COURSE_FACTORY_FOUNDERS_NC_20261108.md) for remaining NC source checks.
 
 ## Reproduction
 
-Use Python 3.12, Shapely 2.1.2, osmium 4.2.0, Node 22 and Poppler `pdftotext`. Fetch the state PBF from `source` and the club PDF from `scorecard.url` in the region manifest. Keep original bytes in scratch. Name each cached PDF exactly its course ID, with no extension.
+Use Python 3.12, Shapely 2.1.2, osmium 4.2.0, Node 22 and Poppler `pdftotext`. Fetch the pinned state PBF from `source` in the region manifest. The scorecard cache command below verifies the primary and companion card bytes and stores them as the course ID and course ID plus part suffix, respectively.
 
 ```sh
 region=north-carolina # or south-carolina
+python3 scripts/course-factory-cache.py "qa/course-factory/$region/manifest.json" "$card_cache"
 python3 scripts/course-factory-snapshot.py "$pbf" "$snapshot" --sha256 "$pbf_sha"
 python3 scripts/course-factory-review.py "$snapshot" --rank > "$scratch/$region-ranked.json"
 node scripts/course-factory-batch.mjs "qa/course-factory/$region/manifest.json" "$snapshot" "$card_cache" "$scratch/new-$region"
