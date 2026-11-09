@@ -637,6 +637,75 @@
         "silver-forward": 4743,
         "forward": 3931
       }
+    },
+    {
+      "id": "pine-island-charlotte-nc",
+      "name": "Pine Island Country Club",
+      "region": "Charlotte, NC",
+      "boundary": "r16549890",
+      "mapRef": "nc/pine-island",
+      "auditTee": "blue",
+      "scorecard": "https://pineislandcc.com/wp-content/uploads/2024/08/Scorecard-82424.pdf",
+      "cardSha256": "018b0e7563b48bcb63cb104c5d8a41a3a7e8924f6caddb74787c19ce76a72b80",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 17,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 2,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "4",
+          "officialPar": 5
+        },
+        {
+          "hole": 3,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "4",
+          "officialPar": 3
+        },
+        {
+          "hole": 4,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "3",
+          "officialPar": 4
+        },
+        {
+          "hole": 7,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "5",
+          "officialPar": 4
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "route-yardage-mismatch",
+        "ratioErrors": [
+          2,
+          3,
+          4
+        ],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "teeTotals": {
+        "blue": 6377,
+        "blue-white": 6141,
+        "white": 5974,
+        "white-gold": 5724,
+        "gold": 5431,
+        "gold-green": 5037,
+        "green": 4865
+      }
     }
   ]
 }

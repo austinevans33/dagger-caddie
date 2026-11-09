@@ -3603,6 +3603,321 @@
           ]
         }
       }
+    },
+    {
+      "id": "pine-island-charlotte-nc",
+      "name": "Pine Island Country Club",
+      "region": "Charlotte, NC",
+      "boundary": "r16549890",
+      "osmName": "Pine Island Country Club",
+      "mapRef": "nc/pine-island",
+      "reviewDate": "2026-11-09",
+      "auditTee": "blue",
+      "scorecard": {
+        "url": "https://pineislandcc.com/wp-content/uploads/2024/08/Scorecard-82424.pdf",
+        "sha256": "018b0e7563b48bcb63cb104c5d8a41a3a7e8924f6caddb74787c19ce76a72b80",
+        "format": "reviewed-image",
+        "reviewNote": "Reviewed the official card grid, all seven printed tee totals, and both stroke-index rows. The lower index is printed immediately beneath Gold/Green and Green.",
+        "handicap": "Handicap",
+        "tees": {
+          "blue": {
+            "label": "Blue",
+            "total": 6377
+          },
+          "blue-white": {
+            "label": "Blue/White",
+            "total": 6141
+          },
+          "white": {
+            "label": "White",
+            "total": 5974
+          },
+          "white-gold": {
+            "label": "White/Gold",
+            "total": 5724
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5431
+          },
+          "gold-green": {
+            "label": "Gold/Green",
+            "total": 5037,
+            "handicap": "Lower Handicap"
+          },
+          "green": {
+            "label": "Green",
+            "total": 4865,
+            "handicap": "Lower Handicap"
+          }
+        },
+        "reviewedRows": {
+          "Blue": [
+            [
+              388,
+              493,
+              145,
+              368,
+              409,
+              301,
+              357,
+              153,
+              366,
+              2980
+            ],
+            [
+              536,
+              348,
+              352,
+              218,
+              439,
+              482,
+              438,
+              192,
+              392,
+              3397,
+              6377
+            ]
+          ],
+          "Blue/White": [
+            [
+              355,
+              475,
+              145,
+              350,
+              381,
+              301,
+              357,
+              153,
+              350,
+              2867
+            ],
+            [
+              511,
+              348,
+              352,
+              201,
+              410,
+              482,
+              408,
+              170,
+              392,
+              3274,
+              6141
+            ]
+          ],
+          "White": [
+            [
+              355,
+              475,
+              119,
+              350,
+              381,
+              289,
+              339,
+              132,
+              350,
+              2790
+            ],
+            [
+              511,
+              328,
+              333,
+              201,
+              410,
+              455,
+              408,
+              170,
+              368,
+              3184,
+              5974
+            ]
+          ],
+          "White/Gold": [
+            [
+              355,
+              436,
+              119,
+              330,
+              339,
+              289,
+              339,
+              132,
+              350,
+              2689
+            ],
+            [
+              511,
+              328,
+              333,
+              178,
+              336,
+              455,
+              356,
+              170,
+              368,
+              3035,
+              5724
+            ]
+          ],
+          "Gold": [
+            [
+              332,
+              436,
+              102,
+              330,
+              339,
+              277,
+              304,
+              120,
+              334,
+              2574
+            ],
+            [
+              490,
+              306,
+              279,
+              178,
+              336,
+              428,
+              356,
+              153,
+              331,
+              2857,
+              5431
+            ]
+          ],
+          "Gold/Green": [
+            [
+              310,
+              407,
+              102,
+              293,
+              304,
+              277,
+              304,
+              120,
+              291,
+              2408
+            ],
+            [
+              467,
+              306,
+              279,
+              135,
+              284,
+              428,
+              308,
+              119,
+              303,
+              2629,
+              5037
+            ]
+          ],
+          "Green": [
+            [
+              310,
+              407,
+              86,
+              293,
+              304,
+              251,
+              269,
+              106,
+              291,
+              2317
+            ],
+            [
+              467,
+              269,
+              270,
+              135,
+              284,
+              393,
+              308,
+              119,
+              303,
+              2548,
+              4865
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              5,
+              3,
+              4,
+              4,
+              4,
+              4,
+              3,
+              4,
+              35
+            ],
+            [
+              5,
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              3,
+              4,
+              36,
+              71
+            ]
+          ],
+          "Handicap": [
+            [
+              6,
+              8,
+              16,
+              4,
+              2,
+              18,
+              14,
+              12,
+              10
+            ],
+            [
+              7,
+              17,
+              15,
+              5,
+              1,
+              13,
+              3,
+              11,
+              9
+            ]
+          ],
+          "Lower Handicap": [
+            [
+              6,
+              8,
+              18,
+              4,
+              2,
+              14,
+              12,
+              16,
+              10
+            ],
+            [
+              3,
+              17,
+              15,
+              11,
+              9,
+              1,
+              5,
+              13,
+              7
+            ]
+          ]
+        }
+      }
     }
   ]
 }

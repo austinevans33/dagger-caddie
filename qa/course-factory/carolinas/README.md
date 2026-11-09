@@ -58,6 +58,10 @@ The [current club card](https://neusegolf.com/wp-content/uploads/2025/04/Scoreca
 
 The source boundary matches the club’s Clayton street address. It yields 17 matched routes, tees, greens and fairways. Both endpoints of the candidate No. 8 route are within the boundary tolerance, but the line crosses outside it. The drawing remains gated while the verified scorecard is playable. [OSM boundary](https://www.openstreetmap.org/relation/6432537) · [No. 8 candidate](https://www.openstreetmap.org/way/756794598)
 
+## Pine Island Country Club
+
+The [club scorecard](https://pineislandcc.com/wp-content/uploads/2024/08/Scorecard-82424.pdf) reconciles all seven tee rows, including Blue/White, White/Gold and Gold/Green. Gold/Green and Green retain the separately printed lower stroke-index row. The pinned Charlotte boundary matches 18 routes, tees and greens. Mapped pars conflict with the card on Nos. 2, 3, 4 and 7, and the Blue route distances fail on Nos. 2, 3 and 4. The verified card is playable while the drawings remain gated pending a source that establishes the current hole numbering.
+
 ## Discovery
 
 The statewide extracts yielded 151 NC and 113 SC named boundaries with at least 17 uniquely numbered, contained routes. Among these, 37 NC and 12 SC met the geometry count screen. The counts include some existing courses. `discovery.json` lists the exact OSM boundaries that made this first screen. Every queued candidate still needs independent course identity and official card review, source import, route-to-yardage checks and browser acceptance.
