@@ -1108,6 +1108,42 @@ test('Standalone Ghost switches between front nine, back nine and eighteen',asyn
  await expect(page.locator('#shots li')).toHaveCount(1);
 });
 
+test('A finished paper round exports a Matchbook and feeds the next Ghost of You',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  if(localStorage.getItem('dcc_active_round_course_v1'))return;
+  const selection={course:{provider:'dagger-founder',providerCourseId:'country-hills-gibsonville-nc',name:'Country Hills Golf Course',region:'Gibsonville, NC'},
+   tee:{providerTeeId:'white',name:'White',totalYards:5511},holeNumber:18};
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:10,selection}));
+  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:'country-hills-gibsonville-nc|white|10',hole:18,length:9,nineStart:10,
+   scores:[...Array(9).fill(null),...Array(8).fill(4),null]}));
+  localStorage.setItem('dagger_foursome_active','{"protected":true}');
+ });
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ await expect(page.locator('#dcc-paper-matchbook')).toBeHidden();
+ await page.getByRole('button',{name:'Pencil 5 strokes for hole 18'}).click();
+ await page.locator('#dcc-paper-matchbook').click();
+ const matchbook=page.getByRole('dialog',{name:'The Matchbook'});
+ await expect(matchbook).toContainText('37 strokes');
+ await expect(matchbook.locator('svg .route-mark')).toHaveAttribute('d',/^M/);
+ await expect(matchbook.locator('figcaption')).toContainText('No. 10');
+ const [image]=await Promise.all([page.waitForEvent('download'),matchbook.getByRole('button',{name:'Save image'}).click()]);
+ expect(image.suggestedFilename()).toBe('dagger-matchbook.png');
+ await matchbook.getByRole('button',{name:'Close',exact:true}).click();
+ await page.evaluate(()=>{
+  const round=JSON.parse(localStorage.getItem('dcc_active_round_course_v1'));
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({...round,selectedAt:11}));
+ });
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ await page.locator('#dcc-paper-length').selectOption('9');
+ await expect(page.locator('#dcc-paper-ghost-of-you')).toHaveText('Ghost of You · Past round: 5 on this hole');
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":true}');
+});
+
 test('Neuse Forward keeps the current hole facts with the drawing gated',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));

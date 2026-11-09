@@ -42,3 +42,21 @@ export function recordedMissNotes(records, clubNames = []) {
  return [...byClub].filter(([, counts]) => counts.total >= 3 && counts.left + counts.right > 0)
   .map(([club, counts]) => club + ' (' + counts.total + ' logged: ' + counts.left + ' left, ' + counts.right + ' right)');
 }
+
+// Comparable golfer-reported approach outcomes, with the sample size attached.
+export function recordedDepthNotes(records,clubNames,targetYards){
+ if(!Array.isArray(records)||!Array.isArray(clubNames)||!Number.isFinite(targetYards)||targetYards<1)return [];
+ const groups=new Map(),seen=new Set();
+ for(const shot of records.slice(-60).reverse()){
+  if(!shot?.receiptId||seen.has(shot.receiptId)||shot.shotMode!=='approach'||
+     !clubNames.includes(shot.club)||!Number.isFinite(shot.yards)||
+     Math.abs(shot.yards-targetYards)>15||!['Short','Pin high','Long'].includes(shot.result))continue;
+  seen.add(shot.receiptId);
+  const counts=groups.get(shot.club)||{total:0,Short:0,'Pin high':0,Long:0};
+  counts.total++;
+  counts[shot.result]++;
+  groups.set(shot.club,counts);
+ }
+ return [...groups].filter(([,counts])=>counts.total>=3).map(([club,counts])=>
+  club+' ('+counts.total+' golfer-reported approaches within 15 yd of target: '+counts.Short+' short, '+counts['Pin high']+' pin high, '+counts.Long+' long)');
+}

@@ -4,6 +4,7 @@ import {readActiveRound} from './starters-desk-session.js';
 import {startSoloCard,readSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard,soloRange} from './solo-scorecard.js?v=premium-paper-9';
 import {readCourseScorecard} from './active-course-context.js?v=cached-fallback-16';
 import {scorecardCoverage} from './course-scorecard-coverage.js';
+import {soloMatchbook,saveMatchbookRound,pastRoundTarget} from './matchbook.js';
 import {formatSoloScorecardBackup} from './solo-scorecard-backup.js';
 
 const paperCSS=`
@@ -48,6 +49,7 @@ const paperCSS=`
 #dcc-solo-scorecard .dcc-paper-navigation button:disabled{opacity:.45}
 #dcc-solo-scorecard #dcc-paper-progress{white-space:nowrap}
 #dcc-solo-scorecard .dcc-paper-scorebuttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+#dcc-paper-ghost-of-you{margin:5px 0 0;text-align:center;color:#365341;font:700 12px/1.4 system-ui}
 #dcc-solo-scorecard .dcc-paper-scorebuttons button.selected{background:#d6bb82}
 #dcc-solo-scorecard .dcc-paper-scorebuttons button{min-height:52px!important;font:700 18px Georgia,serif!important;border:1px solid #bda77a!important;border-radius:9px!important;touch-action:manipulation}
 #dcc-solo-scorecard .dcc-paper-scorebuttons button:focus-visible{outline:3px solid #2b5d40;outline-offset:2px}
@@ -85,13 +87,14 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
     <div class="dcc-paper-hole-status" role="status"><strong id="dcc-paper-progress" tabindex="-1"></strong><small id="dcc-paper-hole-facts"></small></div>
     <button type="button" id="dcc-paper-next">NEXT →</button>
    </div>
+   <p id="dcc-paper-ghost-of-you" hidden></p>
    <div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div>
    <a id="dcc-paper-yardage" href="yardage-preview.html">Open Hole in Yardage Book →</a>
   </div>
   <div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div>
   <div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div>
   <div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div>
-  <div class="dcc-paper-actions"><button type="button" id="dcc-paper-copy">Copy Round Card</button><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div>
+  <div class="dcc-paper-actions"><button type="button" id="dcc-paper-matchbook" hidden>Open Matchbook</button><button type="button" id="dcc-paper-copy">Copy Round Card</button><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div>
   <div id="dcc-paper-copy-status" role="status" aria-live="polite" style="font:11px/1.4 system-ui;color:#34543c;margin-top:5px"></div>
  </div>`;
  const dialog=doc.createElement('dialog');dialog.id='dcc-paper-dialog';
@@ -121,6 +124,13 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   const active=readActiveRound(storage),state=startSoloCard(storage);
   if(!active||!state){card.hidden=true;launch.hidden=true;if(dialog.open)dialog.close();return;}card.hidden=false;launch.hidden=false;
   const range=soloRange(state);
+  const past=pastRoundTarget(storage,active,state);
+  const ghostOfYou=$('dcc-paper-ghost-of-you');
+  ghostOfYou.hidden=!past?.holeStrokes;
+  if(past?.holeStrokes){
+   const standing=past.difference===0?'level':Math.abs(past.difference)+' '+(past.difference<0?'ahead':'behind');
+   ghostOfYou.textContent='Ghost of You · Past round: '+past.holeStrokes+' on this hole'+(past.compared?' · '+standing+' over '+past.compared+' scored':'');
+  }
   const scored=state.scores.slice(range.start-1,range.end).filter(Number.isInteger).length;
   launch.textContent='OPEN SCORECARD  ·  '+scored+'/'+(state.length===9?9:18)+' HOLES SCORED';
   const length=state.length===9?9:18,scorecard=readCourseScorecard(storage,active.selection);
@@ -191,15 +201,29 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
    if(savedScore===score)b.className='selected';
    b.setAttribute('aria-pressed',String(savedScore===score));
    b.setAttribute('aria-label','Pencil '+score+' strokes for hole '+state.hole);
-   b.addEventListener('click',()=>{const next=saveSoloScore(storage,score);if(next){render();broadcast(next.hole);}});
+   b.addEventListener('click',()=>{
+    const next=saveSoloScore(storage,score);
+    if(!next)return;
+    saveMatchbookRound(storage,soloMatchbook(active,next,scorecard));
+    render();broadcast(next.hole);
+   });
    entries.append(b);
   }
   const summary=summarizeSoloCard(state,allHoles.map(h=>h?.par??null));
+  $('dcc-paper-matchbook').hidden=!summary.complete;
   const selectedCaddy=doc.querySelector('.staff-pick.active')?.dataset.caddie||'keith';
   const recap=writeRecap(summary,selectedCaddy);
   $('dcc-paper-recap').hidden=!recap;
   if(recap){$('dcc-paper-recap-title').textContent=recap.title;$('dcc-paper-recap-copy').textContent=recap.line;}
  }
+ $('dcc-paper-matchbook').addEventListener('click',async()=>{
+  const active=readActiveRound(storage);
+  if(!active)return;
+  const card=soloMatchbook(active,readSoloCard(storage),readCourseScorecard(storage,active.selection));
+  if(!card)return;
+  try{(await import('./matchbook-view.js')).openMatchbook(card);}
+  catch{$('dcc-paper-copy-status').textContent='Matchbook unavailable. Your scorecard is saved.';}
+ });
  $('dcc-paper-copy').addEventListener('click',async()=>{
   const active=readActiveRound(storage),state=readSoloCard(storage);
   const text=formatSoloScorecardBackup(active,state,active?readCourseScorecard(storage,active.selection):null);
