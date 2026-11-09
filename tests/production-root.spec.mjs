@@ -39,7 +39,9 @@ test('installed root and manifest entry use the same release and production Fire
 
 test('same-origin upgrade and return preserve legacy scores, profile and game storage',async ({page})=>{
   // Seed with the legacy modules shipped at these existing URLs.
-  await page.goto(launch+'manifest.json');
+  const fixture=launch+'legacy-fixture.html';
+  await page.route('**'+fixture, route=>route.fulfill({contentType:'text/html',body:'<!doctype html><title>Legacy fixture</title>'}));
+  await page.goto(fixture);
   const preserved=await page.evaluate(async ()=>{
     const {saveActiveRound}=await import('./starters-desk-session.js');
     const {saveSoloScore}=await import('./solo-scorecard.js');
@@ -97,8 +99,13 @@ test('root course routes open shared art and carry verified facts to Caddy',asyn
   await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',geometry);
   await page.locator('#next').click();
   await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
-  await page.locator('#ghostBack').click();
+  const back=page.locator('#ghostBack');
+  await expect(back).toHaveAttribute('href','yardage-preview.html?hole=14');
+  await back.click();
+  await expect(page.locator('#hole')).toHaveValue('14');
+  await expect(page.locator('#yards')).toContainText('262');
+  await page.waitForFunction(()=>typeof document.getElementById('askHoleCaddy')?.onclick==='function');
   await page.locator('#askHoleCaddy').click();
+  await page.waitForURL('http://127.0.0.1:8766'+launch,{waitUntil:'domcontentloaded'});
   await expect(page.locator('#aiInput')).toHaveValue(/Oak Island.*hole 14.*262 yards/i);
-  await expect(page).toHaveURL('http://127.0.0.1:8766'+launch);
 });
