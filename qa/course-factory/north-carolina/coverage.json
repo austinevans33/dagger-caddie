@@ -380,6 +380,106 @@
         "red-women": 4823,
         "light-blue-women": 3677
       }
+    },
+    {
+      "id": "carolina-colours-new-bern-nc",
+      "name": "Carolina Colours Golf Club",
+      "region": "New Bern, NC",
+      "boundary": "r21911975",
+      "mapRef": "nc/carolina-colours",
+      "auditTee": "black",
+      "scorecard": "https://carolinacoloursgolfclub.com/wp-content/uploads/2025/01/CarolinaColors1224_2.png",
+      "cardSha256": "e8cce90b96bb7e059ac94d64fc45f7d1423a13a1b3429cd76f4f5b5027655e46",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 16,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 7,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "5",
+          "officialPar": 4
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "route-yardage-mismatch",
+        "ratioErrors": [
+          2,
+          4,
+          5,
+          6,
+          10,
+          12,
+          16
+        ],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "teeTotals": {
+        "black": 6886,
+        "blue": 6609,
+        "green": 6409,
+        "white": 6169,
+        "gold": 5771,
+        "purple": 5168,
+        "red": 4897,
+        "teal": 4316,
+        "white-women": 6169,
+        "gold-women": 5771,
+        "purple-women": 5168,
+        "red-women": 4897,
+        "teal-women": 4316
+      }
+    },
+    {
+      "id": "greensboro-national-summerfield-nc",
+      "name": "Greensboro National Golf Club",
+      "region": "Summerfield, NC",
+      "boundary": "w1196861933",
+      "mapRef": "nc/greensboro-national",
+      "auditTee": "blue",
+      "scorecard": "https://greensboronational.com/wp-content/uploads/sites/148/2024/08/scorecard2-1030x706-1.png",
+      "cardSha256": "2d459e85c9321ba73ed55bde9a5c8b6c0d69023593d92ecf384199140930a9ef",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 16,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "446dcfbd47b4055559ee4076330a0f4e4c6998c738689d5a1078a9956f4abcf7",
+      "teeTotals": {
+        "blue": 6806,
+        "white": 6261,
+        "gold": 5609,
+        "red": 4715
+      }
     }
   ]
 }
