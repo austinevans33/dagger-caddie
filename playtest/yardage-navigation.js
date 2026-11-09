@@ -2,6 +2,11 @@
 import {readActiveRound} from './starters-desk-session.js';
 export const YARDAGE_HOLE_KEY='dccFridayYardageHole';
 export const YARDAGE_SELECTION_KEY='dccYardageSelectionKey_v1';
+export function yardageHoleRange(holeCount,nine){
+ if(holeCount===9||nine==='front')return {start:1,end:9};
+ if(nine==='back')return {start:10,end:18};
+ return {start:1,end:18};
+}
 function validHole(n){const value=Number(n);return Number.isInteger(value)&&value>=1&&value<=18?value:null;}
 export function yardageSelectionKey(selection){
  const c=selection?.course,t=selection?.tee;

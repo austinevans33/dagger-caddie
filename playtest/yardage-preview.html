@@ -107,10 +107,12 @@ import {readYardageCaddy,describeSketchTrouble} from './yardage-caddy-notes.js?v
 import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-reference-2';
 import {bayonetOsmTrouble} from './bayonet-osm-trouble.js';
 import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=paper-labels-1';
-import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
+import {readYardageHole,saveYardageHole,yardageSelectionKey,yardageHoleRange} from './yardage-navigation.js?v=round-nine-1';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 const fromScorecard=params.get('from')==='scorecard';
+const requestedNine=params.get('nine');
+const nine=fromScorecard&&['front','back'].includes(requestedNine)?requestedNine:null;
 const returnUrl=fromScorecard?'./#scorecard':'./';
 if(fromScorecard){
  $('backToPlay').href=returnUrl;
@@ -137,11 +139,13 @@ function renderAttack(features=[],annotations=null){
 }
 function draw({refreshSketch=true}={}){
  const {selection,coverage,state,hasCourse}=latest;
- const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
  const holeCount=coverage.expectedHoles;
- number=page.holeNumber;
- if($('hole').options.length!==holeCount){
-  $('hole').replaceChildren(...Array.from({length:holeCount},(_,i)=>new Option('Hole '+(i+1),String(i+1))));
+ const {start,end}=yardageHoleRange(holeCount,nine);
+ number=Math.max(start,Math.min(end,number));
+ const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
+ const length=end-start+1;
+ if($('hole').options.length!==length||Number($('hole').options[0].value)!==start){
+  $('hole').replaceChildren(...Array.from({length},(_,i)=>new Option('Hole '+(start+i),String(start+i))));
  }
  if(refreshSketch)currentSketch=null;
  renderAttack(currentSketch?.shapes,currentSketch?.annotations);
@@ -150,7 +154,7 @@ function draw({refreshSketch=true}={}){
  $('hole').value=String(number);$('position').textContent='HOLE '+number+' / '+holeCount;
  $('name').textContent=page.courseName+' · '+page.teeName;
  $('courseTitle').textContent=hasCourse?page.courseName:'Yardage Book';
- $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage'+(fromScorecard?'&return=scorecard':'');
+ $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage'+(fromScorecard?'&return=scorecard':'')+(nine?'&nine='+nine:'');
  $('par').textContent='Par: '+page.displayPar;$('yards').textContent='Tee yards: '+page.displayYards;
  $('mapHole').textContent='HOLE '+number;
  $('mapPar').textContent='Par '+page.displayPar;
@@ -160,8 +164,9 @@ function draw({refreshSketch=true}={}){
  $('strokeIndex').textContent=Number.isInteger(currentFact?.handicapMen)&&Number.isInteger(currentFact?.handicapWomen)?'Handicap index · Men '+currentFact.handicapMen+' / Women '+currentFact.handicapWomen:'';
 
 
- rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
- $('teeCaption').textContent=selection?.tee?.name?selection.tee.name+' tees':'';
+ rememberHole();$('prev').disabled=number===start;$('next').disabled=number===end;
+ const side=holeCount===18&&nine?(nine==='back'?'Back nine':'Front nine'):null;
+ $('teeCaption').textContent=[selection?.tee?.name&&selection.tee.name+' tees',side].filter(Boolean).join(' · ');
  if(refreshSketch)void updateSketch(selection,number);
  $('status').textContent=!hasCourse?'Choose a course at the Starter’s Desk to open your book.':
   coverage.verifiedHoles?'':state==='unavailable'?'Course facts unavailable offline.':'Tee distances unavailable for this course.';
@@ -245,8 +250,8 @@ function updateSketch(selection,hole){
   box.append(foot);
  }).catch(error=>{if(spatialPending===controller)spatialPending=null;if(!controller.signal.aborted)unavailable()});
 }
-$('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
-$('next').onclick=()=>{number=Math.min(latest.coverage.expectedHoles,number+1);draw()};
+$('prev').onclick=()=>{number--;draw()};
+$('next').onclick=()=>{number++;draw()};
 $('hole').onchange=()=>{number=Number($('hole').value);draw()};
 $('askHoleCaddy').onclick=()=>{
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});

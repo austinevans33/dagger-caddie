@@ -15,9 +15,8 @@ test('Back to Play goes to the same local playtest and never triggers a score wr
  assert.match(book,/location\.assign\('\.\/'\)/);
  assert.doesNotMatch(book,/setDoc\(|updateDoc\(|addDoc\(|localStorage\.setItem\(/);
 });
-test('Book hole changes save navigation state and stay inside 1-18',()=>{
- assert.match(book,/number=Math\.max\(1,number-1\)/);
- assert.match(book,/number=Math\.min\(latest\.coverage\.expectedHoles,number\+1\)/);
+test('Book hole changes save navigation state and stay inside the selected range',()=>{
+ assert.match(book,/number=Math\.max\(start,Math\.min\(end,number\)\)/);
  assert.match(book,/Number\.isInteger\(requested\)&&requested>=1&&requested<=18/);
  assert.match(book,/readYardageHole/);
 });
