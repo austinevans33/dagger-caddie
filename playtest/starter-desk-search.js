@@ -1,6 +1,6 @@
 // Pure Starter's Desk search/ranking. No Firebase, storage or round state access.
 // Consumers pass the already-approved catalog; this helper never creates courses.
-const normalize = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const normalize = value => String(value ?? '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 export function searchStarterDesk(courses, query, {limit=20, recentIds=[], favoriteIds=[]}={}) {
   if (!Array.isArray(courses)) return [];
   const term=normalize(query);
