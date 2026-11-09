@@ -1047,6 +1047,67 @@ test('Scorecard returns from Yardage Book and House Ghost to the saved scoring h
  expect(await saved()).toBe(before);
 });
 
+test('A back-nine scorecard keeps holes 10 through 18 in Yardage Book and House Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  if(localStorage.getItem('dcc_active_round_course_v1'))return;
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{
+   course:{provider:'opengolfapi',providerCourseId:'back-nine-test',name:'Back Nine Test',region:'NC'},
+   tee:{providerTeeId:'blue',name:'Blue',totalYards:6300},holeNumber:10
+  }}));
+ });
+ await page.route('https://api.opengolfapi.org/v1/courses/back-nine-test/holes',route=>route.fulfill({
+  contentType:'application/json',
+  body:JSON.stringify({holes:Array.from({length:18},(_,i)=>({number:i+1,par:4,yardages:{blue:300+i}}))})
+ }));
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ const card=page.locator('#dcc-paper-dialog');
+ await card.locator('#dcc-paper-length').selectOption('9');
+ await expect(card.locator('#dcc-paper-length option:checked')).toHaveText('Back nine');
+ await card.getByRole('link',{name:'Open Hole in Yardage Book'}).click();
+
+ const holes=page.locator('#hole');
+ await expect(holes).toHaveValue('10');
+ await expect(holes.locator('option')).toHaveText(Array.from({length:9},(_,i)=>'Hole '+(10+i)));
+ await expect(page.locator('#prev')).toBeDisabled();
+ await holes.selectOption('18');
+ await expect(page.locator('#next')).toBeDisabled();
+ await page.locator('#watchGhost').click();
+
+ await expect(page.locator('#length')).toHaveValue('back');
+ await expect(page.locator('#length')).toBeDisabled();
+ await expect(holes.locator('option')).toHaveText(Array.from({length:9},(_,i)=>'Hole '+(10+i)));
+ await expect(holes).toHaveValue('18');
+ await expect(page.locator('#summary')).toContainText('317 yd');
+ await page.locator('#next').click();
+ await expect(page.locator('#shots li')).toHaveCount(1);
+ await page.locator('#ghostBack').click();
+ await expect(holes).toHaveValue('18');
+ await expect(page.locator('#next')).toBeDisabled();
+ await page.getByRole('link',{name:'Back to Scorecard'}).click();
+ await expect(card).toHaveAttribute('open','');
+ await expect(card.locator('#dcc-paper-progress')).toHaveText('HOLE 10');
+ await expect(card.locator('#dcc-paper-length option:checked')).toHaveText('Back nine');
+});
+
+test('Standalone Ghost switches between front nine, back nine and eighteen',async({page})=>{
+ await page.goto('/playtest/ghost-preview.html?hole=17');
+ const length=page.locator('#length'),hole=page.locator('#hole');
+ await length.selectOption('back');
+ await expect(hole).toHaveValue('17');
+ await expect(hole.locator('option')).toHaveCount(9);
+ await length.selectOption('18');
+ await expect(hole).toHaveValue('17');
+ await expect(hole.locator('option')).toHaveCount(18);
+ await length.selectOption('9');
+ await expect(hole).toHaveValue('1');
+ await expect(hole.locator('option')).toHaveCount(9);
+ await page.locator('#next').click();
+ await expect(page.locator('#shots li')).toHaveCount(1);
+});
+
 test('Pelican Pointe preserves its selected pairing and official White tee through the Yardage Book',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));

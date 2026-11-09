@@ -135,6 +135,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   $('dcc-paper-course').textContent=active.selection.course.name+' · '+active.selection.tee.name;
   $('dcc-paper-length').value=String(length);
   $('dcc-paper-length').disabled=nativeNine;
+  $('dcc-paper-length').options[1].textContent=length===18||nativeNine?'9 holes':range.start===10?'Back nine':'Front nine';
   const holeFacts=allHoles[state.hole-1],savedScore=state.scores[state.hole-1];
   $('dcc-paper-progress').textContent='HOLE '+state.hole;
   $('dcc-paper-hole-facts').textContent=[
@@ -142,7 +143,8 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
    Number.isInteger(holeFacts?.yards)?holeFacts.yards+' yd':null,
    savedScore===null?'Enter strokes':savedScore+(savedScore===1?' stroke saved':' strokes saved')
   ].filter(Boolean).join(' · ');
-  $('dcc-paper-yardage').href='yardage-preview.html?hole='+state.hole+'&from=scorecard';
+  const nine=!nativeNine&&length===9?(range.start===10?'&nine=back':'&nine=front'):'';
+  $('dcc-paper-yardage').href='yardage-preview.html?hole='+state.hole+'&from=scorecard'+nine;
   $('dcc-paper-prev').disabled=state.hole<=range.start;$('dcc-paper-next').disabled=state.hole>=range.end;
   const grid=$('dcc-paper-grid');grid.replaceChildren();
   const sumFacts=(facts,key)=>facts.every(h=>h&&Number.isInteger(h[key]))?facts.reduce((n,h)=>n+h[key],0):null;

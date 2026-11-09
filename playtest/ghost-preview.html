@@ -36,7 +36,7 @@ body.match {background:#f5f0e5}
 .ghost-info p{font-size:12px;margin:7px 0 0;padding:9px 10px;background:#f9f4e8;border-left:2px solid #b79c62;border-radius:4px}
 </style></head><body><main><header><small>DAGGER COUNTRY CLUB · HOUSE GHOST</small><h1>House Ghost · Shot Trail</h1><a id="ghostBack" href="./">← Back to The Clubhouse</a></header>
 <details class="ghost-info"><summary>About Ghost play</summary><p>Ghost shots are simulated, not measured ball flights. This playback does not change scores, games, or wagers.</p></details>
-<div class="controls" id="practiceControls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
+<div class="controls" id="practiceControls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">Front nine</option><option value="back">Back nine</option></select></label></div>
 <article><strong id="headline">Loading…</strong><p id="summary"></p>
 <div class="ghost-playback">
  <div class="ghost-playback-buttons" role="group" aria-label="Ghost playback">
@@ -61,11 +61,15 @@ import {loadYardageState} from './yardage-live.js';
 import {drawGhostTracer} from './ghost-tracer.js?v=friday-book-1';
 import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-reference-2';
 import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=paper-labels-1';
-import {readYardageHole} from './yardage-navigation.js';
+import {readYardageHole,yardageHoleRange} from './yardage-navigation.js?v=round-nine-1';
 import {pencilOrientation} from './yardage-pencil-orientation.js';
 const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
 const TIER_NAMES=Object.freeze({scratch:'The Undertaker',fiveTen:'The Sandbagger',tenFifteen:'The Weekend Menace',fifteenTwenty:'The Liability'});
 const params=new URLSearchParams(location.search);
+const fromYardage=params.get('from')==='yardage';
+const returnToScorecard=fromYardage&&params.get('return')==='scorecard';
+const requestedNine=params.get('nine');
+const lockedNine=returnToScorecard&&['front','back'].includes(requestedNine)?requestedNine:null;
 let matchDraft=null;
 if(params.get('match')==='1'){
  document.body.classList.add('match');
@@ -131,9 +135,8 @@ async function updateGhostHoleSketch(){
  sketchPending?.abort();
  currentRoute=null;
  const holeNumber=Number($('hole').value);
- if(params.get('from')==='yardage'){
-  const returnSource=params.get('return')==='scorecard'?'&from=scorecard':'';
-  $('ghostBack').href='yardage-preview.html?hole='+holeNumber+returnSource;
+ if(fromYardage){
+  $('ghostBack').href='yardage-preview.html?hole='+holeNumber+(returnToScorecard?'&from=scorecard':'')+(lockedNine?'&nine='+lockedNine:'');
  }
  const svg=$('ghostHoleSketch'),status=$('ghostMapStatus');
  showUnmappedPencil(holeNumber);
@@ -168,13 +171,26 @@ async function updateGhostHoleSketch(){
 
 if(matchHole){$('back').textContent='Previous shot';$('next').textContent='Next shot';}
 function stopWatch(){if(watchTimer!==null){clearInterval(watchTimer);watchTimer=null;}$('watch').textContent=matchHole?'▶ Replay hole':'▶ Watch Ghost'}
-for(let n=1;n<=(nativeNine?9:18);n++)$('hole').add(new Option('Hole '+n,n));
-$('hole').value=String(matchHole?.hole??(nativeNine?Math.min(firstHole,9):firstHole));
+function playbackRange(){
+ const length=$('length').value;
+ return yardageHoleRange(nativeNine?9:18,length==='9'?'front':length);
+}
+function setHoleOptions(hole){
+ const {start,end}=playbackRange();
+ const options=Array.from({length:end-start+1},(_,i)=>new Option('Hole '+(start+i),String(start+i)));
+ $('hole').replaceChildren(...options);
+ $('hole').value=String(hole>=start&&hole<=end?hole:start);
+}
 if(matchDraft)$('length').value=String(matchDraft.holesPlanned);
-if(nativeNine){$('length').value='9';$('length').disabled=true}
-if(params.get('from')==='yardage')$('ghostBack').textContent='← Back to Yardage Book';
+else if(nativeNine||lockedNine){
+ $('length').value=lockedNine==='back'&&!nativeNine?'back':'9';
+ $('length').disabled=true;
+ if(nativeNine)$('length').options[1].textContent='9 holes';
+}
+setHoleOptions(matchHole?.hole??(nativeNine?Math.min(firstHole,9):firstHole));
+if(fromYardage)$('ghostBack').textContent='← Back to Yardage Book';
 function render(){
- const count=Number($('length').value),holeNumber=Number($('hole').value);
+ const {end:count}=playbackRange(),holeNumber=Number($('hole').value);
  const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity,tier:ghostTier,matchHole});
  revealed=state.shotsRevealed;
  $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par+(state.complete?' · Ghost '+state.score:' · Ghost playing');
@@ -197,7 +213,18 @@ function render(){
 }
 $('next').addEventListener('click',()=>{stopWatch();revealed++;render()});$('back').addEventListener('click',()=>{stopWatch();revealed=Math.max(0,revealed-1);render()});
 $('watch').addEventListener('click',()=>{if(watchTimer!==null){stopWatch();return;}if($('next').disabled){revealed=0;lastRendered=0;render();}revealed++;render();if($('next').disabled)return;$('watch').textContent='Ⅱ Pause Ghost';watchTimer=setInterval(()=>{revealed++;render()},1500)});
-$('hole').addEventListener('change',()=>{stopWatch();revealed=0;lastRendered=0;render();void updateGhostHoleSketch()});$('length').addEventListener('change',()=>{stopWatch();if(Number($('hole').value)>9)$('hole').value='1';for(const o of $('hole').options)o.disabled=Number(o.value)>Number($('length').value);revealed=0;render();void updateGhostHoleSketch()});render();void updateGhostHoleSketch();
+function resetHolePlayback(){
+ stopWatch();
+ revealed=0;
+ lastRendered=0;
+ void updateGhostHoleSketch();
+}
+$('hole').addEventListener('change',resetHolePlayback);
+$('length').addEventListener('change',()=>{
+ setHoleOptions(Number($('hole').value));
+ resetHolePlayback();
+});
+void updateGhostHoleSketch();
 // Read only the Starter's Desk course selection and validated hole facts; no wager or score writes.
 const storage=matchDraft?{
  getItem:key=>key===ACTIVE_ROUND_KEY?matchDraft.course:localStorage.getItem(key),

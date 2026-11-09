@@ -1,9 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readYardageHole,saveYardageHole,YARDAGE_HOLE_KEY,YARDAGE_SELECTION_KEY} from '../playtest/yardage-navigation.js';
+import {readYardageHole,saveYardageHole,yardageHoleRange,YARDAGE_HOLE_KEY,YARDAGE_SELECTION_KEY} from '../playtest/yardage-navigation.js';
 import {saveActiveRound} from '../playtest/starters-desk-session.js';
 function store(){const m=new Map();return {getItem:k=>m.has(k)?m.get(k):null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)}}
 const select=(course='pines',tee='white',holeNumber=1)=>({course:{provider:'opengolfapi',providerCourseId:course,name:course,region:'NC'},tee:{providerTeeId:tee,name:tee,totalYards:6500},holeNumber});
+test('Course length bounds front and back nine navigation',()=>{
+ assert.deepEqual(yardageHoleRange(18),{start:1,end:18});
+ assert.deepEqual(yardageHoleRange(18,'front'),{start:1,end:9});
+ assert.deepEqual(yardageHoleRange(18,'back'),{start:10,end:18});
+ assert.deepEqual(yardageHoleRange(9,'back'),{start:1,end:9});
+});
 test('Yardage navigation uses selected round hole on first visit',()=>{
  const session=store(),local=store();saveActiveRound(local,select('pines','white',7));
  assert.equal(readYardageHole({session,local}),7);
