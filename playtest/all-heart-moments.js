@@ -18,7 +18,8 @@ export function chooseAllHeartMoment(context = {}, history = {}) {
   if (historicalChallenge?.verified === true &&
       historicalChallenge.courseId === courseId &&
       historicalChallenge.holeNumber === holeNumber &&
-      typeof historicalChallenge.player === 'string' &&
+      typeof historicalChallenge.player === 'string' && historicalChallenge.player.trim().length > 0 &&
+      typeof historicalChallenge.event === 'string' && historicalChallenge.event.trim().length > 0 &&
       Number.isInteger(historicalChallenge.strokes) &&
       historicalChallenge.strokes > 0 &&
       typeof historicalChallenge.sourceUrl === 'string' &&
@@ -29,7 +30,7 @@ export function chooseAllHeartMoment(context = {}, history = {}) {
   }
   if (moneyRoomPlayers >= 2 && par === 4 && Number.isInteger(strokeIndex) && strokeIndex >= 13) {
     return {key, type:'dare', title:'THIS HOLE IS BEGGING FOR ACTION',
-      description:'Short par 4. The boys are watching. Open a side-bet proposal?',
+      description:'Friendly par 4. The boys are watching. Open a side-bet proposal?',
       action:'open-ticket-window'};
   }
   if (ghostRival?.eligible === true && Number.isInteger(ghostRival.strokes) && ghostRival.strokes > 0) {
