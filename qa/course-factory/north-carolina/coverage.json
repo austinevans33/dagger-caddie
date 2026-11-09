@@ -228,7 +228,7 @@
       "mapRef": "nc/seven-lakes",
       "auditTee": "black",
       "scorecard": "https://www.golf7lakes.com/scorecard",
-      "cardSha256": "d74ce02f5199ef050d73f5c98d32ed76c44115a70cf82bfd452f0b9db59e4638",
+      "cardSha256": "7f4b4abb7f9d92b15fe189bee05d9b383f5a24bcf62b1893faf5e17aa310ef12",
       "cardVerified": true,
       "issues": [
         {
@@ -479,6 +479,94 @@
         "white": 6261,
         "gold": 5609,
         "red": 4715
+      }
+    },
+    {
+      "id": "12-oaks-holly-springs-nc",
+      "name": "The Club at 12 Oaks",
+      "region": "Holly Springs, NC",
+      "boundary": "r6396830",
+      "mapRef": "nc/12-oaks",
+      "auditTee": "gold",
+      "scorecard": "https://www.theclubat12oaks.com/documents/20124/0/12%2BOaks%2BScorecard%2Bjpg.jpg/7ee0b1a1-542c-8f76-98ab-4de5983984e3?t=1772569988083",
+      "cardSha256": "3850c475a483b21908ffb2cd0b27984d5738256a90bdb1d0f44f457f56bb2fcb",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 11,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "e48397e952b7527d5312e2f211716189907a13a78f0c21e2517aa4c1819825ed",
+      "teeTotals": {
+        "gold": 7093,
+        "nicklaus": 6759,
+        "blue": 6545,
+        "green-oaks": 6216,
+        "white": 5985,
+        "silver": 5583,
+        "red": 5026,
+        "yellow": 4397,
+        "family": 3433
+      }
+    },
+    {
+      "id": "hope-valley-durham-nc",
+      "name": "Hope Valley Country Club",
+      "region": "Durham, NC",
+      "boundary": "r2789076",
+      "mapRef": "nc/hope-valley",
+      "auditTee": "ross",
+      "scorecard": "https://www.hvcc.org/files/Hope%20Valley%20Country%20Club%20Course%20Scorecard.pdf",
+      "cardSha256": "5b1722e8aca0d545e8700fcfe5ada3704cd1f0c447fc71c4803b15fbf70f08a7",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 14,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "27291cf46aaebe6ed3f6947c74cd81911841f21c2ed5207b0978fafcf15202c9",
+      "teeTotals": {
+        "ross": 6720,
+        "valley": 6369,
+        "mashburn": 5702,
+        "crichton": 5226,
+        "hope": 4228,
+        "valley-women": 6369,
+        "mashburn-women": 5702,
+        "crichton-women": 5226,
+        "hope-women": 4228
       }
     }
   ]

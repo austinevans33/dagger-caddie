@@ -48,25 +48,42 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
   svg.append(polygon);
   polygons[i]=polygon;
  });
+ const labelBounds=[];
+ const mapLabel=(caption,point,{endpoint=false,reference=false,below=false}={})=>{
+  // Reserve space for the lettering and its paper outline in both map sizes.
+  const size=endpoint?11:10;
+  const labelWidth=caption.length*size*.72+4;
+  const x=Math.max(4,Math.min(point[0]+7,width-labelWidth-4));
+  const baseline=point[1]+(below?18:-6);
+  for(const shift of [0,13,-13,26,-26]){
+   const y=Math.max(size+4,Math.min(baseline+shift,height-5));
+   const box={left:x-2,right:x+labelWidth,top:y-size-2,bottom:y+4};
+   if(labelBounds.some(other=>box.left<other.right&&box.right>other.left&&box.top<other.bottom&&box.bottom>other.top))continue;
+   labelBounds.push(box);
+   svg.append(item('text',{x,y,class:endpoint?'pencil-map-label':'hazard-tag',
+    fill:endpoint?'#294437':reference?'#3b5c68':'#4a483c',
+    'font-family':endpoint?'Georgia,serif':'system-ui,sans-serif','font-size':size,
+    'font-weight':700,'font-style':endpoint||reference?'italic':'normal',
+    'paint-order':'stroke',stroke:'#f7f0dd','stroke-width':3,'stroke-linejoin':'round'},caption));
+   return true;
+  }
+  return false;
+ };
  if(annotations.route){
   const {tee,green,path=[tee,green]}=annotations.route;
   svg.append(item('path',{d:'M '+path.map(point=>point.join(' ')).join(' L '),class:'route-mark',fill:'none',stroke:'#42584a','stroke-width':1,'stroke-dasharray':'3 5','stroke-opacity':.65}));
   svg.append(item('circle',{cx:tee[0],cy:tee[1],r:3,class:'route-target',fill:'#f7f0dd',stroke:'#42584a'}));
-  svg.append(item('text',{x:Math.min(tee[0]+8,annotations.approximateTee?218:254),y:Math.min(tee[1]+4,height-4),class:'pencil-map-label',fill:'#304a3a','font-size':11},annotations.approximateTee?'TEE (APPROX.)':'TEE'));
-  svg.append(item('text',{x:Math.min(green[0]+8,width-56),y:Math.max(green[1]-7,12),class:'pencil-map-label',fill:'#304a3a','font-size':11},'GREEN'));
+  mapLabel(annotations.approximateTee?'TEE (APPROX.)':'TEE',tee,{endpoint:true,below:true});
+  mapLabel('GREEN',green,{endpoint:true});
+ }
+ if(annotations.reference){
+  const {point,label}=annotations.reference;
+  mapLabel(label+' *',point,{reference:true,below:point===annotations.route?.green});
  }
  const labels=[];
  for(const hazard of annotations.labels||[]){
   if(labels.length>=5||labels.some(other=>Math.hypot(other[0]-hazard.point[0],other[1]-hazard.point[1])<22))continue;
-  labels.push(hazard.point);
-  const x=Math.max(4,Math.min(hazard.point[0]+6,width-40)),y=Math.max(12,Math.min(hazard.point[1]-5,height-10));
-  svg.append(item('text',{x,y,class:'hazard-tag',fill:'#4a483c','font-size':10,'font-style':'italic','paint-order':'stroke',stroke:'#f7f0dd','stroke-width':2},hazard.type==='water'?'WATER':'BKR'));
- }
- if(annotations.reference){
-  const {point,label}=annotations.reference;
-  const atGreen=point===annotations.route?.green;
-  svg.append(item('text',{x:Math.min(point[0]+8,width-(atGreen?112:96)),y:atGreen?Math.min(point[1]+22,height-8):point[1]-9,class:'hazard-tag',
-   fill:'#3b5c68','font-size':10,'font-style':'italic','paint-order':'stroke',stroke:'#f7f0dd','stroke-width':2},label+' *'));
+  if(mapLabel(hazard.type==='water'?'WATER':'BKR',hazard.point))labels.push(hazard.point);
  }
  return polygons;
 }
