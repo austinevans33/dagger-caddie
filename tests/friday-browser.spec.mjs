@@ -1108,6 +1108,68 @@ test('Standalone Ghost switches between front nine, back nine and eighteen',asyn
  await expect(page.locator('#shots li')).toHaveCount(1);
 });
 
+test('A finished paper round exports a Matchbook and feeds the next Ghost of You',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  if(localStorage.getItem('dcc_active_round_course_v1'))return;
+  const selection={course:{provider:'dagger-founder',providerCourseId:'country-hills-gibsonville-nc',name:'Country Hills Golf Course',region:'Gibsonville, NC'},
+   tee:{providerTeeId:'white',name:'White',totalYards:5511},holeNumber:18};
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:10,selection}));
+  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:'country-hills-gibsonville-nc|white|10',hole:18,length:9,nineStart:10,
+   scores:[...Array(9).fill(null),...Array(8).fill(4),null]}));
+  localStorage.setItem('dagger_foursome_active','{"protected":true}');
+ });
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ await expect(page.locator('#dcc-paper-matchbook')).toBeHidden();
+ await page.getByRole('button',{name:'Pencil 5 strokes for hole 18'}).click();
+ await page.locator('#dcc-paper-matchbook').click();
+ const matchbook=page.getByRole('dialog',{name:'The Matchbook'});
+ await expect(matchbook).toContainText('37 strokes');
+ await expect(matchbook.locator('svg .route-mark')).toHaveAttribute('d',/^M/);
+ await expect(matchbook.locator('figcaption')).toContainText('No. 10');
+ const [image]=await Promise.all([page.waitForEvent('download'),matchbook.getByRole('button',{name:'Save image'}).click()]);
+ expect(image.suggestedFilename()).toBe('dagger-matchbook.png');
+ await matchbook.getByRole('button',{name:'Close',exact:true}).click();
+ await page.evaluate(()=>{
+  const round=JSON.parse(localStorage.getItem('dcc_active_round_course_v1'));
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({...round,selectedAt:11}));
+ });
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ await page.locator('#dcc-paper-length').selectOption('9');
+ await expect(page.locator('#dcc-paper-ghost-of-you')).toHaveText('Ghost of You · Past round: 5 on this hole');
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":true}');
+});
+
+test('The Ghost archive offers a Matchbook for a decided match',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  const base={version:1,tier:'scratch',holesPlanned:9,archivedAt:'2026-11-09T12:00:00Z',condition:'normal'};
+  const hole={par:4,player:4,ghost:5};
+  localStorage.setItem('dcc_house_ghost_archive_v1',JSON.stringify([
+   {...base,id:'done',holes:Array(5).fill(hole),result:{lead:5,status:'5 & 4',played:5}},
+   {...base,id:'unfinished',holes:[hole],result:{lead:1,status:'Unfinished · 1 of 9 holes',played:1}}
+  ]));
+ });
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ await page.locator('#tab-bets').click();
+ await page.locator('#dccLedgerArchive').click();
+ const archive=page.locator('#dccGhostArchivePanel');
+ await archive.locator(':scope > summary').click();
+ const completed=archive.locator('#dccGhostArchiveList details').filter({hasText:'5 & 4'});
+ const incomplete=archive.locator('#dccGhostArchiveList details').filter({hasText:'Unfinished'});
+ await completed.locator('summary').click();
+ await incomplete.locator('summary').click();
+ await expect(incomplete.getByRole('button',{name:'Open Matchbook'})).toHaveCount(0);
+ await completed.getByRole('button',{name:'Open Matchbook'}).click();
+ await expect(page.getByRole('dialog',{name:'The Matchbook'})).toContainText('You won · 5 & 4');
+});
+
 test('Neuse Forward keeps the current hole facts with the drawing gated',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
