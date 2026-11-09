@@ -3312,6 +3312,297 @@
           ]
         }
       }
+    },
+    {
+      "id": "neuse-clayton-nc",
+      "name": "Neuse Country Club",
+      "region": "Clayton, NC",
+      "boundary": "r6432537",
+      "osmName": "Neuse Golf Club",
+      "mapRef": "nc/neuse",
+      "reviewDate": "2026-11-09",
+      "auditTee": "championship",
+      "scorecard": {
+        "url": "https://neusegolf.com/wp-content/uploads/2025/04/Scorecard_2025.jpg",
+        "sha256": "04b7e353983cd1ea210db1e0b5c56403c094846605eccb230fc901543a2c192b",
+        "format": "reviewed-image",
+        "reviewNote": "Reviewed the current card linked from the club course page. All six tee rows reconcile. The Forward row uses par 4 on hole 8 and par 71 total, matching the USGA rating. Its printed stroke indexes contain duplicates and are withheld.",
+        "tees": {
+          "championship": {
+            "label": "Championship",
+            "total": 6891,
+            "handicap": "Handicap"
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6448,
+            "handicap": "Handicap"
+          },
+          "white": {
+            "label": "White",
+            "total": 5953,
+            "handicap": "Handicap"
+          },
+          "silver": {
+            "label": "Silver",
+            "total": 5481,
+            "handicap": "Handicap"
+          },
+          "silver-forward": {
+            "label": "Silver/Fwd",
+            "total": 4743,
+            "handicap": "Handicap",
+            "name": "Silver / Forward"
+          },
+          "forward": {
+            "label": "Forward",
+            "total": 3931,
+            "parLabel": "Forward Par"
+          }
+        },
+        "reviewedRows": {
+          "Championship": [
+            [
+              385,
+              401,
+              186,
+              524,
+              371,
+              345,
+              197,
+              528,
+              386,
+              3323
+            ],
+            [
+              522,
+              223,
+              444,
+              410,
+              191,
+              406,
+              429,
+              510,
+              433,
+              3568,
+              6891
+            ]
+          ],
+          "Blue": [
+            [
+              351,
+              390,
+              168,
+              504,
+              345,
+              329,
+              167,
+              502,
+              357,
+              3113
+            ],
+            [
+              491,
+              195,
+              407,
+              393,
+              172,
+              381,
+              403,
+              478,
+              415,
+              3335,
+              6448
+            ]
+          ],
+          "White": [
+            [
+              329,
+              351,
+              151,
+              471,
+              315,
+              300,
+              141,
+              474,
+              326,
+              2858
+            ],
+            [
+              460,
+              170,
+              379,
+              377,
+              148,
+              353,
+              381,
+              456,
+              371,
+              3095,
+              5953
+            ]
+          ],
+          "Silver": [
+            [
+              303,
+              334,
+              129,
+              415,
+              303,
+              270,
+              122,
+              431,
+              292,
+              2599
+            ],
+            [
+              445,
+              153,
+              352,
+              343,
+              136,
+              321,
+              355,
+              435,
+              342,
+              2882,
+              5481
+            ]
+          ],
+          "Silver/Fwd": [
+            [
+              303,
+              334,
+              124,
+              329,
+              303,
+              220,
+              122,
+              431,
+              179,
+              2345
+            ],
+            [
+              445,
+              153,
+              238,
+              212,
+              136,
+              321,
+              228,
+              435,
+              230,
+              2398,
+              4743
+            ]
+          ],
+          "Forward": [
+            [
+              240,
+              195,
+              124,
+              329,
+              219,
+              220,
+              86,
+              255,
+              179,
+              1847
+            ],
+            [
+              386,
+              108,
+              238,
+              212,
+              119,
+              206,
+              228,
+              357,
+              230,
+              2084,
+              3931
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              4,
+              3,
+              5,
+              4,
+              4,
+              3,
+              5,
+              4,
+              36
+            ],
+            [
+              5,
+              3,
+              4,
+              4,
+              3,
+              4,
+              4,
+              5,
+              4,
+              36,
+              72
+            ]
+          ],
+          "Forward Par": [
+            [
+              4,
+              4,
+              3,
+              5,
+              4,
+              4,
+              3,
+              4,
+              4,
+              35
+            ],
+            [
+              5,
+              3,
+              4,
+              4,
+              3,
+              4,
+              4,
+              5,
+              4,
+              36,
+              71
+            ]
+          ],
+          "Handicap": [
+            [
+              6,
+              2,
+              12,
+              14,
+              18,
+              8,
+              16,
+              10,
+              4
+            ],
+            [
+              15,
+              13,
+              7,
+              1,
+              11,
+              9,
+              3,
+              17,
+              5
+            ]
+          ]
+        }
+      }
     }
   ]
 }

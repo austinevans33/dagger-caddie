@@ -175,3 +175,27 @@ test('Hope Valley preserves the ladies’ pars and indexes from the club card',(
  assert.equal(holes[15].par,5);
  assert.equal(holes.reduce((total,hole)=>total+hole.par,0),72);
 });
+
+test('Neuse uses the current published tee rows and withholds ambiguous Forward indexes',()=>{
+ const course=founderCatalogRecords('Neuse Country Club').find(({providerCourseId})=>providerCourseId==='neuse-clayton-nc');
+ assert.ok(course);
+ const tees=founderTeesForCourse(course);
+ assert.deepEqual(Object.fromEntries(tees.map(({providerTeeId,totalYards})=>[providerTeeId,totalYards])),
+  {championship:6891,blue:6448,white:5953,silver:5481,'silver-forward':4743,forward:3931});
+ const card=id=>founderVerifiedScorecard({course,tee:tees.find(({providerTeeId})=>providerTeeId===id)});
+ const coverage=json('../qa/course-factory/north-carolina/coverage.json').courses.find(({id})=>id===course.providerCourseId);
+ assert.equal(coverage.cardVerified,true);
+ assert.equal(coverage.status,'playable-partial');
+ assert.deepEqual(coverage.issues,[{hole:8,issue:'route-crosses-boundary',candidates:['w756794598']}]);
+ assert.equal(founderMapRecord(course).status,'source-review-blocked');
+ const forward=card('forward');
+ assert.deepEqual([forward.holes[7].par,forward.holes[7].yards],[4,255]);
+ assert.ok(forward.holes.every(hole=>hole.handicapMen===undefined));
+ assert.equal(forward.holes.reduce((total,hole)=>total+hole.par,0),71);
+ const championship=card('championship');
+ assert.deepEqual([championship.holes[7].par,championship.holes[7].yards,championship.holes[7].handicapMen],[5,528,10]);
+ assert.equal(championship.provenance.sourceSha256,'04b7e353983cd1ea210db1e0b5c56403c094846605eccb230fc901543a2c192b');
+ const combo=card('silver-forward');
+ assert.equal(combo.holes[7].par,5);
+ assert.equal(combo.holes[7].yards,431);
+});
