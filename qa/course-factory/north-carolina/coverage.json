@@ -263,6 +263,123 @@
         "green": 4144,
         "green-red": 4533
       }
+    },
+    {
+      "id": "the-woods-whispering-pines-nc",
+      "name": "The Woods Golf Club",
+      "region": "Whispering Pines, NC",
+      "boundary": "r6386358",
+      "mapRef": "nc/the-woods",
+      "auditTee": "oak",
+      "scorecard": "https://www.thewoodsgolfclub.com/scorecard/",
+      "cardSha256": "5b7e3f55502e9eaf3599ec8c3783457595a052cf705b279e76aebee8f6974c09",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "20c78e0e4d9f91d8fa762d66c35e451aede83f08ac1b45481983cbadd872363e",
+      "teeTotals": {
+        "oak": 6070,
+        "dogwood": 5643,
+        "hickory": 5041,
+        "long-leaf-pine": 4356
+      }
+    },
+    {
+      "id": "mill-creek-mebane-nc",
+      "name": "Mill Creek Golf Club",
+      "region": "Mebane, NC",
+      "boundary": "r6413045",
+      "mapRef": "nc/mill-creek-mebane",
+      "auditTee": "black",
+      "scorecard": "https://www.golfmillcreek.com/wp-content/uploads/2021/01/Scorecard-1-18-2021-b.jpg",
+      "cardSha256": "4ae40032635450c8fa7df64b43d7f9d04e37477ee82a471021e5d91c6cdd6653",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 17,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "231f7e083422e51f0214c434a5a6a689cbadc6ee3b018b6ecae15caf0a0aa0d2",
+      "teeTotals": {
+        "black": 6992,
+        "blue": 6325,
+        "white": 5638,
+        "yellow": 4881,
+        "orange": 4089,
+        "blue-women": 6325,
+        "white-women": 5638,
+        "yellow-women": 4881,
+        "orange-women": 4089
+      }
+    },
+    {
+      "id": "hillandale-durham-nc",
+      "name": "Hillandale Golf Course",
+      "region": "Durham, NC",
+      "boundary": "w24487227",
+      "mapRef": "nc/hillandale",
+      "auditTee": "blue",
+      "scorecard": "https://hillandalegolf.com/wp-content/uploads/2019/09/hillandale_golf_course_scorecard_1200a.webp",
+      "cardSha256": "e2624774535516097249520924edd3eb9f2d85e77008a76d9583ae32fc51ac2b",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "8b64df0c0ebda9043265ae362969d01aeee7862dc351553401e163ed942bf840",
+      "teeTotals": {
+        "blue": 6425,
+        "white": 6026,
+        "gold": 5395,
+        "red": 4823,
+        "light-blue": 3677,
+        "white-women": 6026,
+        "gold-women": 5395,
+        "red-women": 4823,
+        "light-blue-women": 3677
+      }
     }
   ]
 }
