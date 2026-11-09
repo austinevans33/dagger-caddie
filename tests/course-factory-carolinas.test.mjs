@@ -199,3 +199,16 @@ test('Neuse uses the current published tee rows and withholds ambiguous Forward 
  assert.equal(combo.holes[7].par,5);
  assert.equal(combo.holes[7].yards,431);
 });
+
+test('Pine Island keeps the official combo tees while withholding conflicting geometry',()=>{
+ const course=founderCatalogRecords('Pine Island Country Club').find(({providerCourseId})=>providerCourseId==='pine-island-charlotte-nc');
+ assert.ok(course);
+ const tees=founderTeesForCourse(course);
+ assert.deepEqual(Object.fromEntries(tees.map(({providerTeeId,totalYards})=>[providerTeeId,totalYards])),
+  {blue:6377,'blue-white':6141,white:5974,'white-gold':5724,gold:5431,'gold-green':5037,green:4865});
+ const card=founderVerifiedScorecard({course,tee:tees.find(({providerTeeId})=>providerTeeId==='gold-green')});
+ assert.deepEqual([card.holes[9].par,card.holes[9].yards,card.holes[9].handicapMen],[5,467,3]);
+ assert.equal(founderMapRecord(course).status,'source-review-blocked');
+ const audit=json('../qa/course-factory/north-carolina/coverage.json').courses.find(({id})=>id===course.providerCourseId);
+ assert.deepEqual(audit.audit.ratioErrors,[2,3,4]);
+});
