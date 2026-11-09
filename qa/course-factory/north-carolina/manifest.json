@@ -1781,6 +1781,588 @@
           ]
         }
       }
+    },
+    {
+      "id": "carolina-colours-new-bern-nc",
+      "name": "Carolina Colours Golf Club",
+      "region": "New Bern, NC",
+      "boundary": "r21911975",
+      "osmName": "Carolina Colours Golf Club",
+      "mapRef": "nc/carolina-colours",
+      "auditTee": "black",
+      "scorecard": {
+        "url": "https://carolinacoloursgolfclub.com/wp-content/uploads/2025/01/CarolinaColors1224_2.png",
+        "sha256": "e8cce90b96bb7e059ac94d64fc45f7d1423a13a1b3429cd76f4f5b5027655e46",
+        "format": "reviewed-image",
+        "reviewNote": "Compared the numbered grid and printed subtotals with the pinned operator card and checked venue identity on the cover.",
+        "handicap": "Handicap",
+        "tees": {
+          "black": {
+            "label": "Black",
+            "total": 6886
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6609
+          },
+          "green": {
+            "label": "Green",
+            "total": 6409
+          },
+          "white": {
+            "label": "White",
+            "total": 6169
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5771
+          },
+          "purple": {
+            "label": "Purple",
+            "total": 5168
+          },
+          "red": {
+            "label": "Red",
+            "total": 4897
+          },
+          "teal": {
+            "label": "Teal",
+            "total": 4316
+          },
+          "white-women": {
+            "label": "White",
+            "name": "White (Women)",
+            "total": 6169,
+            "handicap": "Women Index"
+          },
+          "gold-women": {
+            "label": "Gold",
+            "name": "Gold (Women)",
+            "total": 5771,
+            "handicap": "Women Index"
+          },
+          "purple-women": {
+            "label": "Purple",
+            "name": "Purple (Women)",
+            "total": 5168,
+            "handicap": "Women Index"
+          },
+          "red-women": {
+            "label": "Red",
+            "name": "Red (Women)",
+            "total": 4897,
+            "handicap": "Women Index"
+          },
+          "teal-women": {
+            "label": "Teal",
+            "name": "Teal (Women)",
+            "total": 4316,
+            "handicap": "Women Index"
+          }
+        },
+        "reviewedRows": {
+          "Black": [
+            [
+              428,
+              163,
+              550,
+              388,
+              444,
+              215,
+              417,
+              381,
+              540,
+              3526
+            ],
+            [
+              335,
+              566,
+              196,
+              443,
+              319,
+              426,
+              130,
+              520,
+              425,
+              3360,
+              6886
+            ]
+          ],
+          "Blue": [
+            [
+              412,
+              150,
+              533,
+              362,
+              395,
+              209,
+              407,
+              368,
+              511,
+              3347
+            ],
+            [
+              325,
+              556,
+              188,
+              413,
+              313,
+              420,
+              124,
+              508,
+              415,
+              3262,
+              6609
+            ]
+          ],
+          "Green": [
+            [
+              399,
+              140,
+              513,
+              348,
+              380,
+              202,
+              405,
+              356,
+              501,
+              3244
+            ],
+            [
+              323,
+              542,
+              175,
+              403,
+              312,
+              395,
+              112,
+              498,
+              405,
+              3165,
+              6409
+            ]
+          ],
+          "White": [
+            [
+              393,
+              133,
+              487,
+              308,
+              374,
+              188,
+              395,
+              340,
+              490,
+              3108
+            ],
+            [
+              312,
+              524,
+              163,
+              393,
+              302,
+              384,
+              100,
+              489,
+              394,
+              3061,
+              6169
+            ]
+          ],
+          "Gold": [
+            [
+              379,
+              121,
+              470,
+              306,
+              361,
+              177,
+              382,
+              313,
+              470,
+              2979
+            ],
+            [
+              301,
+              444,
+              152,
+              363,
+              293,
+              373,
+              83,
+              401,
+              382,
+              2792,
+              5771
+            ]
+          ],
+          "Purple": [
+            [
+              301,
+              121,
+              407,
+              254,
+              268,
+              109,
+              325,
+              313,
+              393,
+              2491
+            ],
+            [
+              301,
+              441,
+              121,
+              341,
+              293,
+              373,
+              83,
+              401,
+              323,
+              2677,
+              5168
+            ]
+          ],
+          "Red": [
+            [
+              301,
+              73,
+              407,
+              254,
+              268,
+              109,
+              325,
+              279,
+              393,
+              2409
+            ],
+            [
+              232,
+              441,
+              121,
+              341,
+              243,
+              316,
+              76,
+              395,
+              323,
+              2488,
+              4897
+            ]
+          ],
+          "Teal": [
+            [
+              301,
+              73,
+              350,
+              190,
+              268,
+              109,
+              255,
+              279,
+              340,
+              2165
+            ],
+            [
+              232,
+              325,
+              121,
+              260,
+              243,
+              316,
+              76,
+              315,
+              263,
+              2151,
+              4316
+            ]
+          ],
+          "Handicap": [
+            [
+              5,
+              17,
+              1,
+              11,
+              7,
+              15,
+              3,
+              13,
+              9
+            ],
+            [
+              14,
+              8,
+              16,
+              2,
+              10,
+              6,
+              18,
+              12,
+              4
+            ]
+          ],
+          "Women Index": [
+            [
+              7,
+              17,
+              1,
+              9,
+              13,
+              15,
+              3,
+              11,
+              5
+            ],
+            [
+              14,
+              4,
+              16,
+              2,
+              12,
+              10,
+              18,
+              8,
+              6
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              3,
+              5,
+              4,
+              4,
+              3,
+              4,
+              4,
+              5,
+              36
+            ],
+            [
+              4,
+              5,
+              3,
+              4,
+              4,
+              4,
+              3,
+              5,
+              4,
+              36,
+              72
+            ]
+          ]
+        },
+        "additionalSources": [
+          {
+            "suffix": "cover",
+            "url": "https://carolinacoloursgolfclub.com/wp-content/uploads/2025/01/CarolinaColors1224_1.png",
+            "sha256": "8bea089a0bb8f6f760d765775ddb8a487ffae593159105138dfe89ab2f0eb716"
+          }
+        ]
+      }
+    },
+    {
+      "id": "greensboro-national-summerfield-nc",
+      "name": "Greensboro National Golf Club",
+      "region": "Summerfield, NC",
+      "boundary": "w1196861933",
+      "osmName": "Greesnboro National Golf Course",
+      "mapRef": "nc/greensboro-national",
+      "auditTee": "blue",
+      "scorecard": {
+        "url": "https://greensboronational.com/wp-content/uploads/sites/148/2024/08/scorecard2-1030x706-1.png",
+        "sha256": "2d459e85c9321ba73ed55bde9a5c8b6c0d69023593d92ecf384199140930a9ef",
+        "format": "reviewed-image",
+        "reviewNote": "Compared the numbered grid and printed subtotals with the pinned operator card and checked venue identity on the cover.",
+        "handicap": "Handicap",
+        "tees": {
+          "blue": {
+            "label": "Blue",
+            "total": 6806
+          },
+          "white": {
+            "label": "White",
+            "total": 6261
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5609
+          },
+          "red": {
+            "label": "Red",
+            "total": 4715
+          }
+        },
+        "reviewedRows": {
+          "Blue": [
+            [
+              379,
+              409,
+              547,
+              177,
+              426,
+              483,
+              379,
+              173,
+              407,
+              3380
+            ],
+            [
+              386,
+              205,
+              381,
+              434,
+              388,
+              550,
+              189,
+              339,
+              554,
+              3426,
+              6806
+            ]
+          ],
+          "White": [
+            [
+              355,
+              381,
+              518,
+              150,
+              400,
+              428,
+              354,
+              150,
+              385,
+              3121
+            ],
+            [
+              363,
+              180,
+              346,
+              406,
+              359,
+              523,
+              166,
+              302,
+              495,
+              3140,
+              6261
+            ]
+          ],
+          "Gold": [
+            [
+              283,
+              312,
+              488,
+              131,
+              371,
+              396,
+              318,
+              127,
+              353,
+              2779
+            ],
+            [
+              331,
+              140,
+              319,
+              373,
+              321,
+              490,
+              126,
+              261,
+              469,
+              2830,
+              5609
+            ]
+          ],
+          "Red": [
+            [
+              233,
+              294,
+              445,
+              121,
+              324,
+              316,
+              253,
+              104,
+              225,
+              2315
+            ],
+            [
+              287,
+              102,
+              238,
+              314,
+              276,
+              453,
+              73,
+              224,
+              433,
+              2400,
+              4715
+            ]
+          ],
+          "Handicap": [
+            [
+              17,
+              3,
+              9,
+              13,
+              1,
+              7,
+              15,
+              11,
+              5
+            ],
+            [
+              6,
+              4,
+              12,
+              2,
+              8,
+              10,
+              16,
+              18,
+              14
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              4,
+              5,
+              3,
+              4,
+              5,
+              4,
+              3,
+              4,
+              36
+            ],
+            [
+              4,
+              3,
+              4,
+              4,
+              4,
+              5,
+              3,
+              4,
+              5,
+              36,
+              72
+            ]
+          ]
+        },
+        "additionalSources": [
+          {
+            "suffix": "cover",
+            "url": "https://greensboronational.com/wp-content/uploads/sites/148/2024/08/scorecard1-1030x704-1.png",
+            "sha256": "edea482ba77f3317fa5e8eb054b8054c94f07d55408ee1ef350038cd9b2aa6d4"
+          }
+        ]
+      }
     }
   ]
 }

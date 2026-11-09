@@ -37,6 +37,8 @@ for(const {state,id,query,totals,example,fairways=18,handicap=true} of [
   totals:{blue:6425,white:6026,gold:5395,red:4823,'light-blue':3677,
    'white-women':6026,'gold-women':5395,'red-women':4823,'light-blue-women':3677},
   example:{number:13,par:4,yards:368}},
+ {state:'north-carolina',id:'greensboro-national-summerfield-nc',query:'Greensboro National',
+  totals:{blue:6806,white:6261,gold:5609,red:4715},example:{number:13,par:4,yards:434},fairways:17},
 ]){
  test(`${query} promotes only the source-pinned 18-hole course and official tee card`,()=>{
   const root='../qa/course-factory/'+state+'/';
@@ -128,4 +130,15 @@ test('Hillandale and Mill Creek preserve the published women’s card facts',()=
  const millCreekTee=founderTeesForCourse(millCreek).find(({providerTeeId})=>providerTeeId==='white-women');
  const {holes:millCreekHoles}=founderVerifiedScorecard({course:millCreek,tee:millCreekTee});
  assert.equal(millCreekHoles[16].handicapMen,15);
+});
+
+
+test('Carolina Colours uses the official card with its geometry held for review',()=>{
+ const course=founderCatalogRecords('Carolina Colours')[0];
+ assert.equal(course.providerCourseId,'carolina-colours-new-bern-nc');
+ const tee=founderTeesForCourse(course).find(({providerTeeId})=>providerTeeId==='teal-women');
+ const {holes}=founderVerifiedScorecard({course,tee});
+ assert.equal(tee.totalYards,4316);
+ assert.equal(holes[12].handicapMen,2);
+ assert.equal(founderMapRecord(course).status,'source-review-blocked');
 });
