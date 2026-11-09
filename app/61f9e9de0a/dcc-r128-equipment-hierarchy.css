@@ -1,0 +1,13 @@
+/* R128 — Equipment Room visual hierarchy, scoped and presentation-only. */
+/* The bag title is a disclosure, not a second gold call to action. */
+#dccR67Bag #dccR67EquipmentLead .dcc-bag-toggle{background:transparent!important;color:#153629!important;border:0!important;box-shadow:none!important;padding:8px 4px!important;min-height:46px!important;font:700 clamp(20px,4vw,27px)/1.15 Georgia,serif!important;letter-spacing:-.015em!important;white-space:normal!important;text-align:left!important}
+#dccR67Bag #dccR67EquipmentLead .dcc-bag-toggle::after{color:#99763d!important;flex:0 0 auto!important}
+#dccR67Bag #dccR67EquipmentLead .dcc-bag-edit-action{background:#d4af6e!important;color:#153629!important;border:1px solid #b79150!important;border-radius:12px!important;font:750 13px/1.25 system-ui,sans-serif!important;min-height:44px!important;white-space:normal!important;text-align:center!important}
+#dccR67Bag #dccR67EquipmentLead{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;flex-wrap:wrap!important;min-width:0!important}
+#dccR67Bag #dccR67EquipmentLead>*{min-width:0!important}
+#dccR67Bag #dccBagClubList{max-width:100%!important;min-width:0!important;overflow-x:auto!important;overscroll-behavior-x:contain!important;-webkit-overflow-scrolling:touch!important}
+#dccR67Bag #dccBagClubList #manualtable{width:100%!important;min-width:290px!important;table-layout:auto!important}
+#dccR67Bag #dccBagClubList #manualtable :is(th,td){overflow-wrap:break-word!important;word-break:normal!important}
+#dccR67Bag #dccBagClubList #manualtable :is(th,td):nth-child(2){white-space:nowrap!important;font-variant-numeric:tabular-nums!important}
+@media(max-width:390px){#dccR67Bag{padding:12px!important}#dccR67Bag #dccR67EquipmentLead{gap:7px!important}#dccR67Bag #dccR67EquipmentLead .dcc-bag-toggle{font-size:19px!important}#dccR67Bag #dccR67EquipmentLead .dcc-bag-edit-action{padding:9px 10px!important;font-size:12px!important}}
+@media(prefers-reduced-motion:reduce){#dccR67Bag #dccR67EquipmentLead .dcc-bag-toggle::after{transition:none!important}}

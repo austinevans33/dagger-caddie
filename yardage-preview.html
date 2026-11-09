@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yardage Book · Dagger Country Club</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f0e5;color:#143126;font:16px/1.45 Georgia,serif}main{max-width:560px;margin:auto;padding:18px 14px 48px}header{border-bottom:3px solid #b79c62;padding-bottom:14px}h1{margin:7px 0 3px;font-size:30px}.kicker{font:700 11px system-ui;letter-spacing:.13em}button,select{min-height:44px;font:inherit;border:1px solid #b7a777;border-radius:10px;padding:8px 11px;background:white;color:#143126}button{cursor:pointer;font-weight:700}.primary{background:#143126;color:#fff}.bar{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}.nav{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}button:disabled{opacity:.4}.card{background:#fffdf6;border:1px solid #cbbf9f;border-radius:16px;margin:14px 0;padding:18px}.big{font-size:33px;font-weight:700;margin:8px 0}.muted{color:#666b60;font:13px/1.5 system-ui}.hole-pill{display:block;font:700 12px system-ui;letter-spacing:.12em}ul{padding-left:20px}li{padding:3px 0}a{color:#143126}.warning{padding:10px;background:#fff4d8;border:1px solid #cbbf9f;border-radius:10px;font:13px/1.5 system-ui}
+
+/* Pencil-marked tour-caddie field book; decoration is not a surveyed hole map. */
+body{background:#183d2f;padding-bottom:env(safe-area-inset-bottom);color:#23352a}
+main{max-width:620px;padding:14px 11px 32px}
+header{background:#ede4cb;border:1px solid #b3a180;border-bottom:0;border-radius:16px 16px 0 0;padding:17px 18px 10px}
+header h1{font-family:Georgia,serif;letter-spacing:-.035em}
+.paper{position:relative;background:repeating-linear-gradient(to bottom,#f5efd9 0,#f5efd9 29px,#d8d1bd 30px,#f5efd9 31px);border:1px solid #b3a180;border-top:0;border-radius:0 0 16px 16px;padding:14px 16px 20px;box-shadow:0 12px 24px #071e1640}
+.paper::before{content:"";position:absolute;top:0;bottom:0;left:9px;border-left:1px solid #ad77706c;pointer-events:none}
+.paper .card{background:#f7f0dddf;border:2px solid #5b635568;box-shadow:2px 3px 0 #777d6722;transform:rotate(-.3deg);border-radius:5px;margin:13px 0}
+.paper .big{font-family:Georgia,serif;font-style:italic}
+.paper .hole-pill{font-size:12px;letter-spacing:.17em}
+.paper .muted{color:#465448}
+.pencil-title{font:italic 23px/1.25 Georgia,serif;color:#3d493c;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:5px}
+.field-sketch{position:relative;min-height:125px;padding:14px;border:1px dashed #8d9284;border-radius:5px;background:repeating-linear-gradient(90deg,transparent 0,transparent 23px,#aab39f32 24px),repeating-linear-gradient(0deg,transparent 0,transparent 23px,#aab39f32 24px);color:#51604f;display:flex;align-items:center;justify-content:center;text-align:center;transform:rotate(.25deg)}
+.field-sketch p{background:#f5efd9e8;max-width:260px;padding:12px;font:italic 15px/1.35 Georgia,serif}
+.pencil-note{border-left:3px solid #63725d;padding:10px 13px;margin:15px 0;background:#e9e5d4b3;transform:rotate(-.25deg)}
+.pencil-note .signature{font:italic 22px Georgia,serif;color:#3b4b3f}
+.pencil-note #caddyNote{margin:6px 0;font:italic 18px/1.5 Georgia,serif}
+.pencil-note .muted{font-size:11px}
+.nav{margin-top:12px}
+.warning{background:#ebe1c9;border-style:dashed}
+@media(prefers-reduced-motion:reduce){.paper .card,.pencil-note,.field-sketch{transform:none}}
+.field-sketch svg{width:100%;height:auto;max-height:540px;display:block}.field-sketch.has-features{display:block;padding:8px;background:#eee7d5}.field-sketch .geometry-label{font:italic 13px Georgia,serif;color:#51604f;margin:5px 0 1px}.field-sketch .geometry-foot{font:11px/1.4 system-ui,sans-serif;color:#687369;margin:5px 0}
+
+.field-sketch .route-mark{fill:none;stroke:#42584a;stroke-width:1.8;stroke-dasharray:7 5;opacity:.8}
+.field-sketch .route-target{fill:#f7f0dd;stroke:#42584a;stroke-width:1.7}
+.field-sketch .pencil-map-label{fill:#304a3a;font:italic 10px Georgia,serif;paint-order:stroke;stroke:#f7f0dd;stroke-width:3px}
+.field-sketch .hazard-tag{font:700 10px system-ui,sans-serif;fill:#4a483c;paint-order:stroke;stroke:#f7f0dd;stroke-width:3px}
+/* One-hand pencil map controls: large touch targets, no pinch-to-zoom needed. */
+.map-tools{display:flex;gap:7px;margin:9px 0;flex-wrap:wrap}
+.map-tools button{flex:1;min-width:74px;min-height:44px;border:1px solid #8a9482;border-radius:10px;background:#e8e1cc;color:#31473a;font:700 13px system-ui,sans-serif;padding:7px}
+.map-tools button[aria-pressed="true"]{background:#264638;border-color:#264638;color:#fff9e9}
+.map-tools button:focus-visible,.map-feature:focus-visible{outline:3px solid #ac8f54;outline-offset:2px}
+.map-feature-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0 4px}
+.map-feature{min-height:44px;border:1px solid #a5a78e;border-radius:9px;background:#f7f0dd;text-align:left;padding:9px 11px;font:700 13px system-ui,sans-serif;color:#354c3d}
+.map-feature[aria-pressed="true"]{border:2px solid #244d39;background:#dfe6d5}
+.map-note{font:12px/1.4 system-ui,sans-serif!important;color:#4f6151;margin:7px 2px!important;text-align:left}
+.field-sketch .orientation-art{width:100%;max-width:330px;margin:auto}.field-sketch .orientation-art svg{min-height:190px}.field-sketch polygon{transition:opacity .12s ease;stroke-linecap:round}
+.field-sketch polygon.map-selected{stroke:#193c2b;stroke-width:3.7}
+@media(prefers-reduced-motion:reduce){.field-sketch polygon{transition:none}}
+
+/* Map-first paper layout: the round facts and diagram fit above the deeper field notes. */
+.hole-glance{display:flex;gap:9px;justify-content:space-between;align-items:center;margin:9px 0 10px;padding:11px 12px;background:#e7dec8;border:1px solid #b3a180;border-radius:10px;color:#263e31;font:700 13px/1.3 system-ui,sans-serif}
+.hole-glance strong{font-size:13px;font-weight:750}
+.field-sketch{margin:7px 0 12px}
+.paper .card{margin:11px 0;padding:14px}
+@media(max-width:365px){.hole-glance{gap:5px;padding:10px 8px;font-size:11px}.hole-glance strong{font-size:11px}}
+.yardage-ask{display:block;width:100%;min-height:50px;margin:12px 0;padding:12px 13px;border:1px solid #b79c62;border-radius:12px;background:#183d2f;color:#f8f0da;font:700 16px/1.25 Georgia,serif;text-align:left}.yardage-ask:focus-visible{outline:3px solid #b79c62;outline-offset:2px}.yardage-ask:disabled{opacity:.6;cursor:not-allowed}
+/* Release review: a tour book should not repeat a giant scorecard below the map. */
+.paper .card #position,.paper .card #name,.paper .card #par,.paper .card #yards,.paper .card #coverage{display:none}
+.paper .card{padding:11px 14px;margin:9px 0}
+.paper .card .pencil-title{font-size:19px;margin:5px 0}
+.field-sketch.no-map{min-height:110px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:15px;background:#eee7d4}
+.field-sketch.no-map .geometry-label{font:700 16px/1.4 Georgia,serif;color:#465743;margin:0 0 5px}
+.field-sketch.no-map .geometry-foot{background:transparent;max-width:none;padding:0;font:13px/1.45 system-ui,sans-serif;margin:0}
+.bar{grid-template-columns:44px minmax(0,1fr) 44px;margin:8px 0}
+.nav{display:block}.nav button{width:100%}
+#teeCaption{margin:0 0 8px}
+#status{margin:3px 0 8px;padding:0;border:0;background:transparent;font:12px/1.35 system-ui}
+.field-sketch.has-features{padding:4px;background:#f5efd9;border:1px solid #b3a180;transform:none}
+.field-sketch.has-features svg{max-height:520px;margin:auto}
+.field-sketch details{text-align:left;padding:5px 8px;font:13px/1.4 system-ui}
+.field-sketch .route-mark{stroke-width:1;stroke-dasharray:3 5;opacity:.75}
+.book-actions{display:flex;align-items:center;gap:10px}
+.book-actions>*{flex:1}.book-actions a{min-height:44px;display:grid;place-items:center;text-align:center;font-weight:bold}
+#gamePlan{margin:9px 0}#gamePlan dt{font:700 11px system-ui;letter-spacing:.08em;color:#4d6251;margin-top:9px}
+#gamePlan dd{margin:3px 0;font:15px/1.35 Georgia,serif}
+#courseTitle{font-size:clamp(24px,6vw,32px)}
+.field-sketch .geometry-foot{font-size:11px;color:#465448;text-align:left;padding:0 8px}
+
+/* Pocket-book hierarchy: the hole art and two handwritten caddy lines are the page. */
+.pocket-note{padding:12px 14px 13px;margin:4px 0 12px;border-left:3px solid #b69b68;background:#f0e8d3;color:#253a2c;transform:rotate(-.2deg)}
+.pocket-signature{font:italic 20px Georgia,serif;color:#365744;margin-bottom:6px}
+.pocket-note p{font:italic 17px/1.35 Georgia,serif;margin:6px 0}
+.pocket-note p::before{content:'✎';font-style:normal;color:#8b744b;margin-right:8px}
+.advanced-caddy{margin:9px 0 7px;font:13px system-ui;color:#435646}
+.advanced-caddy>summary,.paper .card>summary,.source-info>summary{min-height:44px;display:flex;align-items:center;font:700 13px system-ui;cursor:pointer}
+.advanced-caddy .pencil-note{margin:0;padding:8px}
+.paper>.card,.source-info{opacity:.85}
+.book-actions{margin-top:9px}
+#status[hidden]{display:none!important}
+.field-sketch.has-features svg{max-height:none}
+.tiny-credits{font:10px/1.25 system-ui;color:#647363;margin:15px 3px 0;text-align:center}
+.tiny-credits a{color:inherit}
+.pocket-note p{font-size:16px;line-height:1.32}
+</style></head><body><main><header><span class="kicker">DAGGER COUNTRY CLUB · THE YARDAGE BOOK</span><h1 id="courseTitle">Yardage Book</h1><a href="./" id="backToPlay">← Back to The Clubhouse</a></header>
+<div class="paper"><p class="warning" id="status" role="status">Loading hole…</p>
+<div class="bar"><button id="prev" aria-label="Previous hole">←</button><select id="hole" aria-label="Hole"></select><button id="next" aria-label="Next hole">→</button></div>
+<div class="hole-glance" aria-label="Hole at a glance"><span id="mapHole">HOLE 1</span><strong id="mapPar">Par —</strong><strong id="mapYards">Tee yards —</strong></div>
+<p id="teeCaption" class="muted"></p>
+<div class="field-sketch" aria-label="Hole illustration"></div>
+<aside class="pocket-note" aria-label="Two quick notes from your selected caddy"><div id="pocketCaddyName" class="pocket-signature">Keith’s pencil</div><p id="pocketNoteOne"></p><p id="pocketNoteTwo"></p></aside>
+<div class="book-actions"><button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask My Caddy</button><a id="watchGhost" href="ghost-preview.html">Watch House Ghost →</a></div>
+
+<div id="yardageFactBindings" hidden aria-hidden="true"><span id="position"></span><span id="name"></span><span id="par"></span><span id="yards"></span><span id="coverage"></span><span id="strokeIndex"></span></div>
+<div class="nav"><button id="return" class="primary">Return to the round</button></div>
+<p class="tiny-credits">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> where map data is used</p>
+</div></main><script type="module">
+import {loadYardageState,resolveYardageState} from './app/61f9e9de0a/yardage-live.js';
+import {pocketCaddyNotes} from './app/61f9e9de0a/pocket-caddy-notes.js';
+import {readActiveRound,ACTIVE_ROUND_KEY} from './app/61f9e9de0a/starters-desk-session.js';
+import {readCourseScorecard} from './app/61f9e9de0a/active-course-context.js';
+import {readYardageCaddy,describeSketchTrouble} from './app/61f9e9de0a/yardage-caddy-notes.js?v=friday-book-1';
+import {loadHoleSketch,SKETCH_HEIGHT} from './app/61f9e9de0a/hole-sketch.js?v=founders-reference-2';
+import {bayonetOsmTrouble} from './app/61f9e9de0a/bayonet-osm-trouble.js';
+import {renderSharedHoleSketch} from './app/61f9e9de0a/shared-hole-sketch.js?v=founders-reference-2';
+import {readYardageHole,saveYardageHole,yardageSelectionKey} from './app/61f9e9de0a/yardage-navigation.js';
+import {composeHoleQuestion,saveHoleQuestion} from './app/61f9e9de0a/yardage-caddy-handoff.js?v=friday-book-1';
+const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
+const requested=params.has('hole')?Number(params.get('hole')):null;
+let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
+function cachedState(){
+ const active=readActiveRound(localStorage);
+ const context=active?readCourseScorecard(localStorage,active.selection):null;
+ return resolveYardageState({active,context,holeNumber:number});
+}
+let latest=cachedState();let spatialGeneration=0;let spatialPending=null;let activeAnnotations=null;let currentSketch=null;let roundGeneration=0;let mapMode='all';let mapSelected=null;
+function rememberHole(){saveYardageHole({session:sessionStorage,local:localStorage,hole:number});try{sessionStorage.setItem('dccFridayYardageHole',String(number))}catch{}}
+function renderAttack(features=[],annotations=null){
+ activeAnnotations=annotations;
+ const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
+ const survey=bayonetOsmTrouble(latest.selection,number);
+ const pocket=pocketCaddyNotes({caddy:readYardageCaddy(localStorage),hole:page.hole,annotations});
+ $('pocketCaddyName').textContent=pocket.name+' · On the bag';
+ $('pocketNoteOne').textContent=pocket.lines[0];
+ $('pocketNoteTwo').textContent=pocket.lines[1];
+}
+function draw({refreshSketch=true}={}){
+ const {selection,coverage,state,hasCourse}=latest;
+ const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
+ const holeCount=coverage.expectedHoles;
+ number=page.holeNumber;
+ if($('hole').options.length!==holeCount){
+  $('hole').replaceChildren(...Array.from({length:holeCount},(_,i)=>new Option('Hole '+(i+1),String(i+1))));
+ }
+ if(refreshSketch)currentSketch=null;
+ renderAttack(currentSketch?.shapes,currentSketch?.annotations);
+ $('askHoleCaddy').disabled=!selection?.course||!selection?.tee;
+ $('askHoleCaddy').title=selection?.course&&selection?.tee?'Prepare an editable question for your caddy':'Select a course and tee at the Starter’s Desk first';
+ $('hole').value=String(number);$('position').textContent='HOLE '+number+' / '+holeCount;
+ $('name').textContent=page.courseName+' · '+page.teeName;
+ $('courseTitle').textContent=hasCourse?page.courseName:'Yardage Book';
+ $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage';
+ $('par').textContent='Par: '+page.displayPar;$('yards').textContent='Tee yards: '+page.displayYards;
+ $('mapHole').textContent='HOLE '+number;
+ $('mapPar').textContent='Par '+page.displayPar;
+ $('mapYards').textContent=page.verified?page.displayYards+' yds':'Yards unverified';
+ $('coverage').textContent=coverage.label;
+ const currentFact=(latest.holes||[]).find(h=>h.number===number);
+ $('strokeIndex').textContent=Number.isInteger(currentFact?.handicapMen)&&Number.isInteger(currentFact?.handicapWomen)?'Handicap index · Men '+currentFact.handicapMen+' / Women '+currentFact.handicapWomen:'';
+
+
+ rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
+ $('teeCaption').textContent=selection?.tee?.name?selection.tee.name+' tees':'';
+ if(refreshSketch)void updateSketch(selection,number);
+ $('status').textContent=!hasCourse?'Choose a course at the Starter’s Desk to open your book.':
+  coverage.verifiedHoles?'':state==='unavailable'?'Course facts unavailable offline.':'Tee distances unavailable for this course.';
+ $('status').hidden=!!hasCourse&&coverage.verifiedHoles>0;
+}
+function updateSketch(selection,hole){
+ const gen=++spatialGeneration,box=document.querySelector('.field-sketch');
+ if(spatialPending){spatialPending.abort();spatialPending=null}
+ mapSelected=null;mapMode='all';
+ function unavailable(){
+  if(gen!==spatialGeneration)return;
+  box.classList.remove('has-features');box.replaceChildren();
+  if(!selection?.course){const p=document.createElement('p');p.textContent='Choose a course to open your notebook.';box.append(p);return}
+  // Never fill this prominent stage with a tiny fictional course sketch.
+  // A scorecard provides par/yardage, not a mapped fairway or green.
+  box.classList.add('no-map');
+  const heading=document.createElement('strong');heading.className='geometry-label';
+  heading.textContent='Hole '+hole+' · Scorecard notes';
+  const message=document.createElement('p');message.className='geometry-foot';
+  message.textContent=bayonetOsmTrouble(selection,hole)?
+   'Open the caddy conversation for a plan based on this hole.':
+   'No hole-assigned mapped outlines available. We will not invent doglegs, landing zones, or hazards.';
+  box.append(heading,message);
+ }
+ if(!selection?.course){unavailable();return}
+ unavailable();
+ const controller=new AbortController();
+ spatialPending=controller;
+ loadHoleSketch(selection,hole,{signal:controller.signal}).then(sketch=>{
+  if(spatialPending===controller)spatialPending=null;
+  if(gen!==spatialGeneration)return;
+  currentSketch=sketch;
+  const {shapes,annotations}=sketch;
+  const features=shapes;
+  const artHeight=SKETCH_HEIGHT;
+  renderAttack(features,annotations);
+  if(sketch.coverage==='scorecard'){unavailable();return}
+  box.classList.remove('no-map');box.classList.add('has-features');box.replaceChildren();
+
+  const tools=document.createElement('div');tools.className='map-tools';tools.setAttribute('role','group');tools.setAttribute('aria-label','Map feature filters');
+  const labels={green:'Green',fairway:'Fairway',bunker:'Bunker',water:'Water',rough:'Rough',tee:'Tee'};
+  const count=type=>shapes.filter(f=>f.type===type).length;
+  const modes=[['all','All'],['green','Green'],['trouble','Trouble']];
+  const matches=(shape,mode)=>mode==='all'||mode==='green'&&shape.type==='green'||mode==='trouble'&&['bunker','water'].includes(shape.type);
+  const ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 300 440');svg.setAttribute('role','img');svg.setAttribute('aria-label','Schematic arrangement of coarse provider-mapped features. Map filters also have accessible buttons below.');
+  const polygons=renderSharedHoleSketch(svg,shapes,annotations,{height:artHeight});
+  const list=document.createElement('div');list.className='map-feature-list';list.setAttribute('aria-label','Mapped features');
+  const note=document.createElement('p');note.className='map-note';note.setAttribute('role','status');
+  function updateMode(){
+   tools.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mapMode===mapMode)));
+   list.replaceChildren();
+   let visible=0;
+   shapes.forEach((shape,i)=>{
+    const matchesFilter=matches(shape,mapMode);
+    polygons[i].setAttribute('opacity',matchesFilter?'1':'0.15');
+    polygons[i].classList.toggle('map-selected',mapSelected===i&&matchesFilter);
+    if(!matchesFilter)return;
+    visible++;
+    const b=document.createElement('button');b.type='button';b.className='map-feature';
+    b.textContent=(labels[shape.type]||'Feature')+' '+(count(shape.type)>1?shapes.slice(0,i+1).filter(x=>x.type===shape.type).length:'');
+    b.setAttribute('aria-pressed',String(mapSelected===i));
+    b.onclick=()=>{mapSelected=i;updateMode()};
+    list.append(b);
+   });
+   const selected=shapes[mapSelected];
+   note.textContent=selected&&matches(selected,mapMode)?(labels[selected.type]||'Feature')+' highlighted · provider-mapped outline, not a measured distance':
+    visible+' mapped '+(visible===1?'feature':'features')+' shown · tap a label to highlight';
+  }
+  for(const [id,label] of modes){const button=document.createElement('button');button.type='button';button.dataset.mapMode=id;button.textContent=label;button.setAttribute('aria-pressed',String(id===mapMode));button.onclick=()=>{mapMode=id;mapSelected=null;updateMode()};tools.append(button)}
+  box.append(svg);
+  if(shapes.length){
+   const details=document.createElement('details'),summary=document.createElement('summary');
+   summary.textContent='Explore the sketch';details.append(summary,tools,list,note);box.append(details);
+  }
+  updateMode();
+  const foot=document.createElement('p');foot.className='geometry-foot';
+  foot.textContent=annotations.route?'Illustrative layout · approximate tee area and trouble. Confirm carries on course. ':'Partial mapped shapes · No invented fairway or hazard outlines. ';
+  if(sketch.source){const credit=document.createElement('a');credit.href=sketch.source;credit.textContent=sketch.credit;foot.append(credit)}
+  if(annotations.reference)foot.append(annotations.approximateTee?' · * Aerial reference':' · * Club booklet reference');
+  box.append(foot);
+ }).catch(error=>{if(spatialPending===controller)spatialPending=null;if(!controller.signal.aborted)unavailable()});
+}
+$('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
+$('next').onclick=()=>{number=Math.min(latest.coverage.expectedHoles,number+1);draw()};
+$('hole').onchange=()=>{number=Number($('hole').value);draw()};
+$('askHoleCaddy').onclick=()=>{
+ const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
+ const question=latest.selection?composeHoleQuestion({courseName:latest.selection.course?.name,teeName:latest.selection.tee?.name,holeNumber:number,par:page.hole?.par,yards:page.hole?.yards,trouble:[describeSketchTrouble(activeAnnotations),activeAnnotations?.reference?.note].filter(Boolean).join('. ')}):null;
+ if(!question||!saveHoleQuestion(sessionStorage,question,Date.now(),{selectionKey:yardageSelectionKey(latest.selection),holeNumber:number})){document.querySelector('#status').textContent='Unable to prepare the caddy question. Your current round is unchanged.';return}
+ rememberHole();
+ try{sessionStorage.setItem('dccCaddyTurn','1');sessionStorage.setItem('dccCaddyReturnHole',String(number))}catch{}
+ location.assign('./');
+};
+$('return').onclick=()=>{rememberHole();location.assign('./')};
+async function load(){
+ // Reuse active course provider/cache exactly as AI Caddy does.
+ const generation=++roundGeneration;
+ const result=await loadYardageState({storage:localStorage,holeNumber:number,signal:AbortSignal.timeout?.(7000)});
+ if(generation!==roundGeneration||result.state==='selection-changed')return;
+ const changed=yardageSelectionKey(result.selection)!==yardageSelectionKey(latest.selection);
+ latest=result;
+ draw({refreshSketch:changed});
+}
+function refreshRound(){
+ latest=cachedState();
+ draw();
+ load().catch(()=>{$('status').textContent='Scorecard details are temporarily unavailable.'});
+}
+window.addEventListener('storage',event=>{if(event.key===ACTIVE_ROUND_KEY)refreshRound()});
+refreshRound();
+</script></body></html>

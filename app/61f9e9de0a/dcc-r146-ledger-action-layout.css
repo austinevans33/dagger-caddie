@@ -1,0 +1,17 @@
+/* R146: whole-screen ticket-window layout; no interaction or ledger logic changes. */
+#dccPropBets .dcc-r66-intro.dcc-r94-ledger-action {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+#dccPropBets .dcc-r66-intro.dcc-r94-ledger-action > div { min-width: 0 !important; }
+#dccPropBets .dcc-r66-intro.dcc-r94-ledger-action strong {
+  font: 700 clamp(23px, 6vw, 28px)/1.15 Georgia,serif !important;
+  letter-spacing: -.025em !important;
+}
+#dccPropBets .dcc-r66-intro.dcc-r94-ledger-action p { max-width: none !important; font-size: 12px !important; }
+#dccPropBets .dcc-r66-intro.dcc-r94-ledger-action #dccPropNew {
+  justify-self: stretch !important; width: 100% !important; min-height: 41px !important;
+  font-size: 12px !important; letter-spacing: .035em !important;
+}

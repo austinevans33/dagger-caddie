@@ -1,0 +1,95 @@
+name: Production promotion gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'index.html'
+      - 'yardage-preview.html'
+      - 'ghost-preview.html'
+      - '19th-hole.html'
+      - 'firebase-config.js'
+      - 'manifest.json'
+      - '_config.yml'
+      - 'scripts/production-bundle.py'
+      - 'tests/production-root.spec.mjs'
+      - '.github/workflows/production-promotion.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify promotion and production backend isolation
+        run: |
+          git fetch origin 61f9e9de0a3a7950ce28f223541cdd12f897b5d8
+          python3 scripts/production-bundle.py --check .
+          git diff --exit-code 390b501ffd0b923c6b009ca70509e32319b2e032 -- .firebaserc firebase.json firestore.rules functions
+          node --test tests/*.test.mjs
+      - name: Build the Pages root with its publishing exclusions
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - name: Verify the actual public file tree
+        run: python3 scripts/production-bundle.py --verify-site _site
+      - name: Prepare the pinned regression suite
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/staged" 61f9e9de0a3a7950ce28f223541cdd12f897b5d8
+          npm install --no-save --no-package-lock @playwright/test
+          npx playwright install --with-deps chromium webkit
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/staged/node_modules"
+          python3 -m pip install shapely==2.1.2 osmium==4.2.0
+      - name: Test the new Pages root and existing saved-data formats
+        run: |
+          mkdir -p "$RUNNER_TEMP/public"
+          ln -s "$GITHUB_WORKSPACE/_site" "$RUNNER_TEMP/public/dagger-caddie"
+          python3 -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/public" >"$RUNNER_TEMP/root-http.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8766/dagger-caddie/manifest.json -o /dev/null; then break; fi
+            sleep 1
+          done
+          npx playwright test tests/production-root.spec.mjs --browser=chromium --workers=2 --reporter=line
+          npx playwright test tests/production-root.spec.mjs --browser=webkit --workers=2 --reporter=line
+      - name: Run the full regression suite on the exact staging baseline
+        run: |
+          cd "$RUNNER_TEMP/staged"
+          node --test tests/*.test.mjs
+          python3 tests/course-factory-pipeline.test.py
+          mkdir candidate
+          cp -R playtest candidate/
+          cp yardage-book.js yardage-selection.js course-weather-context.js course-identity.js round-yardage-transition.js candidate/
+          cp house-ghost-trail.js house-ghost-round.js house-ghost-ledger.js house-ghost-playback.js round-receipt.js candidate/
+          python3 tests/friday-bundle-integrity.py candidate
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory candidate >"$RUNNER_TEMP/staged-http.log" 2>&1 &
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8765/playtest/ -o /dev/null; then break; fi
+            sleep 1
+          done
+          "$GITHUB_WORKSPACE/node_modules/.bin/playwright" test --project=chromium --workers=2 --reporter=line
+      - name: Record the tested promotion and package the private rehearsal files
+        run: |
+          printf '%s\n' "${{ github.event.pull_request.head.sha }}" > "$RUNNER_TEMP/PROMOTION_PR_HEAD.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/PROMOTION_TESTED_TREE.txt"
+          tar -czf "$RUNNER_TEMP/pages-root-rehearsal.tar.gz" -C _site .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-root-rehearsal
+          path: |
+            ${{ runner.temp }}/pages-root-rehearsal.tar.gz
+            ${{ runner.temp }}/PROMOTION_PR_HEAD.txt
+            ${{ runner.temp }}/PROMOTION_TESTED_TREE.txt
+          retention-days: 14

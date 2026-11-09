@@ -1,0 +1,22 @@
+/* R121: Five-tab interior rhythm based on approved DCC renderings. Presentation only. */
+:root{--dcc-r121-green:#153629;--dcc-r121-ivory:#f5ecdc;--dcc-r121-gold:#d4af6e;--dcc-r121-ink:#153629}
+/* Standard information panels: dark country-club canvas surrounds warm paper. */
+.content>section.card[data-tab]:not(#dccPropBets):not(#moneyRoomSection):not(#dccGhostCard):not(#dccR86Clubhouse),
+.content>details.card[data-tab]:not(#dccR91SoloPanel){background:var(--dcc-r121-ivory)!important;color:var(--dcc-r121-ink)!important;border:1px solid rgba(212,175,110,.48)!important;border-radius:19px!important;box-shadow:none!important;max-width:100%!important}
+/* Constrain ivory heading color to ivory surfaces. Descendant-wide selectors used to recolor nested dark subpanels. */
+.content>section.card[data-tab]:not(#dccPropBets):not(#moneyRoomSection):not(#dccGhostCard):not(#dccR86Clubhouse)>:is(h2,h3),
+.content>details.card[data-tab]:not(#dccR91SoloPanel)>:is(h2,h3){color:var(--dcc-r121-ink)!important}
+.content>section.card[data-tab]:not(#dccPropBets):not(#moneyRoomSection):not(#dccGhostCard):not(#dccR86Clubhouse)>:is(.muted,.note){color:#53695b!important}
+/* Uniform premium disclosure treatment without changing what a control does. */
+.content>section.card[data-tab]:not(#dccPropBets):not(#moneyRoomSection):not(#dccGhostCard)>details>summary{border-radius:12px!important;min-height:46px!important;align-content:center}
+/* Prevent clipping and page-wide horizontal scroll on narrow phones. */
+.content>[data-tab],.content>[data-tab] :is(.grid,.inline,.bet-summary){min-width:0;max-width:100%;box-sizing:border-box}
+.content>[data-tab] :is(img,video,canvas){max-width:100%}
+.content>[data-tab] :is(input:not([type=checkbox]):not([type=radio]),select,textarea){font-size:16px;max-width:100%;box-sizing:border-box}
+@media(max-width:600px){
+ .content>section.card[data-tab]:not(#dccPropBets):not(#moneyRoomSection):not(#dccGhostCard),
+ .content>details.card[data-tab]:not(#dccR91SoloPanel){padding:clamp(12px,3vw,17px)!important}
+ .content>[data-tab] :is(table){max-width:100%}
+ .content>[data-tab] :is(.grid,.inline){column-gap:8px}
+}
+@media(prefers-reduced-motion:reduce){.content>[data-tab] *{scroll-behavior:auto!important}}
