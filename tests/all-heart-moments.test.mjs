@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {chooseAllHeartMoment} from '../playtest/all-heart-moments.js';
 const base={courseId:'verified-course',holeNumber:6,par:4,strokeIndex:15,moneyRoomPlayers:3};
 test('offers a suggestion but never creates a bet',()=>{
- assert.deepEqual(chooseAllHeartMoment(base),{key:'verified-course:6',type:'dare',title:'THIS HOLE IS BEGGING FOR ACTION',description:'Short par 4. The boys are watching. Open a side-bet proposal?',action:'open-ticket-window'});
+ assert.deepEqual(chooseAllHeartMoment(base),{key:'verified-course:6',type:'dare',title:'THIS HOLE IS BEGGING FOR ACTION',description:'Friendly par 4. The boys are watching. Open a side-bet proposal?',action:'open-ticket-window'});
 });
 test('respects dismissal, cooldown, max and opt-out',()=>{
  assert.equal(chooseAllHeartMoment(base,{dismissedKeys:['verified-course:6']}),null);
@@ -16,6 +16,7 @@ test('rejects unverified historic claims',()=>{
  assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,historicalChallenge:historic}),null);
  assert.equal(chooseAllHeartMoment({...base,historicalChallenge:{...historic,verified:true}}).type,'legend');
  assert.equal(chooseAllHeartMoment({...base,historicalChallenge:{...historic,verified:true,sourceUrl:'javascript:alert(1)'}}).type,'dare');
+ assert.equal(chooseAllHeartMoment({...base,historicalChallenge:{...historic,verified:true,event:''}}).type,'dare');
 });
 test('never invents ghost scores or shows on inactive rounds',()=>{
  assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,ghostRival:{strokes:4}}),null);
