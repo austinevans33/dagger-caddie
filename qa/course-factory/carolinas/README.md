@@ -52,6 +52,12 @@ Oak Island’s [official card](https://oakislandgolf.com/course-scorecard/) pins
 
 The November 9 repin matched every prior hole yardage, par and stroke index across the eight published selections. The published OSM boundary yields 18 routes, 18 tees, 18 greens and 17 matched fairways. Par-3 No. 7 lacks a unique fairway. On No. 16, [OSM way 1113464356](https://www.openstreetmap.org/way/1113464356) measures about 119 yards. The club card lists Black and Blue at 188 and White at 174. These rows fail the route-length check for that hole. A shorter tee can fit the coarse length test but does not establish which pad starts the mapped route. The runtime offers the verified scorecard and withholds the entire drawing bundle until the tee start is independently confirmed.
 
+## Neuse Country Club
+
+The [current club card](https://neusegolf.com/wp-content/uploads/2025/04/Scorecard_2025.jpg) supersedes the older PDF. All six rows reconcile, including Silver / Forward at 4,743 yards and Forward at 3,931 yards. Forward uses par 4 at No. 8 and par 71 overall. Its printed stroke-index row repeats several numbers, so the Forward tee has verified par and yardage only.
+
+The source boundary matches the club’s Clayton street address. It yields 17 matched routes, tees, greens and fairways. Both endpoints of the candidate No. 8 route are within the boundary tolerance, but the line crosses outside it. The drawing remains gated while the verified scorecard is playable. [OSM boundary](https://www.openstreetmap.org/relation/6432537) · [No. 8 candidate](https://www.openstreetmap.org/way/756794598)
+
 ## Discovery
 
 The statewide extracts yielded 151 NC and 113 SC named boundaries with at least 17 uniquely numbered, contained routes. Among these, 37 NC and 12 SC met the geometry count screen. The counts include some existing courses. `discovery.json` lists the exact OSM boundaries that made this first screen. Every queued candidate still needs independent course identity and official card review, source import, route-to-yardage checks and browser acceptance.

@@ -1108,6 +1108,34 @@ test('Standalone Ghost switches between front nine, back nine and eighteen',asyn
  await expect(page.locator('#shots li')).toHaveCount(1);
 });
 
+test('Neuse Forward keeps the current hole facts with the drawing gated',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dcc-starter-dialog').evaluate(dialog=>{if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Neuse Country Club');
+ await page.locator('#dcc-starter-search').click();
+ await page.locator('#dcc-starter-results button').filter({hasText:'Clayton, NC'}).click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'Forward · 3931 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+ await page.locator('#dccHomeScorecard').click();
+ const card=page.locator('#dcc-paper-dialog');
+ await card.getByRole('button',{name:'Select hole 8, not scored'}).click();
+ await expect(card.locator('#dcc-paper-hole-facts')).toHaveText('Par 4 · 255 yd · Enter strokes');
+ await card.getByRole('link',{name:'Open Hole in Yardage Book'}).click();
+ await expect(page.locator('#mapYards')).toHaveText('255 yds');
+ await expect(page.locator('#mapPar')).toHaveText('Par 4');
+ await expect(page.locator('.field-sketch')).toContainText('Hole 8 · Scorecard notes');
+ await expect(page.locator('.field-sketch .route-mark')).toHaveCount(0);
+ await page.locator('#watchGhost').click();
+ await expect(page.locator('#headline')).toContainText('Hole 8 · Par 4');
+ await expect(page.locator('#summary')).toContainText('255 yd');
+ await expect(page.locator('#ghostMapStatus')).toContainText('No mapped hole outlines available');
+ await page.locator('#next').click();
+ await expect(page.locator('#shots li')).toHaveCount(1);
+});
+
 test('Pelican Pointe preserves its selected pairing and official White tee through the Yardage Book',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));

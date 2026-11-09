@@ -602,6 +602,41 @@
         "gold": 5097,
         "red": 4525
       }
+    },
+    {
+      "id": "neuse-clayton-nc",
+      "name": "Neuse Country Club",
+      "region": "Clayton, NC",
+      "boundary": "r6432537",
+      "mapRef": "nc/neuse",
+      "auditTee": "championship",
+      "scorecard": "https://neusegolf.com/wp-content/uploads/2025/04/Scorecard_2025.jpg",
+      "cardSha256": "04b7e353983cd1ea210db1e0b5c56403c094846605eccb230fc901543a2c192b",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 8,
+          "issue": "route-crosses-boundary",
+          "candidates": [
+            "w756794598"
+          ]
+        }
+      ],
+      "counts": {
+        "route": 17,
+        "tee": 17,
+        "green": 17,
+        "fairway": 17
+      },
+      "status": "playable-partial",
+      "teeTotals": {
+        "championship": 6891,
+        "blue": 6448,
+        "white": 5953,
+        "silver": 5481,
+        "silver-forward": 4743,
+        "forward": 3931
+      }
     }
   ]
 }
