@@ -994,6 +994,59 @@ test('Sassamon Trace plays nine real holes through check-in, scoring, Yardage Bo
  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });
 
+test('Scorecard returns from Yardage Book and House Ghost to the saved scoring hole',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dcc-starter-dialog').evaluate(dialog=>{if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Country Hills Golf Course');
+ await page.locator('#dcc-starter-search').click();
+ await page.locator('#dcc-starter-results button').filter({hasText:'Gibsonville, NC'}).click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'Red · 4525 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+
+ const card=page.locator('#dcc-paper-dialog');
+ const progress=card.locator('#dcc-paper-progress');
+ const facts=card.locator('#dcc-paper-hole-facts');
+ await page.locator('#dccHomeScorecard').click();
+ await card.getByRole('button',{name:'Select hole 18, not scored'}).click();
+ await expect(progress).toBeFocused();
+ await expect(facts).toHaveText('Par 4 · 259 yd · Enter strokes');
+ const four=card.getByRole('button',{name:'Pencil 4 strokes for hole 18'});
+ await expect(four).toBeInViewport();
+ await four.click();
+ await expect(facts).toHaveText('Par 4 · 259 yd · 4 strokes saved');
+ await expect(four).toHaveAttribute('aria-pressed','true');
+ const saved=()=>page.evaluate(()=>localStorage.getItem('dcc_solo_scorecard_v1'));
+ const before=await saved();
+
+ await card.getByRole('link',{name:'Open Hole in Yardage Book'}).click();
+ await expect(page.locator('#hole')).toHaveValue('18');
+ await expect(page.locator('#mapYards')).toContainText('259');
+ const sketch=page.locator('.field-sketch .route-mark');
+ await expect(sketch).toHaveAttribute('d',/^M/);
+ const route=await sketch.getAttribute('d');
+ await expect(page.locator('#watchGhost')).toBeInViewport();
+ await page.locator('#watchGhost').click();
+ await expect(page.locator('#hole')).toHaveValue('18');
+ await expect(page.locator('#summary')).toContainText('259 yd');
+ await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+ await expect(page.locator('#watch')).toBeInViewport();
+ await page.locator('#trail').evaluate(trail=>window.scrollTo(0,window.scrollY+trail.getBoundingClientRect().top+80));
+ await expect(page.locator('#watch')).toBeInViewport();
+ await page.locator('#next').click();
+ await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+ await page.locator('#hole').selectOption('17');
+ await page.locator('#ghostBack').click();
+ await expect(page.locator('#hole')).toHaveValue('17');
+ await page.getByRole('link',{name:'Back to Scorecard'}).click();
+ await expect(card).toHaveAttribute('open','');
+ await expect(progress).toHaveText('HOLE 18');
+ await expect(facts).toHaveText('Par 4 · 259 yd · 4 strokes saved');
+ expect(await saved()).toBe(before);
+});
+
 test('Pelican Pointe preserves its selected pairing and official White tee through the Yardage Book',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));

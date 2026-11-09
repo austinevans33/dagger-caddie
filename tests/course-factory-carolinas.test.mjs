@@ -46,6 +46,8 @@ for(const {state,id,query,totals,example,fairways=18,handicap=true} of [
   totals:{ross:6720,valley:6369,mashburn:5702,crichton:5226,hope:4228,
    'valley-women':6369,'mashburn-women':5702,'crichton-women':5226,'hope-women':4228},
   example:{number:13,par:4,yards:366},fairways:17},
+ {state:'north-carolina',id:'country-hills-gibsonville-nc',query:'Country Hills Golf Course',
+  totals:{blue:5873,white:5511,gold:5097,red:4525},example:{number:13,par:4,yards:244}},
 ]){
  test(`${query} promotes only the source-pinned 18-hole course and official tee card`,()=>{
   const root='../qa/course-factory/'+state+'/';
