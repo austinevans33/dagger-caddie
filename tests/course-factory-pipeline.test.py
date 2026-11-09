@@ -247,6 +247,15 @@ class CourseFactoryPipeline(unittest.TestCase):
             self.assertEqual(scoped["holes"][0]["route"], "2")
             self.assertNotIn("green", scoped["holes"][0])
             self.assertIn({"hole": 1, "issue": "green-shared-endpoint", "candidates": ["w5"]}, issues)
+            course = {"boundary": "w1", "osmName": "Fixture Golf", "mapRef": "fl/fixture"}
+            source_order = list(range(10, 19)) + list(range(1, 10))
+            reordered, issues = data.review(dict(course, sourceHoleOrder=source_order), "fixture")
+            self.assertEqual(reordered["sourceHoleOrder"], source_order)
+            self.assertEqual(reordered["holes"][9]["route"], "2")
+            self.assertEqual(reordered["holes"][9]["green"], ["w5"])
+            self.assertIn({"hole": 10, "issue": "tee-ambiguous", "candidates": ["w3", "w4"]}, issues)
+            with self.assertRaisesRegex(ValueError, "complete permutation"):
+                data.review(dict(course, sourceHoleOrder=[1] * 18), "fixture")
             with self.assertRaisesRegex(ValueError, "boundary name"):
                 data.review({"boundary": "w1", "osmName": "Other Fixture", "mapRef": "fl/fixture"}, "fixture")
 

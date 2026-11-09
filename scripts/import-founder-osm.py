@@ -81,6 +81,10 @@ def build_bundle(review, osm):
     hole_count = review.get("holeCount", 18)
     require(hole_count in (9, 18) and len(review["holes"]) == hole_count,
             "Expected every physical hole in the reviewed 9- or 18-hole course")
+    source_order = review.get("sourceHoleOrder", list(range(1, hole_count + 1)))
+    require(isinstance(source_order, list) and all(type(n) is int for n in source_order)
+            and sorted(source_order) == list(range(1, hole_count + 1)),
+            "Reviewed source hole order must be a complete permutation")
     output = []
     used = {}
 
@@ -101,7 +105,7 @@ def build_bundle(review, osm):
         route_id = hole["route"]
         way = ways[route_id]
         coords = coordinates(way)
-        require(tags(way).get("golf") == "hole" and tags(way).get("ref") == str(number),
+        require(tags(way).get("golf") == "hole" and tags(way).get("ref") == str(source_order[number - 1]),
                 f"Route {route_id} does not identify hole {number}")
         if "routeName" in review:
             require(tags(way).get("name") == review["routeName"],

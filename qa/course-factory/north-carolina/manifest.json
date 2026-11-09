@@ -1163,6 +1163,624 @@
           }
         }
       }
+    },
+    {
+      "id": "the-woods-whispering-pines-nc",
+      "name": "The Woods Golf Club",
+      "region": "Whispering Pines, NC",
+      "boundary": "r6386358",
+      "osmName": "The Woods Golf Club",
+      "mapRef": "nc/the-woods",
+      "auditTee": "oak",
+      "sourceHoleOrder": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "scorecard": {
+        "url": "https://www.thewoodsgolfclub.com/scorecard/",
+        "sha256": "5b7e3f55502e9eaf3599ec8c3783457595a052cf705b279e76aebee8f6974c09",
+        "format": "html",
+        "handicap": "Handicap",
+        "tees": {
+          "oak": {
+            "label": "Oak",
+            "total": 6070
+          },
+          "dogwood": {
+            "label": "Dogwood",
+            "total": 5643
+          },
+          "hickory": {
+            "label": "Hickory",
+            "total": 5041
+          },
+          "long-leaf-pine": {
+            "label": "Long Leaf Pine",
+            "total": 4356
+          }
+        },
+        "additionalSources": [
+          {
+            "suffix": "printed",
+            "url": "https://www.thewoodsgolfclub.com/wp-content/uploads/sites/8567/2025/10/The-Woods-Golf-Club-18H-PROOF-12-Final.pdf",
+            "sha256": "aaf03c99bae9379e03c1dac64b5f964691e933ef468d3625d0e36986bc4c501b"
+          }
+        ]
+      }
+    },
+    {
+      "id": "mill-creek-mebane-nc",
+      "name": "Mill Creek Golf Club",
+      "region": "Mebane, NC",
+      "boundary": "r6413045",
+      "osmName": "Mill Creek Golf Club",
+      "mapRef": "nc/mill-creek-mebane",
+      "auditTee": "black",
+      "scorecard": {
+        "url": "https://www.golfmillcreek.com/wp-content/uploads/2021/01/Scorecard-1-18-2021-b.jpg",
+        "sha256": "4ae40032635450c8fa7df64b43d7f9d04e37477ee82a471021e5d91c6cdd6653",
+        "format": "reviewed-image",
+        "reviewNote": "Compared the numbered hole grid, both index rows and printed subtotals to the club card. The companion cover establishes course identity.",
+        "handicap": "Men’s Handicap",
+        "tees": {
+          "black": {
+            "label": "Black",
+            "total": 6992
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6325
+          },
+          "white": {
+            "label": "White",
+            "total": 5638
+          },
+          "yellow": {
+            "label": "Yellow",
+            "total": 4881
+          },
+          "orange": {
+            "label": "Orange",
+            "total": 4089
+          },
+          "blue-women": {
+            "label": "Blue",
+            "name": "Blue (Women)",
+            "total": 6325,
+            "handicap": "Ladies’ Handicap"
+          },
+          "white-women": {
+            "label": "White",
+            "name": "White (Women)",
+            "total": 5638,
+            "handicap": "Ladies’ Handicap"
+          },
+          "yellow-women": {
+            "label": "Yellow",
+            "name": "Yellow (Women)",
+            "total": 4881,
+            "handicap": "Ladies’ Handicap"
+          },
+          "orange-women": {
+            "label": "Orange",
+            "name": "Orange (Women)",
+            "total": 4089,
+            "handicap": "Ladies’ Handicap"
+          }
+        },
+        "reviewedRows": {
+          "Par": [
+            [
+              4,
+              5,
+              4,
+              3,
+              4,
+              5,
+              4,
+              3,
+              4,
+              36
+            ],
+            [
+              4,
+              4,
+              5,
+              3,
+              4,
+              4,
+              5,
+              3,
+              4,
+              36,
+              72
+            ]
+          ],
+          "Black": [
+            [
+              389,
+              560,
+              415,
+              202,
+              404,
+              541,
+              399,
+              175,
+              439,
+              3524
+            ],
+            [
+              396,
+              385,
+              560,
+              156,
+              393,
+              439,
+              523,
+              187,
+              429,
+              3468,
+              6992
+            ]
+          ],
+          "Blue": [
+            [
+              354,
+              502,
+              378,
+              186,
+              382,
+              502,
+              359,
+              164,
+              398,
+              3225
+            ],
+            [
+              307,
+              350,
+              518,
+              143,
+              357,
+              397,
+              478,
+              161,
+              389,
+              3100,
+              6325
+            ]
+          ],
+          "White": [
+            [
+              325,
+              457,
+              340,
+              169,
+              345,
+              456,
+              324,
+              130,
+              360,
+              2906
+            ],
+            [
+              271,
+              281,
+              475,
+              107,
+              322,
+              361,
+              438,
+              126,
+              351,
+              2732,
+              5638
+            ]
+          ],
+          "Yellow": [
+            [
+              297,
+              343,
+              308,
+              138,
+              308,
+              397,
+              282,
+              99,
+              302,
+              2474
+            ],
+            [
+              238,
+              250,
+              439,
+              76,
+              265,
+              330,
+              403,
+              91,
+              315,
+              2407,
+              4881
+            ]
+          ],
+          "Orange": [
+            [
+              265,
+              315,
+              264,
+              90,
+              232,
+              380,
+              224,
+              82,
+              246,
+              2098
+            ],
+            [
+              206,
+              174,
+              372,
+              76,
+              228,
+              276,
+              322,
+              61,
+              276,
+              1991,
+              4089
+            ]
+          ],
+          "Men’s Handicap": [
+            [
+              15,
+              3,
+              5,
+              13,
+              7,
+              9,
+              11,
+              17,
+              1
+            ],
+            [
+              8,
+              16,
+              6,
+              18,
+              10,
+              2,
+              12,
+              14,
+              4
+            ]
+          ],
+          "Ladies’ Handicap": [
+            [
+              2,
+              12,
+              6,
+              16,
+              10,
+              14,
+              8,
+              18,
+              4
+            ],
+            [
+              11,
+              9,
+              13,
+              17,
+              7,
+              1,
+              5,
+              15,
+              3
+            ]
+          ]
+        },
+        "additionalSources": [
+          {
+            "suffix": "cover",
+            "url": "https://www.golfmillcreek.com/wp-content/uploads/2021/01/Scorecard-1-18-2021-a.jpg",
+            "sha256": "84ff48d30a5e072035748fd90f150ac1d84569ee327e5487f7c76da9b206c4a4"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hillandale-durham-nc",
+      "name": "Hillandale Golf Course",
+      "region": "Durham, NC",
+      "boundary": "w24487227",
+      "osmName": "Hillandale Golf Course",
+      "mapRef": "nc/hillandale",
+      "auditTee": "blue",
+      "scorecard": {
+        "url": "https://hillandalegolf.com/wp-content/uploads/2019/09/hillandale_golf_course_scorecard_1200a.webp",
+        "sha256": "e2624774535516097249520924edd3eb9f2d85e77008a76d9583ae32fc51ac2b",
+        "format": "reviewed-image",
+        "reviewNote": "Compared all numbered hole values, index and both par rows to the operator’s card image.",
+        "handicap": "Handicap",
+        "tees": {
+          "blue": {
+            "label": "Blue",
+            "total": 6425
+          },
+          "white": {
+            "label": "White",
+            "total": 6026
+          },
+          "gold": {
+            "label": "Gold",
+            "total": 5395
+          },
+          "red": {
+            "label": "Red",
+            "total": 4823
+          },
+          "light-blue": {
+            "label": "Light Blue",
+            "total": 3677
+          },
+          "white-women": {
+            "label": "White",
+            "name": "White (Women)",
+            "total": 6026,
+            "parLabel": "Women Par"
+          },
+          "gold-women": {
+            "label": "Gold",
+            "name": "Gold (Women)",
+            "total": 5395,
+            "parLabel": "Women Par"
+          },
+          "red-women": {
+            "label": "Red",
+            "name": "Red (Women)",
+            "total": 4823,
+            "parLabel": "Women Par"
+          },
+          "light-blue-women": {
+            "label": "Light Blue",
+            "name": "Light Blue (Women)",
+            "total": 3677,
+            "parLabel": "Women Par"
+          }
+        },
+        "reviewedRows": {
+          "Par": [
+            [
+              4,
+              5,
+              4,
+              3,
+              4,
+              4,
+              3,
+              4,
+              4,
+              35
+            ],
+            [
+              4,
+              4,
+              4,
+              4,
+              5,
+              3,
+              4,
+              3,
+              5,
+              36,
+              71
+            ]
+          ],
+          "Women Par": [
+            [
+              4,
+              5,
+              4,
+              3,
+              4,
+              4,
+              3,
+              5,
+              4,
+              36
+            ],
+            [
+              4,
+              4,
+              4,
+              4,
+              5,
+              3,
+              4,
+              3,
+              5,
+              36,
+              72
+            ]
+          ],
+          "Handicap": [
+            [
+              13,
+              9,
+              1,
+              15,
+              17,
+              5,
+              11,
+              7,
+              3
+            ],
+            [
+              4,
+              6,
+              12,
+              2,
+              18,
+              10,
+              14,
+              8,
+              16
+            ]
+          ],
+          "Blue": [
+            [
+              350,
+              510,
+              425,
+              165,
+              333,
+              425,
+              180,
+              410,
+              400,
+              3198
+            ],
+            [
+              425,
+              392,
+              347,
+              368,
+              440,
+              192,
+              380,
+              190,
+              493,
+              3227,
+              6425
+            ]
+          ],
+          "White": [
+            [
+              330,
+              480,
+              390,
+              151,
+              315,
+              375,
+              165,
+              383,
+              385,
+              2974
+            ],
+            [
+              400,
+              379,
+              332,
+              350,
+              420,
+              175,
+              353,
+              170,
+              473,
+              3052,
+              6026
+            ]
+          ],
+          "Gold": [
+            [
+              310,
+              440,
+              342,
+              130,
+              300,
+              350,
+              155,
+              288,
+              350,
+              2665
+            ],
+            [
+              360,
+              360,
+              240,
+              320,
+              360,
+              155,
+              345,
+              160,
+              430,
+              2730,
+              5395
+            ]
+          ],
+          "Red": [
+            [
+              295,
+              360,
+              300,
+              115,
+              288,
+              322,
+              145,
+              281,
+              318,
+              2424
+            ],
+            [
+              267,
+              312,
+              230,
+              292,
+              313,
+              125,
+              335,
+              150,
+              375,
+              2399,
+              4823
+            ]
+          ],
+          "Light Blue": [
+            [
+              205,
+              260,
+              200,
+              111,
+              222,
+              254,
+              119,
+              220,
+              195,
+              1786
+            ],
+            [
+              224,
+              199,
+              226,
+              210,
+              304,
+              125,
+              251,
+              74,
+              278,
+              1891,
+              3677
+            ]
+          ]
+        }
+      }
     }
   ]
 }

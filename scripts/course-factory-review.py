@@ -105,7 +105,11 @@ class GolfSnapshot:
         hole_count = course.get("holeCount", 18)
         if hole_count not in (9, 18, 27):
             raise ValueError("physical hole count must be 9, 18 or 27")
-        valid_numbers = {str(n) for n in range(1, hole_count + 1)}
+        source_order = course.get("sourceHoleOrder", list(range(1, hole_count + 1)))
+        if (not isinstance(source_order, list) or any(type(n) is not int for n in source_order)
+                or sorted(source_order) != list(range(1, hole_count + 1))):
+            raise ValueError("reviewed source hole order must be a complete permutation")
+        source_to_card = {str(source): number for number, source in enumerate(source_order, 1)}
         route_name = course.get("routeName")
         if route_name is not None and (not isinstance(route_name, str) or not route_name.strip()):
             raise ValueError("shared venue route name must be explicit")
@@ -126,17 +130,17 @@ class GolfSnapshot:
             layer, obj_tags, raw = self.objects[obj_ref]
             shape = meters(raw)
             if layer == "hole":
-                number = obj_tags.get("ref")
+                number = source_to_card.get(obj_tags.get("ref"))
                 if route_name is not None and obj_tags.get("name") != route_name:
                     if route_boundary.intersects(shape) and shape.length > 0:
                         other_routes.append(shape)
                     continue
-                if number not in valid_numbers:
+                if number is None:
                     continue
                 if route_boundary.covers(shape):
-                    routes[int(number)].append((obj_ref, shape, obj_tags.get("par")))
+                    routes[number].append((obj_ref, shape, obj_tags.get("par")))
                 elif all(route_boundary.covers(Point(p)) for p in (shape.coords[0], shape.coords[-1])):
-                    outside_routes[int(number)].append(obj_ref)
+                    outside_routes[number].append(obj_ref)
             elif boundary.covers(shape.representative_point()):
                 layers["water" if layer in WATER else layer][obj_ref] = shape
         lines = {n: row[0] for n, row in routes.items() if len(row) == 1}
@@ -199,6 +203,8 @@ class GolfSnapshot:
                   "source": source_url, "sha256": self.sha, "holes": holes}
         if route_name is not None:
             review["routeName"] = route_name
+        if "sourceHoleOrder" in course:
+            review["sourceHoleOrder"] = source_order
         return review, diagnostics
 
     def write_subset(self, review, path):

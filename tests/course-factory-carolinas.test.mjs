@@ -27,6 +27,16 @@ for(const {state,id,query,totals,example,fairways=18,handicap=true} of [
  {state:'north-carolina',id:'oak-island-nc',query:'Oak Island',
   totals:{blue:6717,black:6401,white:5940,gold:5423,red:4903},
   example:{number:13,par:4,yards:391},fairways:17},
+ {state:'north-carolina',id:'the-woods-whispering-pines-nc',query:'The Woods',
+  totals:{oak:6070,dogwood:5643,hickory:5041,'long-leaf-pine':4356},example:{number:13,par:5,yards:509}},
+ {state:'north-carolina',id:'mill-creek-mebane-nc',query:'Mill Creek Golf Club',
+  totals:{black:6992,blue:6325,white:5638,yellow:4881,orange:4089,
+   'blue-women':6325,'white-women':5638,'yellow-women':4881,'orange-women':4089},
+  example:{number:13,par:3,yards:156},fairways:17},
+ {state:'north-carolina',id:'hillandale-durham-nc',query:'Hillandale',
+  totals:{blue:6425,white:6026,gold:5395,red:4823,'light-blue':3677,
+   'white-women':6026,'gold-women':5395,'red-women':4823,'light-blue-women':3677},
+  example:{number:13,par:4,yards:368}},
 ]){
  test(`${query} promotes only the source-pinned 18-hole course and official tee card`,()=>{
   const root='../qa/course-factory/'+state+'/';
@@ -95,4 +105,27 @@ test('Seven Lakes keeps verified tees selectable while withholding its unaudited
  const {holes}=founderVerifiedScorecard({course,tee});
  assert.equal(holes[11].yards,319);
  assert.equal(holes[11].handicapMen,4);
+});
+
+
+test('The Woods uses the club hole order on both nines',()=>{
+ const {features}=json('../playtest/course-art/the-woods-whispering-pines-nc.json');
+ const routes=features.filter(({properties})=>properties.layer==='hole');
+ assert.deepEqual(routes.map(({properties})=>properties.osm),[
+  'w1157231212','w1157231220','w1157231225','w1157231230','w1157231236','w1157231242',
+  'w1157231247','w1157231252','w1157231258','w1157425828','w1157425852','w1157093634',
+  'w1157093641','w1157093650','w1157093651','w1157093655','w1157093658','w1157093663',
+ ]);
+});
+
+test('Hillandale and Mill Creek preserve the published women’s card facts',()=>{
+ const hillandale=founderCatalogRecords('Hillandale')[0];
+ const hillandaleTee=founderTeesForCourse(hillandale).find(({providerTeeId})=>providerTeeId==='white-women');
+ const {holes:hillandaleHoles}=founderVerifiedScorecard({course:hillandale,tee:hillandaleTee});
+ assert.equal(hillandaleHoles[7].par,5);
+ assert.equal(hillandaleHoles[7].yards,383);
+ const millCreek=founderCatalogRecords('Mill Creek Golf Club')[0];
+ const millCreekTee=founderTeesForCourse(millCreek).find(({providerTeeId})=>providerTeeId==='white-women');
+ const {holes:millCreekHoles}=founderVerifiedScorecard({course:millCreek,tee:millCreekTee});
+ assert.equal(millCreekHoles[16].handicapMen,15);
 });

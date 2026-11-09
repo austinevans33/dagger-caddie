@@ -12,6 +12,9 @@ Stacked on the Founders source review. The regional catalogs use the same runtim
 | Sanford Municipal Golf Course, Sanford NC | 4 | 18 / 18 / 18 / 18 | Men’s, 6,304 yards, par 71 |
 | Pudding Ridge Golf Club, Mocksville NC | 4 | 18 / 18 / 18 / 18 | Black, 6,713 yards, par 71 |
 | Oak Island Golf Club, Caswell Beach NC | 5 | 18 / 18 / 18 / 17 | Blue, 6,717 yards, par 72 |
+| The Woods Golf Club, Whispering Pines NC | 4 | 18 / 18 / 18 / 18 | Oak, 6,070 yards, par 72 |
+| Mill Creek Golf Club, Mebane NC | 5 physical tee rows, 9 selections | 18 / 18 / 18 / 17 | Black, 6,992 yards, par 72 |
+| Hillandale Golf Course, Durham NC | 5 physical tee rows, 9 selections | 18 / 18 / 18 / 18 | Blue, 6,425 yards, par 71 |
 
 Each region's manifest pins the original scorecard sources, Geofabrik PBF and derived golf-only snapshot. Each coverage report pins the promoted bundle. No synthetic tee, fairway, hazard or live pin yardage was added.
 
@@ -22,6 +25,12 @@ Tanglewood uses the [county’s Championship card](https://golf.tanglewoodpark.o
 Pudding Ridge’s [club-issued scorecard](https://www.puddingridge.com/wp-content/uploads/2017/08/scorecard.pdf) prints the back nine first and leaves the front-nine yardage subtotals blank. Four tee rows reconcile with the printed back-nine and round totals. White’s individual holes sum to 5,474 yards while the card prints 5,374, so the White row is withheld. The club’s course overview cites 6,813 yards. The catalog follows the checked Black hole grid and its printed total of 6,713.
 
 Oak Island’s [official card](https://oakislandgolf.com/course-scorecard/) pins both the hole grid and the companion cover. Red uses the printed ladies par and stroke index, including par 5 on No. 9 and par 4 on No. 14. Par-3 No. 3 has a verified route, tee and green. Its fairway remains unrendered.
+
+## November 8 North Carolina additions
+
+- **The Woods.** The pinned OSM extract numbers the current back nine as 1–9 and the current front nine as 10–18. Orienting page 1 of the [club’s printed card](https://www.thewoodsgolfclub.com/wp-content/uploads/sites/8567/2025/10/The-Woods-Golf-Club-18H-PROOF-12-Final.pdf) north-up shows the split directly. Club No. 2 crosses the pond at OSM No. 11, and club No. 15 is the short southwest hole at OSM No. 6. The full one-to-one swap removes all 14 mapped par conflicts and all six route-yardage failures. The manifest records the source number for each card hole. Both generation steps validate the complete order and preserve the original source features. The [club web card](https://www.thewoodsgolfclub.com/scorecard/) agrees with the pinned print card on all four tee rows, pars and indexes. The club’s overview gives 6,324 yards without a corresponding hole grid, so the catalog follows the printed 6,070-yard Oak row.
+- **Mill Creek.** The [Mebane club’s card](https://www.golfmillcreek.com/golf/score-card/) supplies five explicit hole rows and separate men’s and ladies’ indexes. The cover confirms the 1700 St Andrews Drive identity and printed tee labels. The catalog includes women’s selections for the four tees with a published women’s rating and keeps their index. Mixed tee totals are outside the import. No. 17 is par 3 and has a mapped tee, route and green. The source does not yield a unique fairway polygon for that hole.
+- **Hillandale.** The [operator’s card image](https://hillandalegolf.com/wp-content/uploads/2019/09/hillandale_golf_course_scorecard_1200a.webp) supplies five complete yardage rows, one handicap index row and both par rows. The women’s selections retain No. 8 as par 5 and a round par of 72. The public overview’s 6,339-yard summary conflicts with the numbered card. The catalog follows the printed Blue row, which reconciles to 6,425 yards.
 
 ## Seven Lakes scorecard and geometry review
 
