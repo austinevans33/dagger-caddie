@@ -29,8 +29,6 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 
 .field-sketch .route-mark{fill:none;stroke:#42584a;stroke-width:1.8;stroke-dasharray:7 5;opacity:.8}
 .field-sketch .route-target{fill:#f7f0dd;stroke:#42584a;stroke-width:1.7}
-.field-sketch .pencil-map-label{fill:#304a3a;font:italic 10px Georgia,serif;paint-order:stroke;stroke:#f7f0dd;stroke-width:3px}
-.field-sketch .hazard-tag{font:700 10px system-ui,sans-serif;fill:#4a483c;paint-order:stroke;stroke:#f7f0dd;stroke-width:3px}
 /* One-hand pencil map controls: large touch targets, no pinch-to-zoom needed. */
 .map-tools{display:flex;gap:7px;margin:9px 0;flex-wrap:wrap}
 .map-tools button{flex:1;min-width:74px;min-height:44px;border:1px solid #8a9482;border-radius:10px;background:#e8e1cc;color:#31473a;font:700 13px system-ui,sans-serif;padding:7px}
@@ -108,7 +106,7 @@ import {readCourseScorecard} from './active-course-context.js';
 import {readYardageCaddy,describeSketchTrouble} from './yardage-caddy-notes.js?v=friday-book-1';
 import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-reference-2';
 import {bayonetOsmTrouble} from './bayonet-osm-trouble.js';
-import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=founders-reference-2';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=paper-labels-1';
 import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);

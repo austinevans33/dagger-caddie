@@ -1066,12 +1066,15 @@ for(const course of [
  {query:'Mill Creek Golf Club',region:'Mebane, NC',tee:'Black',hole:17,yards:187,par:3,caddy:true},
  {query:'Hillandale',region:'Durham, NC',tee:'Blue',hole:8,yards:410,par:4,caddy:true},
  {query:'Greensboro National',region:'Summerfield, NC',tee:'Blue',hole:16,yards:189,par:3,caddy:true},
+ {query:'12 Oaks',region:'Holly Springs, NC',tee:'Yellow',hole:7,yards:187,par:4,caddy:true},
+ {query:'Hope Valley',region:'Durham, NC',tee:'Ross',hole:14,yards:163,par:3,caddy:true},
 ]){
  test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
   await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
   await page.goto('/playtest/');
+  await expect(page.locator('#dcc-starter-dialog')).toBeAttached();
   await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
   await page.locator('#dcc-starter-query').fill(course.query);
   await page.locator('#dcc-starter-search').click();

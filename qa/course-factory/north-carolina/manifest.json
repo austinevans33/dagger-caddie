@@ -1121,7 +1121,7 @@
       "auditTee": "black",
       "scorecard": {
         "url": "https://www.golf7lakes.com/scorecard",
-        "sha256": "d74ce02f5199ef050d73f5c98d32ed76c44115a70cf82bfd452f0b9db59e4638",
+        "sha256": "7f4b4abb7f9d92b15fe189bee05d9b383f5a24bcf62b1893faf5e17aa310ef12",
         "format": "html",
         "namedHoleHeaders": true,
         "handicap": "Men’s HandicapBlack–Gold tees",
@@ -1162,7 +1162,8 @@
             "handicap": "Ladies’ HandicapRed & Green tees"
           }
         }
-      }
+      },
+      "reviewDate": "2026-11-09"
     },
     {
       "id": "the-woods-whispering-pines-nc",
@@ -2362,6 +2363,698 @@
             "sha256": "edea482ba77f3317fa5e8eb054b8054c94f07d55408ee1ef350038cd9b2aa6d4"
           }
         ]
+      }
+    },
+    {
+      "id": "12-oaks-holly-springs-nc",
+      "name": "The Club at 12 Oaks",
+      "region": "Holly Springs, NC",
+      "boundary": "r6396830",
+      "osmName": "12 Oaks",
+      "mapRef": "nc/12-oaks",
+      "reviewDate": "2026-11-09",
+      "auditTee": "gold",
+      "scorecard": {
+        "url": "https://www.theclubat12oaks.com/documents/20124/0/12%2BOaks%2BScorecard%2Bjpg.jpg/7ee0b1a1-542c-8f76-98ab-4de5983984e3?t=1772569988083",
+        "sha256": "3850c475a483b21908ffb2cd0b27984d5738256a90bdb1d0f44f457f56bb2fcb",
+        "format": "reviewed-image",
+        "reviewNote": "Checked the May 2024 numbered card against the club PDF. The printed arrows identify which physical tee supplies each combo yardage.",
+        "handicap": "Handicap",
+        "tees": {
+          "gold": {
+            "label": "Gold",
+            "total": 7093
+          },
+          "nicklaus": {
+            "label": "Nicklaus",
+            "total": 6759
+          },
+          "blue": {
+            "label": "Blue",
+            "total": 6545
+          },
+          "green-oaks": {
+            "label": "Green Oaks",
+            "total": 6216
+          },
+          "white": {
+            "label": "White",
+            "total": 5985
+          },
+          "silver": {
+            "label": "Silver",
+            "total": 5583
+          },
+          "red": {
+            "label": "Red",
+            "total": 5026
+          },
+          "yellow": {
+            "label": "Yellow",
+            "total": 4397,
+            "parLabel": "Yellow Par"
+          },
+          "family": {
+            "label": "Family",
+            "total": 3433
+          }
+        },
+        "reviewedRows": {
+          "Gold": [
+            [
+              454,
+              421,
+              204,
+              434,
+              513,
+              353,
+              564,
+              180,
+              397,
+              3520
+            ],
+            [
+              418,
+              211,
+              322,
+              594,
+              422,
+              185,
+              437,
+              535,
+              449,
+              3573,
+              7093
+            ]
+          ],
+          "Blue": [
+            [
+              420,
+              382,
+              179,
+              402,
+              493,
+              315,
+              533,
+              137,
+              384,
+              3245
+            ],
+            [
+              388,
+              186,
+              282,
+              559,
+              388,
+              160,
+              413,
+              506,
+              418,
+              3300,
+              6545
+            ]
+          ],
+          "White": [
+            [
+              405,
+              350,
+              125,
+              342,
+              477,
+              301,
+              468,
+              126,
+              362,
+              2956
+            ],
+            [
+              378,
+              173,
+              273,
+              481,
+              352,
+              131,
+              378,
+              478,
+              385,
+              3029,
+              5985
+            ]
+          ],
+          "Silver": [
+            [
+              351,
+              297,
+              125,
+              297,
+              477,
+              301,
+              468,
+              126,
+              298,
+              2740
+            ],
+            [
+              347,
+              151,
+              273,
+              481,
+              330,
+              131,
+              318,
+              478,
+              334,
+              2843,
+              5583
+            ]
+          ],
+          "Red": [
+            [
+              351,
+              297,
+              97,
+              297,
+              421,
+              245,
+              402,
+              92,
+              298,
+              2500
+            ],
+            [
+              309,
+              151,
+              172,
+              448,
+              282,
+              100,
+              318,
+              412,
+              334,
+              2526,
+              5026
+            ]
+          ],
+          "Yellow": [
+            [
+              351,
+              297,
+              97,
+              234,
+              421,
+              245,
+              187,
+              92,
+              298,
+              2222
+            ],
+            [
+              241,
+              100,
+              172,
+              392,
+              282,
+              100,
+              214,
+              374,
+              300,
+              2175,
+              4397
+            ]
+          ],
+          "Family": [
+            [
+              166,
+              209,
+              90,
+              171,
+              302,
+              148,
+              284,
+              92,
+              176,
+              1638
+            ],
+            [
+              197,
+              81,
+              172,
+              320,
+              225,
+              100,
+              203,
+              285,
+              212,
+              1795,
+              3433
+            ]
+          ],
+          "Handicap": [
+            [
+              5,
+              11,
+              13,
+              1,
+              9,
+              15,
+              3,
+              17,
+              7
+            ],
+            [
+              2,
+              8,
+              16,
+              18,
+              4,
+              14,
+              10,
+              12,
+              6
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              5,
+              3,
+              4,
+              36
+            ],
+            [
+              4,
+              3,
+              4,
+              5,
+              4,
+              3,
+              4,
+              5,
+              4,
+              36,
+              72
+            ]
+          ],
+          "Yellow Par": [
+            [
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              4,
+              3,
+              4,
+              35
+            ],
+            [
+              4,
+              3,
+              4,
+              5,
+              4,
+              3,
+              4,
+              5,
+              4,
+              36,
+              71
+            ]
+          ],
+          "Nicklaus": [
+            [
+              420,
+              382,
+              204,
+              402,
+              513,
+              315,
+              564,
+              180,
+              384,
+              3364
+            ],
+            [
+              388,
+              186,
+              322,
+              559,
+              388,
+              160,
+              437,
+              506,
+              449,
+              3395,
+              6759
+            ]
+          ],
+          "Green Oaks": [
+            [
+              405,
+              382,
+              179,
+              342,
+              493,
+              315,
+              468,
+              126,
+              362,
+              3072
+            ],
+            [
+              378,
+              186,
+              282,
+              481,
+              388,
+              160,
+              378,
+              506,
+              385,
+              3144,
+              6216
+            ]
+          ]
+        },
+        "additionalSources": [
+          {
+            "suffix": "companion",
+            "url": "https://www.theclubat12oaks.com/documents/20124/0/Scorecard.pdf/b6aa7a4e-3719-1c18-c3cf-c69cd029db00",
+            "sha256": "f0bb5b65186f1892ac248dce46ff948317a2d7af72627f6422fd38e8258efe13"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hope-valley-durham-nc",
+      "name": "Hope Valley Country Club",
+      "region": "Durham, NC",
+      "boundary": "r2789076",
+      "osmName": "Hope Valley Country Club",
+      "mapRef": "nc/hope-valley",
+      "reviewDate": "2026-11-09",
+      "auditTee": "ross",
+      "scorecard": {
+        "url": "https://www.hvcc.org/files/Hope%20Valley%20Country%20Club%20Course%20Scorecard.pdf",
+        "sha256": "5b1722e8aca0d545e8700fcfe5ada3704cd1f0c447fc71c4803b15fbf70f08a7",
+        "format": "reviewed-image",
+        "reviewNote": "Reviewed the printed hole grid on page 2 and preserved the men’s and ladies’ par and index rows. Three intermediate tees only publish totals.",
+        "handicap": "Handicap",
+        "tees": {
+          "ross": {
+            "label": "Ross",
+            "total": 6720
+          },
+          "valley": {
+            "label": "Valley",
+            "total": 6369
+          },
+          "mashburn": {
+            "label": "Mashburn",
+            "total": 5702
+          },
+          "crichton": {
+            "label": "Crichton",
+            "total": 5226
+          },
+          "hope": {
+            "label": "Hope",
+            "total": 4228
+          },
+          "valley-women": {
+            "label": "Valley",
+            "total": 6369,
+            "name": "Valley (Women)",
+            "parLabel": "Women Par",
+            "handicap": "Women Index"
+          },
+          "mashburn-women": {
+            "label": "Mashburn",
+            "total": 5702,
+            "name": "Mashburn (Women)",
+            "parLabel": "Women Par",
+            "handicap": "Women Index"
+          },
+          "crichton-women": {
+            "label": "Crichton",
+            "total": 5226,
+            "name": "Crichton (Women)",
+            "parLabel": "Women Par",
+            "handicap": "Women Index"
+          },
+          "hope-women": {
+            "label": "Hope",
+            "total": 4228,
+            "name": "Hope (Women)",
+            "parLabel": "Women Par",
+            "handicap": "Women Index"
+          }
+        },
+        "reviewedRows": {
+          "Ross": [
+            [
+              393,
+              202,
+              400,
+              441,
+              420,
+              202,
+              325,
+              527,
+              415,
+              3325
+            ],
+            [
+              416,
+              450,
+              424,
+              366,
+              163,
+              486,
+              461,
+              419,
+              210,
+              3395,
+              6720
+            ]
+          ],
+          "Valley": [
+            [
+              379,
+              192,
+              374,
+              418,
+              396,
+              182,
+              308,
+              520,
+              380,
+              3149
+            ],
+            [
+              390,
+              431,
+              388,
+              363,
+              153,
+              472,
+              443,
+              389,
+              191,
+              3220,
+              6369
+            ]
+          ],
+          "Mashburn": [
+            [
+              362,
+              171,
+              337,
+              374,
+              379,
+              166,
+              306,
+              438,
+              332,
+              2865
+            ],
+            [
+              373,
+              356,
+              348,
+              340,
+              134,
+              418,
+              422,
+              296,
+              150,
+              2837,
+              5702
+            ]
+          ],
+          "Crichton": [
+            [
+              345,
+              144,
+              330,
+              364,
+              288,
+              158,
+              250,
+              422,
+              317,
+              2618
+            ],
+            [
+              344,
+              347,
+              296,
+              320,
+              113,
+              382,
+              417,
+              245,
+              144,
+              2608,
+              5226
+            ]
+          ],
+          "Hope": [
+            [
+              241,
+              130,
+              268,
+              317,
+              254,
+              103,
+              205,
+              371,
+              260,
+              2149
+            ],
+            [
+              281,
+              287,
+              249,
+              233,
+              78,
+              307,
+              328,
+              211,
+              105,
+              2079,
+              4228
+            ]
+          ],
+          "Par": [
+            [
+              4,
+              3,
+              4,
+              4,
+              4,
+              3,
+              4,
+              5,
+              4,
+              35
+            ],
+            [
+              4,
+              4,
+              4,
+              4,
+              3,
+              5,
+              4,
+              4,
+              3,
+              35,
+              70
+            ]
+          ],
+          "Women Par": [
+            [
+              4,
+              3,
+              4,
+              5,
+              4,
+              3,
+              4,
+              5,
+              4,
+              36
+            ],
+            [
+              4,
+              4,
+              4,
+              4,
+              3,
+              5,
+              5,
+              4,
+              3,
+              36,
+              72
+            ]
+          ],
+          "Handicap": [
+            [
+              9,
+              13,
+              7,
+              1,
+              5,
+              11,
+              17,
+              15,
+              3
+            ],
+            [
+              12,
+              6,
+              4,
+              14,
+              16,
+              18,
+              2,
+              10,
+              8
+            ]
+          ],
+          "Women Index": [
+            [
+              3,
+              13,
+              5,
+              15,
+              17,
+              11,
+              9,
+              7,
+              1
+            ],
+            [
+              12,
+              4,
+              2,
+              6,
+              10,
+              8,
+              14,
+              18,
+              16
+            ]
+          ]
+        }
       }
     }
   ]

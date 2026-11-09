@@ -110,7 +110,7 @@ export function buildBatch(manifestPath, snapshotPath, scorecardCache, outputPat
         catalog.push({id,name,region,...card,source:'course-factory-official-scorecard',
           provenance:{source:'Official course scorecard',url:scorecard.url,sourceSha256:scorecard.sha256,
             ...(additionalSources?.length?{additionalSources}:{}),
-            checked:manifest.reviewDate,geography:region,teeYardageIsNotPinDistance:true},map});
+            checked:course.reviewDate??manifest.reviewDate,geography:region,teeYardageIsNotPinDistance:true},map});
       }
       coverage.push(report);
     }

@@ -39,6 +39,13 @@ for(const {state,id,query,totals,example,fairways=18,handicap=true} of [
   example:{number:13,par:4,yards:368}},
  {state:'north-carolina',id:'greensboro-national-summerfield-nc',query:'Greensboro National',
   totals:{blue:6806,white:6261,gold:5609,red:4715},example:{number:13,par:4,yards:434},fairways:17},
+ {state:'north-carolina',id:'12-oaks-holly-springs-nc',query:'12 Oaks',
+  totals:{gold:7093,nicklaus:6759,blue:6545,'green-oaks':6216,white:5985,silver:5583,red:5026,yellow:4397,family:3433},
+  example:{number:13,par:5,yards:594},fairways:17},
+ {state:'north-carolina',id:'hope-valley-durham-nc',query:'Hope Valley',
+  totals:{ross:6720,valley:6369,mashburn:5702,crichton:5226,hope:4228,
+   'valley-women':6369,'mashburn-women':5702,'crichton-women':5226,'hope-women':4228},
+  example:{number:13,par:4,yards:366},fairways:17},
 ]){
  test(`${query} promotes only the source-pinned 18-hole course and official tee card`,()=>{
   const root='../qa/course-factory/'+state+'/';
@@ -141,4 +148,28 @@ test('Carolina Colours uses the official card with its geometry held for review'
  assert.equal(tee.totalYards,4316);
  assert.equal(holes[12].handicapMen,2);
  assert.equal(founderMapRecord(course).status,'source-review-blocked');
+});
+
+
+test('12 Oaks preserves printed combo picks and the Yellow par on No. 7',()=>{
+ const course=founderCatalogRecords('12 Oaks')[0];
+ const tees=founderTeesForCourse(course);
+ const card=id=>founderVerifiedScorecard({course,tee:tees.find(tee=>tee.providerTeeId===id)}).holes;
+ assert.equal(card('nicklaus')[2].yards,204);
+ assert.equal(card('nicklaus')[3].yards,402);
+ assert.equal(card('green-oaks')[12].yards,481);
+ assert.equal(card('green-oaks')[13].yards,388);
+ assert.equal(card('gold')[6].par,5);
+ assert.equal(card('yellow')[6].par,4);
+ assert.equal(card('yellow')[6].yards,187);
+});
+
+test('Hope Valley preserves the ladies’ pars and indexes from the club card',()=>{
+ const course=founderCatalogRecords('Hope Valley')[0];
+ const tee=founderTeesForCourse(course).find(tee=>tee.providerTeeId==='valley-women');
+ const {holes}=founderVerifiedScorecard({course,tee});
+ assert.equal(holes[3].par,5);
+ assert.equal(holes[3].handicapMen,15);
+ assert.equal(holes[15].par,5);
+ assert.equal(holes.reduce((total,hole)=>total+hole.par,0),72);
 });

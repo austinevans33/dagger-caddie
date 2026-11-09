@@ -16,6 +16,8 @@ Stacked on the Founders source review. The regional catalogs use the same runtim
 | Mill Creek Golf Club, Mebane NC | 5 physical tee rows, 9 selections | 18 / 18 / 18 / 17 | Black, 6,992 yards, par 72 |
 | Hillandale Golf Course, Durham NC | 5 physical tee rows, 9 selections | 18 / 18 / 18 / 18 | Blue, 6,425 yards, par 71 |
 | Greensboro National Golf Club, Summerfield NC | 4 | 18 / 18 / 18 / 17 | Blue, 6,806 yards, par 72 |
+| The Club at 12 Oaks, Holly Springs NC | 7 physical tee rows, 2 combo rows | 18 / 18 / 18 / 17 | Gold, 7,093 yards, par 72 |
+| Hope Valley Country Club, Durham NC | 5 physical tee rows, 9 selections | 18 / 18 / 18 / 17 | Ross, 6,720 yards, par 70 |
 
 Each region's manifest pins the original scorecard sources, Geofabrik PBF and derived golf-only snapshot. Each coverage report pins the promoted bundle. No synthetic tee, fairway, hazard or live pin yardage was added.
 
@@ -39,11 +41,16 @@ Oak Island’s [official card](https://oakislandgolf.com/course-scorecard/) pins
 
 [Carolina Colours’ club card](https://carolinacoloursgolfclub.com/golf-scorecard/) supplies eight physical tee rows and both stroke-index rows. Its Black row totals 6,886 yards. The mapped No. 7 is tagged par 5 where the club card has par 4. Seven routes fail the Black distance check, on Nos. 2, 4, 5, 6, 10, 12 and 16. The card is available while the full book is gated.
 
+## 12 Oaks and Hope Valley
+
+- [The Club at 12 Oaks](https://www.theclubat12oaks.com/scorecard-and-course-map) supplies seven full tee rows and printed arrows for the Nicklaus and Green Oaks combinations. Both combinations reconcile with the published front-nine, back-nine and round totals. Yellow No. 7 is 187 yards and par 4, making that card par 71. The club card supplies the Gold 7,093-yard reference, and the pinned OSM geometry includes all 18 routes, tees and greens. No. 11 is a par 3 with no uniquely assigned fairway.
+- [Hope Valley's club card](https://www.hvcc.org/files/Hope%20Valley%20Country%20Club%20Course%20Scorecard.pdf) has five complete physical tee rows and separately printed men's and women's pars and stroke indexes. The women's selections use par 5 at Nos. 4 and 16, for par 72. Souchak, Nelson and Rawlings have printed totals without complete hole rows and are outside the import. No. 14 is a par 3 with no uniquely assigned fairway.
+
 ## Seven Lakes scorecard and geometry review
 
 [Seven Lakes Golf Club in West End](https://www.golf7lakes.com/scorecard) has eight verified tee sets, including both combo rows. The men's and ladies' stroke indexes are preserved according to the club's groups. The importer accepts numbered hole names only when enabled for the pinned scorecard and still requires the exact 1–18 sequence.
 
-The published OSM boundary yields 18 routes, 18 tees, 18 greens and 17 matched fairways. Par-3 No. 7 lacks a unique fairway. On No. 16, [OSM way 1113464356](https://www.openstreetmap.org/way/1113464356) measures about 119 yards. The club card lists Black and Blue at 188 and White at 174. These rows fail the route-length check for that hole. A shorter tee can fit the coarse length test but does not establish which pad starts the mapped route. The runtime offers the verified scorecard and withholds the entire drawing bundle until the tee start is independently confirmed.
+The November 9 repin matched every prior hole yardage, par and stroke index across the eight published selections. The published OSM boundary yields 18 routes, 18 tees, 18 greens and 17 matched fairways. Par-3 No. 7 lacks a unique fairway. On No. 16, [OSM way 1113464356](https://www.openstreetmap.org/way/1113464356) measures about 119 yards. The club card lists Black and Blue at 188 and White at 174. These rows fail the route-length check for that hole. A shorter tee can fit the coarse length test but does not establish which pad starts the mapped route. The runtime offers the verified scorecard and withholds the entire drawing bundle until the tee start is independently confirmed.
 
 ## Discovery
 
