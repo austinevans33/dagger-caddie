@@ -45,7 +45,8 @@ const paperCSS=`
 #dcc-solo-scorecard #dcc-paper-yardage{display:grid;place-items:center;min-height:44px;margin-top:6px;color:#254c36;font:700 13px system-ui;text-underline-offset:3px}
 #dcc-solo-scorecard .dcc-paper-navigation button,#dcc-solo-scorecard .dcc-paper-scorebuttons button{border:1px solid #bca576;border-radius:5px;background:#fffaf0;color:#1b3b2b;min-height:42px;padding:8px;font-weight:800}
 #dcc-solo-scorecard .dcc-paper-navigation button{font:700 11px Georgia,serif;white-space:nowrap;flex:0 0 auto;width:auto;min-width:0;padding:4px}
-#dcc-solo-scorecard #dcc-paper-progress{font-size:12px;text-align:center;white-space:nowrap}
+#dcc-solo-scorecard .dcc-paper-navigation button:disabled{opacity:.45}
+#dcc-solo-scorecard #dcc-paper-progress{white-space:nowrap}
 #dcc-solo-scorecard .dcc-paper-scorebuttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
 #dcc-solo-scorecard .dcc-paper-scorebuttons button.selected{background:#d6bb82}
 #dcc-solo-scorecard .dcc-paper-scorebuttons button{min-height:52px!important;font:700 18px Georgia,serif!important;border:1px solid #bda77a!important;border-radius:9px!important;touch-action:manipulation}

@@ -999,7 +999,7 @@ test('Scorecard returns from Yardage Book and House Ghost to the saved scoring h
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
  await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
  await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
- await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-dialog').evaluate(dialog=>{if(!dialog.open)dialog.showModal()});
  await page.locator('#dcc-starter-query').fill('Country Hills Golf Course');
  await page.locator('#dcc-starter-search').click();
  await page.locator('#dcc-starter-results button').filter({hasText:'Gibsonville, NC'}).click();
@@ -1032,6 +1032,8 @@ test('Scorecard returns from Yardage Book and House Ghost to the saved scoring h
  await expect(page.locator('#hole')).toHaveValue('18');
  await expect(page.locator('#summary')).toContainText('259 yd');
  await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+ await expect(page.locator('#watch')).toBeInViewport();
+ await page.locator('#trail').evaluate(trail=>window.scrollTo(0,window.scrollY+trail.getBoundingClientRect().top+80));
  await expect(page.locator('#watch')).toBeInViewport();
  await page.locator('#next').click();
  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
