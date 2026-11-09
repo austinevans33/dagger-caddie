@@ -219,6 +219,424 @@
         "gold": 5423,
         "red": 4903
       }
+    },
+    {
+      "id": "seven-lakes-west-end-nc",
+      "name": "Seven Lakes Golf Club",
+      "region": "West End, NC",
+      "boundary": "r6390097",
+      "mapRef": "nc/seven-lakes",
+      "auditTee": "black",
+      "scorecard": "https://www.golf7lakes.com/scorecard",
+      "cardSha256": "7f4b4abb7f9d92b15fe189bee05d9b383f5a24bcf62b1893faf5e17aa310ef12",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 7,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "route-yardage-mismatch",
+        "ratioErrors": [
+          16
+        ],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "teeTotals": {
+        "black": 6856,
+        "blue": 6552,
+        "white": 6062,
+        "white-gold": 5640,
+        "gold": 5197,
+        "red": 4830,
+        "green": 4144,
+        "green-red": 4533
+      }
+    },
+    {
+      "id": "the-woods-whispering-pines-nc",
+      "name": "The Woods Golf Club",
+      "region": "Whispering Pines, NC",
+      "boundary": "r6386358",
+      "mapRef": "nc/the-woods",
+      "auditTee": "oak",
+      "scorecard": "https://www.thewoodsgolfclub.com/scorecard/",
+      "cardSha256": "5b7e3f55502e9eaf3599ec8c3783457595a052cf705b279e76aebee8f6974c09",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "20c78e0e4d9f91d8fa762d66c35e451aede83f08ac1b45481983cbadd872363e",
+      "teeTotals": {
+        "oak": 6070,
+        "dogwood": 5643,
+        "hickory": 5041,
+        "long-leaf-pine": 4356
+      }
+    },
+    {
+      "id": "mill-creek-mebane-nc",
+      "name": "Mill Creek Golf Club",
+      "region": "Mebane, NC",
+      "boundary": "r6413045",
+      "mapRef": "nc/mill-creek-mebane",
+      "auditTee": "black",
+      "scorecard": "https://www.golfmillcreek.com/wp-content/uploads/2021/01/Scorecard-1-18-2021-b.jpg",
+      "cardSha256": "4ae40032635450c8fa7df64b43d7f9d04e37477ee82a471021e5d91c6cdd6653",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 17,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "231f7e083422e51f0214c434a5a6a689cbadc6ee3b018b6ecae15caf0a0aa0d2",
+      "teeTotals": {
+        "black": 6992,
+        "blue": 6325,
+        "white": 5638,
+        "yellow": 4881,
+        "orange": 4089,
+        "blue-women": 6325,
+        "white-women": 5638,
+        "yellow-women": 4881,
+        "orange-women": 4089
+      }
+    },
+    {
+      "id": "hillandale-durham-nc",
+      "name": "Hillandale Golf Course",
+      "region": "Durham, NC",
+      "boundary": "w24487227",
+      "mapRef": "nc/hillandale",
+      "auditTee": "blue",
+      "scorecard": "https://hillandalegolf.com/wp-content/uploads/2019/09/hillandale_golf_course_scorecard_1200a.webp",
+      "cardSha256": "e2624774535516097249520924edd3eb9f2d85e77008a76d9583ae32fc51ac2b",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "8b64df0c0ebda9043265ae362969d01aeee7862dc351553401e163ed942bf840",
+      "teeTotals": {
+        "blue": 6425,
+        "white": 6026,
+        "gold": 5395,
+        "red": 4823,
+        "light-blue": 3677,
+        "white-women": 6026,
+        "gold-women": 5395,
+        "red-women": 4823,
+        "light-blue-women": 3677
+      }
+    },
+    {
+      "id": "carolina-colours-new-bern-nc",
+      "name": "Carolina Colours Golf Club",
+      "region": "New Bern, NC",
+      "boundary": "r21911975",
+      "mapRef": "nc/carolina-colours",
+      "auditTee": "black",
+      "scorecard": "https://carolinacoloursgolfclub.com/wp-content/uploads/2025/01/CarolinaColors1224_2.png",
+      "cardSha256": "e8cce90b96bb7e059ac94d64fc45f7d1423a13a1b3429cd76f4f5b5027655e46",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 16,
+          "issue": "no-unambiguous-fairway"
+        },
+        {
+          "hole": 7,
+          "issue": "mapped-par-conflict",
+          "mappedPar": "5",
+          "officialPar": 4
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "playable-partial",
+      "audit": {
+        "pass": false,
+        "reason": "route-yardage-mismatch",
+        "ratioErrors": [
+          2,
+          4,
+          5,
+          6,
+          10,
+          12,
+          16
+        ],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "teeTotals": {
+        "black": 6886,
+        "blue": 6609,
+        "green": 6409,
+        "white": 6169,
+        "gold": 5771,
+        "purple": 5168,
+        "red": 4897,
+        "teal": 4316,
+        "white-women": 6169,
+        "gold-women": 5771,
+        "purple-women": 5168,
+        "red-women": 4897,
+        "teal-women": 4316
+      }
+    },
+    {
+      "id": "greensboro-national-summerfield-nc",
+      "name": "Greensboro National Golf Club",
+      "region": "Summerfield, NC",
+      "boundary": "w1196861933",
+      "mapRef": "nc/greensboro-national",
+      "auditTee": "blue",
+      "scorecard": "https://greensboronational.com/wp-content/uploads/sites/148/2024/08/scorecard2-1030x706-1.png",
+      "cardSha256": "2d459e85c9321ba73ed55bde9a5c8b6c0d69023593d92ecf384199140930a9ef",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 16,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "446dcfbd47b4055559ee4076330a0f4e4c6998c738689d5a1078a9956f4abcf7",
+      "teeTotals": {
+        "blue": 6806,
+        "white": 6261,
+        "gold": 5609,
+        "red": 4715
+      }
+    },
+    {
+      "id": "12-oaks-holly-springs-nc",
+      "name": "The Club at 12 Oaks",
+      "region": "Holly Springs, NC",
+      "boundary": "r6396830",
+      "mapRef": "nc/12-oaks",
+      "auditTee": "gold",
+      "scorecard": "https://www.theclubat12oaks.com/documents/20124/0/12%2BOaks%2BScorecard%2Bjpg.jpg/7ee0b1a1-542c-8f76-98ab-4de5983984e3?t=1772569988083",
+      "cardSha256": "3850c475a483b21908ffb2cd0b27984d5738256a90bdb1d0f44f457f56bb2fcb",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 11,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "e48397e952b7527d5312e2f211716189907a13a78f0c21e2517aa4c1819825ed",
+      "teeTotals": {
+        "gold": 7093,
+        "nicklaus": 6759,
+        "blue": 6545,
+        "green-oaks": 6216,
+        "white": 5985,
+        "silver": 5583,
+        "red": 5026,
+        "yellow": 4397,
+        "family": 3433
+      }
+    },
+    {
+      "id": "hope-valley-durham-nc",
+      "name": "Hope Valley Country Club",
+      "region": "Durham, NC",
+      "boundary": "r2789076",
+      "mapRef": "nc/hope-valley",
+      "auditTee": "ross",
+      "scorecard": "https://www.hvcc.org/files/Hope%20Valley%20Country%20Club%20Course%20Scorecard.pdf",
+      "cardSha256": "5b1722e8aca0d545e8700fcfe5ada3704cd1f0c447fc71c4803b15fbf70f08a7",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 14,
+          "issue": "no-unambiguous-fairway"
+        }
+      ],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 17
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 17
+      },
+      "bundleSha256": "27291cf46aaebe6ed3f6947c74cd81911841f21c2ed5207b0978fafcf15202c9",
+      "teeTotals": {
+        "ross": 6720,
+        "valley": 6369,
+        "mashburn": 5702,
+        "crichton": 5226,
+        "hope": 4228,
+        "valley-women": 6369,
+        "mashburn-women": 5702,
+        "crichton-women": 5226,
+        "hope-women": 4228
+      }
+    },
+    {
+      "id": "country-hills-gibsonville-nc",
+      "name": "Country Hills Golf Course",
+      "region": "Gibsonville, NC",
+      "boundary": "w844109202",
+      "mapRef": "nc/country-hills",
+      "auditTee": "blue",
+      "scorecard": "https://www.countryhillsgolfnc.com/uploads/3/0/4/6/30469734/scorecard_orig.jpg",
+      "cardSha256": "edbfb272d7e67fa557868331e9cefaafbe7d20920241646eecf2a2331a5c3d74",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "5a804bd8045753d1b808565cd56776cb3e706e7544accec3e06fc00d7a58a61b",
+      "teeTotals": {
+        "blue": 5873,
+        "white": 5511,
+        "gold": 5097,
+        "red": 4525
+      }
+    },
+    {
+      "id": "neuse-clayton-nc",
+      "name": "Neuse Country Club",
+      "region": "Clayton, NC",
+      "boundary": "r6432537",
+      "mapRef": "nc/neuse",
+      "auditTee": "championship",
+      "scorecard": "https://neusegolf.com/wp-content/uploads/2025/04/Scorecard_2025.jpg",
+      "cardSha256": "04b7e353983cd1ea210db1e0b5c56403c094846605eccb230fc901543a2c192b",
+      "cardVerified": true,
+      "issues": [
+        {
+          "hole": 8,
+          "issue": "route-crosses-boundary",
+          "candidates": [
+            "w756794598"
+          ]
+        }
+      ],
+      "counts": {
+        "route": 17,
+        "tee": 17,
+        "green": 17,
+        "fairway": 17
+      },
+      "status": "playable-partial",
+      "teeTotals": {
+        "championship": 6891,
+        "blue": 6448,
+        "white": 5953,
+        "silver": 5481,
+        "silver-forward": 4743,
+        "forward": 3931
+      }
     }
   ]
 }

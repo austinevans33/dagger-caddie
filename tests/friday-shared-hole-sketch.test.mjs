@@ -41,3 +41,16 @@ test('portrait yardage map scales across courses without altering Ghost dimensio
  assert.equal(map.children.filter(x=>x.name==='text'&&x.text==='WATER').length,1);
  assert.equal(map.children.filter(x=>x.name==='path').length,1);
 });
+
+test('greenside hazard text moves clear of the green label on both page sizes',()=>{
+ const route={tee:[145,180],green:[145,35]};
+ for(const height of [220,440]){
+  const svg=mockSvg();
+  renderSharedHoleSketch(svg,[],{route,labels:[{point:[147,35],type:'bunker'}]},{height});
+  const green=svg.children.find(node=>node.text==='GREEN');
+  const bunker=svg.children.find(node=>node.text==='BKR');
+  assert.equal(green.attrs['paint-order'],'stroke');
+  assert.ok(Math.abs(Number(green.attrs.y)-Number(bunker.attrs.y))>=16);
+  assert.ok(Number(bunker.attrs.y)<height);
+ }
+});

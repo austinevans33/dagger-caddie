@@ -994,6 +994,210 @@ test('Sassamon Trace plays nine real holes through check-in, scoring, Yardage Bo
  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });
 
+test('Scorecard returns from Yardage Book and House Ghost to the saved scoring hole',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dcc-starter-dialog').evaluate(dialog=>{if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Country Hills Golf Course');
+ await page.locator('#dcc-starter-search').click();
+ await page.locator('#dcc-starter-results button').filter({hasText:'Gibsonville, NC'}).click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'Red · 4525 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+
+ const card=page.locator('#dcc-paper-dialog');
+ const progress=card.locator('#dcc-paper-progress');
+ const facts=card.locator('#dcc-paper-hole-facts');
+ await page.locator('#dccHomeScorecard').click();
+ await card.getByRole('button',{name:'Select hole 18, not scored'}).click();
+ await expect(progress).toBeFocused();
+ await expect(facts).toHaveText('Par 4 · 259 yd · Enter strokes');
+ const four=card.getByRole('button',{name:'Pencil 4 strokes for hole 18'});
+ await expect(four).toBeInViewport();
+ await four.click();
+ await expect(facts).toHaveText('Par 4 · 259 yd · 4 strokes saved');
+ await expect(four).toHaveAttribute('aria-pressed','true');
+ const saved=()=>page.evaluate(()=>localStorage.getItem('dcc_solo_scorecard_v1'));
+ const before=await saved();
+
+ await card.getByRole('link',{name:'Open Hole in Yardage Book'}).click();
+ await expect(page.locator('#hole')).toHaveValue('18');
+ await expect(page.locator('#mapYards')).toContainText('259');
+ const sketch=page.locator('.field-sketch .route-mark');
+ await expect(sketch).toHaveAttribute('d',/^M/);
+ const route=await sketch.getAttribute('d');
+ await expect(page.locator('#watchGhost')).toBeInViewport();
+ await page.locator('#watchGhost').click();
+ await expect(page.locator('#hole')).toHaveValue('18');
+ await expect(page.locator('#summary')).toContainText('259 yd');
+ await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+ await expect(page.locator('#watch')).toBeInViewport();
+ await page.locator('#trail').evaluate(trail=>window.scrollTo(0,window.scrollY+trail.getBoundingClientRect().top+80));
+ await expect(page.locator('#watch')).toBeInViewport();
+ await page.locator('#next').click();
+ await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+ await page.locator('#hole').selectOption('17');
+ await page.locator('#ghostBack').click();
+ await expect(page.locator('#hole')).toHaveValue('17');
+ await page.getByRole('link',{name:'Back to Scorecard'}).click();
+ await expect(card).toHaveAttribute('open','');
+ await expect(progress).toHaveText('HOLE 18');
+ await expect(facts).toHaveText('Par 4 · 259 yd · 4 strokes saved');
+ expect(await saved()).toBe(before);
+});
+
+test('A back-nine scorecard keeps holes 10 through 18 in Yardage Book and House Ghost',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  if(localStorage.getItem('dcc_active_round_course_v1'))return;
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:123456,selection:{
+   course:{provider:'opengolfapi',providerCourseId:'back-nine-test',name:'Back Nine Test',region:'NC'},
+   tee:{providerTeeId:'blue',name:'Blue',totalYards:6300},holeNumber:10
+  }}));
+ });
+ await page.route('https://api.opengolfapi.org/v1/courses/back-nine-test/holes',route=>route.fulfill({
+  contentType:'application/json',
+  body:JSON.stringify({holes:Array.from({length:18},(_,i)=>({number:i+1,par:4,yardages:{blue:300+i}}))})
+ }));
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ const card=page.locator('#dcc-paper-dialog');
+ await card.locator('#dcc-paper-length').selectOption('9');
+ await expect(card.locator('#dcc-paper-length option:checked')).toHaveText('Back nine');
+ await card.getByRole('link',{name:'Open Hole in Yardage Book'}).click();
+
+ const holes=page.locator('#hole');
+ await expect(holes).toHaveValue('10');
+ await expect(holes.locator('option')).toHaveText(Array.from({length:9},(_,i)=>'Hole '+(10+i)));
+ await expect(page.locator('#prev')).toBeDisabled();
+ await holes.selectOption('18');
+ await expect(page.locator('#next')).toBeDisabled();
+ await page.locator('#watchGhost').click();
+
+ await expect(page.locator('#length')).toHaveValue('back');
+ await expect(page.locator('#length')).toBeDisabled();
+ await expect(holes.locator('option')).toHaveText(Array.from({length:9},(_,i)=>'Hole '+(10+i)));
+ await expect(holes).toHaveValue('18');
+ await expect(page.locator('#summary')).toContainText('317 yd');
+ await page.locator('#next').click();
+ await expect(page.locator('#shots li')).toHaveCount(1);
+ await page.locator('#ghostBack').click();
+ await expect(holes).toHaveValue('18');
+ await expect(page.locator('#next')).toBeDisabled();
+ await page.getByRole('link',{name:'Back to Scorecard'}).click();
+ await expect(card).toHaveAttribute('open','');
+ await expect(card.locator('#dcc-paper-progress')).toHaveText('HOLE 10');
+ await expect(card.locator('#dcc-paper-length option:checked')).toHaveText('Back nine');
+});
+
+test('Standalone Ghost switches between front nine, back nine and eighteen',async({page})=>{
+ await page.goto('/playtest/ghost-preview.html?hole=17');
+ const length=page.locator('#length'),hole=page.locator('#hole');
+ await length.selectOption('back');
+ await expect(hole).toHaveValue('17');
+ await expect(hole.locator('option')).toHaveCount(9);
+ await length.selectOption('18');
+ await expect(hole).toHaveValue('17');
+ await expect(hole.locator('option')).toHaveCount(18);
+ await length.selectOption('9');
+ await expect(hole).toHaveValue('1');
+ await expect(hole.locator('option')).toHaveCount(9);
+ await page.locator('#next').click();
+ await expect(page.locator('#shots li')).toHaveCount(1);
+});
+
+test('A finished paper round exports a Matchbook and feeds the next Ghost of You',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  if(localStorage.getItem('dcc_active_round_course_v1'))return;
+  const selection={course:{provider:'dagger-founder',providerCourseId:'country-hills-gibsonville-nc',name:'Country Hills Golf Course',region:'Gibsonville, NC'},
+   tee:{providerTeeId:'white',name:'White',totalYards:5511},holeNumber:18};
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:10,selection}));
+  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:'country-hills-gibsonville-nc|white|10',hole:18,length:9,nineStart:10,
+   scores:[...Array(9).fill(null),...Array(8).fill(4),null]}));
+  localStorage.setItem('dagger_foursome_active','{"protected":true}');
+ });
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ await expect(page.locator('#dcc-paper-matchbook')).toBeHidden();
+ await page.getByRole('button',{name:'Pencil 5 strokes for hole 18'}).click();
+ await page.locator('#dcc-paper-matchbook').click();
+ const matchbook=page.getByRole('dialog',{name:'The Matchbook'});
+ await expect(matchbook).toContainText('37 strokes');
+ await expect(matchbook.locator('svg .route-mark')).toHaveAttribute('d',/^M/);
+ await expect(matchbook.locator('figcaption')).toContainText('No. 10');
+ const [image]=await Promise.all([page.waitForEvent('download'),matchbook.getByRole('button',{name:'Save image'}).click()]);
+ expect(image.suggestedFilename()).toBe('dagger-matchbook.png');
+ await matchbook.getByRole('button',{name:'Close',exact:true}).click();
+ await page.evaluate(()=>{
+  const round=JSON.parse(localStorage.getItem('dcc_active_round_course_v1'));
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({...round,selectedAt:11}));
+ });
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#dccHomeScorecard').click();
+ await page.locator('#dcc-paper-length').selectOption('9');
+ await expect(page.locator('#dcc-paper-ghost-of-you')).toHaveText('Ghost of You · Past round: 5 on this hole');
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":true}');
+});
+
+test('The Ghost archive offers a Matchbook for a decided match',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  const base={version:1,tier:'scratch',holesPlanned:9,archivedAt:'2026-11-09T12:00:00Z',condition:'normal'};
+  const hole={par:4,player:4,ghost:5};
+  localStorage.setItem('dcc_house_ghost_archive_v1',JSON.stringify([
+   {...base,id:'done',holes:Array(5).fill(hole),result:{lead:5,status:'5 & 4',played:5}},
+   {...base,id:'unfinished',holes:[hole],result:{lead:1,status:'Unfinished · 1 of 9 holes',played:1}}
+  ]));
+ });
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ await page.locator('#tab-bets').click();
+ await page.locator('#dccLedgerArchive').click();
+ const archive=page.locator('#dccGhostArchivePanel');
+ await archive.locator(':scope > summary').click();
+ const completed=archive.locator('#dccGhostArchiveList details').filter({hasText:'5 & 4'});
+ const incomplete=archive.locator('#dccGhostArchiveList details').filter({hasText:'Unfinished'});
+ await completed.locator('summary').click();
+ await incomplete.locator('summary').click();
+ await expect(incomplete.getByRole('button',{name:'Open Matchbook'})).toHaveCount(0);
+ await completed.getByRole('button',{name:'Open Matchbook'}).click();
+ await expect(page.getByRole('dialog',{name:'The Matchbook'})).toContainText('You won · 5 & 4');
+});
+
+test('Neuse Forward keeps the current hole facts with the drawing gated',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#dcc-starter-dialog').evaluate(dialog=>{if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('Neuse Country Club');
+ await page.locator('#dcc-starter-search').click();
+ await page.locator('#dcc-starter-results button').filter({hasText:'Clayton, NC'}).click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'Forward · 3931 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+ await page.locator('#dccHomeScorecard').click();
+ const card=page.locator('#dcc-paper-dialog');
+ await card.getByRole('button',{name:'Select hole 8, not scored'}).click();
+ await expect(card.locator('#dcc-paper-hole-facts')).toHaveText('Par 4 · 255 yd · Enter strokes');
+ await card.getByRole('link',{name:'Open Hole in Yardage Book'}).click();
+ await expect(page.locator('#mapYards')).toHaveText('255 yds');
+ await expect(page.locator('#mapPar')).toHaveText('Par 4');
+ await expect(page.locator('.field-sketch')).toContainText('Hole 8 · Scorecard notes');
+ await expect(page.locator('.field-sketch .route-mark')).toHaveCount(0);
+ await page.locator('#watchGhost').click();
+ await expect(page.locator('#headline')).toContainText('Hole 8 · Par 4');
+ await expect(page.locator('#summary')).toContainText('255 yd');
+ await expect(page.locator('#ghostMapStatus')).toContainText('No mapped hole outlines available');
+ await page.locator('#next').click();
+ await expect(page.locator('#shots li')).toHaveCount(1);
+});
+
 test('Pelican Pointe preserves its selected pairing and official White tee through the Yardage Book',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
@@ -1018,6 +1222,33 @@ test('Pelican Pointe preserves its selected pairing and official White tee throu
  await expect(page.locator('#yards')).toContainText('329');
 });
 
+test('Seven Lakes carries a verified combo tee into the scorecard-only Yardage Book',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+ await page.route(url=>url.hostname==='api.opengolfapi.org',route=>route.abort());
+ await page.goto('/playtest/');
+ await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
+ await page.locator('#dcc-starter-query').fill('7 Lakes');
+ await page.locator('#dcc-starter-search').click();
+ const choices=page.locator('#dcc-starter-results button');
+ await expect(choices).toHaveCount(1);
+ await expect(choices.first()).toContainText('Seven Lakes');
+ await choices.first().click();
+ await page.locator('#dcc-starter-tees').selectOption({label:'White/Gold · 5640 yards'});
+ await page.locator('#dcc-starter-checkin').click();
+ await expect(page.locator('#dcc-starter-dialog')).toBeHidden();
+ await page.goto('/playtest/yardage-preview.html?hole=12');
+ await expect(page.locator('#yards')).toContainText('319');
+ await expect(page.locator('#mapPar')).toContainText('Par 4');
+ await expect(page.locator('.field-sketch')).toContainText('Hole 12 · Scorecard notes');
+ await expect(page.locator('.field-sketch svg')).toHaveCount(0);
+ await page.locator('#askHoleCaddy').click();
+ await page.waitForURL('**/playtest/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#aiInput')).toHaveValue(/Seven Lakes/i);
+ await expect(page.locator('#aiInput')).toHaveValue(/hole 12/i);
+ await expect(page.locator('#aiInput')).toHaveValue(/319 yards/i);
+});
+
 for(const course of [
  {query:'The Chimneys',region:'Winder, GA',tee:'Gold',hole:11,yards:216,par:3},
  {query:'Pine Hills',region:'Winder, GA',tee:'Red',hole:18,yards:360,par:5},
@@ -1035,12 +1266,19 @@ for(const course of [
  {query:'Sanford Municipal',region:'Sanford, NC',tee:'Men’s',hole:16,yards:522,par:5,caddy:true},
  {query:'Pudding Ridge',region:'Mocksville, NC',tee:'Black',hole:13,yards:445,par:4,caddy:true},
  {query:'Oak Island',region:'Caswell Beach, NC',tee:'Red',hole:14,yards:262,par:4,caddy:true},
+ {query:'The Woods',region:'Whispering Pines, NC',tee:'Oak',hole:6,yards:366,par:4,caddy:true},
+ {query:'Mill Creek Golf Club',region:'Mebane, NC',tee:'Black',hole:17,yards:187,par:3,caddy:true},
+ {query:'Hillandale',region:'Durham, NC',tee:'Blue',hole:8,yards:410,par:4,caddy:true},
+ {query:'Greensboro National',region:'Summerfield, NC',tee:'Blue',hole:16,yards:189,par:3,caddy:true},
+ {query:'12 Oaks',region:'Holly Springs, NC',tee:'Yellow',hole:7,yards:187,par:4,caddy:true},
+ {query:'Hope Valley',region:'Durham, NC',tee:'Ross',hole:14,yards:163,par:3,caddy:true},
 ]){
  test(`${course.query} opens eighteen distinct local maps and plays Ghost on the same drawing`,async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
   await page.route(url=>url.hostname==='api.opengolfapi.org'&&url.pathname.includes('/courses/search'),route=>route.abort());
   await page.goto('/playtest/');
+  await expect(page.locator('#dcc-starter-dialog')).toBeAttached();
   await page.evaluate(()=>{const dialog=document.getElementById('dcc-starter-dialog');if(!dialog.open)dialog.showModal()});
   await page.locator('#dcc-starter-query').fill(course.query);
   await page.locator('#dcc-starter-search').click();

@@ -1,4 +1,4 @@
-import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
+import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-24';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
 import {getRoundEnvironment} from './round-environment.js?v=location-shapes-23';
@@ -8,7 +8,7 @@ import {sameCourseSelection} from './course-identity.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js?v=weather-cache-22';
 import {buildCaddyCourseFacts} from './caddy-course-facts.js?v=weather-cache-22';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js?v=weather-cache-22';
-import {createShotRecordContext,recordedMissNotes} from './shot-record-context.js?v=friday-book-1';
+import {createShotRecordContext,recordedMissNotes,recordedDepthNotes} from './shot-record-context.js?v=caddy-receipts-1';
 import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
 import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=weather-cache-22';
 import {mountStartersDesk} from './starters-desk-ui.js?v=weather-cache-22';
@@ -491,7 +491,10 @@ function context(){
  let clubs=profile.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,900);
  try{
   const shots=JSON.parse(localStorage.getItem('dagger_shot_log')||'[]');
-  const misses=recordedMissNotes(shots,profile.map(club=>club.name)).join('; ');
+  const clubNames=profile.map(club=>club.name);
+  const depth=golferConfirmedTarget?recordedDepthNotes(shots,clubNames,Number($('yards')?.value)).join('; '):'';
+  if(depth)clubs+=' | Golfer-reported approach outcomes: '+depth;
+  const misses=recordedMissNotes(shots,clubNames).join('; ');
   if(misses)clubs+=' | Recorded direction outcomes: '+misses;
  }catch{}
  clubs=clubs.slice(0,1200);

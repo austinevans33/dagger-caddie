@@ -29,8 +29,6 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 
 .field-sketch .route-mark{fill:none;stroke:#42584a;stroke-width:1.8;stroke-dasharray:7 5;opacity:.8}
 .field-sketch .route-target{fill:#f7f0dd;stroke:#42584a;stroke-width:1.7}
-.field-sketch .pencil-map-label{fill:#304a3a;font:italic 10px Georgia,serif;paint-order:stroke;stroke:#f7f0dd;stroke-width:3px}
-.field-sketch .hazard-tag{font:700 10px system-ui,sans-serif;fill:#4a483c;paint-order:stroke;stroke:#f7f0dd;stroke-width:3px}
 /* One-hand pencil map controls: large touch targets, no pinch-to-zoom needed. */
 .map-tools{display:flex;gap:7px;margin:9px 0;flex-wrap:wrap}
 .map-tools button{flex:1;min-width:74px;min-height:44px;border:1px solid #8a9482;border-radius:10px;background:#e8e1cc;color:#31473a;font:700 13px system-ui,sans-serif;padding:7px}
@@ -66,8 +64,9 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .field-sketch.has-features svg{max-height:520px;margin:auto}
 .field-sketch details{text-align:left;padding:5px 8px;font:13px/1.4 system-ui}
 .field-sketch .route-mark{stroke-width:1;stroke-dasharray:3 5;opacity:.75}
-.book-actions{display:flex;align-items:center;gap:10px}
-.book-actions>*{flex:1}.book-actions a{min-height:44px;display:grid;place-items:center;text-align:center;font-weight:bold}
+.book-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 12px}
+.book-actions>*{display:grid;place-items:center;min-height:48px;margin:0;padding:7px;border:1px solid #b79c62;border-radius:9px;text-align:center;font:700 14px/1.25 Georgia,serif}
+.book-actions a{background:#fff9e9;text-decoration:none}.book-actions a:focus-visible{outline:3px solid #b79c62;outline-offset:2px}
 #gamePlan{margin:9px 0}#gamePlan dt{font:700 11px system-ui;letter-spacing:.08em;color:#4d6251;margin-top:9px}
 #gamePlan dd{margin:3px 0;font:15px/1.35 Georgia,serif}
 #courseTitle{font-size:clamp(24px,6vw,32px)}
@@ -82,7 +81,6 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .advanced-caddy>summary,.paper .card>summary,.source-info>summary{min-height:44px;display:flex;align-items:center;font:700 13px system-ui;cursor:pointer}
 .advanced-caddy .pencil-note{margin:0;padding:8px}
 .paper>.card,.source-info{opacity:.85}
-.book-actions{margin-top:9px}
 #status[hidden]{display:none!important}
 .field-sketch.has-features svg{max-height:none}
 .tiny-credits{font:10px/1.25 system-ui;color:#647363;margin:15px 3px 0;text-align:center}
@@ -93,9 +91,9 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 <div class="bar"><button id="prev" aria-label="Previous hole">←</button><select id="hole" aria-label="Hole"></select><button id="next" aria-label="Next hole">→</button></div>
 <div class="hole-glance" aria-label="Hole at a glance"><span id="mapHole">HOLE 1</span><strong id="mapPar">Par —</strong><strong id="mapYards">Tee yards —</strong></div>
 <p id="teeCaption" class="muted"></p>
+<div class="book-actions"><button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask My Caddy</button><a id="watchGhost" href="ghost-preview.html">Watch House Ghost →</a></div>
 <div class="field-sketch" aria-label="Hole illustration"></div>
 <aside class="pocket-note" aria-label="Two quick notes from your selected caddy"><div id="pocketCaddyName" class="pocket-signature">Keith’s pencil</div><p id="pocketNoteOne"></p><p id="pocketNoteTwo"></p></aside>
-<div class="book-actions"><button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask My Caddy</button><a id="watchGhost" href="ghost-preview.html">Watch House Ghost →</a></div>
 
 <div id="yardageFactBindings" hidden aria-hidden="true"><span id="position"></span><span id="name"></span><span id="par"></span><span id="yards"></span><span id="coverage"></span><span id="strokeIndex"></span></div>
 <div class="nav"><button id="return" class="primary">Return to the round</button></div>
@@ -108,10 +106,19 @@ import {readCourseScorecard} from './active-course-context.js';
 import {readYardageCaddy,describeSketchTrouble} from './yardage-caddy-notes.js?v=friday-book-1';
 import {loadHoleSketch,SKETCH_HEIGHT} from './hole-sketch.js?v=founders-reference-2';
 import {bayonetOsmTrouble} from './bayonet-osm-trouble.js';
-import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=founders-reference-2';
-import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
+import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=paper-labels-1';
+import {readYardageHole,saveYardageHole,yardageSelectionKey,yardageHoleRange} from './yardage-navigation.js?v=round-nine-1';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
+const fromScorecard=params.get('from')==='scorecard';
+const requestedNine=params.get('nine');
+const nine=fromScorecard&&['front','back'].includes(requestedNine)?requestedNine:null;
+const returnUrl=fromScorecard?'./#scorecard':'./';
+if(fromScorecard){
+ $('backToPlay').href=returnUrl;
+ $('backToPlay').textContent='← Back to Scorecard';
+ $('return').textContent='Return to the scorecard';
+}
 const requested=params.has('hole')?Number(params.get('hole')):null;
 let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
 function cachedState(){
@@ -132,11 +139,13 @@ function renderAttack(features=[],annotations=null){
 }
 function draw({refreshSketch=true}={}){
  const {selection,coverage,state,hasCourse}=latest;
- const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
  const holeCount=coverage.expectedHoles;
- number=page.holeNumber;
- if($('hole').options.length!==holeCount){
-  $('hole').replaceChildren(...Array.from({length:holeCount},(_,i)=>new Option('Hole '+(i+1),String(i+1))));
+ const {start,end}=yardageHoleRange(holeCount,nine);
+ number=Math.max(start,Math.min(end,number));
+ const {page}=resolveYardageState({active:{selection},context:{state,holes:latest.holes||[],selection},holeNumber:number});
+ const length=end-start+1;
+ if($('hole').options.length!==length||Number($('hole').options[0].value)!==start){
+  $('hole').replaceChildren(...Array.from({length},(_,i)=>new Option('Hole '+(start+i),String(start+i))));
  }
  if(refreshSketch)currentSketch=null;
  renderAttack(currentSketch?.shapes,currentSketch?.annotations);
@@ -145,7 +154,7 @@ function draw({refreshSketch=true}={}){
  $('hole').value=String(number);$('position').textContent='HOLE '+number+' / '+holeCount;
  $('name').textContent=page.courseName+' · '+page.teeName;
  $('courseTitle').textContent=hasCourse?page.courseName:'Yardage Book';
- $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage';
+ $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage'+(fromScorecard?'&return=scorecard':'')+(nine?'&nine='+nine:'');
  $('par').textContent='Par: '+page.displayPar;$('yards').textContent='Tee yards: '+page.displayYards;
  $('mapHole').textContent='HOLE '+number;
  $('mapPar').textContent='Par '+page.displayPar;
@@ -155,8 +164,9 @@ function draw({refreshSketch=true}={}){
  $('strokeIndex').textContent=Number.isInteger(currentFact?.handicapMen)&&Number.isInteger(currentFact?.handicapWomen)?'Handicap index · Men '+currentFact.handicapMen+' / Women '+currentFact.handicapWomen:'';
 
 
- rememberHole();$('prev').disabled=page.previousHole===null;$('next').disabled=page.nextHole===null;
- $('teeCaption').textContent=selection?.tee?.name?selection.tee.name+' tees':'';
+ rememberHole();$('prev').disabled=number===start;$('next').disabled=number===end;
+ const side=holeCount===18&&nine?(nine==='back'?'Back nine':'Front nine'):null;
+ $('teeCaption').textContent=[selection?.tee?.name&&selection.tee.name+' tees',side].filter(Boolean).join(' · ');
  if(refreshSketch)void updateSketch(selection,number);
  $('status').textContent=!hasCourse?'Choose a course at the Starter’s Desk to open your book.':
   coverage.verifiedHoles?'':state==='unavailable'?'Course facts unavailable offline.':'Tee distances unavailable for this course.';
@@ -240,8 +250,8 @@ function updateSketch(selection,hole){
   box.append(foot);
  }).catch(error=>{if(spatialPending===controller)spatialPending=null;if(!controller.signal.aborted)unavailable()});
 }
-$('prev').onclick=()=>{number=Math.max(1,number-1);draw()};
-$('next').onclick=()=>{number=Math.min(latest.coverage.expectedHoles,number+1);draw()};
+$('prev').onclick=()=>{number--;draw()};
+$('next').onclick=()=>{number++;draw()};
 $('hole').onchange=()=>{number=Number($('hole').value);draw()};
 $('askHoleCaddy').onclick=()=>{
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
@@ -251,7 +261,7 @@ $('askHoleCaddy').onclick=()=>{
  try{sessionStorage.setItem('dccCaddyTurn','1');sessionStorage.setItem('dccCaddyReturnHole',String(number))}catch{}
  location.assign('./');
 };
-$('return').onclick=()=>{rememberHole();location.assign('./')};
+$('return').onclick=()=>{rememberHole();location.assign(returnUrl)};
 async function load(){
  // Reuse active course provider/cache exactly as AI Caddy does.
  const generation=++roundGeneration;

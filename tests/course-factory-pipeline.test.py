@@ -62,6 +62,26 @@ class CourseFactoryPipeline(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Hole 1: green ring is open or incomplete"):
             review_greens(source, anchors, traces)
 
+    def test_named_html_holes_still_require_a_complete_ordered_card(self):
+        def row(title, cells):
+            return "<tr><th>" + title + "</th>" + "".join(f"<td>{value}</td>" for value in cells) + "</tr>"
+
+        with tempfile.TemporaryDirectory() as temp:
+            card = Path(temp) / "card"
+            def write(first):
+                front = row("Hole", [first, *range(2, 10), "Out"])
+                back = row("Hole", [*range(10, 19), "In"])
+                facts = row("Par", [4] * 9 + [36]) + row("Black", [400] * 9 + [3600])
+                card.write_text("<table>" + front + facts + back + facts + "</table>")
+                return {"format": "html", "sha256": hashlib.sha256(card.read_bytes()).hexdigest(),
+                        "tees": {"black": {"label": "Black", "total": 7200}}}
+            spec = write("1Over the Hill")
+            with self.assertRaisesRegex(ValueError, "hole headings"):
+                load_card(card, spec)
+            self.assertEqual(load_card(card, dict(spec, namedHoleHeaders=True))["par"], [4] * 18)
+            with self.assertRaisesRegex(ValueError, "hole headings"):
+                load_card(card, dict(write("2Over the Hill"), namedHoleHeaders=True))
+
     def test_all_parts_of_an_official_card_are_required(self):
         with tempfile.TemporaryDirectory() as temp:
             front = Path(temp) / "card"
@@ -227,6 +247,15 @@ class CourseFactoryPipeline(unittest.TestCase):
             self.assertEqual(scoped["holes"][0]["route"], "2")
             self.assertNotIn("green", scoped["holes"][0])
             self.assertIn({"hole": 1, "issue": "green-shared-endpoint", "candidates": ["w5"]}, issues)
+            course = {"boundary": "w1", "osmName": "Fixture Golf", "mapRef": "fl/fixture"}
+            source_order = list(range(10, 19)) + list(range(1, 10))
+            reordered, issues = data.review(dict(course, sourceHoleOrder=source_order), "fixture")
+            self.assertEqual(reordered["sourceHoleOrder"], source_order)
+            self.assertEqual(reordered["holes"][9]["route"], "2")
+            self.assertEqual(reordered["holes"][9]["green"], ["w5"])
+            self.assertIn({"hole": 10, "issue": "tee-ambiguous", "candidates": ["w3", "w4"]}, issues)
+            with self.assertRaisesRegex(ValueError, "complete permutation"):
+                data.review(dict(course, sourceHoleOrder=[1] * 18), "fixture")
             with self.assertRaisesRegex(ValueError, "boundary name"):
                 data.review({"boundary": "w1", "osmName": "Other Fixture", "mapRef": "fl/fixture"}, "fixture")
 

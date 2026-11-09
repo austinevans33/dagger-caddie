@@ -65,8 +65,13 @@ def load_card(path, spec):
     if spec["format"] == "html":
         table = TableRows()
         table.feed(path.read_text(encoding="utf-8"))
-        headers = [[int(value) for value in cells if value.isdecimal()]
-                   for label, *cells in table.rows if label.casefold() == "hole"]
+        headers = []
+        hole_pattern = r"([0-9]+)(?:\s*[^\W\d_].*)?" if spec.get("namedHoleHeaders") else r"([0-9]+)"
+        for label, *cells in table.rows:
+            if label.casefold() != "hole":
+                continue
+            headers.append([int(match[1]) for value in cells
+                            if (match := re.fullmatch(hole_pattern, value))])
         if headers != [list(range(1, 10)), list(range(10, 19))]:
             raise ValueError("official HTML hole headings are missing, reordered or ambiguous")
 
