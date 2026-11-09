@@ -4528,7 +4528,7 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <button data-feedback="Trouble">! Trouble</button>
 </div>
 <p class="muted" id="feedbackStatus" style="color:#d6d6cb">
-  Optional: one tap records the last shot outcome on this phone. No scorekeeping.
+  Optional: log the result if you played the Caddy’s suggested club. Tap again to correct it.
 </p>
 <div class="field-row" id="shotModeRow"><button class="selected" id="modeApproach" type="button">Approach</button><button id="modeTee" type="button">Tee shot</button><button id="voiceShot" type="button">🎙 Talk to Caddy</button></div><div aria-live="polite" class="voice-indicator" id="voiceStatus" role="status">Voice optional; manual controls always work.</div>
 <details class="shot-extra" style="margin-top:6px"><summary>Full shot description / voice transcript <span>＋</span></summary><div class="extra-inner"><label for="fullShotDescription">Describe your entire situation</label><textarea id="fullShotDescription" placeholder="I'm 176 out, light downhill lie in right rough. Crosswind left to right, bunker short, water long, flag back right..." rows="4" style="width:100%;border-radius:10px;padding:10px;font:14px system-ui"></textarea><div class="grid"><button class="btn-secondary" id="parseDescription" type="button">Extract shot details</button><button class="btn-secondary" id="useDescription" type="button">Apply details &amp; ask caddy</button></div><p id="descriptionStatus" style="color:#efe3cc;font-size:12px;margin:7px 0 0">Caddie interprets recognized yardage, lie, wind, pin and hazards. Other context is preserved as a note, not automatically understood or verified.</p></div></details>
@@ -7649,7 +7649,9 @@ function dccGhostMatchbookButton(record,opponent,courseSnapshot){
         import('./matchbook.js'),import('./matchbook-view.js'),import('./starters-desk-session.js')
       ]);
       const selection=courseSnapshot?readActiveRound({getItem:()=>courseSnapshot})?.selection:null;
-      openMatchbook(ghostMatchbook({...record,opponent,selection}));
+      const card=ghostMatchbook({...record,opponent,selection});
+      if(card)openMatchbook(card);
+      else button.textContent='Matchbook unavailable';
     }catch{button.textContent='Retry Matchbook';}
   });
   return button;
@@ -7712,7 +7714,10 @@ function dccGhostRenderArchive() {
 
     summary.append(title, subtitle);
     details.appendChild(summary);
-    details.append(dccGhostMatchbookButton(record,name,record.course));
+    const holesLeft=record.holesPlanned-record.holes.length;
+    if(holesLeft===0||Math.abs(record.result?.lead)>holesLeft){
+      details.append(dccGhostMatchbookButton(record,name,record.course));
+    }
 
     const ledger = document.createElement('div');
     ledger.style.marginTop = '12px';

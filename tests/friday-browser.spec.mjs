@@ -1144,6 +1144,32 @@ test('A finished paper round exports a Matchbook and feeds the next Ghost of You
  expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":true}');
 });
 
+test('The Ghost archive offers a Matchbook for a decided match',async({page})=>{
+ await page.addInitScript(()=>{
+  localStorage.setItem('dagger_setup_complete','true');
+  const base={version:1,tier:'scratch',holesPlanned:9,archivedAt:'2026-11-09T12:00:00Z',condition:'normal'};
+  const hole={par:4,player:4,ghost:5};
+  localStorage.setItem('dcc_house_ghost_archive_v1',JSON.stringify([
+   {...base,id:'done',holes:Array(5).fill(hole),result:{lead:5,status:'5 & 4',played:5}},
+   {...base,id:'unfinished',holes:[hole],result:{lead:1,status:'Unfinished · 1 of 9 holes',played:1}}
+  ]));
+ });
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ const desk=page.locator('#dcc-starter-dialog');
+ if(await desk.isVisible())await page.keyboard.press('Escape');
+ await page.locator('#tab-bets').click();
+ await page.locator('#dccLedgerArchive').click();
+ const archive=page.locator('#dccGhostArchivePanel');
+ await archive.locator(':scope > summary').click();
+ const completed=archive.locator('#dccGhostArchiveList details').filter({hasText:'5 & 4'});
+ const incomplete=archive.locator('#dccGhostArchiveList details').filter({hasText:'Unfinished'});
+ await completed.locator('summary').click();
+ await incomplete.locator('summary').click();
+ await expect(incomplete.getByRole('button',{name:'Open Matchbook'})).toHaveCount(0);
+ await completed.getByRole('button',{name:'Open Matchbook'}).click();
+ await expect(page.getByRole('dialog',{name:'The Matchbook'})).toContainText('You won · 5 & 4');
+});
+
 test('Neuse Forward keeps the current hole facts with the drawing gated',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
