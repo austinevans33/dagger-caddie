@@ -64,8 +64,9 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .field-sketch.has-features svg{max-height:520px;margin:auto}
 .field-sketch details{text-align:left;padding:5px 8px;font:13px/1.4 system-ui}
 .field-sketch .route-mark{stroke-width:1;stroke-dasharray:3 5;opacity:.75}
-.book-actions{display:flex;align-items:center;gap:10px}
-.book-actions>*{flex:1}.book-actions a{min-height:44px;display:grid;place-items:center;text-align:center;font-weight:bold}
+.book-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 12px}
+.book-actions>*{display:grid;place-items:center;min-height:48px;margin:0;padding:7px;border:1px solid #b79c62;border-radius:9px;text-align:center;font:700 14px/1.25 Georgia,serif}
+.book-actions a{background:#fff9e9;text-decoration:none}.book-actions a:focus-visible{outline:3px solid #b79c62;outline-offset:2px}
 #gamePlan{margin:9px 0}#gamePlan dt{font:700 11px system-ui;letter-spacing:.08em;color:#4d6251;margin-top:9px}
 #gamePlan dd{margin:3px 0;font:15px/1.35 Georgia,serif}
 #courseTitle{font-size:clamp(24px,6vw,32px)}
@@ -80,7 +81,6 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 .advanced-caddy>summary,.paper .card>summary,.source-info>summary{min-height:44px;display:flex;align-items:center;font:700 13px system-ui;cursor:pointer}
 .advanced-caddy .pencil-note{margin:0;padding:8px}
 .paper>.card,.source-info{opacity:.85}
-.book-actions{margin-top:9px}
 #status[hidden]{display:none!important}
 .field-sketch.has-features svg{max-height:none}
 .tiny-credits{font:10px/1.25 system-ui;color:#647363;margin:15px 3px 0;text-align:center}
@@ -91,9 +91,9 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 <div class="bar"><button id="prev" aria-label="Previous hole">←</button><select id="hole" aria-label="Hole"></select><button id="next" aria-label="Next hole">→</button></div>
 <div class="hole-glance" aria-label="Hole at a glance"><span id="mapHole">HOLE 1</span><strong id="mapPar">Par —</strong><strong id="mapYards">Tee yards —</strong></div>
 <p id="teeCaption" class="muted"></p>
+<div class="book-actions"><button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask My Caddy</button><a id="watchGhost" href="ghost-preview.html">Watch House Ghost →</a></div>
 <div class="field-sketch" aria-label="Hole illustration"></div>
 <aside class="pocket-note" aria-label="Two quick notes from your selected caddy"><div id="pocketCaddyName" class="pocket-signature">Keith’s pencil</div><p id="pocketNoteOne"></p><p id="pocketNoteTwo"></p></aside>
-<div class="book-actions"><button id="askHoleCaddy" class="yardage-ask" type="button">✎ Ask My Caddy</button><a id="watchGhost" href="ghost-preview.html">Watch House Ghost →</a></div>
 
 <div id="yardageFactBindings" hidden aria-hidden="true"><span id="position"></span><span id="name"></span><span id="par"></span><span id="yards"></span><span id="coverage"></span><span id="strokeIndex"></span></div>
 <div class="nav"><button id="return" class="primary">Return to the round</button></div>
@@ -110,6 +110,13 @@ import {renderSharedHoleSketch} from './shared-hole-sketch.js?v=paper-labels-1';
 import {readYardageHole,saveYardageHole,yardageSelectionKey} from './yardage-navigation.js';
 import {composeHoleQuestion,saveHoleQuestion} from './yardage-caddy-handoff.js?v=friday-book-1';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
+const fromScorecard=params.get('from')==='scorecard';
+const returnUrl=fromScorecard?'./#scorecard':'./';
+if(fromScorecard){
+ $('backToPlay').href=returnUrl;
+ $('backToPlay').textContent='← Back to Scorecard';
+ $('return').textContent='Return to the scorecard';
+}
 const requested=params.has('hole')?Number(params.get('hole')):null;
 let number=Number.isInteger(requested)&&requested>=1&&requested<=18?requested:readYardageHole({session:sessionStorage,local:localStorage});
 function cachedState(){
@@ -143,7 +150,7 @@ function draw({refreshSketch=true}={}){
  $('hole').value=String(number);$('position').textContent='HOLE '+number+' / '+holeCount;
  $('name').textContent=page.courseName+' · '+page.teeName;
  $('courseTitle').textContent=hasCourse?page.courseName:'Yardage Book';
- $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage';
+ $('watchGhost').href='ghost-preview.html?hole='+number+'&from=yardage'+(fromScorecard?'&return=scorecard':'');
  $('par').textContent='Par: '+page.displayPar;$('yards').textContent='Tee yards: '+page.displayYards;
  $('mapHole').textContent='HOLE '+number;
  $('mapPar').textContent='Par '+page.displayPar;
@@ -249,7 +256,7 @@ $('askHoleCaddy').onclick=()=>{
  try{sessionStorage.setItem('dccCaddyTurn','1');sessionStorage.setItem('dccCaddyReturnHole',String(number))}catch{}
  location.assign('./');
 };
-$('return').onclick=()=>{rememberHole();location.assign('./')};
+$('return').onclick=()=>{rememberHole();location.assign(returnUrl)};
 async function load(){
  // Reuse active course provider/cache exactly as AI Caddy does.
  const generation=++roundGeneration;

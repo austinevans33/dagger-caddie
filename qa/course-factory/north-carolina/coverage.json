@@ -568,6 +568,40 @@
         "crichton-women": 5226,
         "hope-women": 4228
       }
+    },
+    {
+      "id": "country-hills-gibsonville-nc",
+      "name": "Country Hills Golf Course",
+      "region": "Gibsonville, NC",
+      "boundary": "w844109202",
+      "mapRef": "nc/country-hills",
+      "auditTee": "blue",
+      "scorecard": "https://www.countryhillsgolfnc.com/uploads/3/0/4/6/30469734/scorecard_orig.jpg",
+      "cardSha256": "edbfb272d7e67fa557868331e9cefaafbe7d20920241646eecf2a2331a5c3d74",
+      "cardVerified": true,
+      "issues": [],
+      "counts": {
+        "route": 18,
+        "tee": 18,
+        "green": 18,
+        "fairway": 18
+      },
+      "status": "strict-pass",
+      "audit": {
+        "pass": true,
+        "reason": "structural-parity",
+        "ratioErrors": [],
+        "teeHoles": 18,
+        "greenHoles": 18,
+        "fairwayHoles": 18
+      },
+      "bundleSha256": "5a804bd8045753d1b808565cd56776cb3e706e7544accec3e06fc00d7a58a61b",
+      "teeTotals": {
+        "blue": 5873,
+        "white": 5511,
+        "gold": 5097,
+        "red": 4525
+      }
     }
   ]
 }

@@ -38,7 +38,11 @@ const paperCSS=`
 #dcc-solo-scorecard .dcc-paper-grid .dcc-paper-score:focus-visible{outline:2px solid #1d5b41;outline-offset:-3px}
 #dcc-solo-scorecard .dcc-paper-grid .dcc-paper-missing{color:#877d67}
 #dcc-solo-scorecard .dcc-paper-total{margin-top:8px;border-top:1px double #ac9364;padding:6px 2px 0;text-align:right;font:700 11px/1.6 system-ui;color:#2e4937}
-#dcc-solo-scorecard .dcc-paper-navigation{display:flex;align-items:center;justify-content:space-between;gap:4px;margin:8px 0 7px}
+#dcc-solo-scorecard .dcc-paper-active{margin:10px 0 14px;padding:9px;border:1px solid #bca576;border-radius:9px;background:#f8f0dc}
+#dcc-solo-scorecard .dcc-paper-navigation{display:flex;align-items:center;justify-content:space-between;gap:6px}
+#dcc-solo-scorecard .dcc-paper-hole-status{text-align:center}
+#dcc-solo-scorecard #dcc-paper-hole-facts{display:block;margin-top:3px;color:#415746;font:12px/1.3 system-ui}
+#dcc-solo-scorecard #dcc-paper-yardage{display:grid;place-items:center;min-height:44px;margin-top:6px;color:#254c36;font:700 13px system-ui;text-underline-offset:3px}
 #dcc-solo-scorecard .dcc-paper-navigation button,#dcc-solo-scorecard .dcc-paper-scorebuttons button{border:1px solid #bca576;border-radius:5px;background:#fffaf0;color:#1b3b2b;min-height:42px;padding:8px;font-weight:800}
 #dcc-solo-scorecard .dcc-paper-navigation button{font:700 11px Georgia,serif;white-space:nowrap;flex:0 0 auto;width:auto;min-width:0;padding:4px}
 #dcc-solo-scorecard #dcc-paper-progress{font-size:12px;text-align:center;white-space:nowrap}
@@ -47,7 +51,6 @@ const paperCSS=`
 #dcc-solo-scorecard .dcc-paper-scorebuttons button{min-height:52px!important;font:700 18px Georgia,serif!important;border:1px solid #bda77a!important;border-radius:9px!important;touch-action:manipulation}
 #dcc-solo-scorecard .dcc-paper-scorebuttons button:focus-visible{outline:3px solid #2b5d40;outline-offset:2px}
 #dcc-solo-scorecard .dcc-paper-scorebuttons{gap:7px!important;margin-top:11px}
-#dcc-solo-scorecard .dcc-paper-navigation{padding:9px 0}
 #dcc-solo-scorecard #dcc-paper-progress{font:700 13px/1.25 system-ui;color:#173729}
 #dcc-paper-dialog .dcc-paper-dialog-bar{padding-top:max(10px,env(safe-area-inset-top));}
 #dcc-solo-scorecard .dcc-paper-pencil{font:italic 16px 'Bradley Hand','Segoe Print','Comic Sans MS',cursive;color:#625f56}
@@ -71,7 +74,25 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-solo-scorecard'))return;
  const style=doc.createElement('style');style.textContent=paperCSS;doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-solo-scorecard';
- card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div><div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-copy">Copy Round Card</button><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div><div id="dcc-paper-copy-status" role="status" aria-live="polite" style="font:11px/1.4 system-ui;color:#34543c;margin-top:5px"></div></div>`;
+ card.innerHTML=`
+ <div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div>
+ <div class="dcc-paper-body">
+  <div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
+  <div class="dcc-paper-active" aria-label="Enter score for the selected hole">
+   <div class="dcc-paper-navigation">
+    <button type="button" id="dcc-paper-prev">← PREV</button>
+    <div class="dcc-paper-hole-status" role="status"><strong id="dcc-paper-progress" tabindex="-1"></strong><small id="dcc-paper-hole-facts"></small></div>
+    <button type="button" id="dcc-paper-next">NEXT →</button>
+   </div>
+   <div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div>
+   <a id="dcc-paper-yardage" href="yardage-preview.html">Open Hole in Yardage Book →</a>
+  </div>
+  <div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div>
+  <div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div>
+  <div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div>
+  <div class="dcc-paper-actions"><button type="button" id="dcc-paper-copy">Copy Round Card</button><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div>
+  <div id="dcc-paper-copy-status" role="status" aria-live="polite" style="font:11px/1.4 system-ui;color:#34543c;margin-top:5px"></div>
+ </div>`;
  const dialog=doc.createElement('dialog');dialog.id='dcc-paper-dialog';
  dialog.setAttribute('aria-label','Dagger Country Club scorecard');
  const bar=doc.createElement('div');bar.className='dcc-paper-dialog-bar';
@@ -84,7 +105,12 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  const target=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]');
  if(courseStrip)courseStrip.insertAdjacentElement('afterend',launch);
  else (target||doc.body).prepend(launch);
- launch.addEventListener('click',()=>{if(launch.hidden||dialog.open)return;dialog.showModal();dialog.scrollTop=0;});
+ function openScorecard(){
+  if(launch.hidden||dialog.open)return;
+  dialog.showModal();
+  dialog.scrollTop=0;
+ }
+ launch.addEventListener('click',openScorecard);
  close.addEventListener('click',()=>dialog.close());
  // Never move the live card or recreate its scoring listeners on open/close.
  // Native dialog Escape support and focus restoration work in iPhone Safari.
@@ -104,14 +130,20 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   const coverageTitle=doc.createElement('strong');coverageTitle.textContent=coverage.label;
   const coverageDetail=doc.createElement('small');coverageDetail.textContent=coverage.detail;
   coverageEl.append(coverageTitle,coverageDetail);
-  const pars=Array.from({length:18},(_,i)=>scorecard?.holes.find(h=>h.number===i+1)?.par??null);
+  const allHoles=Array.from({length:18},(_,i)=>scorecard?.holes.find(h=>h.number===i+1)||null);
   $('dcc-paper-course').textContent=active.selection.course.name+' · '+active.selection.tee.name;
   $('dcc-paper-length').value=String(length);
   $('dcc-paper-length').disabled=nativeNine;
-  $('dcc-paper-progress').textContent='HOLE '+state.hole+'  ·  ENTER STROKES';
+  const holeFacts=allHoles[state.hole-1],savedScore=state.scores[state.hole-1];
+  $('dcc-paper-progress').textContent='HOLE '+state.hole;
+  $('dcc-paper-hole-facts').textContent=[
+   Number.isInteger(holeFacts?.par)?'Par '+holeFacts.par:null,
+   Number.isInteger(holeFacts?.yards)?holeFacts.yards+' yd':null,
+   savedScore===null?'Enter strokes':savedScore+(savedScore===1?' stroke saved':' strokes saved')
+  ].filter(Boolean).join(' · ');
+  $('dcc-paper-yardage').href='yardage-preview.html?hole='+state.hole+'&from=scorecard';
   $('dcc-paper-prev').disabled=state.hole<=range.start;$('dcc-paper-next').disabled=state.hole>=range.end;
   const grid=$('dcc-paper-grid');grid.replaceChildren();
-  const allHoles=Array.from({length:18},(_,i)=>scorecard?.holes.find(h=>h.number===i+1)||null);
   const sumFacts=(facts,key)=>facts.every(h=>h&&Number.isInteger(h[key]))?facts.reduce((n,h)=>n+h[key],0):null;
   const scoreSum=(from,to)=>state.scores.slice(from,to).reduce((n,v)=>n+(Number.isInteger(v)?v:0),0);
   const makeCell=(value,cls='')=>{const d=doc.createElement('div');d.className=cls;d.textContent=value;return d;};
@@ -134,7 +166,14 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
     button.textContent=state.scores[i]??'—';
     button.setAttribute('aria-current',state.hole===i+1?'step':'false');
     button.setAttribute('aria-label','Select hole '+(i+1)+', '+(state.scores[i]===null?'not scored':state.scores[i]+' strokes'));
-    button.addEventListener('click',()=>{const next=setSoloHole(storage,i+1);if(next){render();broadcast(next.hole);}});
+    button.addEventListener('click',()=>{
+     const next=setSoloHole(storage,i+1);
+     if(!next)return;
+     render();
+     broadcast(next.hole);
+     dialog.scrollTop=0;
+     $('dcc-paper-progress').focus({preventScroll:true});
+    });
     table.append(button);
    }
    table.append(makeCell(String(scoreSum(part.start,part.end)),'dcc-paper-sum'));
@@ -146,12 +185,13 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   const entries=$('dcc-paper-entries');entries.replaceChildren();
   for(let score=1;score<=10;score++){
    const b=doc.createElement('button');b.type='button';b.textContent=String(score);
-   if(state.scores[state.hole-1]===score)b.className='selected';
+   if(savedScore===score)b.className='selected';
+   b.setAttribute('aria-pressed',String(savedScore===score));
    b.setAttribute('aria-label','Pencil '+score+' strokes for hole '+state.hole);
    b.addEventListener('click',()=>{const next=saveSoloScore(storage,score);if(next){render();broadcast(next.hole);}});
    entries.append(b);
   }
-  const summary=summarizeSoloCard(state,pars);
+  const summary=summarizeSoloCard(state,allHoles.map(h=>h?.par??null));
   const selectedCaddy=doc.querySelector('.staff-pick.active')?.dataset.caddie||'keith';
   const recap=writeRecap(summary,selectedCaddy);
   $('dcc-paper-recap').hidden=!recap;
@@ -178,4 +218,9 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  $('dcc-paper-length').addEventListener('change',event=>{const next=setSoloLength(storage,Number(event.target.value));if(next){render();broadcast(next.hole);}});
  doc.addEventListener('dcc:round-environment',render);doc.addEventListener('dcc:course-selected',render);doc.addEventListener('dcc:course-cleared',render);doc.addEventListener('click',event=>{if(event.target.closest?.('.staff-pick'))setTimeout(render,0);});
  render();
+ const view=doc.defaultView;
+ if(view?.location.hash==='#scorecard'){
+  view.history.replaceState(view.history.state,'',view.location.pathname+view.location.search);
+  openScorecard();
+ }
 }

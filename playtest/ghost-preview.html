@@ -33,14 +33,15 @@ body.match {background:#f5f0e5}
 <details class="ghost-info"><summary>About Ghost play</summary><p>Ghost shots are simulated, not measured ball flights. This playback does not change scores, games, or wagers.</p></details>
 <div class="controls" id="practiceControls"><label>Hole<select id="hole"></select></label><label>Round length<select id="length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div>
 <article><strong id="headline">Loading…</strong><p id="summary"></p>
+<div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button>
+<p id="progress" role="status"></p>
 <div class="ghost-hole-paper" aria-label="Shared caddy-book sketch with illustrative Ghost flight"><strong id="ghostStageTitle">✎ Caddy book · Ghost on the hole</strong>
 <svg id="trail" viewBox="0 0 300 220" role="img" aria-label="One pencil hole sketch with simulated Ghost shot trails, not GPS">
  <svg id="ghostHoleSketch" x="0" y="0" width="300" height="220" viewBox="0 0 300 220" aria-label="Mapped hole features, when available"></svg>
  <g id="traces" transform="scale(0.9375 0.51162790698)"></g>
  <g id="markers" transform="scale(0.9375 0.51162790698)"></g>
 </svg><small id="ghostMapStatus">Ghost shots are illustrative overlays, not measured GPS positions.</small></div>
-<div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button>
-<p id="progress" role="status"></p></article>
+</article>
 <article><strong>Shots played</strong><ol id="shots"></ol></article>
 </main><script type="module">
 import {ghostShotPlayback} from '../house-ghost-playback.js?v=ghost-match-1';
@@ -119,7 +120,10 @@ async function updateGhostHoleSketch(){
  sketchPending?.abort();
  currentRoute=null;
  const holeNumber=Number($('hole').value);
- if(params.get('from')==='yardage')$('ghostBack').href='yardage-preview.html?hole='+holeNumber;
+ if(params.get('from')==='yardage'){
+  const returnSource=params.get('return')==='scorecard'?'&from=scorecard':'';
+  $('ghostBack').href='yardage-preview.html?hole='+holeNumber+returnSource;
+ }
  const svg=$('ghostHoleSketch'),status=$('ghostMapStatus');
  showUnmappedPencil(holeNumber);
  render();
@@ -163,7 +167,9 @@ function render(){
  const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity,tier:ghostTier,matchHole});
  revealed=state.shotsRevealed;
  $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par+(state.complete?' · Ghost '+state.score:' · Ghost playing');
- $('summary').textContent=(selectedCourse?selectedCourse+' · ':'Practice defaults · ')+(matchHole?'':state.coverage==='scorecard'?'selected-tee par & yards verified · ':'unverified hole facts · ')+state.label;
+ const teeYards=verifiedHoles.find(h=>h.number===holeNumber)?.yards;
+ const verifiedFacts=state.coverage==='scorecard'?'selected-tee par & yards verified · '+teeYards+' yd · ':'unverified hole facts · ';
+ $('summary').textContent=(selectedCourse?selectedCourse+' · ':'Practice defaults · ')+(matchHole?'':verifiedFacts)+state.label;
  const placement=placeGhostShots(state.visibleShots,currentRoute);
  drawGhostTracer($('trail'),placement.shots,{start:placement.start,animateLast:revealed>lastRendered});lastRendered=revealed;
  $('markers').replaceChildren();

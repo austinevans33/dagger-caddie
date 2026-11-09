@@ -3705,5 +3705,206 @@ export const courseFactoryCourses = [
       "status": "bundled-reviewed-osm",
       "auditTee": "ross"
     }
+  },
+  {
+    "id": "country-hills-gibsonville-nc",
+    "name": "Country Hills Golf Course",
+    "region": "Gibsonville, NC",
+    "par": [
+      4,
+      4,
+      5,
+      3,
+      5,
+      4,
+      3,
+      4,
+      3,
+      5,
+      4,
+      3,
+      4,
+      4,
+      4,
+      3,
+      4,
+      5
+    ],
+    "tees": {
+      "blue": {
+        "label": "Blue",
+        "yards": [
+          385,
+          326,
+          506,
+          188,
+          556,
+          305,
+          152,
+          384,
+          178,
+          492,
+          393,
+          190,
+          244,
+          333,
+          336,
+          156,
+          324,
+          425
+        ]
+      },
+      "white": {
+        "label": "White",
+        "yards": [
+          365,
+          310,
+          472,
+          175,
+          537,
+          297,
+          145,
+          351,
+          170,
+          478,
+          359,
+          136,
+          237,
+          315,
+          318,
+          137,
+          297,
+          412
+        ]
+      },
+      "gold": {
+        "label": "Gold",
+        "yards": [
+          350,
+          282,
+          445,
+          131,
+          503,
+          286,
+          130,
+          327,
+          152,
+          453,
+          349,
+          118,
+          223,
+          269,
+          299,
+          125,
+          279,
+          376
+        ]
+      },
+      "red": {
+        "label": "Red",
+        "yards": [
+          334,
+          258,
+          379,
+          101,
+          387,
+          272,
+          108,
+          300,
+          133,
+          430,
+          334,
+          105,
+          217,
+          252,
+          282,
+          112,
+          262,
+          259
+        ],
+        "par": [
+          5,
+          4,
+          5,
+          3,
+          5,
+          4,
+          3,
+          4,
+          3,
+          5,
+          5,
+          3,
+          4,
+          4,
+          4,
+          3,
+          4,
+          4
+        ],
+        "handicap": [
+          4,
+          17,
+          9,
+          7,
+          3,
+          13,
+          15,
+          11,
+          5,
+          2,
+          1,
+          10,
+          8,
+          6,
+          12,
+          18,
+          14,
+          16
+        ]
+      }
+    },
+    "handicapMen": [
+      4,
+      8,
+      10,
+      6,
+      2,
+      18,
+      12,
+      14,
+      16,
+      5,
+      1,
+      3,
+      9,
+      17,
+      13,
+      7,
+      15,
+      11
+    ],
+    "source": "course-factory-official-scorecard",
+    "provenance": {
+      "source": "Official course scorecard",
+      "url": "https://www.countryhillsgolfnc.com/uploads/3/0/4/6/30469734/scorecard_orig.jpg",
+      "sourceSha256": "edbfb272d7e67fa557868331e9cefaafbe7d20920241646eecf2a2331a5c3d74",
+      "additionalSources": [
+        {
+          "url": "https://www.countryhillsgolfnc.com/uploads/3/0/4/6/30469734/scorecard2_orig.jpg",
+          "sha256": "8cd24368c754207f15e3798ad499e4d8270238f9ffabb0dc62d6aafc0bd4458d"
+        }
+      ],
+      "checked": "2026-11-09",
+      "geography": "Gibsonville, NC",
+      "teeYardageIsNotPinDistance": true
+    },
+    "map": {
+      "file": "country-hills-gibsonville-nc.json",
+      "source": "https://www.openstreetmap.org/way/844109202",
+      "ref": "nc/country-hills",
+      "status": "bundled-reviewed-osm",
+      "auditTee": "blue"
+    }
   }
 ];

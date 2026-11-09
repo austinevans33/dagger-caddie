@@ -23,12 +23,12 @@ test('invalid feature labels do not become tactical claims',()=>{
  const result=pocketCaddyNotes({caddy:'kyle',hole,annotations:{labels:[{type:'water',side:'unknown',stage:'approach'}]}});
  assert.equal(result.mapped,false);
 });
-test('Yardage Book shows only art and two caddy notes, not a duplicate map inventory',()=>{
+test('Yardage Book keeps actions above the art and two caddy notes without a duplicate map inventory',()=>{
  const html=readFileSync(new URL('../playtest/yardage-preview.html',import.meta.url),'utf8');
  const art=html.indexOf('<div class="field-sketch" aria-label="Hole illustration">');
  const pocket=html.indexOf('<aside class="pocket-note"');
  const actions=html.indexOf('<div class="book-actions">');
- assert.ok(art>=0&&pocket>art&&actions>pocket);
+ assert.ok(actions>=0&&art>actions&&pocket>art);
  assert.doesNotMatch(html,/Mapped trouble and scorecard details|More hole details/);
  assert.doesNotMatch(html,/id="hazards"|id="gamePlan"/);
  assert.match(html,/pocketCaddyNotes\(\{caddy:readYardageCaddy\(localStorage\)/);
