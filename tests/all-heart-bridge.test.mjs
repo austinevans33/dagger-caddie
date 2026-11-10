@@ -23,10 +23,18 @@ test('bridge requires verified active round and nonempty round key',()=>{
  f.emit({roundKey:'r1',context});
  assert.equal(f.root.children.length,1);
  f.emit({roundKey:'r1',context});
- assert.equal(f.root.children.length,0);
+ assert.equal(f.root.children.length,1); // repeated sync must not erase the card
 });
 test('bridge resets per-round limits only for new round identity',()=>{
  const f=fixture();installAllHeartBridge({document:f.doc});
  f.emit({roundKey:'r1',context});assert.equal(f.root.children.length,1);
  f.emit({roundKey:'r2',context});assert.equal(f.root.children.length,1);
+});
+
+test('disabling All Heart clears a visible prompt',()=>{
+ const f=fixture();installAllHeartBridge({document:f.doc});
+ f.emit({roundKey:'r1',context});assert.equal(f.root.children.length,1);
+ f.doc.dispatchEvent({type:'dcc:all-heart-enabled',detail:{enabled:false}});
+ assert.equal(f.root.children.length,0);
+ f.emit({roundKey:'r1',context});assert.equal(f.root.children.length,0);
 });
