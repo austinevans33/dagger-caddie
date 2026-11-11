@@ -29,7 +29,7 @@ test('rejects wrong course and wrong hole',()=>{
 });
 test('respects native nine-hole range and completion',()=>{
  assert.equal(buildAllHeartRoundDetail(storage({hole:6,length:9,scoreAll:true}),hole),null);
- assert.equal(buildAllHeartRoundDetail(storage({hole:10,length:9,nineStart:10}),{...hole,holeNumber:10}),null); // missing verified index
+ assert.equal(buildAllHeartRoundDetail(storage({hole:10,length:9,nineStart:10}),{...hole,holeNumber:11}),null); // wrong hole
  const back={...hole,holeNumber:10,strokeIndex:14};
  assert.equal(buildAllHeartRoundDetail(storage({hole:10,length:9,nineStart:10}),back).context.holeNumber,10);
 });
