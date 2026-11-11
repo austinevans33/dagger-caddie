@@ -55,3 +55,23 @@ test('greenside hazard text moves clear of the green label on both page sizes',(
   assert.ok(Number(bunker.attrs.y)<height);
  }
 });
+
+test('pencil textures are isolated across sketches and preserve mapped coordinates',()=>{
+ const features=[shape('fairway',140,100),shape('green',150,30)];
+ const a=mockSvg(),b=mockSvg();
+ renderSharedHoleSketch(a,features,{});
+ renderSharedHoleSketch(b,features,{});
+ const ids=svg=>svg.children.find(node=>node.name==='defs').children.map(n=>n.attrs.id);
+ const aIds=ids(a),bIds=ids(b);
+ assert.equal(new Set([...aIds,...bIds]).size,aIds.length+bIds.length);
+ const polygons=svg=>svg.children.filter(node=>node.name==='polygon');
+ assert.deepEqual(polygons(a).map(n=>n.attrs.points),polygons(b).map(n=>n.attrs.points));
+ for(const svg of [a,b]){
+  const valid=new Set(ids(svg));
+  for(const polygon of polygons(svg)){
+   const match=polygon.attrs.fill.match(/^url\\(#(.+)\\)$/);
+   assert.ok(match);
+   assert.ok(valid.has(match[1]));
+  }
+ }
+});
