@@ -15,7 +15,8 @@ test('one renderer gives Yardage and Ghost identical provider geometry',()=>{
  const notes=pencilBookAnnotations(features);
  const yardage=mockSvg(),ghost=mockSvg();
  const a=renderSharedHoleSketch(yardage,features,notes),b=renderSharedHoleSketch(ghost,features,notes);
- assert.deepEqual(yardage.children.map(node=>({name:node.name,attrs:node.attrs,text:node.text})),ghost.children.map(node=>({name:node.name,attrs:node.attrs,text:node.text})));
+ const geometry=svg=>svg.children.filter(node=>node.name!=='defs').map(node=>({name:node.name,attrs:{...node.attrs,fill:String(node.attrs.fill||'').replace(/dcc-pencil-[0-9]+-/g,'dcc-pencil-')},text:node.text}));
+ assert.deepEqual(geometry(yardage),geometry(ghost));
  assert.equal(a.length,4);assert.equal(b.length,4);
  assert.equal(yardage.children.filter(x=>x.name==='path').length,1);
  assert.equal(yardage.children.filter(x=>x.name==='polygon').length,4);
@@ -52,5 +53,25 @@ test('greenside hazard text moves clear of the green label on both page sizes',(
   assert.equal(green.attrs['paint-order'],'stroke');
   assert.ok(Math.abs(Number(green.attrs.y)-Number(bunker.attrs.y))>=16);
   assert.ok(Number(bunker.attrs.y)<height);
+ }
+});
+
+test('pencil textures are isolated across sketches and preserve mapped coordinates',()=>{
+ const features=[shape('fairway',140,100),shape('green',150,30)];
+ const a=mockSvg(),b=mockSvg();
+ renderSharedHoleSketch(a,features,{});
+ renderSharedHoleSketch(b,features,{});
+ const ids=svg=>svg.children.find(node=>node.name==='defs').children.map(n=>n.attrs.id);
+ const aIds=ids(a),bIds=ids(b);
+ assert.equal(new Set([...aIds,...bIds]).size,aIds.length+bIds.length);
+ const polygons=svg=>svg.children.filter(node=>node.name==='polygon');
+ assert.deepEqual(polygons(a).map(n=>n.attrs.points),polygons(b).map(n=>n.attrs.points));
+ for(const svg of [a,b]){
+  const valid=new Set(ids(svg));
+  for(const polygon of polygons(svg)){
+   const match=polygon.attrs.fill.match(/^url\(#(.+)\)$/);
+   assert.ok(match);
+   assert.ok(valid.has(match[1]));
+  }
  }
 });

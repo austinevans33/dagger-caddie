@@ -67,3 +67,7 @@ body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!i
    JavaScript, but the requested four shortcuts are the visible entry points. */
 #dccScorePulse,#dccGamesYardageAccessLink{display:none!important}
 @media(min-width:650px){#dccGroundsDoors .dcc-grounds-door-grid{max-width:600px;margin-inline:auto}}
+
+/* Keep the approved heritage seal visible at the foot of the focused Clubhouse.
+   The focus filter hides legacy play panels, but must not hide the shared tab footer. */
+body.dcc-clubhouse-focus .content > :is(#dccR161Seal_play,#dccR162Seal_play).dcc-r162-seal-footer:not(.hidden-panel){display:block!important}
