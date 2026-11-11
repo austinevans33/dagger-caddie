@@ -44,6 +44,19 @@ test('Capture Friday iPhone-sized Play, Games and Ledger views for release revie
  await page.locator('#tab-play').click();
  await expect(page.locator('#dccClubhouseHome')).toBeVisible();
  await page.screenshot({path:'candidate-screenshots/01-play-iphone.png',animations:'disabled'});
+ // The original approved seal must be visible at the bottom of the focused Clubhouse,
+ // not merely present in the DOM or hidden behind the legacy Play-tab filter.
+ const clubhouseFooter=page.locator('.content > .dcc-r162-seal-footer[data-tab="play"]');
+ await expect(clubhouseFooter).toHaveCount(1);
+ await expect(clubhouseFooter).toBeVisible();
+ await expect(clubhouseFooter.locator('img')).toHaveAttribute('src','dcc-approved-seal.png');
+ await expect(clubhouseFooter.locator('img')).toHaveJSProperty('complete',true);
+ const footerVisible=await clubhouseFooter.evaluate(el=>{
+  const style=getComputedStyle(el),rect=el.getBoundingClientRect();
+  return style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)>0&&rect.width>0&&rect.height>0;
+ });
+ expect(footerVisible).toBe(true);
+ await page.screenshot({path:'candidate-screenshots/01-clubhouse-fullpage-seal.png',fullPage:true,animations:'disabled'});
  await page.locator('#tab-games').click();
  await expect(page.locator('#gamesMenu')).toBeAttached();
  await expect(page.locator('#dccGroundsDoors')).toHaveCount(0);
