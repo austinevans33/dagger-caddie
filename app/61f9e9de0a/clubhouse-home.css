@@ -1,0 +1,69 @@
+/* Dagger Clubhouse: prominent entry points without replacing game/caddy state. */
+.dcc-home{isolation:isolate;max-width:860px;margin:10px auto 16px;padding:16px;background:#12382b;border:1px solid #9f8655;border-radius:22px;color:#f6efdf;box-shadow:0 12px 26px rgba(17,39,29,.12);font-family:system-ui,-apple-system,sans-serif}
+.dcc-home *{box-sizing:border-box}
+.dcc-home-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}
+.dcc-home-kicker{font-size:11px;letter-spacing:.14em;font-weight:800;color:#cbb083}
+.dcc-home h2{margin:4px 0 0;font:700 clamp(26px,7vw,34px)/1.12 Georgia,serif;color:#f9f0df}
+.dcc-home-seal{mix-blend-mode:lighten;width:72px;height:72px;object-fit:contain;border-radius:50%;flex-shrink:0}
+.dcc-home button,.dcc-home a{font:inherit;cursor:pointer}
+.dcc-home-feature{display:block;width:100%;padding:19px 18px;border-radius:18px;background:#f1e7d2;border:1px solid #b6a075;color:#173a2c;text-align:left;text-decoration:none;box-shadow:none}
+.dcc-home-feature:focus-visible,.dcc-home-tile:focus-visible,.dcc-home-caddy:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
+.dcc-home-line{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12px;font-weight:800;letter-spacing:.075em}
+.dcc-home-hole{white-space:nowrap;padding:5px 10px;border-radius:30px;background:#e5dac5;font-size:12px;letter-spacing:0}
+.dcc-home-feature-title{display:block;margin:0;font:700 clamp(20px,5.8vw,32px)/1 Georgia,serif;letter-spacing:0}
+.dcc-home-view{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:14px;font-weight:750}
+.dcc-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:12px}
+.dcc-home-tile{min-width:0;min-height:127px;padding:16px 13px;text-align:left;background:#214b38;color:#f5eddd;border:1px solid #42664e;border-radius:16px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.dcc-home-tile-icon{color:#d5ba82;font-size:25px;line-height:1}
+.dcc-home-tile-name{margin-top:7px;font:700 18px/1.17 Georgia,serif}
+.dcc-home-tile-caption{font-size:12px;color:#c6d1c8}
+.dcc-home-caddy{margin-top:11px;width:100%;padding:13px 3px;background:transparent;border:0;color:#f5eddd;display:flex;align-items:center;justify-content:space-between;font-size:17px;font-weight:750;text-align:left}
+.dcc-home-caddy span:first-child{color:#e1c589;margin-right:9px}
+.dcc-home-foot{border-top:1px solid rgba(205,182,132,.3);padding-top:11px;color:#b5c7b8;font-size:10px;letter-spacing:.08em;text-align:center}
+@media(min-width:650px){.dcc-home{padding:22px}.dcc-home-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(prefers-reduced-motion:no-preference){.dcc-home button,.dcc-home a{transition:background-color .17s,transform .17s}.dcc-home button:active,.dcc-home a:active{transform:scale(.99)}}
+
+/* Preserve button-like tiles over legacy global anchor styles. */
+.dcc-home a.dcc-home-tile,.dcc-home a.dcc-home-tile:visited{color:#f5eddd!important;text-decoration:none!important}
+.dcc-home a.dcc-home-feature,.dcc-home a.dcc-home-feature:visited{color:#173a2c!important;text-decoration:none!important}
+.dcc-home a.dcc-home-tile *, .dcc-home a.dcc-home-feature *{text-decoration:none!important}
+
+/* Clear, single-purpose Money Room route, preserving the original five tab names. */
+.dcc-home-money{display:flex;align-items:center;justify-content:space-between;width:100%;gap:12px;margin-top:12px;padding:13px 15px;min-height:60px;border:1px solid #a88c58;border-radius:14px;background:#f1e7d2;color:#173a2c;text-align:left}
+.dcc-home-money strong{display:block;font:700 16px/1.25 Georgia,serif;color:#173a2c}
+.dcc-home-money small{display:block;margin-top:3px;color:#625f54;font:12px/1.3 system-ui,sans-serif}
+.dcc-home-money>span:last-child{font:26px Georgia,serif}
+.dcc-home-money:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
+@media(max-width:420px){.dcc-home{padding:13px}.dcc-home-header{margin-bottom:12px}.dcc-home-seal{width:62px;height:62px}.dcc-home-feature{padding:16px}.dcc-home-grid{gap:9px;margin-top:10px}.dcc-home-tile{padding:13px 11px;min-height:111px}.dcc-home-tile-name{font-size:17px}.dcc-home-tile-icon{font-size:22px}}
+
+/* On-course cockpit: three primary tabs. Service tabs are still reachable via Club Services. */
+nav.tabbar.dcc-bespoke-nav #tab-bag,nav.tabbar.dcc-bespoke-nav #tab-settings{display:none!important}
+nav.tabbar.dcc-bespoke-nav{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.dcc-home-services{margin:12px 0 2px;border-top:1px solid rgba(205,182,132,.3);border-bottom:1px solid rgba(205,182,132,.3)}
+.dcc-home-services summary{cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:space-between;color:#d8c59d;font:700 13px/1.35 system-ui,sans-serif;list-style:none}
+.dcc-home-services summary::-webkit-details-marker{display:none}
+.dcc-home-service-links{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 12px}
+.dcc-home-service-links button{background:#214b38;color:#f7efdc;border:1px solid #7d916e;border-radius:10px;min-height:45px;padding:9px;font:700 13px system-ui,sans-serif}
+.dcc-home-return{width:100%;min-height:44px;margin-bottom:10px;padding:9px 12px;border:1px solid #b79c62;border-radius:12px;background:#173b2d;color:#f5eddd;font:700 14px system-ui,sans-serif;text-align:left}
+.dcc-home-return:focus-visible,.dcc-home-service-links button:focus-visible{outline:3px solid #d5ba82;outline-offset:2px}
+
+
+/* Post-staging review: preserve approved top banner; home ends at Money Room. */
+body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!important}
+#dccClubhouseHome .dcc-home-money{margin-bottom:0}
+#dccClubhouseHome{margin-bottom:18px}
+#dccGroundsDoors{max-width:860px;margin:10px auto 18px;background:transparent;border:0;padding:0}
+#dccGroundsDoors .dcc-grounds-door-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#dccGroundsDoors .dcc-grounds-door{
+ min-width:0;aspect-ratio:1/0.78;border:1px solid #bba477;border-radius:17px;
+ padding:16px 10px;display:flex;align-items:center;justify-content:center;flex-direction:column;
+ gap:12px;background:#f0e5ce;color:#183c2d;text-decoration:none!important;text-align:center;
+ font:700 18px/1.15 Georgia,serif;cursor:pointer;box-shadow:0 3px 0 #917d5644
+}
+#dccGroundsDoors .dcc-grounds-door span{font:29px/1 Georgia,serif;color:#a58a55}
+#dccGroundsDoors .dcc-grounds-door strong{font:700 clamp(14px,4vw,19px)/1.2 Georgia,serif}
+#dccGroundsDoors .dcc-grounds-door:focus-visible{outline:3px solid #e3bd70;outline-offset:3px}
+/* The score pulse and former longhand links are still available to the game's
+   JavaScript, but the requested four shortcuts are the visible entry points. */
+#dccScorePulse,#dccGamesYardageAccessLink{display:none!important}
+@media(min-width:650px){#dccGroundsDoors .dcc-grounds-door-grid{max-width:600px;margin-inline:auto}}

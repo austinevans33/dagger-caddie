@@ -1,0 +1,51 @@
+/* R123: Caddy Master office — visual fidelity to the approved DCC palette.
+   Presentation-only: original caddie buttons, data-caddie attributes and event handlers remain intact. */
+.content>.caddie-roster[data-tab="play"]{
+ background:#f5ecdc!important;color:#153629!important;
+ border:1px solid rgba(212,175,110,.65)!important;border-radius:20px!important;
+ padding:clamp(13px,3vw,20px)!important;margin:0 0 13px!important;
+ box-shadow:none!important;min-width:0!important;
+}
+.content>.caddie-roster[data-tab="play"] .roster-heading{
+ display:flex!important;flex-wrap:wrap!important;align-items:center!important;
+ gap:10px!important;justify-content:space-between!important;
+ color:#153629!important;border-bottom:1px solid rgba(21,54,41,.18)!important;
+ padding:0 0 12px!important;margin:0 0 14px!important;
+ font:750 11px/1.4 system-ui,sans-serif!important;letter-spacing:.11em!important;
+}
+.content>.caddie-roster[data-tab="play"] .roster-abuse{display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important}
+.content>.caddie-roster[data-tab="play"] .roster-abuse label{color:#52685b!important;font-size:10px!important}
+.content>.caddie-roster[data-tab="play"] #aiAbuseLevel{
+ background:#fffaf1!important;color:#153629!important;border:1px solid #bca674!important;
+ border-radius:10px!important;min-height:40px!important;max-width:178px!important;
+ padding:7px!important;font-size:13px!important;
+}
+.content>.caddie-roster[data-tab="play"] #caddieChoices{
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ gap:clamp(5px,1.5vw,12px)!important;
+}
+.content>.caddie-roster[data-tab="play"] #caddieChoices>.staff-pick{
+ min-width:0!important;min-height:107px!important;display:flex!important;
+ flex-direction:column!important;justify-content:center!important;align-items:center!important;
+ gap:6px!important;padding:12px 4px!important;
+ background:#fffaf1!important;color:#153629!important;
+ border:1px solid #dfcfac!important;border-radius:14px!important;
+ box-shadow:none!important;transition:background-color .15s ease,border-color .15s ease!important;
+}
+.content>.caddie-roster[data-tab="play"] #caddieChoices>.staff-pick.active,
+.content>.caddie-roster[data-tab="play"] #caddieChoices>.staff-pick[aria-pressed="true"]{
+ background:#153629!important;color:#f5ecdc!important;
+ border:2px solid #d4af6e!important;
+}
+.content>.caddie-roster[data-tab="play"] #caddieChoices .staff-thumb{
+ width:clamp(38px,8vw,58px)!important;height:clamp(38px,8vw,58px)!important;
+ border-radius:50%!important;object-fit:cover!important;
+}
+.content>.caddie-roster[data-tab="play"] #caddieChoices .staff-pick strong{font-size:clamp(11px,2.5vw,14px)!important;line-height:1.2!important;color:inherit!important}
+.content>.caddie-roster[data-tab="play"] #caddieChoices .staff-pick small{font-size:10px!important;line-height:1.2!important;color:inherit!important;opacity:.85!important;text-align:center!important}
+@media(max-width:390px){
+ .content>.caddie-roster[data-tab="play"] #caddieChoices>.staff-pick{padding:9px 2px!important;min-height:98px!important}
+ .content>.caddie-roster[data-tab="play"] #caddieChoices .staff-pick small{font-size:9px!important}
+ .content>.caddie-roster[data-tab="play"] #aiAbuseLevel{max-width:155px!important}
+}
+@media(prefers-reduced-motion:reduce){.content>.caddie-roster[data-tab="play"] #caddieChoices>.staff-pick{transition:none!important}}

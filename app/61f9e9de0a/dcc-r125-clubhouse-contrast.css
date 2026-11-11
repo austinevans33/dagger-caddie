@@ -1,0 +1,12 @@
+/* R125: Clubhouse retains ivory text on its forest-green shell. */
+#dccR86Clubhouse{background:#153629!important;color:#f5ecdc!important;border:1px solid rgba(212,175,110,.4)!important;box-shadow:none!important}
+#dccR86Clubhouse>.dcc-r86-title{color:#f5ecdc!important}
+#dccR86Clubhouse>.dcc-r86-eyebrow{color:#d4af6e!important}
+#dccR86Clubhouse>.dcc-r86-account{background:#f5ecdc!important;color:#153629!important;border:1px solid rgba(212,175,110,.5)!important}
+#dccR86Clubhouse>.dcc-r86-account :is(h2,h3){color:#153629!important}
+#dccR86Clubhouse>.dcc-r86-account :is(.muted,.note,.dcc-r86-desc){color:#52685b!important}
+#dccR86Clubhouse>.dcc-r86-drawer{border-bottom:1px solid rgba(212,175,110,.35)!important}
+#dccR86Clubhouse>.dcc-r86-drawer>summary{background:transparent!important;color:#f5ecdc!important;border-radius:0!important;min-height:52px!important}
+#dccR86Clubhouse>.dcc-r86-drawer>summary::after{color:#d4af6e!important}
+#dccR86Clubhouse :is(button,summary,input,select):focus-visible{outline:2px solid #d4af6e!important;outline-offset:3px!important}
+@media(max-width:600px){#dccR86Clubhouse{padding:16px!important}#dccR86Clubhouse>.dcc-r86-account{padding:15px!important}}

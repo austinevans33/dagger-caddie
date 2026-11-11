@@ -1,0 +1,32 @@
+/* R124 | On-course conversation composition. Visual-only, IDs/handlers unchanged. */
+:root{--dcc-caddy-forest:#153629;--dcc-caddy-ivory:#f5ecdc;--dcc-caddy-gold:#d4af6e}
+section.ai-card[data-tab="play"]{background:#153629!important;color:#f5ecdc!important;border:1px solid rgba(212,175,110,.32)!important;border-radius:22px!important;box-shadow:none!important;padding:clamp(14px,3vw,24px)!important;min-width:0!important}
+.ai-card .dcc-caddy-heading{margin:0 0 14px!important;padding:0 2px!important}
+.ai-card .dcc-service-label{color:#d4af6e!important;letter-spacing:.13em!important;font:750 11px/1.4 system-ui,sans-serif!important}
+.ai-card #aiHeading{color:#f5ecdc!important;font:700 clamp(27px,5vw,37px)/1.1 Georgia,serif!important;margin:7px 0 8px!important}
+.ai-card .dcc-service-intro{color:#e9deca!important;font-size:14px!important;line-height:1.5!important}
+.ai-card .dcc-r55-advice-desk{background:#f5ecdc!important;color:#153629!important;border:0!important;border-radius:18px!important;padding:clamp(13px,3vw,19px)!important;margin:0 0 14px!important;box-shadow:none!important}
+.ai-card .dcc-r53-brief-line,.ai-card .dcc-r53-brief-title,.ai-card .dcc-r55-advice-desk p{color:#153629!important}
+.ai-card .dcc-r53-brief-title{font:700 clamp(22px,4vw,30px)/1.18 Georgia,serif!important}
+.ai-card .dcc-r53-brief-title em{color:#54705c!important}
+.ai-card .dcc-r53-ask-examples{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+.ai-card .dcc-r53-ask-examples button{min-width:0!important;min-height:48px!important;background:#fffaf1!important;color:#153629!important;border:1px solid rgba(21,54,41,.25)!important;border-radius:11px!important;padding:10px!important;font-size:12px!important;font-weight:700!important;text-align:left!important;white-space:normal!important}
+.ai-card #aiMic{display:flex!important;align-items:center!important;justify-content:center!important;min-height:50px!important;width:100%!important;background:#234b3a!important;color:#f5ecdc!important;border:1px solid #d4af6e!important;border-radius:13px!important;font-weight:800!important;letter-spacing:.04em!important;margin:0 0 9px!important}
+.ai-card #aiStatus{font-size:12px!important;color:#e6d5b4!important;padding:4px 2px 12px!important}
+.ai-card .dcc-r55-transcript-heading,.ai-card .dcc-r55-composer-label{color:#d4af6e!important;font:750 10px/1.4 system-ui,sans-serif!important;letter-spacing:.1em!important;display:flex!important;justify-content:space-between!important;gap:10px!important;margin:11px 0 8px!important}
+.ai-card #aiHistory{background:#f5ecdc!important;color:#153629!important;border:0!important;border-radius:16px!important;min-height:105px!important;max-height:350px!important;overflow:auto!important;padding:12px!important}
+.ai-card #aiHistory .ai-bubble{max-width:100%!important;overflow-wrap:anywhere!important}
+.ai-card .dcc-r55-composer{display:grid!important;grid-template-columns:minmax(0,1fr) 94px!important;gap:9px!important;align-items:stretch!important;margin:0!important}
+.ai-card #aiInput{min-width:0!important;max-width:100%!important;min-height:66px!important;box-sizing:border-box!important;background:#fffaf1!important;color:#153629!important;border:1px solid #d4af6e!important;border-radius:13px!important;padding:13px!important;font-size:16px!important;line-height:1.35!important;resize:vertical!important}
+.ai-card #aiSend{min-width:0!important;min-height:58px!important;background:#d4af6e!important;color:#153629!important;border:0!important;border-radius:13px!important;font-weight:800!important}
+.ai-card .ai-tools{display:flex!important;flex-wrap:wrap!important;gap:8px!important;margin:11px 0 15px!important}
+.ai-card .ai-tools button:not([hidden]){min-height:42px!important;border-radius:11px!important;padding:9px 13px!important;font-size:13px!important}
+.ai-card #aiShotReport.dcc-r106-shot-primary{background:#d4af6e!important;color:#153629!important;border-radius:15px!important;margin-top:10px!important;overflow:hidden!important}
+.ai-card #aiShotReport.dcc-r106-shot-primary>summary{padding:16px!important;min-height:56px!important;cursor:pointer!important;color:#153629!important}
+.ai-card #aiShotReport[open]{padding:0 14px 14px!important}
+.ai-card #aiShotReport[open]>summary{margin:0 -14px 14px!important;border-bottom:1px solid rgba(21,54,41,.35)!important}
+.ai-card #aiShotReport :is(input,select){background:#fffaf1!important;color:#153629!important;min-height:44px!important;border-radius:10px!important;border:1px solid #ad945f!important}
+.ai-card #aiShotReport #aiRecordShot{min-height:48px!important;border-radius:11px!important}
+.ai-card :is(button,textarea,select,input):focus-visible{outline:3px solid #e6c783!important;outline-offset:2px!important}
+@media(max-width:600px){.ai-card .dcc-r53-ask-examples{grid-template-columns:1fr!important}.ai-card .dcc-r53-ask-examples button{min-height:44px!important}.ai-card .dcc-r55-transcript-heading span:last-child,.ai-card .dcc-r55-composer-label span:last-child{display:none!important}.ai-card .dcc-r55-composer{grid-template-columns:minmax(0,1fr) 78px!important}.ai-card .ai-tools button:not([hidden]){flex:1 1 auto!important}}
+@media(prefers-reduced-motion:reduce){.ai-card *{scroll-behavior:auto!important;transition-duration:.01ms!important}}
