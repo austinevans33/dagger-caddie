@@ -13,13 +13,20 @@ test('respects dismissal, cooldown, max and opt-out',()=>{
 });
 test('rejects unverified historic claims',()=>{
  const historic={courseId:'verified-course',holeNumber:6,player:'Pro',strokes:4,event:'2024 Open',sourceUrl:'https://example.org/results'};
- assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,historicalChallenge:historic}),null);
+ assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,historicalChallenge:historic}).action,'accept-challenge');
  assert.equal(chooseAllHeartMoment({...base,historicalChallenge:{...historic,verified:true}}).type,'legend');
  assert.equal(chooseAllHeartMoment({...base,historicalChallenge:{...historic,verified:true,sourceUrl:'javascript:alert(1)'}}).type,'dare');
  assert.equal(chooseAllHeartMoment({...base,historicalChallenge:{...historic,verified:true,event:''}}).type,'dare');
 });
 test('never invents ghost scores or shows on inactive rounds',()=>{
- assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,ghostRival:{strokes:4}}),null);
- assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,ghostRival:{eligible:true,strokes:4}}).type,'grudge');
+ assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,ghostRival:{strokes:4}}).type,'dare');
+ assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,par:3,ghostRival:{eligible:true,strokes:4}}).type,'grudge');
  assert.equal(chooseAllHeartMoment({...base,roundActive:false}),null);
+});
+
+test('solo verified hole offers a non-wager Dare, never a Ticket Window',()=>{
+ const moment=chooseAllHeartMoment({...base,moneyRoomPlayers:0});
+ assert.equal(moment.type,'dare');
+ assert.equal(moment.action,'accept-challenge');
+ assert.doesNotMatch(moment.description,/boys|bet|money/i);
 });

@@ -33,6 +33,13 @@ export function chooseAllHeartMoment(context = {}, history = {}) {
       description:'Friendly par 4. The boys are watching. Open a side-bet proposal?',
       action:'open-ticket-window'};
   }
+  // Solo rounds can still have a non-monetary Dare. Never imply other players
+  // are present and never open a betting form for a solo challenge.
+  if (moneyRoomPlayers < 2 && par === 4 && Number.isInteger(strokeIndex) && strokeIndex >= 13) {
+    return {key, type:'dare', title:'ALL HEART. NO EXCUSES.',
+      description:'A friendly par 4. Pick your target and commit to the shot.',
+      action:'accept-challenge'};
+  }
   if (ghostRival?.eligible === true && Number.isInteger(ghostRival.strokes) && ghostRival.strokes > 0) {
     return {key, type:'grudge', title:'BEAT YOUR GHOST',
       description:`Your rival shot ${ghostRival.strokes} here. Can you beat it?`,
