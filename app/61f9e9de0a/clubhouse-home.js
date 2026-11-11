@@ -85,8 +85,8 @@ function mount(){
    if(ghost){ghost.open=true;ghost.scrollIntoView({block:'start'});}
   }
   else if(target==='handicap'){
-   // Account owns member identity and handicap; do not introduce a second value.
-   openTab('settings');
+   // Player's Locker owns the persisted handicap; do not introduce a second value.
+   openTab('bag');
    const input=document.getElementById('golferHandicap') || document.querySelector('input[id*="handicap" i],input[name*="handicap" i]');
    if(input){input.closest('details')?.setAttribute('open','');input.scrollIntoView({block:'center'});input.focus({preventScroll:true})}
   }
