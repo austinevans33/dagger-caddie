@@ -1,6 +1,7 @@
 import {installAllHeartBridge} from './all-heart-bridge.js';
 import {installAllHeartActions} from './all-heart-actions.js';
 import {installAllHeartScoreEvents} from './all-heart-score-events.js';
+import {emitVerifiedAllHeartHole} from './all-heart-verified-hole-provider.js';
 
 // Progressive enhancement only. The existing round engine remains the sole
 // authority for scores, verified hole context, Ghost and wager state.
@@ -17,6 +18,11 @@ export function mountAllHeartInRound(doc=globalThis.document){
  installAllHeartBridge({document:doc});
  installAllHeartActions({document:doc});
  installAllHeartScoreEvents({doc,storage:globalThis.localStorage});
+ const refresh=()=>emitVerifiedAllHeartHole(doc,globalThis.localStorage);
+ doc.addEventListener('dcc:solo-hole-change',refresh);
+ doc.addEventListener('dcc:course-selected',refresh);
+ doc.getElementById('tab-games')?.addEventListener('click',refresh);
+ refresh();
 }
 if(typeof document!=='undefined'){
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>mountAllHeartInRound(),{once:true});
