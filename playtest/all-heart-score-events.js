@@ -6,14 +6,15 @@ import {emitAllHeartRoundDetail} from './all-heart-scorecard-context.js';
 export function installAllHeartScoreEvents({doc=globalThis.document,storage=globalThis.localStorage}={}){
  if(!doc?.addEventListener || !storage?.getItem)return ()=>{};
  let verifiedHole=null;
- const refresh=()=>{if(verifiedHole)emitAllHeartRoundDetail(doc,storage,verifiedHole)};
+ const clear=()=>doc.getElementById?.('dccAllHeartMoment')?.replaceChildren();
+ const refresh=()=>{if(!verifiedHole || !emitAllHeartRoundDetail(doc,storage,verifiedHole))clear()};
  const onVerified=event=>{
   const hole=event?.detail;
   verifiedHole=hole?.verified===true?hole:null;
   if(verifiedHole)refresh();
-  else doc.getElementById?.('dccAllHeartMoment')?.replaceChildren();
+  else clear();
  };
- const onCourseChange=()=>{verifiedHole=null;doc.getElementById?.('dccAllHeartMoment')?.replaceChildren()};
+ const onCourseChange=()=>{verifiedHole=null;clear()};
  doc.addEventListener('dcc:verified-hole-context',onVerified);
  doc.addEventListener('dcc:solo-hole-change',refresh);
  doc.addEventListener('dcc:course-selected',onCourseChange);
