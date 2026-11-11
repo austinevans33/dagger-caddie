@@ -43,7 +43,7 @@ function mount(){
  </div>
  <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
  <button class="dcc-home-handicap" type="button" data-dcc-go="handicap"><span><strong>Handicap Index</strong><small>Open your member profile to update HCP</small></span><span aria-hidden="true">›</span></button>
- <button class="dcc-home-course" type="button" data-dcc-go="course"><span><strong>Change Course</strong><small>Open the Starter’s Desk · keep saved rounds</small></span><span aria-hidden="true">›</span></button>
+ <button class="dcc-home-course" type="button" data-dcc-go="course"><span><strong>Course Settings</strong><small>Open existing course &amp; GPS controls</small></span><span aria-hidden="true">›</span></button>
  <footer class="dcc-home-heritage" aria-label="Dagger Country Club heritage seal"><img src="dcc-approved-seal.png" alt="Dagger Country Club circular seal — As It Lies" loading="lazy"></footer>
 `;
  caddy.parentNode.insertBefore(section,caddy);
@@ -96,7 +96,8 @@ function mount(){
    if(starter){starter.click();return}
    const dialog=document.getElementById('dcc-starter-dialog');
    if(dialog&&typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();return}
-   // Older builds retain course tools under Club Services.
+   // The pinned production bundle has no Starter's Desk launch control.
+   // Open the real legacy course field without claiming a verified tee switch.
    openTab('settings');
    const course=document.getElementById('legacyCourseTools');
    if(course){course.scrollIntoView({block:'start'});course.querySelector('#course')?.focus({preventScroll:true})}
