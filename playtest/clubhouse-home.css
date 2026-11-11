@@ -70,4 +70,4 @@ body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!i
 
 /* Keep the approved heritage seal visible at the foot of the focused Clubhouse.
    The focus filter hides legacy play panels, but must not hide the shared tab footer. */
-body.dcc-clubhouse-focus .content > .dcc-r162-seal-footer[data-tab="play"]:not(.hidden-panel){display:block!important}
+body.dcc-clubhouse-focus .content > :is(#dccR161Seal_play,#dccR162Seal_play).dcc-r162-seal-footer:not(.hidden-panel){display:block!important}
