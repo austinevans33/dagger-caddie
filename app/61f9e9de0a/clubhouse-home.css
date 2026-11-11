@@ -85,3 +85,9 @@ body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!i
  body:has(nav.tabbar.dcc-bespoke-nav) .app-shell>.content{padding-bottom:calc(135px + env(safe-area-inset-bottom,0px))!important}
  body:has(nav.tabbar.dcc-bespoke-nav) [data-tab="games"] button{scroll-margin-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
 }
+
+#dccClubhouseHome .dcc-home-handicap{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;margin-top:10px;padding:11px 15px;border:1px solid #8b9c7d;border-radius:12px;background:#214b38;color:#f5eddd;text-align:left}
+#dccClubhouseHome .dcc-home-handicap strong{display:block;font:700 16px/1.25 Georgia,serif}
+#dccClubhouseHome .dcc-home-handicap small{display:block;margin-top:3px;font:12px/1.3 system-ui,sans-serif;color:#d4dfd2}
+#dccClubhouseHome .dcc-home-handicap>span:last-child{font:26px Georgia,serif}
+#dccClubhouseHome .dcc-home-handicap:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
