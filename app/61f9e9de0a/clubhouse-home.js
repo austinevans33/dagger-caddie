@@ -46,8 +46,8 @@ function mount(){
  <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
  <button class="dcc-home-handicap" type="button" data-dcc-go="handicap"><span><strong>Handicap Index</strong><small>Open your member profile to update HCP</small></span><span aria-hidden="true">›</span></button>
  <button class="dcc-home-course" type="button" data-dcc-go="course"><span><strong>Change Course</strong><small>Choose a verified course and tee</small></span><span aria-hidden="true">›</span></button>
- <dialog id="dccHomeCourseDialog" aria-label="Choose course and tees" style="width:min(92vw,440px);max-height:82dvh;overflow:auto;border:2px solid #b79c62;border-radius:18px;background:#f3ead7;color:#163b2c;padding:20px">
-  <form method="dialog"><button type="submit" style="float:right;min-height:44px">Close ×</button></form>
+ <dialog id="dccHomeCourseDialog" aria-label="Choose course and tees" style="width:min(92vw,440px);max-height:82dvh;overflow:auto;border:2px solid #b79c62;border-radius:18px;background:#f3ead7;color:#163b2c;padding:20px;position:relative">
+  <form method="dialog" style="display:contents"><button type="submit" aria-label="Close Starter’s Desk" style="position:absolute;top:12px;right:12px;display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;max-width:44px;padding:0;margin:0;border:1px solid #b79c62;border-radius:50%;background:#e8dcc2;color:#163b2c;font:normal 26px/1 Georgia,serif;box-shadow:none;appearance:none;-webkit-appearance:none">×</button></form>
   <h3 style="font:700 25px Georgia,serif;margin:4px 0 12px">Starter’s Desk</h3>
   <p style="font:13px system-ui">Search published course scorecards. Choosing a new course updates the Yardage Book selection; it does not delete your saved scores.</p>
   <label for="dccHomeCourseSearch">Find a course</label><input id="dccHomeCourseSearch" type="search" autocomplete="off" placeholder="e.g. Kings Grant" style="width:100%;min-height:44px">
