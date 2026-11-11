@@ -86,8 +86,8 @@ function mount(){
   }
   else if(target==='handicap'){
    // Account owns member identity and handicap; do not introduce a second value.
-   document.getElementById('dccR62Account')?.click();
-   const input=document.querySelector('input[id*="handicap" i],input[name*="handicap" i]');
+   openTab('settings');
+   const input=document.getElementById('golferHandicap') || document.querySelector('input[id*="handicap" i],input[name*="handicap" i]');
    if(input){input.closest('details')?.setAttribute('open','');input.scrollIntoView({block:'center'});input.focus({preventScroll:true})}
   }
   else if(target==='course'){
