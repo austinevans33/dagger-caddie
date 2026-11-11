@@ -29,7 +29,11 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
   pattern.append(item('rect',{width:7,height:7,fill:paper}));
   pattern.append(item('path',{
    d:kind==='water'?'M0 2h7 M1 5h4':'M-1 5l6 -6 M2 8l6 -6 M5 10l5 -5',
-   stroke:pencil,'stroke-opacity':.17,'stroke-width':.7,fill:'none'
+   stroke:pencil,'stroke-opacity':kind==='bunker'?.27:kind==='water'?.23:.19,'stroke-width':kind==='bunker'?1:.7,fill:'none'
+  }));
+  if(kind==='fairway'||kind==='green')pattern.append(item('path',{
+   d:kind==='green'?'M0 1l3 3 M4 5l3 2':'M0 3l3 -3 M4 7l3 -3',
+   stroke:pencil,'stroke-opacity':.11,'stroke-width':.55,fill:'none'
   }));
   defs.append(pattern);
  }
