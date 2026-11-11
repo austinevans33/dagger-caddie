@@ -77,3 +77,11 @@ body.dcc-clubhouse-focus [data-tab="play"]:not(#dccClubhouseHome){display:none!i
 #dccClubhouseHome .dcc-home-course:focus-visible{outline:3px solid #e7c878;outline-offset:3px}
 #dccClubhouseHome .dcc-home-heritage{margin:18px 0 0;padding:17px 0 2px;border-top:1px solid rgba(212,175,110,.3);text-align:center}
 #dccClubhouseHome .dcc-home-heritage img{display:block;width:96px;max-width:34vw;height:auto;margin:0 auto;object-fit:contain;mix-blend-mode:lighten}
+
+/* iPhone fixed tab bar: reserve real scroll clearance below the last Grounds
+   control, including the Home Indicator safe area. Do not move the tab bar. */
+@media(max-width:720px){
+ body:has(nav.tabbar.dcc-bespoke-nav) main{padding-bottom:calc(155px + env(safe-area-inset-bottom,0px))!important}
+ body:has(nav.tabbar.dcc-bespoke-nav) .app-shell>.content{padding-bottom:calc(135px + env(safe-area-inset-bottom,0px))!important}
+ body:has(nav.tabbar.dcc-bespoke-nav) [data-tab="games"] button{scroll-margin-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+}
