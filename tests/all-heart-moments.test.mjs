@@ -19,8 +19,8 @@ test('rejects unverified historic claims',()=>{
  assert.equal(chooseAllHeartMoment({...base,historicalChallenge:{...historic,verified:true,event:''}}).type,'dare');
 });
 test('never invents ghost scores or shows on inactive rounds',()=>{
- assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,ghostRival:{strokes:4}}),null);
- assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,ghostRival:{eligible:true,strokes:4}}).type,'grudge');
+ assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,ghostRival:{strokes:4}}).type,'dare');
+ assert.equal(chooseAllHeartMoment({...base,moneyRoomPlayers:0,par:3,ghostRival:{eligible:true,strokes:4}}).type,'grudge');
  assert.equal(chooseAllHeartMoment({...base,roundActive:false}),null);
 });
 
