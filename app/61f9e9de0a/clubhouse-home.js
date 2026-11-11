@@ -42,6 +42,8 @@ function mount(){
   <button class="dcc-home-tile" type="button" data-dcc-go="ledger"><span class="dcc-home-tile-icon" aria-hidden="true">▤</span><span class="dcc-home-tile-name">Ledger</span><span class="dcc-home-tile-caption">Balances &amp; statements</span></button>
  </div>
  <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
+ <button class="dcc-home-course" type="button" data-dcc-go="course"><span><strong>Change Course</strong><small>Open the Starter’s Desk · keep saved rounds</small></span><span aria-hidden="true">›</span></button>
+ <footer class="dcc-home-heritage" aria-label="Dagger Country Club heritage seal"><img src="dcc-approved-seal.png" alt="Dagger Country Club circular seal — As It Lies" loading="lazy"></footer>
 `;
  caddy.parentNode.insertBefore(section,caddy);
  // Retain the entire original header, saved state, and caddy infrastructure.
@@ -80,6 +82,17 @@ function mount(){
    openTab('games');
    const ghost=document.getElementById('dccR91SoloPanel');
    if(ghost){ghost.open=true;ghost.scrollIntoView({block:'start'});}
+  }
+  else if(target==='course'){
+   // Reuse the existing Starter's Desk instead of creating competing course state.
+   const starter=document.getElementById('dcc-starter-open');
+   if(starter){starter.click();return}
+   const dialog=document.getElementById('dcc-starter-dialog');
+   if(dialog&&typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();return}
+   // Older builds retain course tools under Club Services.
+   openTab('settings');
+   const course=document.getElementById('legacyCourseTools');
+   if(course){course.scrollIntoView({block:'start'});course.querySelector('#course')?.focus({preventScroll:true})}
   }
   else if(target==='ledger'){openTab('bets')}
   else if(target==='ticket'){openTab('bets');document.getElementById('dccPropBets')?.scrollIntoView({block:'start'})}
