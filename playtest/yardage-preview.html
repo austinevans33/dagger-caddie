@@ -29,6 +29,11 @@ header h1{font-family:Georgia,serif;letter-spacing:-.035em}
 
 .field-sketch .route-mark{fill:none;stroke:#42584a;stroke-width:1.8;stroke-dasharray:7 5;opacity:.8}
 .field-sketch .route-target{fill:#f7f0dd;stroke:#42584a;stroke-width:1.7}
+/* Notebook hierarchy: the hole drawing leads, notes stay easy to scan. */
+.paper .field-sketch.has-features{border:1px solid #9b977f;border-radius:7px;box-shadow:inset 0 0 0 3px #f7f0dd,2px 3px 0 #6b70521a}
+.paper .pencil-note{border-left:2px solid #66745c;background:#ede7d6c9;padding:11px 14px}
+.paper .pencil-note #caddyNote{font-size:17px;line-height:1.45}
+@media(max-width:420px){.paper .card{padding:13px}.paper .field-sketch.has-features{padding:5px}.paper .pencil-title{font-size:21px}}
 /* One-hand pencil map controls: large touch targets, no pinch-to-zoom needed. */
 .map-tools{display:flex;gap:7px;margin:9px 0;flex-wrap:wrap}
 .map-tools button{flex:1;min-width:74px;min-height:44px;border:1px solid #8a9482;border-radius:10px;background:#e8e1cc;color:#31473a;font:700 13px system-ui,sans-serif;padding:7px}
