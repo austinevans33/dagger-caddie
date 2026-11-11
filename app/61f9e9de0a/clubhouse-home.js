@@ -1,5 +1,7 @@
 /* Dagger Clubhouse: navigation facade only. Do not own scoring, bets or round state. */
 import {readYardageHole} from './yardage-navigation.js';
+import {founderCatalogRecords,founderTeesForCourse} from './founders-verified-scorecards.js';
+import {saveActiveRound,readActiveRound} from './starters-desk-session.js';
 (function(){
 'use strict';
 function openTab(id){
@@ -42,8 +44,56 @@ function mount(){
   <button class="dcc-home-tile" type="button" data-dcc-go="ledger"><span class="dcc-home-tile-icon" aria-hidden="true">▤</span><span class="dcc-home-tile-name">Ledger</span><span class="dcc-home-tile-caption">Balances &amp; statements</span></button>
  </div>
  <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
+ <button class="dcc-home-handicap" type="button" data-dcc-go="handicap"><span><strong>Handicap Index</strong><small>Open your member profile to update HCP</small></span><span aria-hidden="true">›</span></button>
+ <button class="dcc-home-course" type="button" data-dcc-go="course"><span><strong>Change Course</strong><small>Choose a verified course and tee</small></span><span aria-hidden="true">›</span></button>
+ <dialog id="dccHomeCourseDialog" aria-label="Choose course and tees" style="width:min(92vw,440px);max-height:82dvh;overflow:auto;border:2px solid #b79c62;border-radius:18px;background:#f3ead7;color:#163b2c;padding:20px">
+  <form method="dialog"><button type="submit" style="float:right;min-height:44px">Close ×</button></form>
+  <h3 style="font:700 25px Georgia,serif;margin:4px 0 12px">Starter’s Desk</h3>
+  <p style="font:13px system-ui">Search published course scorecards. Choosing a new course updates the Yardage Book selection; it does not delete your saved scores.</p>
+  <label for="dccHomeCourseSearch">Find a course</label><input id="dccHomeCourseSearch" type="search" autocomplete="off" placeholder="e.g. Kings Grant" style="width:100%;min-height:44px">
+  <label for="dccHomeCourseSelect">Course</label><select id="dccHomeCourseSelect" style="width:100%;min-height:44px"></select>
+  <label for="dccHomeTeeSelect">Tees</label><select id="dccHomeTeeSelect" style="width:100%;min-height:44px"></select>
+  <p id="dccHomeCourseStatus" role="status" style="font:13px system-ui"></p>
+  <button id="dccHomeCourseConfirm" type="button" style="width:100%;min-height:48px;background:#d2ac6d;color:#153729;border:1px solid #aa8855;border-radius:10px;font-weight:700">Use This Course</button>
+ </dialog>
+ <footer class="dcc-home-heritage" aria-label="Dagger Country Club heritage seal"><img src="dcc-approved-seal.png" alt="Dagger Country Club circular seal — As It Lies" loading="lazy"></footer>
 `;
  caddy.parentNode.insertBefore(section,caddy);
+ // A real source-backed course/tee picker. Never fabricate course identities.
+ const search=section.querySelector('#dccHomeCourseSearch');
+ const courses=section.querySelector('#dccHomeCourseSelect');
+ const tees=section.querySelector('#dccHomeTeeSelect');
+ const status=section.querySelector('#dccHomeCourseStatus');
+ const confirm=section.querySelector('#dccHomeCourseConfirm');
+ let records=[];
+ function renderTees(){
+  const course=courses.value!==''?records[Number(courses.value)]:null;
+  const available=course?founderTeesForCourse(course):[];
+  tees.replaceChildren(...available.map((tee,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=tee.name+' · '+tee.totalYards+' yards';return option}));
+  confirm.disabled=!available.length;
+  status.textContent=course?course.name+' · '+course.region:'Type at least two letters to find a published course';
+ }
+ search.addEventListener('input',()=>{
+  records=founderCatalogRecords(search.value).slice(0,100);
+  courses.replaceChildren(...records.map((course,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=course.name+' · '+course.region;return option}));
+  renderTees();
+ });
+ courses.addEventListener('change',renderTees);
+ confirm.addEventListener('click',()=>{
+  const course=courses.value!==''?records[Number(courses.value)]:null;
+  const tee=course&&tees.value!==''?founderTeesForCourse(course)[Number(tees.value)]:null;
+  if(!course||!tee)return;
+  const previous=readActiveRound(localStorage)?.selection;
+  if(previous&&(previous.course.providerCourseId!==course.providerCourseId||previous.tee.providerTeeId!==tee.providerTeeId)){
+   if(!window.confirm('Switch Yardage Book course and tee? Saved scores stay intact, but the active course context will change.'))return;
+  }
+  if(!saveActiveRound(localStorage,{course,tee,holeNumber:1})){status.textContent='Could not save course selection on this device';return}
+  document.dispatchEvent(new CustomEvent('dcc:course-selected',{detail:{course,tee}}));
+  section.querySelector('#dccHomeCourseDialog').close();
+  status.textContent='Course selected';
+  section.querySelector('#dccHomeHole').textContent='HOLE 1';
+ });
+
  // Retain the entire original header, saved state, and caddy infrastructure.
  // Expose only the approved Clubhouse doors in the home tab.
  document.body.classList.add('dcc-clubhouse-focus');
@@ -80,6 +130,17 @@ function mount(){
    openTab('games');
    const ghost=document.getElementById('dccR91SoloPanel');
    if(ghost){ghost.open=true;ghost.scrollIntoView({block:'start'});}
+  }
+  else if(target==='handicap'){
+   // Player's Locker owns the persisted handicap; do not introduce a second value.
+   openTab('bag');
+   const input=document.getElementById('golferHandicap') || document.querySelector('input[id*="handicap" i],input[name*="handicap" i]');
+   if(input){input.closest('details')?.setAttribute('open','');input.scrollIntoView({block:'center'});input.focus({preventScroll:true})}
+  }
+  else if(target==='course'){
+   const dialog=document.getElementById('dccHomeCourseDialog');
+   if(dialog&&!dialog.open)dialog.showModal();
+   document.getElementById('dccHomeCourseSearch')?.focus();
   }
   else if(target==='ledger'){openTab('bets')}
   else if(target==='ticket'){openTab('bets');document.getElementById('dccPropBets')?.scrollIntoView({block:'start'})}

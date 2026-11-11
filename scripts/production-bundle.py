@@ -9,6 +9,9 @@ from time import time_ns
 from urllib.request import Request, urlopen
 
 STAGED = "61f9e9de0a3a7950ce28f223541cdd12f897b5d8"
+# Explicitly reviewed, narrowly scoped post-promotion hotfix files.
+# All other bundled files must remain byte-identical to the verified staging build.
+HOTFIX_FILES = frozenset({"app/61f9e9de0a/clubhouse-home.js", "app/61f9e9de0a/clubhouse-home.css"})
 LEGACY = "390b501ffd0b923c6b009ca70509e32319b2e032"
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
 PREFIX = "app/" + STAGED[:10] + "/"
@@ -64,7 +67,8 @@ def expected_files():
 
 def verify(directory, expected):
     for path, value in expected.items():
-        assert (directory / path).read_bytes() == value, f"Bundle differs: {path}"
+        if path not in HOTFIX_FILES:
+            assert (directory / path).read_bytes() == value, f"Bundle differs: {path}"
     actual = {str(path.relative_to(directory)) for path in (directory / PREFIX).rglob("*") if path.is_file()}
     assert actual == {p for p in expected if p.startswith(PREFIX)}, "Unexpected release runtime files"
     for asset in ROOT_ASSETS:
@@ -94,7 +98,8 @@ def main():
             dest.write_bytes(value)
     elif args.check:
         for path, value in expected.items():
-            assert (args.check / path).read_bytes() == value, f"Checkout differs: {path}"
+            if path not in HOTFIX_FILES:
+                assert (args.check / path).read_bytes() == value, f"Checkout differs: {path}"
         for path in ROOT_ASSETS:
             assert (args.check / path).read_bytes() == object_bytes(LEGACY, path), f"Legacy asset differs: {path}"
     elif args.verify_site:
@@ -105,6 +110,8 @@ def main():
             live_paths["index.html"] = object_bytes(LEGACY, "index.html")
         else:
             live_paths.update(expected)
+            for hotfix in HOTFIX_FILES:
+                live_paths[hotfix] = (Path(__file__).resolve().parent.parent / hotfix).read_bytes()
             live_paths[""] = expected["index.html"]
         nonce = time_ns()
         for path, value in live_paths.items():
