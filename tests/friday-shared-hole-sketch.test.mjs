@@ -69,7 +69,7 @@ test('pencil textures are isolated across sketches and preserve mapped coordinat
  for(const svg of [a,b]){
   const valid=new Set(ids(svg));
   for(const polygon of polygons(svg)){
-   const match=polygon.attrs.fill.match(/^url\\(#(.+)\\)$/);
+   const match=polygon.attrs.fill.match(/^url\(#(.+)\)$/);
    assert.ok(match);
    assert.ok(valid.has(match[1]));
   }
