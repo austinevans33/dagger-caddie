@@ -15,7 +15,7 @@ export function installAllHeartActions({document:doc=globalThis.document}={}){
    doc.getElementById?.('dccPropText')?.focus?.();
    return;
   }
-  if((moment.type==='grudge'||moment.type==='legend') && moment.action==='accept-challenge'){
+  if((moment.type==='grudge'||moment.type==='legend'||moment.type==='dare') && moment.action==='accept-challenge'){
    // An opt-in challenge is informational until the round engine explicitly
    // records it. No synthetic score or wager is generated here.
    doc.dispatchEvent(new CustomEvent('dcc:all-heart-challenge-selected',{
