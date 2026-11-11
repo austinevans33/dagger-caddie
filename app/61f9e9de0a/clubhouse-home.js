@@ -42,6 +42,7 @@ function mount(){
   <button class="dcc-home-tile" type="button" data-dcc-go="ledger"><span class="dcc-home-tile-icon" aria-hidden="true">▤</span><span class="dcc-home-tile-name">Ledger</span><span class="dcc-home-tile-caption">Balances &amp; statements</span></button>
  </div>
  <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
+ <button class="dcc-home-handicap" type="button" data-dcc-go="handicap"><span><strong>Handicap Index</strong><small>Open your member profile to update HCP</small></span><span aria-hidden="true">›</span></button>
  <button class="dcc-home-course" type="button" data-dcc-go="course"><span><strong>Change Course</strong><small>Open the Starter’s Desk · keep saved rounds</small></span><span aria-hidden="true">›</span></button>
  <footer class="dcc-home-heritage" aria-label="Dagger Country Club heritage seal"><img src="dcc-approved-seal.png" alt="Dagger Country Club circular seal — As It Lies" loading="lazy"></footer>
 `;
@@ -82,6 +83,12 @@ function mount(){
    openTab('games');
    const ghost=document.getElementById('dccR91SoloPanel');
    if(ghost){ghost.open=true;ghost.scrollIntoView({block:'start'});}
+  }
+  else if(target==='handicap'){
+   // Account owns member identity and handicap; do not introduce a second value.
+   document.getElementById('dccR62Account')?.click();
+   const input=document.querySelector('input[id*="handicap" i],input[name*="handicap" i]');
+   if(input){input.closest('details')?.setAttribute('open','');input.scrollIntoView({block:'center'});input.focus({preventScroll:true})}
   }
   else if(target==='course'){
    // Reuse the existing Starter's Desk instead of creating competing course state.
