@@ -15,7 +15,7 @@ test('one renderer gives Yardage and Ghost identical provider geometry',()=>{
  const notes=pencilBookAnnotations(features);
  const yardage=mockSvg(),ghost=mockSvg();
  const a=renderSharedHoleSketch(yardage,features,notes),b=renderSharedHoleSketch(ghost,features,notes);
- const geometry=svg=>svg.children.filter(node=>node.name!=='defs').map(node=>({name:node.name,attrs:{...node.attrs,fill:String(node.attrs.fill||'').replace(/dcc-pencil-\\d+-/g,'dcc-pencil-')},text:node.text}));
+ const geometry=svg=>svg.children.filter(node=>node.name!=='defs').map(node=>({name:node.name,attrs:{...node.attrs,fill:String(node.attrs.fill||'').replace(/dcc-pencil-[0-9]+-/g,'dcc-pencil-')},text:node.text}));
  assert.deepEqual(geometry(yardage),geometry(ghost));
  assert.equal(a.length,4);assert.equal(b.length,4);
  assert.equal(yardage.children.filter(x=>x.name==='path').length,1);
