@@ -23,7 +23,7 @@ export function mountAllHeartMoment({root,context,history={},onAccept=()=>{},onD
  }
  const actions=doc.createElement('div');actions.className='dcc-all-heart-actions';
  const accept=doc.createElement('button');accept.type='button';
- accept.textContent=moment.type==='dare'?'Open Ticket Window':'Take the challenge';
+ accept.textContent=moment.action==='open-ticket-window'?'Open Ticket Window':'Take the challenge';
  accept.addEventListener('click',()=>{root.replaceChildren();onAccept(moment)});
  const dismiss=doc.createElement('button');dismiss.type='button';
  dismiss.textContent='Not this hole';
