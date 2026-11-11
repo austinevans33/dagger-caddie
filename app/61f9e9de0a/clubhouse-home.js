@@ -67,7 +67,7 @@ function mount(){
  const confirm=section.querySelector('#dccHomeCourseConfirm');
  let records=[];
  function renderTees(){
-  const course=records[Number(courses.value)];
+  const course=courses.value!==''?records[Number(courses.value)]:null;
   const available=course?founderTeesForCourse(course):[];
   tees.replaceChildren(...available.map((tee,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=tee.name+' · '+tee.totalYards+' yards';return option}));
   confirm.disabled=!available.length;
@@ -80,8 +80,8 @@ function mount(){
  });
  courses.addEventListener('change',renderTees);
  confirm.addEventListener('click',()=>{
-  const course=records[Number(courses.value)];
-  const tee=course&&founderTeesForCourse(course)[Number(tees.value)];
+  const course=courses.value!==''?records[Number(courses.value)]:null;
+  const tee=course&&tees.value!==''?founderTeesForCourse(course)[Number(tees.value)]:null;
   if(!course||!tee)return;
   const previous=readActiveRound(localStorage)?.selection;
   if(previous&&(previous.course.providerCourseId!==course.providerCourseId||previous.tee.providerTeeId!==tee.providerTeeId)){
@@ -91,6 +91,7 @@ function mount(){
   document.dispatchEvent(new CustomEvent('dcc:course-selected',{detail:{course,tee}}));
   section.querySelector('#dccHomeCourseDialog').close();
   status.textContent='Course selected';
+  section.querySelector('#dccHomeHole').textContent='HOLE 1';
  });
 
  // Retain the entire original header, saved state, and caddy infrastructure.
