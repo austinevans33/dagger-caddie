@@ -134,8 +134,17 @@ function mount(){
   else if(target==='handicap'){
    // Player's Locker owns the persisted handicap; do not introduce a second value.
    openTab('bag');
-   const input=document.getElementById('golferHandicap') || document.querySelector('input[id*="handicap" i],input[name*="handicap" i]');
-   if(input){input.closest('details')?.setAttribute('open','');input.scrollIntoView({block:'center'});input.focus({preventScroll:true})}
+   // The R78 equipment drawer wraps the Player's Locker; open BOTH nested drawers.
+   const equipment=document.getElementById('dccR78EquipmentTools');
+   if(equipment)equipment.open=true;
+   const input=document.getElementById('golferHandicap');
+   if(input){
+    input.closest('details')?.setAttribute('open','');
+    requestAnimationFrame(()=>{input.scrollIntoView({block:'center'});input.focus({preventScroll:true})});
+   }else{
+    const locker=document.getElementById('playersLocker');
+    locker?.scrollIntoView({block:'start'});
+   }
   }
   else if(target==='course'){
    const dialog=document.getElementById('dccHomeCourseDialog');
