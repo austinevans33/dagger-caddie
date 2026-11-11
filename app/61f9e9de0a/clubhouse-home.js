@@ -44,8 +44,17 @@ function mount(){
   <button class="dcc-home-tile" type="button" data-dcc-go="ledger"><span class="dcc-home-tile-icon" aria-hidden="true">▤</span><span class="dcc-home-tile-name">Ledger</span><span class="dcc-home-tile-caption">Balances &amp; statements</span></button>
  </div>
  <button class="dcc-home-money" type="button" data-dcc-go="money"><span><strong>◉ Live Money Room</strong><small>Start or join · host QR code</small></span><span aria-hidden="true">›</span></button>
- <button class="dcc-home-handicap" type="button" data-dcc-go="handicap"><span><strong>Handicap Index</strong><small>Open your member profile to update HCP</small></span><span aria-hidden="true">›</span></button>
+ <button class="dcc-home-handicap" type="button" data-dcc-go="handicap"><span><strong>Handicap Index</strong><small>Tap to enter or update your index</small></span><span aria-hidden="true">›</span></button>
  <button class="dcc-home-course" type="button" data-dcc-go="course"><span><strong>Change Course</strong><small>Choose a verified course and tee</small></span><span aria-hidden="true">›</span></button>
+ <dialog id="dccHomeHandicapDialog" aria-label="Edit Handicap Index" style="width:min(90vw,400px);max-height:80dvh;overflow:auto;position:relative;padding:24px 20px;border:2px solid #b79c62;border-radius:18px;background:#f3ead7;color:#163b2c">
+  <button type="button" id="dccHomeHandicapClose" aria-label="Close handicap editor" style="position:absolute;top:10px;right:10px;width:44px;height:44px;min-height:44px;min-width:44px;max-width:44px;margin:0;padding:0;border:1px solid #b79c62;border-radius:50%;background:#e8dcc2;color:#163b2c;font:normal 26px/1 Georgia,serif;box-shadow:none;-webkit-appearance:none">×</button>
+  <h3 style="font:700 27px Georgia,serif;margin:8px 46px 12px 0">Handicap Index</h3>
+  <p style="font:14px/1.5 system-ui">Enter your current Handicap Index. Plus handicaps use a negative number.</p>
+  <label for="dccHomeHandicapInput" style="display:block;margin:16px 0 6px">Your index</label>
+  <input id="dccHomeHandicapInput" type="number" inputmode="decimal" min="-10" max="54" step="0.1" placeholder="e.g. 9.1" style="display:block;width:100%;min-height:48px;font-size:20px">
+  <p id="dccHomeHandicapStatus" role="status" aria-live="polite" style="font:13px/1.5 system-ui;min-height:24px"></p>
+  <button type="button" id="dccHomeHandicapSave" style="width:100%;min-height:48px;border:1px solid #a78a4f;border-radius:10px;background:#d2ac6d;color:#163b2c;font-weight:700">Save Handicap</button>
+ </dialog>
  <dialog id="dccHomeCourseDialog" aria-label="Choose course and tees" style="width:min(92vw,440px);max-height:82dvh;overflow:auto;border:2px solid #b79c62;border-radius:18px;background:#f3ead7;color:#163b2c;padding:20px;position:relative">
   <form method="dialog" style="display:contents"><button type="submit" aria-label="Close Starter’s Desk" style="position:absolute;top:12px;right:12px;display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;max-width:44px;padding:0;margin:0;border:1px solid #b79c62;border-radius:50%;background:#e8dcc2;color:#163b2c;font:normal 26px/1 Georgia,serif;box-shadow:none;appearance:none;-webkit-appearance:none">×</button></form>
   <h3 style="font:700 25px Georgia,serif;margin:4px 0 12px">Starter’s Desk</h3>
@@ -131,21 +140,7 @@ function mount(){
    const ghost=document.getElementById('dccR91SoloPanel');
    if(ghost){ghost.open=true;ghost.scrollIntoView({block:'start'});}
   }
-  else if(target==='handicap'){
-   // Player's Locker owns the persisted handicap; do not introduce a second value.
-   openTab('bag');
-   // The R78 equipment drawer wraps the Player's Locker; open BOTH nested drawers.
-   const equipment=document.getElementById('dccR78EquipmentTools');
-   if(equipment)equipment.open=true;
-   const input=document.getElementById('golferHandicap');
-   if(input){
-    input.closest('details')?.setAttribute('open','');
-    requestAnimationFrame(()=>{input.scrollIntoView({block:'center'});input.focus({preventScroll:true})});
-   }else{
-    const locker=document.getElementById('playersLocker');
-    locker?.scrollIntoView({block:'start'});
-   }
-  }
+  else if(target==='handicap'){openHandicapPopup()}
   else if(target==='course'){
    const dialog=document.getElementById('dccHomeCourseDialog');
    if(dialog&&!dialog.open)dialog.showModal();
@@ -157,6 +152,47 @@ function mount(){
   else if(target==='caddy'){caddy.scrollIntoView({block:'start',behavior:'instant'})}
   else if(target==='bag'||target==='settings'){openTab(target)}
  });
+ // Direct popup; the existing Firebase Golfer Memory editor remains the only writer.
+ const handicapDialog=section.querySelector('#dccHomeHandicapDialog');
+ const handicapInput=section.querySelector('#dccHomeHandicapInput');
+ const handicapStatus=section.querySelector('#dccHomeHandicapStatus');
+ const handicapSave=section.querySelector('#dccHomeHandicapSave');
+ function openHandicapPopup(){
+  const source=document.getElementById('golferHandicap');
+  handicapInput.value=source?.value||'';
+  handicapSave.disabled=!source||source.disabled;
+  handicapStatus.textContent=!source?'Golfer Memory is not available. Try reopening Dagger.':source.disabled?'Sign in to your permanent Golfer Account to edit your index.':'Your index is saved to your existing Golfer Memory.';
+  if(!handicapDialog.open)handicapDialog.showModal();
+ }
+ section.querySelector('#dccHomeHandicapClose').addEventListener('click',()=>handicapDialog.close());
+ handicapSave.addEventListener('click',()=>{
+  const source=document.getElementById('golferHandicap');
+  const originalSave=document.getElementById('saveGolferProfile');
+  const raw=handicapInput.value.trim();const value=Number(raw);
+  if(!source||!originalSave||source.disabled||originalSave.disabled){handicapStatus.textContent='Golfer Memory is not ready. Sign in to your Golfer Account.';return}
+  if(!raw||!Number.isFinite(value)||value< -10||value>54||Math.round(value*10)!==value*10){handicapStatus.textContent='Enter an index from -10.0 to 54.0, in tenths.';return}
+  source.value=raw;
+  source.dispatchEvent(new Event('input',{bubbles:true}));
+  originalSave.click();
+  handicapStatus.textContent='Saving to Golfer Memory…';
+  handicapSave.disabled=true;
+  const realStatus=document.getElementById('golferProfileStatus');
+  if(!realStatus){handicapSave.disabled=false;handicapStatus.textContent='Save status unavailable.';return}
+  const observer=new MutationObserver(()=>{
+   const message=realStatus.textContent||'';
+   if(/Handicap Index saved to Golfer Memory!/i.test(message)){
+    observer.disconnect();handicapSave.disabled=false;handicapDialog.close();
+    const header=document.getElementById('dccR106Handicap');if(header)header.textContent='HCP '+value.toFixed(1);
+   }else if(/Could not save:|Please sign in|Enter a valid Handicap/i.test(message)){
+    observer.disconnect();handicapSave.disabled=false;handicapStatus.textContent=message;
+   }
+  });
+  observer.observe(realStatus,{childList:true,characterData:true,subtree:true});
+ });
+ // Intercept the legacy banner click before its incorrect Settings navigation.
+ document.addEventListener('click',event=>{
+  if(event.target.closest('#dccR106Handicap')){event.preventDefault();event.stopImmediatePropagation();openHandicapPopup()}
+ },true);
  // Existing navigation handlers remain intact; these two doors are simply off the bottom bar.
  for(const tabName of ['bag','settings']){
   const sections=Array.from(document.querySelectorAll('[data-tab="'+tabName+'"]')).filter(el=>el.tagName==='SECTION');
