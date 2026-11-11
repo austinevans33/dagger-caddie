@@ -99,7 +99,7 @@ def main():
     elif args.check:
         for path, value in expected.items():
             if path not in HOTFIX_FILES:
-            assert (args.check / path).read_bytes() == value, f"Checkout differs: {path}"
+                assert (args.check / path).read_bytes() == value, f"Checkout differs: {path}"
         for path in ROOT_ASSETS:
             assert (args.check / path).read_bytes() == object_bytes(LEGACY, path), f"Legacy asset differs: {path}"
     elif args.verify_site:
