@@ -2,6 +2,7 @@
 // Only hole-assigned provider polygons enter this function. Ghost's simulated
 // shot tracer remains separate: synthetic strokes are NOT GPS coordinates.
 const NS='http://www.w3.org/2000/svg';
+let sketchSequence=0;
 export const PENCIL_PALETTE=Object.freeze({
  green:['#bac8a0','#455c47'],fairway:['#ced7ae','#596955'],
  bunker:['#e9d8b1','#8d8265'],water:['#b8ccd0','#516d78'],
@@ -19,9 +20,12 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
   if(caption!==undefined)node.textContent=caption;
   return node;
  };
+ // Scope pattern identifiers per SVG. Yardage Book and Ghost can coexist
+ // on the same page without one sketch borrowing the other's pencil fill.
+ const patternPrefix='dcc-pencil-'+(++sketchSequence)+'-';
  const defs=item('defs',{});
  for(const [kind,[paper,pencil]] of Object.entries(PENCIL_PALETTE)){
-  const pattern=item('pattern',{id:'pencil-'+kind,width:7,height:7,patternUnits:'userSpaceOnUse'});
+  const pattern=item('pattern',{id:patternPrefix+kind,width:7,height:7,patternUnits:'userSpaceOnUse'});
   pattern.append(item('rect',{width:7,height:7,fill:paper}));
   pattern.append(item('path',{
    d:kind==='water'?'M0 2h7 M1 5h4':'M-1 5l6 -6 M2 8l6 -6 M5 10l5 -5',
@@ -41,7 +45,7 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
    : {points:points(shape.points)};
   const polygon=item(cutouts?.length?'path':'polygon',{
    ...geometry,
-   fill:'url(#pencil-'+shape.type+')',stroke:PENCIL_PALETTE[shape.type][1],
+   fill:'url(#'+patternPrefix+shape.type+')',stroke:PENCIL_PALETTE[shape.type][1],
    'stroke-width':shape.type==='fairway'?1.6:1.1,'stroke-linejoin':'round',
    'data-map-feature':i
   });
@@ -72,7 +76,12 @@ export function renderSharedHoleSketch(svg,shapes=[],annotations={},options={}){
  if(annotations.route){
   const {tee,green,path=[tee,green]}=annotations.route;
   svg.append(item('path',{d:'M '+path.map(point=>point.join(' ')).join(' L '),class:'route-mark',fill:'none',stroke:'#42584a','stroke-width':1,'stroke-dasharray':'3 5','stroke-opacity':.65}));
+  // Two restrained hand-inked landmarks: tee ring and green target.
+  // They indicate only provider route endpoints, never a live pin location.
+  svg.append(item('circle',{cx:tee[0],cy:tee[1],r:5.5,fill:'none',stroke:'#42584a','stroke-width':.8,'stroke-opacity':.65}));
   svg.append(item('circle',{cx:tee[0],cy:tee[1],r:3,class:'route-target',fill:'#f7f0dd',stroke:'#42584a'}));
+  svg.append(item('circle',{cx:green[0],cy:green[1],r:5.5,fill:'none',stroke:'#42584a','stroke-width':1,'stroke-dasharray':'2 2'}));
+  svg.append(item('circle',{cx:green[0],cy:green[1],r:1.8,fill:'#42584a'}));
   mapLabel(annotations.approximateTee?'TEE (APPROX.)':'TEE',tee,{endpoint:true,below:true});
   mapLabel('GREEN',green,{endpoint:true});
  }
