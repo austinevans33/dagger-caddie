@@ -1,5 +1,6 @@
 import {installAllHeartBridge} from './all-heart-bridge.js';
 import {installAllHeartActions} from './all-heart-actions.js';
+import {installAllHeartScoreEvents} from './all-heart-score-events.js';
 
 // Progressive enhancement only. The existing round engine remains the sole
 // authority for scores, verified hole context, Ghost and wager state.
@@ -15,6 +16,7 @@ export function mountAllHeartInRound(doc=globalThis.document){
  games.prepend(root);
  installAllHeartBridge({document:doc});
  installAllHeartActions({document:doc});
+ installAllHeartScoreEvents({doc,storage:globalThis.localStorage});
 }
 if(typeof document!=='undefined'){
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>mountAllHeartInRound(),{once:true});
