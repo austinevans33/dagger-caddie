@@ -7206,7 +7206,7 @@ try {
     dccGhostHoles = saved.holes;
     dccGhostCourse = saved.course;
     const pending = saved.pending;
-    if (pending?.hole === saved.holes.length + 1 &&
+    if (pending?.hole === dccGhostActualHole(saved.holes.length) &&
         pending.hole <= dccGhostLength && [3,4,5].includes(pending.par) &&
         Number.isInteger(pending.ghost) && pending.ghost >= 1 && pending.ghost <= 20) {
       dccGhostPending = pending;
