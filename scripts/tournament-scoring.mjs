@@ -52,12 +52,11 @@ export function leaderboard(teams,verifiedPars,holeCount=18) {
  standings.sort((a,b)=>{
   if(a.disqualified!==b.disqualified)return a.disqualified?1:-1;
   if(a.relative===null||b.relative===null)return a.relative===null?(b.relative===null?0:1):-1;
-  if(a.complete!==b.complete)return a.complete?-1:1;
   return a.relative-b.relative||b.played-a.played||a.name.localeCompare(b.name);
  });
  let lastKey=null,rank=0;
  return standings.map((row,i)=>{
-  const key=row.disqualified?'DQ'+i:row.relative===null?'UNVERIFIED'+i:`${row.complete}|${row.relative}|${row.played}`;
+  const key=row.disqualified?'DQ'+i:row.relative===null?'UNVERIFIED'+i:String(row.relative);
   if(key!==lastKey){rank=i+1;lastKey=key}
   return {...row,rank:row.disqualified||row.relative===null?null:rank};
  });
