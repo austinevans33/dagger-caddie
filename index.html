@@ -7083,6 +7083,7 @@ function dccGhostArchiveMatch() {
     tier,
     condition: dccGhostCondition || 'normal',
     holesPlanned: dccGhostLength,
+    startHole:dccGhostStartHole,
     holes: dccGhostHoles.map(h => ({ ...h })),
     result: {
       lead: result.lead,
@@ -7106,6 +7107,36 @@ const DCC_GHOST_DRAFT_KEY = 'dcc_house_ghost_draft_v1';
 
 
 let dccGhostHoles = [];
+// Shotgun order belongs to the Ghost draft, not the wager/round score ledger.
+let dccGhostStartHole = 1;
+function dccGhostActualHole(played){
+ const length=dccGhostLength===9?9:18;
+ const start=Math.min(length,Math.max(1,dccGhostStartHole));
+ return (start-1+played)%length+1;
+}
+function dccGhostStartControl(){
+ let select=document.getElementById('dccGhostStartHole');
+ if(select)return select;
+ const length=document.getElementById('dccGhostLength');
+ if(!length)return null;
+ const row=document.createElement('label');
+ row.id='dccGhostStartRow';
+ row.style.cssText='display:block;padding:12px;margin:12px 0;border:1px solid #b79c62;border-radius:12px;background:#f3ead7;color:#163b2c;font:700 14px Georgia,serif';
+ row.textContent='SHOTGUN START · FIRST HOLE ';
+ select=document.createElement('select');select.id='dccGhostStartHole';
+ select.setAttribute('aria-label','First hole played in House Ghost match');
+ select.style.cssText='display:block;width:100%;min-height:44px;margin-top:8px;background:#fffaf0;color:#163b2c';
+ for(let i=1;i<=18;i++)select.add(new Option('Hole '+i,String(i)));
+ row.append(select);
+ length.closest('label,div')?.after(row);
+ if(!row.isConnected)length.after(row);
+ select.addEventListener('change',()=>{
+  if(dccGhostHoles.length||dccGhostPending){select.value=String(dccGhostStartHole);return}
+  dccGhostStartHole=Number(select.value);
+  dccGhostRender();
+ });
+ return select;
+}
 
 // DCC STEP 30E — Existing drafts are 18-hole matches.
 let dccGhostLength = 18;
@@ -7171,6 +7202,7 @@ try {
       )) {
     
     dccGhostLength = saved.holesPlanned === 9 ? 9 : 18;
+    dccGhostStartHole=Number.isInteger(saved.startHole)&&saved.startHole>=1&&saved.startHole<=dccGhostLength?saved.startHole:1;
     dccGhostHoles = saved.holes;
     dccGhostCourse = saved.course;
     const pending = saved.pending;
@@ -7205,7 +7237,7 @@ try {
 let dccGhostParRenderToken=0;
 async function dccGhostSyncPar(){
  const token=++dccGhostParRenderToken;
- const hole=dccGhostPending?.hole??(dccGhostHoles.length+1);
+ const hole=dccGhostPending?.hole??dccGhostActualHole(dccGhostHoles.length);
  const snapshot=dccGhostCourse===undefined
    ?localStorage.getItem('dcc_active_round_course_v1'):dccGhostCourse;
  let par=dccGhostPending?.par;
@@ -7250,6 +7282,13 @@ function dccGhostRender() {
   const lengthSelect = document.getElementById('dccGhostLength');
   const eighteen = lengthSelect.querySelector('option[value="18"]');
   const locked = dccGhostHoles.length > 0 || !!dccGhostPending;
+  const startControl=dccGhostStartControl();
+  if(startControl){
+   if(!locked&&dccGhostStartHole>dccGhostLength)dccGhostStartHole=1;
+   for(const o of startControl.options)o.hidden=Number(o.value)>dccGhostLength;
+   startControl.value=String(dccGhostStartHole);
+   startControl.disabled=locked;
+  }
   if (!locked) {
     let nativeNine = false;
     try {
@@ -7293,7 +7332,7 @@ function dccGhostRender() {
   const playButton = document.getElementById('dccGhostPlay');
   playButton.disabled = result.decided;
   playButton.textContent = dccGhostPending ? 'Replay Hole ' + dccGhostPending.hole :
-    (result.played ? 'Watch Hole ' + (result.played + 1) : 'Start round');
+    (result.played ? 'Watch Hole ' + dccGhostActualHole(result.played) : 'Start on Hole '+dccGhostActualHole(0));
 
 
   const position = document.getElementById('dccGhostPosition');
@@ -7307,8 +7346,8 @@ function dccGhostRender() {
     result.decided
       ? 'MATCH COMPLETE · ' + result.played +
         ' OF ' + dccGhostLength + ' HOLES'
-      : 'NEXT HOLE · ' + (result.played + 1) +
-        ' OF ' + dccGhostLength;
+      : 'NEXT · HOLE ' + dccGhostActualHole(result.played) +
+        ' · ' + (result.played + 1) + ' OF ' + dccGhostLength;
 
 
   
@@ -7353,7 +7392,7 @@ function dccGhostRender() {
 
     const heading = document.createElement('strong');
     heading.textContent =
-      'HOLE ' + (index + 1) + ' · PAR ' + hole.par;
+      'HOLE ' + (hole.holeNumber||dccGhostActualHole(index)) + ' · PAR ' + hole.par;
 
     const score = document.createElement('span');
     score.textContent =
@@ -7379,10 +7418,10 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
     return;
   }
   button.disabled = true;
-  const hole = dccGhostHoles.length + 1;
+  const hole = dccGhostActualHole(dccGhostHoles.length);
   try {
     const {readCourseScorecard} = await import('./app/61f9e9de0a/active-course-context.js');
-    if (hole !== dccGhostHoles.length + 1) return;
+    if (hole !== dccGhostActualHole(dccGhostHoles.length)) return;
     const tier = document.getElementById('dccGhostTier').value;
     const parField = document.getElementById('dccGhostPar');
     const course = dccGhostCourse === undefined
@@ -7394,7 +7433,7 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
     const condition = dccGhostCondition || dccGhostPickCondition();
     const pending = {hole, par, ghost: dccGhostConditionScore(par, tier, condition)};
     localStorage.setItem(DCC_GHOST_DRAFT_KEY, JSON.stringify({
-      version: 1, tier, holesPlanned: dccGhostLength, condition,
+      version: 1, tier, holesPlanned: dccGhostLength, startHole:dccGhostStartHole, condition,
       course, holes: dccGhostHoles, pending
     }));
     dccGhostCourse = course;
@@ -7451,7 +7490,7 @@ document.getElementById('dccGhostRecord')
 
       const next = [
         ...dccGhostHoles,
-        { par, player: Number(value), ghost: ghostScore }
+        { holeNumber:dccGhostActualHole(dccGhostHoles.length), par, player: Number(value), ghost: ghostScore }
       ];
 
       // Save before updating the displayed match.
@@ -7462,6 +7501,7 @@ document.getElementById('dccGhostRecord')
           version: 1,
           tier,
           holesPlanned: dccGhostLength,
+          startHole:dccGhostStartHole,
           condition,
           course: dccGhostCourse,
           holes: next
@@ -7530,6 +7570,7 @@ document.getElementById('dccGhostUndo')
           tier,
          
           holesPlanned: dccGhostLength,
+          startHole:dccGhostStartHole,
           condition: dccGhostCondition,
           course: dccGhostCourse,
           holes: next
@@ -7591,6 +7632,7 @@ document.getElementById('dccGhostUndo')
             version: 1,
             tier,
             holesPlanned: dccGhostLength,
+            startHole:dccGhostStartHole,
             condition: null,
             holes: []
           })
