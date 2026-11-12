@@ -17,8 +17,9 @@ test('course picker uses published records and existing active-round persistence
  assert.match(js,/Switch Yardage Book course and tee/);
 });
 test('handicap routes to real Player Locker profile editor',()=>{
- assert.match(js,/openTab\('bag'\)/);
+ assert.match(js,/openHandicapPopup\(\)/);
  assert.match(js,/getElementById\('golferHandicap'\)/);
+ assert.match(js,/getElementById\('saveGolferProfile'\)/);
  assert.doesNotMatch(js,/localStorage\.setItem\(['"]handicap/);
 });
 test('mobile content has safe clearance below navigation',()=>{
