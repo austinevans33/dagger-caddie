@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DCC · Tournament HQ Development Preview</title>
+<style>
+:root{color-scheme:light;font:15px/1.5 system-ui,sans-serif;background:#123427;color:#173a2b}
+*{box-sizing:border-box}body{margin:0;background:#eee3cb;min-height:100dvh;padding:16px 14px 60px}
+main{max-width:720px;margin:0 auto}.mast{background:#163b2c;color:#f4e6c6;padding:24px 20px;border:2px solid #af925b;border-radius:18px}
+h1,h2,h3{font-family:Georgia,serif;margin:.2em 0 .5em}h1{font-size:30px}h2{font-size:23px}
+.eyebrow{font-size:11px;letter-spacing:.17em;font-weight:800;color:#d5b47b}
+.notice{padding:11px 14px;margin:12px 0;background:#fff3d5;border:1px solid #ba9544;border-radius:10px;font-size:13px}
+.panel{background:#faf6eb;border:1px solid #bea979;border-radius:15px;padding:17px;margin:14px 0}
+label{display:block;margin:12px 0 6px;font-weight:700;font-size:13px}
+input,select,button{font:inherit;border-radius:10px;min-height:44px}
+input,select{width:100%;padding:10px;border:1px solid #b8a783;background:white;color:#173a2b}
+button{border:1px solid #a68a55;background:#d1b070;color:#173a2b;font-weight:800;padding:10px 15px;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}.primary{background:#163b2c;color:#fff2d4;width:100%}
+.row{display:flex;gap:10px;align-items:end}.row>*{min-width:0;flex:1}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid #d8cbaa;padding:12px 5px;text-align:left}td:last-child,th:last-child{text-align:right}
+td:nth-child(3),th:nth-child(3){text-align:center}
+.rank{font-weight:800;font-size:18px}.minor{font-size:12px;color:#5e665c}
+.score{font-weight:900;color:#163b2c}#alert{min-height:1.5em;color:#9c462d;font-weight:700}
+.tag{display:inline-block;background:#dbc89d;padding:3px 8px;border-radius:9px;font-size:12px}
+</style>
+</head>
+<body><main>
+<header class="mast"><div class="eyebrow">DAGGER COUNTRY CLUB · GAMES</div>
+<h1>Tournament HQ</h1><div>Shotgun Scramble · Director / Captain Preview</div></header>
+<div class="notice"><strong>Development preview · local device only.</strong> No live event, Firebase connection, invitations, payments, or real captains. This page demonstrates the proposed flows and scoring engine; nothing is shared with other phones.</div>
+<section class="panel" id="setup"><h2>Director's Desk</h2>
+<label for="eventName">Tournament name</label><input id="eventName" value="DCC Scramble Open" maxlength="80">
+<div class="row"><div><label for="holes">Holes</label><select id="holes"><option value="18">18 holes</option><option value="9">9 holes</option></select></div>
+<div><label for="limit">Team limit</label><input id="limit" type="number" min="2" max="144" value="36"></div></div>
+<button id="create" class="primary" style="margin-top:16px">Create Preview Tournament</button></section>
+<section id="event" hidden><section class="panel"><h2 id="eventTitle"></h2>
+<div class="minor" id="eventMeta"></div><p id="alert" role="status" aria-live="polite"></p>
+<div class="actions"><button id="open" type="button">Start Tournament</button><button id="finalize" type="button">Finalize Results</button><button id="reset" type="button">New Preview</button></div></section>
+<section class="panel" id="addPanel"><h2>Add a team</h2>
+<div class="row"><div><label for="teamName">Team name</label><input id="teamName" placeholder="The Sandbaggers" maxlength="48"></div>
+<div><label for="start">Start hole</label><select id="start"></select></div></div>
+<label for="slot">Shotgun group</label><select id="slot"><option>A</option><option>B</option><option>C</option><option>D</option></select>
+<button id="addTeam" class="primary" style="margin-top:12px">Add Team</button><p class="minor">Names and captains are demonstration labels. No account is registered.</p></section>
+<section class="panel" id="scorePanel"><h2>Captain's Scorecard</h2>
+<label for="scoringTeam">Select scorekeeper to simulate</label><select id="scoringTeam"></select>
+<div class="row"><div><label for="hole">Next hole</label><input id="hole" disabled></div>
+<div><label for="strokes">Team strokes</label><input type="number" id="strokes" min="1" max="20" step="1" value="4"></div></div>
+<button id="post" class="primary" style="margin-top:12px">Post Hole Score</button>
+<p class="minor">Simulation only. Production submission requires authenticated captain and server-side authorization.</p></section>
+<section class="panel"><h2>Live Standings <span id="count" class="tag"></span></h2><div class="minor">All holes in this preview use demonstration par 4. Actual events require a verified course scorecard.</div>
+<table aria-label="Tournament standings"><thead><tr><th>POS</th><th>TEAM</th><th>THRU</th><th>SCORE</th></tr></thead><tbody id="board"></tbody></table></section></section>
+</main><script type="module">
+import {createTournament,addTournamentTeam,changeTournamentStatus,submitTournamentScore,tournamentLeaderboard} from '../scripts/tournament-event.mjs';
+import {shotgunOrder} from '../scripts/tournament-scoring.mjs';
+const $=id=>document.getElementById(id);
+const eventKey='dcc_tournament_hq_local_preview_v1';
+let model=null;
+const uid='preview-director';
+const mutation=()=> 'op-'+crypto.randomUUID();
+const say=message=>$('alert').textContent=message;
+const persist=()=>{try{sessionStorage.setItem(eventKey,JSON.stringify(model))}catch{}};
+function render(){
+ $('setup').hidden=!!model;$('event').hidden=!model;
+ if(!model)return;
+ $('eventTitle').textContent=model.name;
+ $('eventMeta').textContent=model.status.toUpperCase()+' · '+model.teams.length+'/'+model.teamLimit+' teams · '+model.holes+' holes';
+ $('open').disabled=model.status!=='draft'||!model.teams.length;
+ $('finalize').disabled=model.status!=='live';
+ $('addPanel').hidden=model.status!=='draft';
+ $('scorePanel').hidden=model.status!=='live';
+ const teamSelect=$('scoringTeam'),last=teamSelect.value;
+ teamSelect.replaceChildren();
+ for(const t of model.teams)teamSelect.add(new Option(t.name+' · '+t.startHole+t.startSlot,t.id));
+ if(model.teams.some(t=>t.id===last))teamSelect.value=last;
+ const start=$('start'),prev=start.value;start.replaceChildren();
+ for(let i=1;i<=model.holes;i++)start.add(new Option('Hole '+i,String(i)));
+ if(Number(prev)>=1&&Number(prev)<=model.holes)start.value=prev;
+ const current=model.teams.find(t=>t.id===teamSelect.value);
+ const order=current?shotgunOrder(current.startHole,model.holes):[];
+ const next=order.find(h=>!Object.hasOwn(current?.scores||{},String(h)));
+ $('hole').value=next?'Hole '+next:'Completed';
+ $('post').disabled=!next;
+ const pars=Array.from({length:model.holes},(_,i)=>({number:i+1,par:4}));
+ const standings=tournamentLeaderboard(model,pars);
+ $('count').textContent=model.teams.length+' teams';
+ $('board').replaceChildren();
+ for(const row of standings){
+  const tr=document.createElement('tr');
+  const cells=[row.rank===null?'—':String(row.rank),row.name,row.played===model.holes?'F':row.played?row.played+'/ '+model.holes:'—',row.relative===null?'—':row.relative===0?'E':row.relative>0?'+'+row.relative:String(row.relative)];
+  cells.forEach((value,i)=>{const td=document.createElement('td');td.textContent=value;if(i===0)td.className='rank';if(i===3)td.className='score';tr.append(td)});
+  $('board').append(tr);
+ }
+ persist();
+}
+$('create').addEventListener('click',()=>{
+ const name=$('eventName').value.trim(),holes=Number($('holes').value),limit=Number($('limit').value);
+ const result=createTournament({id:'local-'+Date.now(),name,hostUid:uid,courseIdentity:'DEMO-PAR-4-NOT-VERIFIED',holes,teamLimit:limit,mutationId:mutation()});
+ if(!result.ok){alert('Check event name and team limit (2–144).');return}
+ model=result.event;render();
+});
+$('addTeam').addEventListener('click',()=>{
+ const i=model.teams.length+1;
+ const result=addTournamentTeam({event:model,actorId:uid,teamId:'team-'+i,name:$('teamName').value,captainUid:'captain-'+i,startHole:Number($('start').value),startSlot:$('slot').value,mutationId:mutation()});
+ if(!result.ok){say('Team could not be added: '+result.reason);return}
+ model=result.event;$('teamName').value='';say('Team added.');render();
+});
+$('open').addEventListener('click',()=>{const r=changeTournamentStatus({event:model,actorId:uid,status:'live',mutationId:mutation()});if(r.ok){model=r.event;say('Tournament started.');render()}else say(r.reason)});
+$('finalize').addEventListener('click',()=>{if(!confirm('Lock scores and finalize this preview tournament?'))return;const r=changeTournamentStatus({event:model,actorId:uid,status:'final',mutationId:mutation()});if(r.ok){model=r.event;say('Results finalized.');render()}});
+$('scoringTeam').addEventListener('change',render);
+$('post').addEventListener('click',()=>{
+ const team=model.teams.find(t=>t.id===$('scoringTeam').value),hole=shotgunOrder(team.startHole,model.holes).find(h=>!Object.hasOwn(team.scores,String(h)));
+ const result=submitTournamentScore({event:model,actorId:team.captainId,teamId:team.id,hole,strokes:Number($('strokes').value),expectedTeamRevision:team.revision,mutationId:mutation()});
+ if(!result.ok){say('Score not recorded: '+result.reason);return}
+ model=result.event;say(team.name+' scored '+$('strokes').value+' on Hole '+hole+'.');render();
+});
+$('reset').addEventListener('click',()=>{if(confirm('Discard this local demo event?')){sessionStorage.removeItem(eventKey);model=null;render()}});
+try{const prior=JSON.parse(sessionStorage.getItem(eventKey));if(prior?.version===1&&prior.hostUid===uid&&Array.isArray(prior.teams))model=prior}catch{}
+render();
+</script></body></html>
