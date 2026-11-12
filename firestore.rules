@@ -53,6 +53,14 @@ service cloud.firestore {
       }
     }
 
+    // Tournament HQ: writes ONLY through authenticated callable transactions.
+    // A signed-in spectator with an explicit event ID may follow standings;
+    // listing all events and direct score/role changes are forbidden.
+    match /tournaments/{eventId} {
+      allow get: if signedIn();
+      allow list, create, update, delete: if false;
+    }
+
     // DCC STEP 29A — SHARED COMPETITIONS
     // Locked until ownership and membership validation is ready.
     // Existing room rules above remain unchanged.
