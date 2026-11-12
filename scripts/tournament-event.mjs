@@ -35,6 +35,23 @@ export function addTournamentTeam({event,actorId,teamId,name,captainUid,startHol
  next.audit=stamp(event,actorId,'team-added',{teamId,startHole,startSlot},mutationId);
  return {ok:true,event:next};
 }
+// An authenticated captain may claim an explicitly invited vacant seat.
+// The server validates the one-use secret against a private invite document first.
+export function claimTournamentTeam({event,actorId,teamId,inviteVerified,mutationId}){
+ if(!event||!['draft','live'].includes(event.status))return fail('event-closed',event);
+ if(!validIdentifier(actorId)||!validIdentifier(teamId)||!validMutationId(mutationId))return fail('invalid-claim',event);
+ if(!inviteVerified)return fail('invalid-invitation',event);
+ if(seen(event,mutationId))return fail('duplicate-mutation',event);
+ const index=event.teams.findIndex(t=>t.id===teamId);
+ if(index<0)return fail('missing-team',event);
+ const team=event.teams[index];
+ if(team.captainId!=='pending-'+teamId)return fail('already-claimed',event);
+ if(event.teams.some(t=>t.captainId===actorId))return fail('already-captain',event);
+ const next={...event,revision:event.revision+1,
+  teams:event.teams.map((t,i)=>i===index?{...t,captainId:actorId,revision:t.revision+1}:t)};
+ next.audit=stamp(event,actorId,'captain-joined',{teamId},mutationId);
+ return {ok:true,event:next};
+}
 export function changeTournamentStatus({event,actorId,status,mutationId}){
  if(!owner(event,actorId))return fail('not-director',event);
  if(!validMutationId(mutationId)||seen(event,mutationId))return fail('duplicate-mutation',event);

@@ -59,6 +59,10 @@ service cloud.firestore {
     match /tournaments/{eventId} {
       allow get: if signedIn();
       allow list, create, update, delete: if false;
+      // Invitation secrets/hashes must never be readable from a phone.
+      match /invites/{teamId} {
+        allow read, write: if false;
+      }
     }
 
     // DCC STEP 29A — SHARED COMPETITIONS

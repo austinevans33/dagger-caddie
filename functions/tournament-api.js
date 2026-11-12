@@ -2,7 +2,13 @@
 // Server-controlled Tournament HQ API. Never let client writes bypass captain authorization.
 // Firebase Admin authentication is supplied by callable request.auth; use one Firestore
 // transaction per command so revisions and mutation IDs are checked atomically.
-const {randomUUID}=require('node:crypto');
+const {randomUUID,randomBytes,createHash,timingSafeEqual}=require('node:crypto');
+function inviteHash(token){return createHash('sha256').update(token).digest('hex')}
+function validInvite(token){return typeof token==='string'&&/^[A-Za-z0-9_-]{32}$/.test(token)}
+function matchesInvite(expected,token){
+ if(typeof expected!=='string'||!/^[a-f0-9]{64}$/.test(expected)||!validInvite(token))return false;
+ return timingSafeEqual(Buffer.from(expected,'hex'),Buffer.from(inviteHash(token),'hex'));
+}
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 
 function invalid(message){throw new HttpsError('invalid-argument',message)}
@@ -46,18 +52,31 @@ function configureTournamentCallables(admin){
    if(!doc.exists)throw new HttpsError('not-found','Tournament not found.');
    return {ok:true,event:doc.data()};
   }
-  if(!['add-team','start','score','correct','finalize'].includes(action))invalid('Unknown tournament action.');
+  if(!['add-team','join-team','start','score','correct','finalize'].includes(action))invalid('Unknown tournament action.');
   idField(body.mutationId);
   const ref=eventRef(db,body.eventId);
+  // Only directors receive one-use team invites. Their hashes stay in a
+  // separate server-only collection, never inside spectator-readable events.
+  const newInvite=action==='add-team'&&!body.captainUid?randomBytes(24).toString('base64url'):null;
   return db.runTransaction(async transaction=>{
    const snapshot=await transaction.get(ref);
    if(!snapshot.exists)throw new HttpsError('not-found','Tournament not found.');
    const event=snapshot.data();
+   let inviteDoc=null;
+   if(action==='join-team'){
+    if(!validInvite(body.invite))throw errorForReason('invalid-invitation');
+    inviteDoc=ref.collection('invites').doc(idField(body.teamId));
+    const invitation=await transaction.get(inviteDoc);
+    if(!invitation.exists||invitation.data()?.claimed===true||!matchesInvite(invitation.data()?.hash,body.invite))throw errorForReason('invalid-invitation');
+   }
    let result;
    switch(action){
     case 'add-team':
      result=domain.addTournamentTeam({event,actorId:uid,teamId:body.teamId,name:body.name,
-      captainUid:body.captainUid,startHole:body.startHole,startSlot:body.startSlot||'A',mutationId:body.mutationId});
+      captainUid:body.captainUid||('pending-'+idField(body.teamId)),startHole:body.startHole,startSlot:body.startSlot||'A',mutationId:body.mutationId});
+     break;
+    case 'join-team':
+     result=domain.claimTournamentTeam({event,actorId:uid,teamId:body.teamId,inviteVerified:!!inviteDoc,mutationId:body.mutationId});
      break;
     case 'start':
     case 'finalize':
@@ -75,7 +94,13 @@ function configureTournamentCallables(admin){
    if(!result.ok)throw errorForReason(result.reason);
    // Preserve server-owned createdAt while atomically updating event state.
    transaction.update(ref,result.event);
-   return {ok:true,eventId:event.id,revision:result.event.revision};
+   if(newInvite){
+    transaction.create(ref.collection('invites').doc(idField(body.teamId)),{
+     hash:inviteHash(newInvite),claimed:false,createdAt:admin.firestore.FieldValue.serverTimestamp()
+    });
+   }
+   if(inviteDoc)transaction.update(inviteDoc,{claimed:true,claimedUid:uid,claimedAt:admin.firestore.FieldValue.serverTimestamp()});
+   return {ok:true,eventId:event.id,revision:result.event.revision,...(newInvite?{invite:newInvite}:{} )};
   });
  }
  return onCall({region:'us-central1',memory:'256MiB',maxInstances:10,concurrency:20,
