@@ -5,6 +5,8 @@ const admin=require('firebase-admin');
 const {caddyContext,caddyContextInstructions}=require('./caddy-context');
 const {resolveCaddyDeploymentTarget}=require('./deployment-target');
 admin.initializeApp();
+// Tournament hosting is a separate authenticated callable; existing Caddy API unchanged.
+exports.tournamentHQ=require('./tournament-api').configureTournamentCallables(admin);
 const key=defineSecret('OPENAI_API_KEY');
 const ORIGIN='https://austinevans33.github.io';
 const {project:PROJECT,serviceAccount:CADDY_SERVICE_ACCOUNT}=resolveCaddyDeploymentTarget();
