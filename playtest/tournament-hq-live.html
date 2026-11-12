@@ -1,0 +1,142 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Dagger · Tournament HQ Firebase Staging</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;padding:16px 14px 70px;font:15px/1.5 system-ui;background:#eee3cb;color:#173a2b}
+main{max-width:690px;margin:auto}header{background:#163b2c;color:#fff0d5;border:2px solid #b79c62;padding:22px 18px;border-radius:17px}h1,h2{font-family:Georgia,serif;margin:4px 0 12px}h1{font-size:29px}h2{font-size:23px}.kicker{letter-spacing:.15em;font-size:11px;color:#d7b874;font-weight:800}
+article{margin:15px 0;background:#fffaf0;border:1px solid #cbb78d;border-radius:14px;padding:18px}.warn{background:#fff0bf;border:1px solid #b48f3d;border-radius:11px;padding:12px;margin:12px 0}.muted{font-size:12px;color:#6d674f}.row{display:flex;gap:9px;flex-wrap:wrap;align-items:end}.row>*{flex:1;min-width:110px}
+label{display:block;font-weight:700;font-size:13px;margin:11px 0 5px}input,select,button{font:inherit;min-height:44px;border-radius:9px}input,select{display:block;width:100%;border:1px solid #b9a77f;background:#fff;padding:9px;color:#173a2b}
+button{background:#d9be85;border:1px solid #af925b;color:#173a2b;padding:9px 14px;font-weight:750;cursor:pointer}button.primary{background:#163b2c;color:#fff0d5;width:100%;margin-top:12px}button:disabled{opacity:.5;cursor:not-allowed}
+[hidden]{display:none!important}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #dfd0ae;padding:10px 4px;text-align:left}td:last-child,th:last-child{text-align:right}
+#message{font-weight:700;min-height:24px}#sync{font-size:12px}.pill{display:inline-block;background:#d8c498;padding:4px 9px;border-radius:30px;font-weight:700;font-size:12px}
+</style></head><body><main>
+<header><div class="kicker">DAGGER COUNTRY CLUB · GAMES</div><h1>Tournament HQ</h1><div>Hosted shotgun scramble · integration test</div></header>
+<div class="warn"><b>STAGING DEVELOPMENT SCREEN — NOT A PUBLIC TOURNAMENT.</b> Requires the tournament callable and Firestore rules to be explicitly deployed to the chosen Firebase project. This page does not deploy either. Do not use it to run a real event.</div>
+<article><h2>Golfer Account</h2><div id="authState">Checking existing Dagger sign-in…</div><p class="muted">Sign in through the main Dagger account screen first. This preview will reuse that login and will never create an anonymous scoring identity.</p><div id="sync">Not connected</div></article>
+<article><h2>Director · Create</h2><label for="name">Event name</label><input id="name" value="DCC Scramble Test" maxlength="80">
+<div class="row"><div><label for="identity">Verified course/tee identity</label><input id="identity" placeholder="Provider / course / tee key"></div><div><label for="holes">Holes</label><select id="holes"><option value="18">18</option><option value="9">9</option></select></div></div>
+<p class="muted">Enter an actual verified course/tee identity from Dagger. Until verified par is fetched, this screen deliberately leaves scores-to-par blank.</p>
+<button id="create" class="primary" disabled>Create Staging Tournament</button></article>
+<article><h2>Open Tournament</h2><label for="eventId">Tournament ID</label><input id="eventId" placeholder="Paste director's event ID" autocomplete="off">
+<button id="load" class="primary" disabled>Connect to Tournament</button><p id="message" role="status" aria-live="polite"></p></article>
+<div id="event" hidden>
+<article><h2 id="title">Tournament</h2><span class="pill" id="state"></span><p id="meta" class="muted"></p>
+<div id="director" hidden><h2>Director's Desk</h2>
+<div class="row"><div><label for="teamName">Team</label><input id="teamName" maxlength="48" placeholder="The Sandbaggers"></div><div><label for="startHole">Starting hole</label><select id="startHole"></select></div>
+<div><label for="slot">Wave</label><select id="slot"><option>A</option><option>B</option><option>C</option><option>D</option></select></div></div>
+<button id="add" class="primary">Add Team & Create One-Time Captain Invite</button>
+<div id="inviteBox" hidden class="warn"><b>Captain invite — show only to that captain</b><p id="inviteText" style="overflow-wrap:anywhere"></p><button id="copyInvite">Copy Invite Link</button></div>
+<div class="row" style="margin-top:12px"><button id="begin">Start Event</button><button id="finish">Lock Final Results</button></div>
+<p class="muted">One captain per team. The director can verify and correct submitted scores separately; corrections require an audit reason.</p></div>
+</article>
+<article id="joinBox" hidden><h2>Claim Your Team</h2><p id="joinTeamInfo"></p><label for="invite">Captain invitation token</label><input id="invite" autocomplete="off"><button id="join" class="primary">Join as Captain</button></article>
+<article id="captainBox" hidden><h2>Your Team's Scorecard</h2><p id="captainTeam"></p>
+<div class="row"><div><label for="nextHole">Next actual hole</label><input id="nextHole" disabled></div><div><label for="strokes">Strokes</label><input id="strokes" type="number" inputmode="numeric" min="1" max="20" step="1" value="4"></div></div>
+<button id="post" class="primary">Submit Team Score</button><p class="muted">The server verifies your account and team, the next hole, and the team's score revision.</p></article>
+<article><h2>Leaderboard</h2><p class="muted">Live team scores are based on actual holes recorded. Score-to-par stays unranked until the event's verified course pars are attached.</p>
+<table><thead><tr><th>TEAM</th><th>THRU</th><th>SCORE TO PAR</th></tr></thead><tbody id="standings"></tbody></table></article>
+</div>
+</main><script type="module">
+import {firebaseConfig} from '../app/61f9e9de0a/firebase-config.js';
+import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import {getAuth,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getFirestore,doc,onSnapshot} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+import {getFunctions,httpsCallable} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-functions.js';
+import {createTournamentTransport} from '../scripts/tournament-sync.mjs';
+import {shotgunOrder} from '../scripts/tournament-scoring.mjs';
+import {tournamentLeaderboard} from '../scripts/tournament-event.mjs';
+const $=id=>document.getElementById(id);
+const app=getApps()[0]||initializeApp(firebaseConfig);
+const auth=getAuth(app),firestore=getFirestore(app),functions=getFunctions(app,'us-central1');
+const transport=createTournamentTransport({auth,functions,firestore,httpsCallable,doc,onSnapshot,mutationId:()=>crypto.randomUUID()});
+let model=null,stopWatch=()=>{},activeId=null,busy=false,inviteUrl='';
+function status(text){$('message').textContent=text}
+function preventDouble(fn){return async()=>{if(busy)return;busy=true;try{await fn()}finally{busy=false}}}
+function nextHole(team){return shotgunOrder(team.startHole,model.holes).find(h=>!Object.hasOwn(team.scores||{},String(h)))}
+function setEvent(event){
+ model=event;$('event').hidden=false;$('title').textContent=event.name;
+ $('state').textContent=event.status.toUpperCase();$('meta').textContent=event.teams.length+' / '+event.teamLimit+' teams · '+event.holes+' holes';
+ const uid=auth.currentUser?.uid;const director=event.hostUid===uid;
+ $('director').hidden=!director;
+ $('add').disabled=event.status!=='draft';$('begin').disabled=event.status!=='draft'||!event.teams.length;
+ $('finish').disabled=event.status!=='live';
+ let start=$('startHole'),value=start.value;start.replaceChildren();
+ for(let i=1;i<=event.holes;i++)start.add(new Option('Hole '+i,String(i)));
+ if(Number(value)>0&&Number(value)<=event.holes)start.value=value;
+ const mine=event.teams.find(t=>t.captainId===uid),requested=new URLSearchParams(location.search).get('team');
+ const vacant=event.teams.find(t=>t.id===requested&&t.captainId==='pending-'+t.id);
+ $('joinBox').hidden=!vacant||!!mine||event.status==='final';
+ if(vacant){$('joinTeamInfo').textContent=vacant.name+' · Start Hole '+vacant.startHole+vacant.startSlot}
+ $('captainBox').hidden=!mine;
+ if(mine){
+  const next=nextHole(mine);
+  $('captainTeam').textContent=mine.name+' · Start '+mine.startHole+mine.startSlot+' · '+Object.keys(mine.scores).length+' holes recorded';
+  $('nextHole').value=next?'Hole '+next:'Round complete';
+  $('post').disabled=!next||event.status!=='live';
+ }
+ const tbody=$('standings');tbody.replaceChildren();
+ // No invented pars or fake leaderboard positions: verified pars will be supplied
+ // by the course-fact integration. Until then, display real submitted progress only.
+ for(const t of event.teams){
+  const played=Object.keys(t.scores||{}).length;
+  const tr=document.createElement('tr');
+  for(const value of [t.name,played===event.holes?'F':played+'/'+event.holes,'—']){
+   const cell=document.createElement('td');cell.textContent=value;tr.append(cell);
+  }tbody.append(tr);
+ }
+}
+function connect(eventId){
+ if(!/^[a-zA-Z0-9_-]{3,96}$/.test(eventId)){status('Enter a valid tournament ID.');return}
+ stopWatch();activeId=eventId;model=null;$('event').hidden=true;
+ $('eventId').value=eventId;
+ $('sync').textContent='Connecting to live data…';
+ stopWatch=transport.watch(eventId,event=>{
+  setEvent(event);$('sync').textContent=event.syncStatus==='live'?'LIVE · server connected':event.syncStatus==='cached'?'OFFLINE CACHE · scores may be outdated':'UPDATING…';
+ },error=>{$('sync').textContent='Not connected';status(error.message)});
+}
+async function doAction(action,payload={},onSuccess){
+ if(!activeId&&action!=='create'){status('Connect to a tournament first.');return}
+ status('Submitting…');
+ const result=await transport.send(action,action==='create'?payload:{eventId:activeId,...payload});
+ if(!result.ok){status(result.error.message);return}
+ status('Confirmed by tournament server.');
+ if(onSuccess)onSuccess(result);
+}
+onAuthStateChanged(auth,user=>{
+ $('authState').textContent=user?'Signed in · '+(user.email||'Golfer Account'):'Not signed in · open Dagger and sign in first';
+ $('create').disabled=!user;$('load').disabled=!user;
+ if(!user){stopWatch();$('event').hidden=true;$('sync').textContent='Sign in required';model=null}
+ else if(activeId)connect(activeId);
+});
+$('create').addEventListener('click',preventDouble(async()=>{
+ await doAction('create',{name:$('name').value.trim(),holes:Number($('holes').value),courseIdentity:$('identity').value.trim(),teamLimit:36},r=>connect(r.eventId));
+}));
+$('load').addEventListener('click',()=>connect($('eventId').value.trim()));
+$('add').addEventListener('click',preventDouble(async()=>{
+ const teamId='team-'+crypto.randomUUID();
+ await doAction('add-team',{teamId,name:$('teamName').value.trim(),startHole:Number($('startHole').value),startSlot:$('slot').value},result=>{
+  const url=new URL(location.href);url.searchParams.set('event',activeId);url.searchParams.set('team',teamId);url.searchParams.set('invite',result.invite);
+  inviteUrl=url.href;$('inviteText').textContent=inviteUrl;$('inviteBox').hidden=false;$('teamName').value='';
+ });
+}));
+$('copyInvite').addEventListener('click',async()=>{if(inviteUrl)try{await navigator.clipboard.writeText(inviteUrl);status('Captain link copied.')}catch{status('Copy link from the invite box.')}});
+$('begin').addEventListener('click',preventDouble(async()=>doAction('start')));
+$('finish').addEventListener('click',preventDouble(async()=>{
+ if(!confirm('Finalize this tournament? Captains will no longer be able to enter scores.'))return;
+ await doAction('finalize');
+}));
+$('join').addEventListener('click',preventDouble(async()=>{
+ const teamId=new URLSearchParams(location.search).get('team');
+ await doAction('join-team',{teamId,invite:$('invite').value.trim()},()=>{
+  history.replaceState({},'',location.pathname+'?event='+encodeURIComponent(activeId));
+  $('invite').value='';status('Captain identity verified.');
+ });
+}));
+$('post').addEventListener('click',preventDouble(async()=>{
+ const team=model?.teams.find(t=>t.captainId===auth.currentUser?.uid);
+ if(!team)return status('You are not assigned to a team.');
+ const hole=nextHole(team);if(!hole)return status('All holes recorded.');
+ await doAction('score',{teamId:team.id,hole,strokes:Number($('strokes').value),expectedTeamRevision:team.revision});
+}));
+const params=new URLSearchParams(location.search),queryEvent=params.get('event');
+if(params.get('invite'))$('invite').value=params.get('invite');
+if(queryEvent){$('eventId').value=queryEvent;activeId=queryEvent}
+</script></body></html>
