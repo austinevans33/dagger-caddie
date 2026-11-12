@@ -193,6 +193,17 @@ function mount(){
  document.addEventListener('click',event=>{
   if(event.target.closest('#dccR106Handicap')){event.preventDefault();event.stopImmediatePropagation();openHandicapPopup()}
  },true);
+ // Remove the nonfunctional R78 Equipment Tools disclosure without losing its contents.
+ // Preserve the original nodes, IDs, input values, and event listeners.
+ const equipmentDrawer=document.getElementById('dccR78EquipmentTools');
+ if(equipmentDrawer){
+  for(const child of Array.from(equipmentDrawer.children)){
+   if(child.tagName==='SUMMARY'){child.remove();continue}
+   if(child.tagName==='SECTION')child.dataset.tab='bag';
+   equipmentDrawer.before(child);
+  }
+  equipmentDrawer.remove();
+ }
  // Existing navigation handlers remain intact; these two doors are simply off the bottom bar.
  for(const tabName of ['bag','settings']){
   const sections=Array.from(document.querySelectorAll('[data-tab="'+tabName+'"]')).filter(el=>el.tagName==='SECTION');
