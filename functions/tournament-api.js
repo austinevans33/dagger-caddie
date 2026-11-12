@@ -73,7 +73,8 @@ function configureTournamentCallables(admin){
      break;
    }
    if(!result.ok)throw errorForReason(result.reason);
-   transaction.set(ref,result.event);
+   // Preserve server-owned createdAt while atomically updating event state.
+   transaction.update(ref,result.event);
    return {ok:true,eventId:event.id,revision:result.event.revision};
   });
  }
