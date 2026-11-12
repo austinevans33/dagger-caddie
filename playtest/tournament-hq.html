@@ -40,8 +40,7 @@ td:nth-child(3),th:nth-child(3){text-align:center}
 <section class="panel" id="addPanel"><h2>Add a team</h2>
 <div class="row"><div><label for="teamName">Team name</label><input id="teamName" placeholder="The Sandbaggers" maxlength="48"></div>
 <div><label for="start">Start hole</label><select id="start"></select></div></div>
-<div class="row"><div><label for="slot">Group</label><select id="slot"><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
-<div><label for="captain">Captain label</label><input id="captain" placeholder="Scorekeeper name" maxlength="48"></div></div>
+<label for="slot">Shotgun group</label><select id="slot"><option>A</option><option>B</option><option>C</option><option>D</option></select>
 <button id="addTeam" class="primary" style="margin-top:12px">Add Team</button><p class="minor">Names and captains are demonstration labels. No account is registered.</p></section>
 <section class="panel" id="scorePanel"><h2>Captain's Scorecard</h2>
 <label for="scoringTeam">Select scorekeeper to simulate</label><select id="scoringTeam"></select>
@@ -104,7 +103,7 @@ $('addTeam').addEventListener('click',()=>{
  const i=model.teams.length+1;
  const result=addTournamentTeam({event:model,actorId:uid,teamId:'team-'+i,name:$('teamName').value,captainUid:'captain-'+i,startHole:Number($('start').value),startSlot:$('slot').value,mutationId:mutation()});
  if(!result.ok){say('Team could not be added: '+result.reason);return}
- model=result.event;$('teamName').value='';$('captain').value='';say('Team added.');render();
+ model=result.event;$('teamName').value='';say('Team added.');render();
 });
 $('open').addEventListener('click',()=>{const r=changeTournamentStatus({event:model,actorId:uid,status:'live',mutationId:mutation()});if(r.ok){model=r.event;say('Tournament started.');render()}else say(r.reason)});
 $('finalize').addEventListener('click',()=>{if(!confirm('Lock scores and finalize this preview tournament?'))return;const r=changeTournamentStatus({event:model,actorId:uid,status:'final',mutationId:mutation()});if(r.ok){model=r.event;say('Results finalized.');render()}});
