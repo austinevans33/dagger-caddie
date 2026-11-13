@@ -12,8 +12,8 @@ button{background:#d9be85;border:1px solid #af925b;color:#173a2b;padding:9px 14p
 <div class="warn"><b>STAGING DEVELOPMENT SCREEN — NOT A PUBLIC TOURNAMENT.</b> Requires the tournament callable and Firestore rules to be explicitly deployed to the chosen Firebase project. This page does not deploy either. Do not use it to run a real event.</div>
 <article><h2>Golfer Account</h2><div id="authState">Checking existing Dagger sign-in…</div><p class="muted">Sign in through the main Dagger account screen first. This preview will reuse that login and will never create an anonymous scoring identity.</p><div id="sync">Not connected</div></article>
 <article><h2>Director · Create</h2><label for="name">Event name</label><input id="name" value="DCC Scramble Test" maxlength="80">
-<div class="row"><div><label for="identity">Verified course/tee identity</label><input id="identity" placeholder="Provider / course / tee key"></div><div><label for="holes">Holes</label><select id="holes"><option value="18">18</option><option value="9">9</option></select></div></div>
-<p class="muted">Enter an actual verified course/tee identity from Dagger. Until verified par is fetched, this screen deliberately leaves scores-to-par blank.</p>
+<div class="row"><div><label for="identity">Selected Dagger course / tee</label><input id="identity" readonly placeholder="Select course in The Clubhouse first"></div><div><label for="holes">Holes</label><select id="holes" disabled><option value="18">18</option><option value="9">9</option></select></div></div>
+<p class="muted"><span id="courseStatus">Select a verified course and tee in The Clubhouse. Scores-to-par require verified pars for the exact event.</span></p>
 <button id="create" class="primary" disabled>Create Staging Tournament</button></article>
 <article><h2>Open Tournament</h2><label for="eventId">Tournament ID</label><input id="eventId" placeholder="Paste director's event ID" autocomplete="off">
 <button id="load" class="primary" disabled>Connect to Tournament</button><p id="message" role="status" aria-live="polite"></p></article>
@@ -31,7 +31,7 @@ button{background:#d9be85;border:1px solid #af925b;color:#173a2b;padding:9px 14p
 <article id="captainBox" hidden><h2>Your Team's Scorecard</h2><p id="captainTeam"></p>
 <div class="row"><div><label for="nextHole">Next actual hole</label><input id="nextHole" disabled></div><div><label for="strokes">Strokes</label><input id="strokes" type="number" inputmode="numeric" min="1" max="20" step="1" value="4"></div></div>
 <button id="post" class="primary">Submit Team Score</button><p class="muted">The server verifies your account and team, the next hole, and the team's score revision.</p></article>
-<article><h2>Leaderboard</h2><p class="muted">Live team scores are based on actual holes recorded. Score-to-par stays unranked until the event's verified course pars are attached.</p>
+<article><h2>Leaderboard</h2><p class="muted"><span id="leaderboardStatus">Score-to-par requires verified pars for this event. Missing pars are never guessed.</span></p>
 <table><thead><tr><th>TEAM</th><th>THRU</th><th>SCORE TO PAR</th></tr></thead><tbody id="standings"></tbody></table></article>
 </div>
 </main><script type="module">
@@ -43,11 +43,33 @@ import {getFunctions,httpsCallable} from 'https://www.gstatic.com/firebasejs/11.
 import {createTournamentTransport} from '../scripts/tournament-sync.mjs';
 import {shotgunOrder} from '../scripts/tournament-scoring.mjs';
 import {tournamentLeaderboard} from '../scripts/tournament-event.mjs';
+import {readActiveRound} from '../app/61f9e9de0a/starters-desk-session.js';
+import {yardageSelectionKey} from '../app/61f9e9de0a/yardage-navigation.js';
+import {readCourseScorecard} from '../app/61f9e9de0a/active-course-context.js';
 const $=id=>document.getElementById(id);
 const app=getApps()[0]||initializeApp(firebaseConfig);
 const auth=getAuth(app),firestore=getFirestore(app),functions=getFunctions(app,'us-central1');
 const transport=createTournamentTransport({auth,functions,firestore,httpsCallable,doc,onSnapshot,mutationId:()=>crypto.randomUUID()});
 let model=null,stopWatch=()=>{},activeId=null,busy=false,inviteUrl='';
+function verifiedCardFor(selection){
+ const identity=yardageSelectionKey(selection);
+ if(!identity)return null;
+ const card=readCourseScorecard(localStorage,selection);
+ const holeCount=selection?.course?.holeCount===9?9:18;
+ if(!card||!Array.isArray(card.holes))return null;
+ const parMap=new Map(card.holes.filter(h=>Number.isInteger(h.number)&&h.number>=1&&h.number<=holeCount&&[3,4,5].includes(h.par)).map(h=>[h.number,h.par]));
+ if(parMap.size!==holeCount)return null;
+ return {identity,holes:card.holes,holeCount};
+}
+function selectedVerifiedCard(){return verifiedCardFor(readActiveRound(localStorage)?.selection)}
+function refreshSelectedCourse(){
+ const card=selectedVerifiedCard();
+ $('identity').value=card?.identity||'';
+ if(card)$('holes').value=String(card.holeCount);
+ $('courseStatus').textContent=card?'Verified '+card.holeCount+'-hole scorecard selected.':'Select a course and tee with a complete verified scorecard in The Clubhouse.';
+ $('create').disabled=!auth.currentUser||!card;
+ return card;
+}
 function status(text){$('message').textContent=text}
 function preventDouble(fn){return async()=>{if(busy)return;busy=true;try{await fn()}finally{busy=false}}}
 function nextHole(team){return shotgunOrder(team.startHole,model.holes).find(h=>!Object.hasOwn(team.scores||{},String(h)))}
@@ -73,12 +95,18 @@ function setEvent(event){
   $('post').disabled=!next||event.status!=='live';
  }
  const tbody=$('standings');tbody.replaceChildren();
+ const card=selectedVerifiedCard();
+ const verified=card&&card.identity===event.courseIdentity&&card.holeCount===event.holes?card:null;
+ $('leaderboardStatus').textContent=verified?'Scores to par use verified local '+event.holes+'-hole scorecard facts.':'Course/tee scorecard not verified on this device for this event. Live hole counts shown; ranks withheld.';
+ const standings=verified?tournamentLeaderboard(event,verified.holes):null;
  // No invented pars or fake leaderboard positions: verified pars will be supplied
  // by the course-fact integration. Until then, display real submitted progress only.
- for(const t of event.teams){
+ for(const item of (standings||event.teams)){
+  const t=event.teams.find(team=>team.id===item.id);
+  const row=standings?.find(standing=>standing.id===t.id);
   const played=Object.keys(t.scores||{}).length;
   const tr=document.createElement('tr');
-  for(const value of [t.name,played===event.holes?'F':played+'/'+event.holes,'—']){
+  for(const value of [row?.rank?row.rank+'. '+t.name:t.name,played===event.holes?'F':played+'/'+event.holes,row?.relative==null?'—':row.relative===0?'E':row.relative>0?'+'+row.relative:String(row.relative)]){
    const cell=document.createElement('td');cell.textContent=value;tr.append(cell);
   }tbody.append(tr);
  }
@@ -102,12 +130,13 @@ async function doAction(action,payload={},onSuccess){
 }
 onAuthStateChanged(auth,user=>{
  $('authState').textContent=user?'Signed in · '+(user.email||'Golfer Account'):'Not signed in · open Dagger and sign in first';
- $('create').disabled=!user;$('load').disabled=!user;
+ refreshSelectedCourse();$('load').disabled=!user;
  if(!user){stopWatch();$('event').hidden=true;$('sync').textContent='Sign in required';model=null}
  else if(activeId)connect(activeId);
 });
 $('create').addEventListener('click',preventDouble(async()=>{
- await doAction('create',{name:$('name').value.trim(),holes:Number($('holes').value),courseIdentity:$('identity').value.trim(),teamLimit:36},r=>connect(r.eventId));
+ const card=refreshSelectedCourse();if(!card)return status('Choose a course with fully verified pars first.');
+ await doAction('create',{name:$('name').value.trim(),holes:card.holeCount,courseIdentity:card.identity,teamLimit:36},r=>connect(r.eventId));
 }));
 $('load').addEventListener('click',()=>connect($('eventId').value.trim()));
 $('add').addEventListener('click',preventDouble(async()=>{
