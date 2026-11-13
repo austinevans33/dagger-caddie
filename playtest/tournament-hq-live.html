@@ -14,8 +14,8 @@ button{background:#d9be85;border:1px solid #af925b;color:#173a2b;padding:9px 14p
 <article><h2>Director · Create</h2><label for="name">Event name</label><input id="name" value="DCC Scramble Test" maxlength="80">
 <div class="row"><div><label for="identity">Selected Dagger course / tee</label><input id="identity" readonly placeholder="Select course in The Clubhouse first"></div><div><label for="holes">Holes</label><select id="holes" disabled><option value="18">18</option><option value="9">9</option></select></div></div>
 <p class="muted"><span id="courseStatus">Select a verified course and tee in The Clubhouse. Scores-to-par require verified pars for the exact event.</span></p>
-<div class="row"><div><label for="teamLimit">Maximum teams (2–36)</label><input id="teamLimit" type="number" inputmode="numeric" min="2" max="36" step="1" value="36"></div><div><label for="teamSize">Golfers per team</label><select id="teamSize" disabled title="Team-size validation requires the Firebase backend update"><option>Not yet supported by backend</option></select></div></div>
-<p class="muted">Use any team count from 2 to 36. Two- and four-golfer roster enforcement remains a backend release requirement; this preview does not claim to enforce it.</p>
+<label for="teamLimit">Maximum teams (2–36)</label><input id="teamLimit" type="number" inputmode="numeric" min="2" max="36" step="1" value="36">
+<p class="muted">Use any team count from 2 to 36. Two- and four-golfer team roster enforcement is still a backend release requirement.</p>
 <button id="create" class="primary" disabled>Create Staging Tournament</button></article>
 <article><h2>Open Tournament</h2><label for="eventId">Tournament ID</label><input id="eventId" placeholder="Paste director's event ID" autocomplete="off">
 <button id="load" class="primary" disabled>Connect to Tournament</button><p id="message" role="status" aria-live="polite"></p></article>
