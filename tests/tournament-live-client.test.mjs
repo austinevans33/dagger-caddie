@@ -42,3 +42,23 @@ test('event creation requires exact verified course and tee from Dagger, not arb
  assert.match(page,/courseIdentity:card\.identity/);
  assert.match(page,/<input id="identity" readonly/);
 });
+
+test('director chooses a variable event field size within the supported 2–36 team range',()=>{
+ assert.match(page,/id="teamLimit"[^>]*min="2" max="36"/);
+ assert.match(page,/Number\.isInteger\(teamLimit\)\|\|teamLimit<2\|\|teamLimit>36/);
+ assert.match(page,/teamLimit},r=>connect\(r\.eventId\)/);
+ assert.doesNotMatch(page,/courseIdentity:card\.identity,teamLimit:36/);
+});
+test('captain card displays real shotgun hole order and recorded strokes, not dummy scores',()=>{
+ assert.match(page,/id="teamScorecard"/);
+ assert.match(page,/shotgunOrder\(mine\.startHole,event\.holes\)/);
+ assert.match(page,/Object\.hasOwn\(mine\.scores\|\|{},String\(hole\)\)/);
+ assert.match(page,/recorded\?String\(mine\.scores\[hole\]\):'—'/);
+ assert.match(page,/matching\.holes\.map\(h=>\[h\.number,h\.par\]\)/);
+});
+test('scorekeeper adjust buttons do not submit and finalization discloses missing scores',()=>{
+ assert.match(page,/id="less" aria-label="Decrease strokes"/);
+ assert.match(page,/id="more" aria-label="Increase strokes"/);
+ assert.match(page,/Math\.max\(1,Math\.min\(20,/);
+ assert.match(page,/team-hole scores are still missing/);
+});
