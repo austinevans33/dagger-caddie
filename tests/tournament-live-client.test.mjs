@@ -22,11 +22,23 @@ test('scoring sends server-checked revision and correct actual next shotgun hole
 });
 test('leaderboard never fabricates event par or falsely labels offline data as live',()=>{
  assert.match(page,/OFFLINE CACHE/);
- assert.match(page,/for\(const value of \[t\.name,played===event\.holes\?'F':played\+'\/'\+event\.holes,'—'\]\)/);
- assert.match(page,/Until then, display real submitted progress only/);
+ assert.match(page,/card\.identity===event\.courseIdentity/);
+ assert.match(page,/tournamentLeaderboard\(event,verified\.holes\)/);
+ assert.match(page,/Course\/tee scorecard not verified/);
+ assert.doesNotMatch(page,/DEMO-PAR-4-NOT-VERIFIED/);
 });
 test('real event preview is not part of public production navigation',()=>{
  const index=readFileSync('index.html','utf8');
  assert.doesNotMatch(index,/tournament-hq-live\.html/);
  assert.match(page,/STAGING DEVELOPMENT SCREEN/);
+});
+
+test('event creation requires exact verified course and tee from Dagger, not arbitrary text',()=>{
+ assert.match(page,/readActiveRound\(localStorage\)/);
+ assert.match(page,/yardageSelectionKey\(selection\)/);
+ assert.match(page,/readCourseScorecard\(localStorage,selection\)/);
+ assert.match(page,/parMap\.size!==holeCount/);
+ assert.match(page,/if\(!card\)return status/);
+ assert.match(page,/courseIdentity:card\.identity/);
+ assert.match(page,/<input id="identity" readonly/);
 });
