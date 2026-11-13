@@ -101,8 +101,9 @@ function setEvent(event){
  const standings=verified?tournamentLeaderboard(event,verified.holes):null;
  // No invented pars or fake leaderboard positions: verified pars will be supplied
  // by the course-fact integration. Until then, display real submitted progress only.
- for(const t of event.teams){
-  const row=standings?.find(item=>item.id===t.id);
+ for(const item of (standings||event.teams)){
+  const t=event.teams.find(team=>team.id===item.id);
+  const row=standings?.find(standing=>standing.id===t.id);
   const played=Object.keys(t.scores||{}).length;
   const tr=document.createElement('tr');
   for(const value of [row?.rank?row.rank+'. '+t.name:t.name,played===event.holes?'F':played+'/'+event.holes,row?.relative==null?'—':row.relative===0?'E':row.relative>0?'+'+row.relative:String(row.relative)]){
