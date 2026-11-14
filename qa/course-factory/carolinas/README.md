@@ -87,3 +87,5 @@ Compare the generated catalog, coverage, review and map bytes with the checked-i
 [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/), via [Geofabrik](https://download.geofabrik.de/north-america/us.html).
 
 For a targeted audit, pass the complete regional manifest with repeatable `--course COURSE_ID` arguments. The runner validates the complete manifest, reads the same pinned snapshot, and audits only the selected courses in manifest order. The output includes `selection.json` and a `*-selected-courses.js` catalog fragment. Run the full batch before replacing a published regional catalog.
+
+Use `--require-strict` in review automation to return a failing exit status when any selected course misses strict geometry parity. The coverage report is still written for triage.

@@ -24,6 +24,11 @@ test('selected batch matches full coverage and uses a separate catalog filename'
   assert.deepEqual(JSON.parse(readFileSync(join(selected,'selection.json'))).courseIds,['second']);
   assert.equal(existsSync(join(selected,'north-carolina-course-factory.js')),false);
   assert.equal(existsSync(join(selected,'north-carolina-selected-courses.js')),true);
+  const gated=join(root,'gated');
+  const cli=spawnSync(process.execPath,['scripts/course-factory-batch.mjs',manifest,snapshot,root,gated,
+   '--course','second','--require-strict'],{encoding:'utf8'});
+  assert.equal(cli.status,1);
+  assert.equal(existsSync(join(gated,'coverage.json')),true);
   assert.throws(()=>buildBatch(manifest,snapshot,root,join(root,'bad'),['typo']),/Unknown course selection/);
   assert.throws(()=>buildBatch(manifest,snapshot,root,join(root,'bad'),['first','first']),/Duplicate course selection/);
  }finally{rmSync(root,{recursive:true,force:true});}

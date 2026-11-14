@@ -144,11 +144,19 @@ export function buildBatch(manifestPath, snapshotPath, scorecardCache, outputPat
 if (process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const courseIds = [];
-  for (let i=4; i<args.length; i+=2) {
+  let requireStrict = false;
+  for (let i=4; i<args.length;) {
+    if (args[i]==='--require-strict' && !requireStrict) {
+      requireStrict = true;
+      i++;
+      continue;
+    }
     if (args[i]!=='--course'||!args[i+1]) throw Error('Expected --course COURSE_ID');
     courseIds.push(args[i+1]);
+    i+=2;
   }
-  if (args.length<4) throw Error('Usage: course-factory-batch.mjs MANIFEST SNAPSHOT SCORECARD_CACHE NEW_OUTPUT [--course COURSE_ID]...');
+  if (args.length<4) throw Error('Usage: course-factory-batch.mjs MANIFEST SNAPSHOT SCORECARD_CACHE NEW_OUTPUT [--course COURSE_ID]... [--require-strict]');
   const coverage = buildBatch(...args.slice(0,4), courseIds);
   console.table(coverage.map(({id,status,counts})=>({id,status,...counts})));
+  if (requireStrict && coverage.some(course=>course.status!=='strict-pass')) process.exitCode=1;
 }
