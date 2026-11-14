@@ -1,6 +1,7 @@
 import {createTrip,addTripRound,tripRosterSummary} from './trip-roster.js';
 import {changeTripRoundStatus} from './trip-round-status.js';
 import {summarizeTrip} from './trip-settlement.js';
+import {cupStandings} from './trip-cup.js';
 import {reconcileTripScorecard} from './trip-scorecard-reconcile.js';
 import {buildTripRecap} from './trip-recap.js';
 // All data stays on this device. Live multiplayer is intentionally not implied.
@@ -26,31 +27,45 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
  function openScorecard(trip,round,group){
   const card=doc.createElement('form');
   card.setAttribute('aria-label',round.name+' skins scorecard');
-  const fields=[];
+  const holes=group.scores??Array(18).fill(null);
+  const firstMissing=holes.indexOf(null);
   const names=group.playerIds.map(id=>trip.players.find(player=>player.id===id).name);
-  para(card,names.join(' · ')+' · 18 holes · Practice skins');
-  for(let hole=1;hole<=18;hole++){
-   const row=doc.createElement('fieldset');
-   const legend=doc.createElement('legend');legend.textContent='Hole '+hole;row.append(legend);
-   fields.push(names.map(name=>{
-    const label=doc.createElement('label');label.textContent=name;
-    const field=doc.createElement('input');field.type='number';field.inputMode='numeric';
-    field.min='1';field.max='20';field.required=true;
-    label.append(field);row.append(label);return field;
-   }));
-   card.append(row);
+  const picker=doc.createElement('select');
+  picker.setAttribute('aria-label','Scoring hole');
+  for(let index=0;index<18;index++)picker.add(new Option('Hole '+(index+1),String(index)));
+  picker.value=String(firstMissing<0?17:firstMissing);
+  const row=doc.createElement('fieldset');
+  const fields=names.map(name=>{
+   const label=doc.createElement('label');label.textContent=name;
+   const field=doc.createElement('input');field.type='number';field.inputMode='numeric';
+   field.min='1';field.max='20';field.required=true;
+   label.append(field);row.append(label);return field;
+  });
+  const populate=()=>fields.forEach((field,index)=>{field.value=holes[Number(picker.value)]?.[index]??'';});
+  picker.onchange=populate;
+  populate();
+  const submit=doc.createElement('button');submit.textContent='Save hole';
+  const status=doc.createElement('p');status.setAttribute('role','status');
+  card.append(picker,row,submit,status);
+  const standings=cupStandings(trip);
+  const leader=standings[0];
+  if(leader.skins){
+   const tied=standings.filter(entry=>entry.skins===leader.skins);
+   para(card,(tied.length>1?'Tied lead · ':'Leader · ')+tied.map(entry=>entry.name).join(', ')+' · '+leader.skins+' skins');
   }
-  const submit=doc.createElement('button');submit.textContent='Record practice result';card.append(submit);
-  const status=doc.createElement('p');status.setAttribute('role','status');card.append(status);
   const expected=storage.getItem(key);
   card.addEventListener('submit',event=>{
    event.preventDefault();
    try{
     if(storage.getItem(key)!==expected)throw Error('Trip changed. Reopen the scorecard before saving.');
-    const holes=fields.map(row=>row.map(field=>field.valueAsNumber));
-    const next=reconcileTripScorecard(read(),round.id,{playerIds:group.playerIds,holes,
+    const updated=[...holes];updated[Number(picker.value)]=fields.map(field=>field.valueAsNumber);
+    const revised={...trip,rounds:trip.rounds.map(item=>item.id===round.id
+     ?{...item,groups:item.groups.map(entry=>entry.id===group.id?{...entry,scores:updated}:entry)}:item)};
+    const next=reconcileTripScorecard(revised,round.id,{playerIds:group.playerIds,holes:updated,
      games:[{id:'practice-'+group.id,format:'skins',stakeCents:0}]});
     save(next);
+    const nextRound=next.rounds.find(item=>item.id===round.id);
+    openScorecard(next,nextRound,nextRound.groups.find(entry=>entry.id===group.id));
    }catch(error){status.textContent=error.message;}
   });
   body.querySelector('form')?.remove();
@@ -76,8 +91,7 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
     for(const [index,group] of round.groups.entries()){
      if(group.playerIds.length<2)continue;
      const recorded=round.games.some(game=>game.id==='practice-'+group.id&&game.status==='completed');
-     if(recorded)para(body,'Group '+(index+1)+' · Scorecard recorded');
-     else body.append(button('Score group '+(index+1),()=>openScorecard(trip,round,group)));
+     body.append(button((recorded?'Review group ':'Score group ')+(index+1),()=>openScorecard(trip,round,group)));
     }
     const playable=round.groups.filter(group=>group.playerIds.length>=2);
     if(playable.length&&playable.every(group=>round.games.some(game=>game.id==='practice-'+group.id&&game.status==='completed'))&&
@@ -87,6 +101,8 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
    }
    if(round.status==='draft')body.append(button('Start '+round.name,()=>save(changeTripRoundStatus(read(),round.id,'active').trip)));
   }
+  const standings=doc.createElement('h3');standings.textContent='Cup De Diesel Nips · Practice standings';body.append(standings);
+  for(const row of cupStandings(trip))para(body,row.name+' · '+row.skins+' skins · '+row.holes+' holes scored');
   const ledger=summarizeTrip(trip);const h=doc.createElement('h3');
   h.textContent='TRIP LEDGER · '+(ledger.provisional?'PROVISIONAL':'FINAL');body.append(h);
   para(body,ledger.countedGames+' counted games · '+ledger.pendingGames+' pending games');
@@ -105,7 +121,13 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
   }));
   const next=input('New round name');
   body.append(next,button('Add Draft Round',()=>{
-   const groups=[];for(let i=0;i<trip.players.length;i+=4)groups.push({id:id(),playerIds:trip.players.slice(i,i+4).map(p=>p.id)});
+   const groups=[];
+   for(let i=0;i<trip.players.length;){
+    const remaining=trip.players.length-i;
+    const size=remaining===5?3:Math.min(remaining,4);
+    groups.push({id:id(),playerIds:trip.players.slice(i,i+size).map(p=>p.id)});
+    i+=size;
+   }
    save(addTripRound(read(),{id:id(),name:next.value,status:'draft',groups}));
   }));
  }
