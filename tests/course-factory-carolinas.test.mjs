@@ -212,3 +212,11 @@ test('Pine Island keeps the official combo tees while withholding conflicting ge
  const audit=json('../qa/course-factory/north-carolina/coverage.json').courses.find(({id})=>id===course.providerCourseId);
  assert.deepEqual(audit.audit.ratioErrors,[2,3,4]);
 });
+
+test('Starter’s Desk distinguishes bundled drawings, approximate tees and scorecard coverage',async()=>{
+ const {courseCoverageLabel}=await import('../playtest/starters-desk-ui.js');
+ assert.equal(courseCoverageLabel(founderCatalogRecords('Pine Island')[0]),'Verified scorecard');
+ assert.equal(courseCoverageLabel(founderCatalogRecords('Country Hills')[0]),'Full Yardage Book');
+ assert.match(courseCoverageLabel(founderCatalogRecords('Kings Grant')[0]),/approximate/);
+ assert.equal(courseCoverageLabel({provider:'opengolfapi',providerCourseId:'unknown'}),'Coverage varies by tee');
+});

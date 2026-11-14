@@ -5,6 +5,16 @@ import {searchOpenGolfCourses,loadOpenGolfTees} from './opengolf-catalog.js';
 import {getRoundEnvironment} from './round-environment.js?v=location-shapes-23';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {archiveAndClearSoloRound} from './solo-round-reset.js';
+import {founderMapRecord} from './founders-verified-scorecards.js';
+import {isBayonetCourse} from './bayonet-verified-scorecard.js';
+
+export function courseCoverageLabel(course){
+ if(isBayonetCourse(course))return 'Full Yardage Book';
+ const map=founderMapRecord(course);
+ if(!map)return 'Coverage varies by tee';
+ if(map.status!=='bundled-reviewed-osm')return 'Verified scorecard';
+ return map.referenceTees?.length?'Yardage Book · some tee locations approximate':'Full Yardage Book';
+}
 export function mountStartersDesk({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-starter-open'))return;
  const style=doc.createElement('style');
@@ -16,9 +26,13 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  #dcc-starter-dialog .dcc-starter-eyebrow{color:#d8ba77;letter-spacing:.18em;font:800 10px system-ui}
  #dcc-starter-dialog .dcc-starter-head h2{font:normal 30px Georgia,serif;margin:10px 0;color:#f3e9d3!important;opacity:1}
  .dcc-starter-body{padding:24px;display:grid;gap:14px}
- .dcc-starter-body p{margin:0;line-height:1.5}\n .dcc-starter-body input,.dcc-starter-body select{padding:11px;border-radius:8px;width:100%;box-sizing:border-box;border:1px solid #b79c62}\n #dcc-starter-results{display:grid;gap:6px;max-height:200px;overflow:auto}
+ .dcc-starter-body p{margin:0;line-height:1.5}\n .dcc-starter-body input,.dcc-starter-body select{padding:11px;border-radius:8px;width:100%;box-sizing:border-box;border:1px solid #b79c62}\n #dcc-starter-results button{text-align:left;min-height:44px}
+ .dcc-starter-coverage{display:block;margin-top:4px;font:600 11px/1.4 system-ui}
+ #dcc-starter-results{display:grid;gap:6px;max-height:200px;overflow:auto}
  .dcc-starter-body button{padding:12px;border-radius:10px;border:1px solid #b79c62;background:#173528;color:#f3e9d3;cursor:pointer}
- #dcc-starter-dialog .dcc-starter-body,#dcc-starter-dialog .dcc-starter-body label,#dcc-starter-dialog #dcc-starter-current,#dcc-starter-dialog #dcc-starter-results{color:#173528}
+ #dcc-starter-dialog .dcc-starter-body,#dcc-starter-dialog .dcc-starter-body label,#dcc-starter-dialog #dcc-starter-current,#dcc-starter-dialog #dcc-starter-results button{text-align:left;min-height:44px}
+ .dcc-starter-coverage{display:block;margin-top:4px;font:600 11px/1.4 system-ui}
+ #dcc-starter-results{color:#173528}
  #dcc-starter-dialog .dcc-starter-head p{color:#f3e9d3}
  #dcc-starter-dialog .dcc-starter-body input,#dcc-starter-dialog .dcc-starter-body select{background:#fffcf3;color:#173528}
  #dcc-starter-dialog .dcc-starter-body input::placeholder{color:#59695d;opacity:1}
@@ -62,7 +76,10 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
    if(!list.length){results.textContent='No courses found. Try another name, or enter the clubhouse without checking in.';return;}
    for(const course of list){
     const item=doc.createElement('button');item.type='button';item.className='secondary';
-    item.textContent=course.name+' · '+course.region;
+    const name=doc.createElement('span');name.textContent=course.name+' · '+course.region;
+    const coverage=doc.createElement('small');coverage.className='dcc-starter-coverage';
+    coverage.textContent=courseCoverageLabel(course);
+    item.append(name,coverage);
     item.addEventListener('click',async()=>{
      const turn=++requestId;selected=null;checkin.disabled=true;tees.disabled=true;
      results.textContent='Checking the available tees…';
@@ -71,7 +88,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
       if(turn!==requestId)return;
       if(!entries.length){results.textContent='No verified tees available for this course yet. Try another course or enter without checking in.';return;}
       selected=entries[0].course;available=entries[0].tees;
-      results.textContent='Selected: '+selected.name;
+      results.textContent='Selected: '+selected.name+' · '+courseCoverageLabel(selected);
       tees.replaceChildren(new Option('Select your tees',''),...available.map((t,i)=>new Option(t.name+' · '+t.totalYards+' yards',String(i))));
       tees.disabled=false;
      }catch{if(turn===requestId)results.textContent='Could not retrieve tee details. You can enter without checking in.';}
