@@ -4,9 +4,15 @@ import {correctTripGame} from './trip-game-correction.js';
 // Replace recorded results atomically in a pure copy, matching by game ID.
 // Calling code must persist the entire returned snapshot with a revision guard.
 export function reconcileTripScorecard(trip,roundId,card){
+ const round=trip?.rounds?.find(row=>row.id===roundId);
+ if(!round)throw Error('Unknown round');
  const calculated=scorecardToTripGames(card);
+ if(!round.groups.some(group=>group.playerIds.length===card.playerIds.length&&
+    card.playerIds.every(id=>group.playerIds.includes(id))))throw Error('Scorecard must match an assigned group');
  let next=trip;
- for(const result of calculated){
+ for(const calculatedGame of calculated){
+  const result=calculatedGame.status==='completed'?{...calculatedGame,
+   netCents:Object.fromEntries(trip.players.map(({id})=>[id,calculatedGame.netCents[id]??0]))}:calculatedGame;
   const round=next.rounds?.find(r=>r.id===roundId);
   if(!round)throw Error('Unknown round');
   const prior=round.games?.find(g=>g.id===result.id);

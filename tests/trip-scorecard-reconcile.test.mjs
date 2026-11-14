@@ -27,3 +27,12 @@ test('incomplete scorecard cannot silently settle',()=>{
  const result=reconcileTripScorecard(base(),'r',card([[4,5]]));
  assert(result.rounds[0].games.every(g=>g.status==='active'));
 });
+
+test('a foursome scorecard reconciles inside a larger trip without charging absent golfers',()=>{
+ const trip=createTrip({tripId:'t',name:'Trip',players:[...players,{id:'c',name:'C'},{id:'d',name:'D'}],
+  rounds:[{id:'r',name:'Round',status:'active',groups:[{id:'g',playerIds:['a','b']},{id:'h',playerIds:['c','d']}]}]});
+ const input=card(Array.from({length:18},()=>[4,5]));
+ const next=reconcileTripScorecard(trip,'r',input);
+ assert.deepEqual(next.rounds[0].games[0].netCents,{a:1800,b:-1800,c:0,d:0});
+ assert.throws(()=>reconcileTripScorecard(trip,'r',{...input,playerIds:['a','c']}),/assigned group/);
+});
