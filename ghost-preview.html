@@ -40,7 +40,7 @@ body.match {background:#f5f0e5}
  <g id="markers" transform="scale(0.9375 0.51162790698)"></g>
 </svg><small id="ghostMapStatus">Ghost shots are illustrative overlays, not measured GPS positions.</small></div>
 <div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button>
-<p id="progress" role="status"></p></article>
+<p id="progress" role="status"></p><p id="ghostReaction" class="note" hidden></p></article>
 <article><strong>Shots played</strong><ol id="shots"></ol></article>
 </main><script type="module">
 import {ghostShotPlayback} from './app/61f9e9de0a/house-ghost-playback.js?v=ghost-match-1';
@@ -175,6 +175,17 @@ function render(){
  });
  $('shots').replaceChildren();state.visibleShots.forEach(s=>{const li=document.createElement('li');li.textContent=s.club+' · '+s.distanceLabel+' · '+s.lie;$('shots').append(li)});
  $('progress').textContent=state.complete?'Holed out in '+state.score+' strokes':revealed===0?'Ghost on the tee':revealed+' '+(revealed===1?'stroke':'strokes')+' played · still on the hole';
+ const lastShot=state.visibleShots[state.visibleShots.length-1];
+ const reaction=$('ghostReaction');
+ reaction.hidden=!lastShot;
+ if(lastShot){
+  const relative=state.score-state.par;
+  reaction.textContent=state.complete
+   ? relative<0?'The Ghost took a stroke off par.':relative>1?'The Ghost left the door open.':'The Ghost put a number on the card.'
+   : lastShot.club==='Putter'?'Still work left on the green.'
+   : lastShot.lie==='Rough / recovery'?'The Ghost has a recovery shot next.'
+   : lastShot.comment;
+ }
  $('back').disabled=!state.canRewind;$('next').disabled=!state.canAdvance;
  if(state.complete)stopWatch();
 }
