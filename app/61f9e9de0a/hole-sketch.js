@@ -110,7 +110,7 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
       }
       const features = courseArtFeatures(records, holeNumber);
       if (features.length) return buildHoleSketch(features, {credit: entry.credit, source: entry.source,
-        approximateTee, referenceNote: (mappedFounder?.referenceNotes ?? entry.referenceNotes)?.[holeNumber]});
+        reviewedGeometry:bundled||courseArt.has(identity), approximateTee, referenceNote: (mappedFounder?.referenceNotes ?? entry.referenceNotes)?.[holeNumber]});
     } catch (error) {
       if (signal?.aborted) throw error;
     }

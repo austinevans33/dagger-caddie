@@ -47,8 +47,9 @@ import {ghostShotPlayback} from './app/61f9e9de0a/house-ghost-playback.js?v=ghos
 import {ACTIVE_ROUND_KEY,readActiveRound} from './app/61f9e9de0a/starters-desk-session.js';
 import {loadYardageState} from './app/61f9e9de0a/yardage-live.js';
 import {drawGhostTracer} from './app/61f9e9de0a/ghost-tracer.js?v=friday-book-1';
-import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './app/61f9e9de0a/hole-sketch.js?v=founders-reference-2';
-import {renderSharedHoleSketch} from './app/61f9e9de0a/shared-hole-sketch.js?v=founders-reference-2';
+import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './app/61f9e9de0a/hole-sketch.js?v=ghost-mapped-lie-1';
+import {mappedGhostShots} from './app/61f9e9de0a/ghost-mapped-lie.js';
+import {renderSharedHoleSketch} from './app/61f9e9de0a/shared-hole-sketch.js?v=ghost-mapped-lie-1';
 import {readYardageHole} from './app/61f9e9de0a/yardage-navigation.js';
 import {pencilOrientation} from './app/61f9e9de0a/yardage-pencil-orientation.js';
 const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
@@ -100,7 +101,7 @@ const ghostTier=Object.hasOwn(TIER_NAMES,requestedTier)?requestedTier:
  Object.hasOwn(TIER_NAMES,savedTier)?savedTier:'tenFifteen';
 let selectedCourse=null;let verifiedHoles=[];let courseIdentity='friday-qa';
 let activeCourseSelection=null,sketchGeneration=0;
-let currentRoute=null,sketchPending=null;
+let currentRoute=null,reviewedShapes=[],sketchPending=null;
 function sizeStage(height){
  $('trail').setAttribute('viewBox','0 0 '+SKETCH_WIDTH+' '+height);
  $('ghostHoleSketch').setAttribute('height',height);
@@ -117,7 +118,7 @@ function showUnmappedPencil(holeNumber){
 async function updateGhostHoleSketch(){
  const generation=++sketchGeneration;
  sketchPending?.abort();
- currentRoute=null;
+ currentRoute=null;reviewedShapes=[];
  const holeNumber=Number($('hole').value);
  if(params.get('from')==='yardage')$('ghostBack').href='yardage-preview.html?hole='+holeNumber;
  const svg=$('ghostHoleSketch'),status=$('ghostMapStatus');
@@ -140,6 +141,7 @@ async function updateGhostHoleSketch(){
   sizeStage(SKETCH_HEIGHT);
   renderSharedHoleSketch(svg,sketch.shapes,sketch.annotations,{height:SKETCH_HEIGHT});
   currentRoute=sketch.annotations.route;
+  reviewedShapes=currentRoute&&sketch.reviewedGeometry?sketch.shapes:[];
   status.textContent='Same mapped pencil drawing as Yardage Book. Simulated flights. ';
   if(sketch.source){
    const credit=document.createElement('a');
@@ -173,9 +175,15 @@ function render(){
   const label=document.createElementNS(ns,'text');label.setAttribute('x',String(shot.x*320));label.setAttribute('y',String(shot.y*430+4));label.setAttribute('text-anchor','middle');label.setAttribute('font-size','12');label.setAttribute('fill','#fff');label.textContent=String(i+1);
   $('markers').append(dot,label);
  });
- $('shots').replaceChildren();state.visibleShots.forEach(s=>{const li=document.createElement('li');li.textContent=s.club+' · '+s.distanceLabel+' · '+s.lie;$('shots').append(li)});
+ const shots=mappedGhostShots(placement.shots,reviewedShapes,SKETCH_WIDTH,SKETCH_HEIGHT);
+ $('shots').replaceChildren();
+ for(const shot of shots){
+  const li=document.createElement('li');
+  li.textContent=shot.club+' · '+shot.distanceLabel+' · '+(shot.mappedLie?'Simulated landing: '+shot.mappedLie:shot.lie);
+  $('shots').append(li);
+ }
  $('progress').textContent=state.complete?'Holed out in '+state.score+' strokes':revealed===0?'Ghost on the tee':revealed+' '+(revealed===1?'stroke':'strokes')+' played · still on the hole';
- const lastShot=state.visibleShots[state.visibleShots.length-1];
+ const lastShot=shots.at(-1);
  const reaction=$('ghostReaction');
  reaction.hidden=!lastShot;
  if(lastShot){
@@ -183,6 +191,7 @@ function render(){
   reaction.textContent=state.complete
    ? relative<0?'The Ghost took a stroke off par.':relative>1?'The Ghost left the door open.':'The Ghost put a number on the card.'
    : lastShot.club==='Putter'?'Still work left on the green.'
+   : lastShot.mappedLie==='Mapped water'?'The simulated line finished in the water.':lastShot.mappedLie==='Mapped bunker'?'The simulated line found sand.'
    : lastShot.lie==='Rough / recovery'?'The Ghost has a recovery shot next.'
    : lastShot.comment;
  }
