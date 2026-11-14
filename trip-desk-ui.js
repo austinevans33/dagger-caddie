@@ -103,6 +103,23 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
   }
   const standings=doc.createElement('h3');standings.textContent='Cup De Diesel Nips · Practice standings';body.append(standings);
   for(const row of cupStandings(trip))para(body,row.name+' · '+row.skins+' skins · '+row.holes+' holes scored');
+  const share=doc.createElement('button');share.type='button';share.textContent='Share standings';
+  const shareStatus=doc.createElement('p');shareStatus.setAttribute('role','status');
+  share.onclick=async()=>{
+   const current=read();
+   if(!current)return;
+   const text=[current.name,'Practice standings · '+new Date().toISOString(),
+    ...cupStandings(current).map(row=>row.name+' · '+row.skins+' skins · '+row.holes+' holes scored')].join('\n');
+   try{
+    const nav=doc.defaultView.navigator;
+    if(nav.share)await nav.share({title:current.name,text});
+    else {await nav.clipboard.writeText(text);shareStatus.textContent='Standings copied.';}
+   }catch(error){
+    if(error.name!=='AbortError')shareStatus.textContent=text;
+   }
+  };
+  shareStatus.style.whiteSpace='pre-line';
+  body.append(share,shareStatus);
   const ledger=summarizeTrip(trip);const h=doc.createElement('h3');
   h.textContent='TRIP LEDGER · '+(ledger.provisional?'PROVISIONAL':'FINAL');body.append(h);
   para(body,ledger.countedGames+' counted games · '+ledger.pendingGames+' pending games');
