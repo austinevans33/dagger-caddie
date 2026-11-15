@@ -7,7 +7,7 @@ on:
     paths:
       - 'trip-*.js'
       - 'scorecard-trip-bridge.js'
-      - 'tests/trip-*.test.mjs'
+      - 'tests/trip-*.mjs'
       - 'tests/scorecard-trip-bridge.test.mjs'
       - '.github/workflows/trip-settlement-regression.yml'
   workflow_dispatch:
@@ -27,3 +27,16 @@ jobs:
           done
       - name: Run all Node regression tests
         run: node --test tests/*.test.mjs
+
+      - name: Install browser runner
+        run: |
+          npm install --no-save --no-package-lock @playwright/test
+          npx playwright install --with-deps webkit
+      - name: Verify the Cup scorecard on a phone viewport
+        run: |
+          python3 -m http.server 8769 --bind 127.0.0.1 &
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8769/trip-desk-ui.js -o /dev/null; then break; fi
+            sleep 1
+          done
+          npx playwright test tests/trip-practice.spec.mjs --workers=1 --reporter=line
