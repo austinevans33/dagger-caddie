@@ -26,7 +26,12 @@ function validateRound(round,roster){
       if(!roster.has(playerId)||assigned.has(playerId))throw new Error('Unknown or duplicate golfer in round');
       assigned.add(playerId);
     }
-    return {id:group.id,playerIds:[...group.playerIds]};
+    const scores=group.scores;
+    if(scores!==undefined&&(!Array.isArray(scores)||scores.length!==18||
+       !Array.from(scores).every(hole=>hole===null||Array.isArray(hole)&&hole.length===group.playerIds.length&&
+         Array.from(hole).every(score=>Number.isInteger(score)&&score>=1&&score<=20))))throw Error('Invalid group scorecard');
+    return {id:group.id,playerIds:[...group.playerIds],
+     ...(scores===undefined?{}:{scores:scores.map(hole=>hole===null?null:[...hole])})};
   });
   if(new Set(groups.map(g=>g.id)).size!==groups.length)throw new Error('Duplicate foursome');
   // Preserve already recorded games when adding a later trip round.
