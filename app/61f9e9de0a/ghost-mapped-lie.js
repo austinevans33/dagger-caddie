@@ -50,13 +50,14 @@ const skills=Object.freeze({
  fifteenTwenty:{carry:205,spread:.13,putt:.54}
 });
 
-export function playMappedGhostHole({route,shapes,width,height,yards,tier,seed,condition}){
+export function playMappedGhostHole({route,shapes,width,height,yards,par,tier,seed,condition}){
  const skill=Object.hasOwn(skills,tier)?skills[tier]:null;
  if(!skill||!Number.isFinite(yards)||yards<=0||!route?.path||width<=0||height<=0)return null;
  const {tee,green,path}=route;
  const classify=([x,y])=>lies.find(([type])=>shapes.some(shape=>shape.type===type&&
   inside(x,y,shape.points)&&!shape.interiors?.some(ring=>inside(x,y,ring))))?.[0];
- if(classify(green)!=='green'||!shapes.some(shape=>shape.type==='fairway'))return null;
+ const hasFairway=shapes.some(shape=>shape.type==='fairway');
+ if(classify(green)!=='green'||(!hasFairway&&par!==3))return null;
  const length=path.slice(1).reduce((sum,point,i)=>sum+Math.hypot(point[0]-path[i][0],point[1]-path[i][1]),0);
  if(!length)return null;
  const scale=yards/length;
@@ -72,6 +73,7 @@ export function playMappedGhostHole({route,shapes,width,height,yards,tier,seed,c
  let position=tee;
  let lie='tee';
  let waypoint=1;
+ let retryAfterWater=false;
  const shots=[];
  while(shots.length<18){
   const remaining=distance(position,green)*scale;
@@ -94,7 +96,17 @@ export function playMappedGhostHole({route,shapes,width,height,yards,tier,seed,c
   const dx=target[0]-position[0],dy=target[1]-position[1];
   const line=Math.hypot(dx,dy);
   if(!line)return null;
-  const planned=Math.min(line,carry/scale);
+  let planned=Math.min(line,carry/scale);
+  if(retryAfterWater&&hasFairway){
+   // After a penalty, look for a shorter target with usable ground on both sides.
+   for(const fraction of [.8,.65,.5,.35]){
+    const step=planned*fraction;
+    const flank=step*skill.spread*risk;
+    const supported=[-flank,0,flank].every(offset=>
+     classify([position[0]+(dx*step-dy*offset)/line,position[1]+(dy*step+dx*offset)/line])==='fairway');
+    if(supported){planned=step;break;}
+   }
+  }
   const club=lie==='bunker'?'Recovery wedge':recovery?'Punch out':planned*scale>190?'Driver':
    planned*scale>105?'Iron':planned*scale>35?'Wedge':'Chip';
   const miss=(random()-.5)*2*planned*skill.spread*risk;
@@ -108,7 +120,8 @@ export function playMappedGhostHole({route,shapes,width,height,yards,tier,seed,c
   shots.push({...unit(landing),club,distanceLabel:Math.max(1,Math.round(distance(position,landing)*scale))+' yd',
    lie:mappedLie||'Unclassified ground',mappedLie,comment:nextLie==='water'?'Water. The Ghost will replay with a penalty.':
     recovery?'The Ghost plays back toward the hole.':nextLie==='green'?'On the green. Putter next.':'The Ghost plays toward the next target.'});
-  if(nextLie==='water'){
+  retryAfterWater=nextLie==='water';
+  if(retryAfterWater){
    shots.push({...unit(position),club:'Penalty',distanceLabel:'Stroke and distance',lie:'Replay position',
     comment:'One penalty stroke. The Ghost plays again from the previous lie.'});
   }else{

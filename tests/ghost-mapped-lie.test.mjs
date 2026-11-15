@@ -74,3 +74,15 @@ test('mapped lie changes the next club and landing from the same prior position'
  assert.notEqual(recovery.shots[1].x,clear.shots[1].x);
  assert.equal(playMappedGhostHole({...base,shapes:[]}),null);
 });
+
+test('a reviewed par three can finish with a green and route but no fairway polygon',async()=>{
+ const holeNumber=14;
+ const course={provider:'opengolfapi',providerCourseId:BAYONET_COURSE_ID,holeCount:18};
+ const sketch=await loadHoleSketch({course},holeNumber,{fetcher:async url=>new Response(await readFile(url))});
+ assert.equal(sketch.reviewedGeometry,true);
+ const options={route:sketch.annotations.route,shapes:sketch.shapes,width:SKETCH_WIDTH,height:SKETCH_HEIGHT,
+  yards:BAYONET_TEES.white.yards[holeNumber-1],tier:'scratch',seed:'bayonet|14'};
+ assert.equal(playMappedGhostHole({...options,par:4}),null);
+ const play=playMappedGhostHole({...options,par:3});
+ assert.equal(play?.shots.at(-1).lie,'Holed');
+});

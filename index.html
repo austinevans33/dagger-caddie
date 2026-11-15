@@ -7167,7 +7167,7 @@ function dccGhostShowPlayback() {
 
   const frame = document.createElement('iframe');
   frame.title = 'House Ghost playing this hole';
-  frame.src = 'ghost-preview.html?match=1&v=mapped-play-1';
+  frame.src = 'ghost-preview.html?match=1&v=mapped-play-2';
   frame.height = '440';
   frame.addEventListener('load', () => {
     const card = frame.contentDocument?.querySelector('main');
@@ -7439,13 +7439,13 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
       try {
         const [{loadHoleSketch, SKETCH_WIDTH, SKETCH_HEIGHT}, {playMappedGhostHole}] = await Promise.all([
           import('./app/61f9e9de0a/hole-sketch.js'),
-          import('./app/61f9e9de0a/ghost-mapped-lie.js?v=mapped-play-1')
+          import('./app/61f9e9de0a/ghost-mapped-lie.js?v=mapped-play-2')
         ]);
         const sketch = await loadHoleSketch(selection, hole, {signal:AbortSignal.timeout?.(3000)});
         if (sketch.reviewedGeometry) {
           const play = playMappedGhostHole({
             route:sketch.annotations.route, shapes:sketch.shapes, width:SKETCH_WIDTH, height:SKETCH_HEIGHT,
-            yards:facts.yards, tier, condition,
+            yards:facts.yards, par, tier, condition,
             seed:[selection.course.providerCourseId, selection.tee.providerTeeId, hole, tier, condition, crypto.randomUUID()].join('|')
           });
           if (play) pending.mappedPlay = play;

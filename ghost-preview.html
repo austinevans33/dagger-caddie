@@ -48,7 +48,7 @@ import {ACTIVE_ROUND_KEY,readActiveRound} from './app/61f9e9de0a/starters-desk-s
 import {loadYardageState} from './app/61f9e9de0a/yardage-live.js';
 import {drawGhostTracer} from './app/61f9e9de0a/ghost-tracer.js?v=friday-book-1';
 import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './app/61f9e9de0a/hole-sketch.js?v=ghost-mapped-lie-1';
-import {mappedGhostShots,playMappedGhostHole} from './app/61f9e9de0a/ghost-mapped-lie.js?v=mapped-play-1';
+import {mappedGhostShots,playMappedGhostHole} from './app/61f9e9de0a/ghost-mapped-lie.js?v=mapped-play-2';
 import {renderSharedHoleSketch} from './app/61f9e9de0a/shared-hole-sketch.js?v=ghost-mapped-lie-1';
 import {readYardageHole} from './app/61f9e9de0a/yardage-navigation.js';
 import {pencilOrientation} from './app/61f9e9de0a/yardage-pencil-orientation.js';
@@ -153,7 +153,7 @@ async function updateGhostHoleSketch(){
   if(!matchHole&&reviewedShapes.length){
    const facts=verifiedHoles.find(hole=>hole.number===holeNumber);
    mappedPlay=playMappedGhostHole({route:currentRoute,shapes:reviewedShapes,width:SKETCH_WIDTH,height:SKETCH_HEIGHT,
-    yards:facts?.yards,tier:ghostTier,seed:courseIdentity+'|'+holeNumber});
+    yards:facts?.yards,par:facts?.par,tier:ghostTier,seed:courseIdentity+'|'+holeNumber});
   }
   status.textContent=mappedPlay?'Simulated play on the Yardage Book drawing. ': 'Yardage Book drawing · schematic playback. ';
   if(sketch.source){
