@@ -2,6 +2,8 @@
 """Convert a pinned regional Geofabrik PBF into a reproducible golf-only OSM XML snapshot."""
 import argparse
 import hashlib
+import json
+import tempfile
 import re
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -54,7 +56,7 @@ def extract(source, bounds=None):
     return nodes, ways, relations
 
 
-def snapshot(source, output, bounds=None):
+def snapshot(source, output, bounds=None, *, expected_sha=None):
     nodes, ways, relations = extract(source, bounds)
     root = ET.Element("osm", version="0.6", license=LICENSE)
     for ref, (lon, lat) in sorted(nodes.items()):
@@ -72,23 +74,40 @@ def snapshot(source, output, bounds=None):
             ET.SubElement(element, "member", type=kinds[kind], ref=str(child), role=role)
         for key in sorted(TAGS & tags.keys()):
             ET.SubElement(element, "tag", k=key, v=tags[key])
-    temp = output.with_suffix(output.suffix + ".tmp")
-    ET.ElementTree(root).write(temp, encoding="utf-8", xml_declaration=True)
-    temp.replace(output)
+    with tempfile.NamedTemporaryFile(dir=output.parent, prefix=output.name + ".", delete=False) as handle:
+        temp = Path(handle.name)
+    try:
+        ET.ElementTree(root).write(temp, encoding="utf-8", xml_declaration=True)
+        if expected_sha and file_sha(temp) != expected_sha:
+            raise ValueError("derived snapshot checksum differs from the manifest pin")
+        temp.replace(output)
+    finally:
+        temp.unlink(missing_ok=True)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--sha256", required=True)
+    pin = parser.add_mutually_exclusive_group(required=True)
+    pin.add_argument("--sha256", help="legacy input PBF pin")
+    pin.add_argument("--manifest", type=Path, help="verify both input and derived output pins")
     parser.add_argument("--bbox", type=float, nargs=4, metavar=("WEST", "SOUTH", "EAST", "NORTH"))
     args = parser.parse_args()
-    if not re.fullmatch(r"[a-f0-9]{64}", args.sha256) or file_sha(args.source) != args.sha256:
+    source_pin, output_pin = args.sha256, None
+    if args.manifest:
+        manifest = json.loads(args.manifest.read_text())
+        source_pin, output_pin = manifest.get("pbfSha256"), manifest.get("snapshotSha256")
+        if not isinstance(output_pin, str) or not re.fullmatch(r"[a-f0-9]{64}", output_pin):
+            parser.error("invalid snapshot pin in manifest")
+    if not isinstance(source_pin, str) or not re.fullmatch(r"[a-f0-9]{64}", source_pin) or file_sha(args.source) != source_pin:
         parser.error("regional PBF checksum differs from the pinned source")
     if args.bbox and not (-180 <= args.bbox[0] < args.bbox[2] <= 180 and -90 <= args.bbox[1] < args.bbox[3] <= 90):
         parser.error("invalid snapshot bounding box")
-    snapshot(args.source, args.output, args.bbox)
+    try:
+        snapshot(args.source, args.output, args.bbox, expected_sha=output_pin)
+    except ValueError as error:
+        parser.error(str(error))
 
 
 if __name__ == "__main__":

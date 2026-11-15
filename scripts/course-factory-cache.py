@@ -11,7 +11,7 @@ from urllib.request import Request, urlopen
 MAX_CARD_BYTES = 20 * 1024 * 1024
 
 
-def cache_card(key, spec, directory):
+def cache_card(key, spec, directory, *, offline=False):
     digest = spec["sha256"]
     url = urlsplit(spec["url"])
     if (not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", key)
@@ -23,6 +23,9 @@ def cache_card(key, spec, directory):
         if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
             raise ValueError("cached bytes differ from the pin; preserve them and choose a fresh cache")
         return "cache hit"
+
+    if offline:
+        raise ValueError("missing pinned card in offline cache")
 
     request = Request(spec["url"], headers={"User-Agent": "Dagger Country Club Course Factory/1.0"})
     with urlopen(request, timeout=30) as response:
@@ -42,18 +45,33 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("manifest", type=Path)
     parser.add_argument("cache", type=Path)
+    parser.add_argument("--course", action="append", default=[], help="limit to a manifest course ID, repeatable")
+    parser.add_argument("--offline", action="store_true", help="check cached pins without downloading")
     args = parser.parse_args()
-    args.cache.mkdir(parents=True, exist_ok=True)
+    courses = json.loads(args.manifest.read_text())["courses"]
+    ids = [course["id"] for course in courses]
+    requested = set(args.course)
+    if len(requested) != len(args.course):
+        parser.error("duplicate course selection")
+    if unknown := requested.difference(ids):
+        parser.error("unknown course selection: " + ", ".join(sorted(unknown)))
+    if requested:
+        courses = [course for course in courses if course["id"] in requested]
+    if not args.offline:
+        args.cache.mkdir(parents=True, exist_ok=True)
     failed = False
-    for course in json.loads(args.manifest.read_text())["courses"]:
-        if not course.get("scorecard", {}).get("format"):
+    for course in courses:
+        if not (course.get("scorecard") or {}).get("format"):
+            if requested:
+                print(f"{course['id']}: no pinned scorecard in manifest")
+                failed = True
             continue
         try:
             spec = course["scorecard"]
-            print(f"{course['id']}: {cache_card(course['id'], spec, args.cache)}")
+            print(f"{course['id']}: {cache_card(course['id'], spec, args.cache, offline=args.offline)}")
             for part in spec.get("additionalSources", []):
                 key = course["id"] + "-" + part["suffix"]
-                print(f"{key}: {cache_card(key, part, args.cache)}")
+                print(f"{key}: {cache_card(key, part, args.cache, offline=args.offline)}")
         except (OSError, ValueError) as error:
             print(f"{course['id']}: {error}")
             failed = True

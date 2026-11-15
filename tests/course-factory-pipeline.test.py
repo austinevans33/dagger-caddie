@@ -229,6 +229,11 @@ class CourseFactoryPipeline(unittest.TestCase):
             original = output.read_bytes()
             snapshot(pbf, output, [-82.1, 27.9, -81.9, 28.1])
             self.assertEqual(output.read_bytes(), original)
+            with self.assertRaisesRegex(ValueError, "derived snapshot checksum"):
+                snapshot(pbf, output, [-82.1, 27.9, -81.9, 28.1], expected_sha="0" * 64)
+            self.assertEqual(output.read_bytes(), original)
+            snapshot(pbf, output, [-82.1, 27.9, -81.9, 28.1],
+                     expected_sha=hashlib.sha256(original).hexdigest())
             data = GolfSnapshot(output)
             self.assertEqual(list(data.discover("fixture"))[0]["unique_numbered_routes"], 1)
             self.assertEqual(list(data.discover("fixture", 27))[0]["unique_numbered_routes"], 2)
