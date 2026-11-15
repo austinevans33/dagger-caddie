@@ -48,7 +48,7 @@ import {ACTIVE_ROUND_KEY,readActiveRound} from './app/61f9e9de0a/starters-desk-s
 import {loadYardageState} from './app/61f9e9de0a/yardage-live.js';
 import {drawGhostTracer} from './app/61f9e9de0a/ghost-tracer.js?v=friday-book-1';
 import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './app/61f9e9de0a/hole-sketch.js?v=ghost-mapped-lie-1';
-import {mappedGhostShots} from './app/61f9e9de0a/ghost-mapped-lie.js';
+import {mappedGhostShots} from './app/61f9e9de0a/ghost-mapped-lie.js?v=recovery-1';
 import {renderSharedHoleSketch} from './app/61f9e9de0a/shared-hole-sketch.js?v=ghost-mapped-lie-1';
 import {readYardageHole} from './app/61f9e9de0a/yardage-navigation.js';
 import {pencilOrientation} from './app/61f9e9de0a/yardage-pencil-orientation.js';
@@ -167,15 +167,15 @@ function render(){
  $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par+(state.complete?' · Ghost '+state.score:' · Ghost playing');
  $('summary').textContent=(selectedCourse?selectedCourse+' · ':'Practice defaults · ')+(matchHole?'':state.coverage==='scorecard'?'selected-tee par & yards verified · ':'unverified hole facts · ')+state.label;
  const placement=placeGhostShots(state.visibleShots,currentRoute);
- drawGhostTracer($('trail'),placement.shots,{start:placement.start,animateLast:revealed>lastRendered});lastRendered=revealed;
+ const shots=mappedGhostShots(placement.shots,reviewedShapes,SKETCH_WIDTH,SKETCH_HEIGHT);
+ drawGhostTracer($('trail'),shots,{start:placement.start,animateLast:revealed>lastRendered});lastRendered=revealed;
  $('markers').replaceChildren();
  const ns='http://www.w3.org/2000/svg';
- placement.shots.forEach((shot,i)=>{
+ shots.forEach((shot,i)=>{
   const dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',String(shot.x*320));dot.setAttribute('cy',String(shot.y*430));dot.setAttribute('r','10');dot.setAttribute('fill','#143126');dot.setAttribute('stroke','#fff');dot.setAttribute('stroke-width','2');
   const label=document.createElementNS(ns,'text');label.setAttribute('x',String(shot.x*320));label.setAttribute('y',String(shot.y*430+4));label.setAttribute('text-anchor','middle');label.setAttribute('font-size','12');label.setAttribute('fill','#fff');label.textContent=String(i+1);
   $('markers').append(dot,label);
  });
- const shots=mappedGhostShots(placement.shots,reviewedShapes,SKETCH_WIDTH,SKETCH_HEIGHT);
  $('shots').replaceChildren();
  for(const shot of shots){
   const li=document.createElement('li');

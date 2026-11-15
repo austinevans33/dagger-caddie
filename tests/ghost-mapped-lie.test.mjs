@@ -10,3 +10,20 @@ test('simulated marker respects polygon cutouts and prioritizes mapped hazards',
  assert.deepEqual(mappedGhostShots(shots,[],10,10),shots);
  assert.equal(shots[0].mappedLie,undefined);
 });
+
+test('bunker and rough recoveries change the visible landing without rewriting scores or replay history',()=>{
+ const box=(left,right)=>[[left,0],[right,0],[right,10],[left,10]];
+ const original=[{x:.2,y:.5,club:'Tee club'},{x:.9,y:.5,club:'Approach club',distanceLabel:'about 150 yards'},
+  {x:.95,y:.5,club:'Putter',lie:'Holed'}];
+ for(const [type,club] of [['bunker','Recovery wedge'],['rough','Punch out']]){
+  const shapes=[{type,points:box(0,3)},{type:'fairway',points:box(4,8)}];
+  const shots=mappedGhostShots(original,shapes,10,10);
+  assert.equal(shots[1].club,club);
+  assert.equal(shots[1].mappedLie,'Mapped fairway');
+  assert.ok(shots[1].x<original[1].x);
+  assert.equal(shots[2],original[2]);
+  assert.equal(shots.length,original.length);
+  assert.deepEqual(mappedGhostShots(original.slice(0,2),shapes,10,10),shots.slice(0,2));
+  assert.equal(mappedGhostShots(original,shapes.slice(0,1),10,10)[1],original[1]);
+ }
+});
