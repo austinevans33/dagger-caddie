@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  // Isolated Cup practice schema. The trip has an immutable host and roster.
+  // Explicit memberships grant read access. Immutable group docs assign keepers.
+  // Each group/hole stores only ordered gross strokes.
+  match /cupTrips/{trip} {
+   function signedIn() { return request.auth != null; }
+   function tripPath() { return /databases/$(database)/documents/cupTrips/$(trip); }
+   function host() { return signedIn() && get(tripPath()).data.hostUid == request.auth.uid; }
+   function member() {
+    return signedIn() && (host() || exists(/databases/$(database)/documents/cupTrips/$(trip)/members/$(request.auth.uid)));
+   }
+   function validTrip(d) {
+    return d.keys().hasOnly(['hostUid','draft']) && d.hostUid == request.auth.uid &&
+      d.draft is string && d.draft.size() > 0 && d.draft.size() <= 60000;
+   }
+   function validMember(d, uid) { return d.keys().hasOnly(['uid']) && d.uid == uid; }
+   function validGroup(d) {
+    return d.keys().hasOnly(['keeperUid','players']) && d.keeperUid is string &&
+      d.keeperUid.size() > 0 && d.keeperUid.size() <= 128 && d.players is list &&
+      d.players.size() >= 2 && d.players.size() <= 4;
+   }
+   function isStroke(n) { return n is int && n >= 1 && n <= 20; }
+   function validHole(d, key) {
+    let group = get(/databases/$(database)/documents/cupTrips/$(trip)/groups/$(d.groupKey)).data;
+    return d.keys().hasOnly(['groupKey','hole','strokes','holeKey']) &&
+      d.groupKey is string && d.groupKey.matches('^[a-zA-Z0-9_-]{1,64}~[a-zA-Z0-9_-]{1,64}$') &&
+      d.hole is int && d.hole >= 1 && d.hole <= 18 &&
+      d.holeKey == ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18'][d.hole - 1] &&
+      key == d.groupKey + '~' + d.holeKey &&
+      group.keeperUid == request.auth.uid &&
+      d.strokes is list && d.strokes.size() == group.players.size() &&
+      isStroke(d.strokes[0]) && isStroke(d.strokes[1]) &&
+      (d.strokes.size() < 3 || isStroke(d.strokes[2])) &&
+      (d.strokes.size() < 4 || isStroke(d.strokes[3]));
+   }
+   allow create: if signedIn() && validTrip(request.resource.data);
+   allow get: if member();
+   match /members/{uid} {
+    allow create: if host() && validMember(request.resource.data, uid);
+   }
+   match /groups/{key} {
+    allow create: if signedIn() && getAfter(tripPath()).data.hostUid == request.auth.uid &&
+      key.matches('^[a-zA-Z0-9_-]{1,64}~[a-zA-Z0-9_-]{1,64}$') && validGroup(request.resource.data);
+   }
+   match /holes/{key} {
+    allow read: if member();
+    allow create, update: if member() && validHole(request.resource.data, key);
+   }
+  }
+ }
+}

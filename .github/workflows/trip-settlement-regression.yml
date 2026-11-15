@@ -6,6 +6,8 @@ on:
   pull_request:
     paths:
       - 'trip-*.js'
+      - 'firestore.trip-emulator.rules'
+      - 'firebase.trip-emulator.json'
       - 'scorecard-trip-bridge.js'
       - 'tests/trip-*.mjs'
       - 'tests/scorecard-trip-bridge.test.mjs'
@@ -28,6 +30,14 @@ jobs:
       - name: Run all Node regression tests
         run: node --test tests/*.test.mjs
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Verify authenticated Cup sync in the Firestore emulator
+        run: |
+          npm install --no-save --no-package-lock firebase-tools@14 firebase@11.10.0 @firebase/rules-unit-testing@4
+          npx firebase emulators:exec --only firestore --project demo-dcc-trip --config firebase.trip-emulator.json 'node --test tests/trip-shared-emulator.test.mjs'
       - name: Install browser runner
         run: |
           npm install --no-save --no-package-lock @playwright/test
