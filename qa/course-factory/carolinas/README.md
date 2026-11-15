@@ -75,12 +75,14 @@ Use Python 3.12, Shapely 2.1.2, osmium 4.2.0, Node 22 and Poppler `pdftotext`. F
 ```sh
 region=north-carolina # or south-carolina
 python3 scripts/course-factory-cache.py "qa/course-factory/$region/manifest.json" "$card_cache"
-python3 scripts/course-factory-snapshot.py "$pbf" "$snapshot" --sha256 "$pbf_sha"
+python3 scripts/course-factory-snapshot.py "$pbf" "$snapshot" --manifest "qa/course-factory/$region/manifest.json"
 python3 scripts/course-factory-review.py "$snapshot" --rank > "$scratch/$region-ranked.json"
 node scripts/course-factory-batch.mjs "qa/course-factory/$region/manifest.json" "$snapshot" "$card_cache" "$scratch/new-$region"
 node --test tests/course-factory-carolinas.test.mjs
 python3 tests/course-factory-pipeline.test.py
 ```
+
+If the dated Geofabrik URL has expired, use the original cached PBF or golf-only XML. The manifest checks both digests and a mismatched reconstruction never replaces an existing snapshot. Checked-in review JSON and per-course map bundles are derived subsets.
 
 Compare the generated catalog, coverage, review and map bytes with the checked-in versions before promoting new outputs. A changed source hash requires re-review. For browser acceptance, run the existing Friday workflow or its local Chromium equivalent. The checks step through all 18 drawings on each course, verify matching House Ghost shapes and a shot tracer, then verify that Ask My Caddy receives the selected hole and yardage. Live AI responses and physical iPhone field use are separate checks.
 
