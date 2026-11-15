@@ -15,7 +15,7 @@ permissions:
 jobs:
   mapped-match:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,6 +23,11 @@ jobs:
           node-version: '22'
       - name: Test Ghost engine and shotgun routing
         run: node --test tests/ghost-*.test.mjs
+      - name: Build the private Pages rehearsal
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
       - name: Install browser runner
         run: |
           npm install --no-save --no-package-lock @playwright/test
@@ -40,14 +45,45 @@ jobs:
           INTEGRATION_BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           git fetch origin "$INTEGRATION_BASE" --depth=1
-          git diff --exit-code "$INTEGRATION_BASE" HEAD --             .firebaserc firebase.json firebase-config.js firestore.rules functions             app/61f9e9de0a/firebase-config.js _config.yml manifest.json dcc-*.png
+          git diff --exit-code "$INTEGRATION_BASE" HEAD -- \
+            .firebaserc firebase.json firebase-config.js firestore.rules functions \
+            app/61f9e9de0a/firebase-config.js _config.yml manifest.json 'dcc-*.png'
       - name: Rehearse the existing shortcut and legacy saved data
         run: |
           mkdir -p "$RUNNER_TEMP/dcc-public"
-          ln -s "$GITHUB_WORKSPACE" "$RUNNER_TEMP/dcc-public/dagger-caddie"
+          ln -s "$GITHUB_WORKSPACE/_site" "$RUNNER_TEMP/dcc-public/dagger-caddie"
           python3 -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/dcc-public" &
           for attempt in {1..30}; do
             if curl --silent --fail http://127.0.0.1:8766/dagger-caddie/manifest.json -o /dev/null; then break; fi
             sleep 1
           done
           npx playwright test tests/production-root.spec.mjs --browser=webkit --workers=1 --reporter=line
+      - name: Verify and package the private rehearsal
+        env:
+          CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 - <<'PYTHON'
+          import runpy
+          from pathlib import Path
+          gate = runpy.run_path('scripts/production-bundle.py')
+          site = Path('_site')
+          for name in gate['ROOT_ASSETS']:
+              assert (site / name).read_bytes() == Path(name).read_bytes(), name
+          for name in gate['EXCLUDED']:
+              assert not (site / name).exists(), name
+          for file in site.rglob('*'):
+              if file.is_file() and file.suffix in ('.js', '.json', '.html', '.css', '.txt'):
+                  assert gate['STAGE_PROJECT'] not in file.read_bytes(), file
+          PYTHON
+          printf '%s\n' "$CANDIDATE_HEAD" > "$RUNNER_TEMP/REHEARSAL_HEAD.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/REHEARSAL_TESTED_MERGE.txt"
+          tar -czf "$RUNNER_TEMP/ghost-pages-rehearsal.tar.gz" -C _site .
+          sha256sum "$RUNNER_TEMP/ghost-pages-rehearsal.tar.gz" > "$RUNNER_TEMP/REHEARSAL_SHA256.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ghost-pages-rehearsal
+          path: |
+            ${{ runner.temp }}/ghost-pages-rehearsal.tar.gz
+            ${{ runner.temp }}/REHEARSAL_HEAD.txt
+            ${{ runner.temp }}/REHEARSAL_TESTED_MERGE.txt
+            ${{ runner.temp }}/REHEARSAL_SHA256.txt
