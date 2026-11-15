@@ -26,7 +26,7 @@ jobs:
       - name: Install browser runner
         run: |
           npm install --no-save --no-package-lock @playwright/test
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps webkit
       - name: Verify a mapped match on a phone viewport
         run: |
           python3 -m http.server 8768 --bind 127.0.0.1 &
