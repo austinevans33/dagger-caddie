@@ -7418,6 +7418,8 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
     return;
   }
   button.disabled = true;
+  const played = dccGhostHoles;
+  const length = dccGhostLength;
   const hole = dccGhostActualHole(dccGhostHoles.length);
   try {
     const {readCourseScorecard} = await import('./app/61f9e9de0a/active-course-context.js');
@@ -7444,7 +7446,7 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
           const play = playMappedGhostHole({
             route:sketch.annotations.route, shapes:sketch.shapes, width:SKETCH_WIDTH, height:SKETCH_HEIGHT,
             yards:facts.yards, tier, condition,
-            seed:[selection.course.providerCourseId, selection.tee.providerTeeId, hole, tier, condition].join('|')
+            seed:[selection.course.providerCourseId, selection.tee.providerTeeId, hole, tier, condition, crypto.randomUUID()].join('|')
           });
           if (play) pending.mappedPlay = play;
         }
@@ -7452,7 +7454,10 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
         // An unavailable map leaves the existing score-based playback available.
       }
     }
-    if (hole !== dccGhostActualHole(dccGhostHoles.length) || dccGhostPending ||
+    const currentCourse = dccGhostCourse === undefined
+      ? localStorage.getItem('dcc_active_round_course_v1') : dccGhostCourse;
+    if (played !== dccGhostHoles || length !== dccGhostLength || course !== currentCourse ||
+        hole !== dccGhostActualHole(played.length) || dccGhostPending ||
         tier !== document.getElementById('dccGhostTier').value) return;
     pending.ghost = pending.mappedPlay?.shots.length ?? dccGhostConditionScore(par, tier, condition);
     localStorage.setItem(DCC_GHOST_DRAFT_KEY, JSON.stringify({
