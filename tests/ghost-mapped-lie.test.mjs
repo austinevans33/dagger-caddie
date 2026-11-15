@@ -27,3 +27,50 @@ test('bunker and rough recoveries change the visible landing without rewriting s
   assert.equal(mappedGhostShots(original,shapes.slice(0,1),10,10)[1],original[1]);
  }
 });
+
+import {readFile} from 'node:fs/promises';
+import {BAYONET_COURSE_ID,BAYONET_TEES} from '../app/61f9e9de0a/bayonet-verified-scorecard.js';
+import {loadHoleSketch,SKETCH_WIDTH,SKETCH_HEIGHT} from '../app/61f9e9de0a/hole-sketch.js';
+import {playMappedGhostHole} from '../app/61f9e9de0a/ghost-mapped-lie.js';
+import {ghostShotPlayback} from '../app/61f9e9de0a/house-ghost-playback.js';
+
+test('Bayonet shotgun hole replay uses one stable mapped score for every skill level',async()=>{
+ const holeNumber=4;
+ const course={provider:'opengolfapi',providerCourseId:BAYONET_COURSE_ID,holeCount:18};
+ const fetcher=async url=>new Response(await readFile(url));
+ const sketch=await loadHoleSketch({course},holeNumber,{fetcher});
+ assert.equal(sketch.reviewedGeometry,true);
+ const {route}=sketch.annotations;
+ const yards=BAYONET_TEES.white.yards[holeNumber-1];
+ for(const tier of ['scratch','fiveTen','tenFifteen','fifteenTwenty']){
+  const options={route,shapes:sketch.shapes,width:SKETCH_WIDTH,height:SKETCH_HEIGHT,yards,tier,seed:'bayonet|4|'+tier};
+  const play=playMappedGhostHole(options);
+  assert.ok(play,tier);
+  assert.deepEqual(play,playMappedGhostHole(options));
+  assert.deepEqual(play.start,{x:route.tee[0]/SKETCH_WIDTH,y:route.tee[1]/SKETCH_HEIGHT});
+  assert.equal(play.shots.at(-1).lie,'Holed');
+  const restored=JSON.parse(JSON.stringify(play));
+  const matchHole={hole:holeNumber,par:4,ghost:play.shots.length};
+  const view=ghostShotPlayback({count:9,holeNumber,matchHole,mappedPlay:restored,shotsRevealed:99});
+  assert.equal(view.score,matchHole.ghost);
+  assert.equal(view.complete,true);
+  assert.deepEqual(view.visibleShots,restored.shots);
+ }
+});
+
+test('mapped lie changes the next club and landing from the same prior position',()=>{
+ const rectangle=(left,right)=>[[left,0],[right,0],[right,100],[left,100]];
+ const route={tee:[10,50],green:[290,50],path:[[10,50],[290,50]]};
+ const base={route,width:300,height:100,yards:400,tier:'scratch',seed:'recovery'};
+ const shapes=[{type:'fairway',points:rectangle(0,278)},{type:'green',points:rectangle(278,300)}];
+ const clear=playMappedGhostHole({...base,shapes});
+ assert.ok(clear);
+ const bunker={type:'bunker',points:rectangle(clear.shots[0].x*300-8,clear.shots[0].x*300+8)};
+ const recovery=playMappedGhostHole({...base,shapes:[...shapes,bunker]});
+ assert.ok(recovery);
+ assert.equal(recovery.shots[0].x,clear.shots[0].x);
+ assert.equal(recovery.shots[0].mappedLie,'Mapped bunker');
+ assert.equal(recovery.shots[1].club,'Recovery wedge');
+ assert.notEqual(recovery.shots[1].x,clear.shots[1].x);
+ assert.equal(playMappedGhostHole({...base,shapes:[]}),null);
+});

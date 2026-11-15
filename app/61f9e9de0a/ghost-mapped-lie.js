@@ -40,3 +40,82 @@ export function mappedGhostShots(shots,shapes,width,height){
  }
  return played;
 }
+
+// Distances are simulated by scaling the reviewed drawing's route to the
+// selected scorecard yardage. They are not measured shot or tee distances.
+const skills=Object.freeze({
+ scratch:{carry:270,spread:.055,putt:.86},
+ fiveTen:{carry:250,spread:.08,putt:.76},
+ tenFifteen:{carry:228,spread:.105,putt:.65},
+ fifteenTwenty:{carry:205,spread:.13,putt:.54}
+});
+
+export function playMappedGhostHole({route,shapes,width,height,yards,tier,seed,condition}){
+ const skill=Object.hasOwn(skills,tier)?skills[tier]:null;
+ if(!skill||!Number.isFinite(yards)||yards<=0||!route?.path||width<=0||height<=0)return null;
+ const {tee,green,path}=route;
+ const classify=([x,y])=>lies.find(([type])=>shapes.some(shape=>shape.type===type&&
+  inside(x,y,shape.points)&&!shape.interiors?.some(ring=>inside(x,y,ring))))?.[0];
+ if(classify(green)!=='green'||!shapes.some(shape=>shape.type==='fairway'))return null;
+ const length=path.slice(1).reduce((sum,point,i)=>sum+Math.hypot(point[0]-path[i][0],point[1]-path[i][1]),0);
+ if(!length)return null;
+ const scale=yards/length;
+ const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+ const unit=([x,y])=>({x:x/width,y:y/height});
+ const risk=condition==='normal'||!condition?1:1.12;
+ let randomState=2166136261;
+ for(const character of String(seed))randomState=Math.imul(randomState^character.charCodeAt(0),16777619);
+ function random(){
+  randomState=(Math.imul(randomState,1664525)+1013904223)>>>0;
+  return randomState/4294967296;
+ }
+ let position=tee;
+ let lie='tee';
+ let waypoint=1;
+ const shots=[];
+ while(shots.length<18){
+  const remaining=distance(position,green)*scale;
+  if(lie==='green'){
+   const holed=remaining<.8||random()<skill.putt/(1+remaining/10);
+   const shortRoll=[green[0]+(position[0]-green[0])*.22,green[1]+(position[1]-green[1])*.22];
+   position=holed||classify(shortRoll)!=='green'?green:shortRoll;
+   shots.push({...unit(position),club:'Putter',distanceLabel:Math.max(1,Math.round(remaining*3))+' ft',
+    lie:holed?'Holed':'Green',comment:holed?'The putt drops.':'The putt leaves a shorter look.'});
+   if(holed)return {start:unit(tee),shots};
+   continue;
+  }
+  const recovery=lie==='bunker'||lie==='rough'||lie===undefined;
+  const carry=lie==='bunker'?Math.min(85,skill.carry*.33):recovery?skill.carry*.55:skill.carry;
+  // Advance through nearby dogleg waypoints before taking a direct line at the pin.
+  while(waypoint<path.length-1&&distance(position,path[waypoint])*scale<carry*.48)waypoint++;
+  const aim=path[waypoint]??green;
+  const aimingAtGreen=aim===green||waypoint===path.length-1;
+  const target=aimingAtGreen?green:aim;
+  const dx=target[0]-position[0],dy=target[1]-position[1];
+  const line=Math.hypot(dx,dy);
+  if(!line)return null;
+  const planned=Math.min(line,carry/scale);
+  const club=lie==='bunker'?'Recovery wedge':recovery?'Punch out':planned*scale>190?'Driver':
+   planned*scale>105?'Iron':planned*scale>35?'Wedge':'Chip';
+  const miss=(random()-.5)*2*planned*skill.spread*risk;
+  const travel=planned*(1+(random()-.5)*skill.spread*risk);
+  let landing=[position[0]+(dx*travel-dy*miss)/line,position[1]+(dy*travel+dx*miss)/line];
+  // A short shot uses the mapped green as its target. Misses can still leave a chip.
+  if(remaining<=12&&aimingAtGreen&&classify(landing)===undefined)landing=[...green];
+  if(landing[0]<0||landing[0]>width||landing[1]<0||landing[1]>height)return null;
+  const nextLie=classify(landing);
+  const mappedLie=lies.find(([type])=>type===nextLie)?.[1];
+  shots.push({...unit(landing),club,distanceLabel:Math.max(1,Math.round(distance(position,landing)*scale))+' yd',
+   lie:mappedLie||'Unclassified ground',mappedLie,comment:nextLie==='water'?'Water. The Ghost will replay with a penalty.':
+    recovery?'The Ghost plays back toward the hole.':nextLie==='green'?'On the green. Putter next.':'The Ghost plays toward the next target.'});
+  if(nextLie==='water'){
+   shots.push({...unit(position),club:'Penalty',distanceLabel:'Stroke and distance',lie:'Replay position',
+    comment:'One penalty stroke. The Ghost plays again from the previous lie.'});
+  }else{
+   position=landing;
+   lie=nextLie;
+  }
+ }
+ // The caller can use the legacy experience if this map cannot support a finish.
+ return null;
+}

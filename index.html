@@ -7167,7 +7167,7 @@ function dccGhostShowPlayback() {
 
   const frame = document.createElement('iframe');
   frame.title = 'House Ghost playing this hole';
-  frame.src = 'ghost-preview.html?match=1&v=3';
+  frame.src = 'ghost-preview.html?match=1&v=mapped-play-1';
   frame.height = '440';
   frame.addEventListener('load', () => {
     const card = frame.contentDocument?.querySelector('main');
@@ -7431,7 +7431,30 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
     const officialPar = cached?.holes.find(facts => facts.number === hole)?.par;
     const par = [3,4,5].includes(officialPar) ? officialPar : Number(parField.value);
     const condition = dccGhostCondition || dccGhostPickCondition();
-    const pending = {hole, par, ghost: dccGhostConditionScore(par, tier, condition)};
+    const pending = {hole, par};
+    const facts = cached?.holes.find(entry => entry.number === hole);
+    if (facts?.yards && [3,4,5].includes(officialPar)) {
+      try {
+        const [{loadHoleSketch, SKETCH_WIDTH, SKETCH_HEIGHT}, {playMappedGhostHole}] = await Promise.all([
+          import('./app/61f9e9de0a/hole-sketch.js'),
+          import('./app/61f9e9de0a/ghost-mapped-lie.js?v=mapped-play-1')
+        ]);
+        const sketch = await loadHoleSketch(selection, hole, {signal:AbortSignal.timeout?.(3000)});
+        if (sketch.reviewedGeometry) {
+          const play = playMappedGhostHole({
+            route:sketch.annotations.route, shapes:sketch.shapes, width:SKETCH_WIDTH, height:SKETCH_HEIGHT,
+            yards:facts.yards, tier, condition,
+            seed:[selection.course.providerCourseId, selection.tee.providerTeeId, hole, tier, condition].join('|')
+          });
+          if (play) pending.mappedPlay = play;
+        }
+      } catch {
+        // An unavailable map leaves the existing score-based playback available.
+      }
+    }
+    if (hole !== dccGhostActualHole(dccGhostHoles.length) || dccGhostPending ||
+        tier !== document.getElementById('dccGhostTier').value) return;
+    pending.ghost = pending.mappedPlay?.shots.length ?? dccGhostConditionScore(par, tier, condition);
     localStorage.setItem(DCC_GHOST_DRAFT_KEY, JSON.stringify({
       version: 1, tier, holesPlanned: dccGhostLength, startHole:dccGhostStartHole, condition,
       course, holes: dccGhostHoles, pending
