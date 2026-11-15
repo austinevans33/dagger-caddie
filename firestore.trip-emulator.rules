@@ -41,6 +41,7 @@ service cloud.firestore {
     allow create: if host() && validMember(request.resource.data, uid);
    }
    match /groups/{key} {
+    allow get: if member();
     allow create: if signedIn() && getAfter(tripPath()).data.hostUid == request.auth.uid &&
       key.matches('^[a-zA-Z0-9_-]{1,64}~[a-zA-Z0-9_-]{1,64}$') && validGroup(request.resource.data);
    }

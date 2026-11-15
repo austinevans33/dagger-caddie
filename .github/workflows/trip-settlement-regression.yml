@@ -34,13 +34,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - name: Verify authenticated Cup sync in the Firestore emulator
+      - name: Install emulator and browser runners
         run: |
-          npm install --no-save --no-package-lock firebase-tools@14 firebase@11.10.0 @firebase/rules-unit-testing@4
-          npx firebase emulators:exec --only firestore --project demo-dcc-trip --config firebase.trip-emulator.json 'node --test tests/trip-shared-emulator.test.mjs'
-      - name: Install browser runner
-        run: |
-          npm install --no-save --no-package-lock @playwright/test
+          npm install --no-save --no-package-lock firebase-tools@14 firebase@11.10.0 @firebase/rules-unit-testing@4 @playwright/test
           npx playwright install --with-deps webkit
       - name: Verify the Cup scorecard on a phone viewport
         run: |
@@ -49,4 +45,4 @@ jobs:
             if curl --silent --fail http://127.0.0.1:8769/trip-desk-ui.js -o /dev/null; then break; fi
             sleep 1
           done
-          npx playwright test tests/trip-practice.spec.mjs --workers=1 --reporter=line
+          npx firebase emulators:exec --only firestore --project demo-dcc-trip --config firebase.trip-emulator.json             'node --test tests/trip-shared-emulator.test.mjs && playwright test tests/trip-practice.spec.mjs tests/trip-shared.spec.mjs --workers=1 --reporter=line'

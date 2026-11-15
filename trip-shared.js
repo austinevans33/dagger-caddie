@@ -46,6 +46,17 @@ export function sharedTripStore(db, sdk){
    if(!snapshot.exists())throw Error('Trip unavailable.');
    return JSON.parse(snapshot.data().draft);
   },
+  async assignedGroups(tripId,draft,uid){
+   const choices=draft.rounds.filter(round=>round.status==='active').flatMap(round=>round.groups
+    .filter(group=>group.playerIds.length>=2).map((group,index)=>({
+     roundId:round.id,groupId:group.id,label:round.name+' · Score group '+(index+1)
+    })));
+   const matches=await Promise.all(choices.map(async choice=>{
+    const group=await getDoc(ref(tripId,'groups',choice.roundId+'~'+choice.groupId));
+    return group.data()?.keeperUid===uid?choice:null;
+   }));
+   return matches.filter(Boolean);
+  },
   watch(tripId,draft,onUpdate,onError){
    return onSnapshot(collection(db,...paths(tripId),'holes'),{includeMetadataChanges:true},snap=>{
     onUpdate({...sharedCupTrip(draft,snap.docs.map(row=>row.data())),fromCache:snap.metadata.fromCache});
