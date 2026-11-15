@@ -2,7 +2,7 @@ import {createTrip,addTripRound,tripRosterSummary} from './trip-roster.js';
 import {changeTripRoundStatus} from './trip-round-status.js';
 import {summarizeTrip} from './trip-settlement.js';
 import {cupStandings} from './trip-cup.js';
-import {reconcileTripScorecard} from './trip-scorecard-reconcile.js';
+import {applyCupHole} from './trip-scorecard-reconcile.js';
 import {buildTripRecap} from './trip-recap.js';
 // All data stays on this device. Live multiplayer is intentionally not implied.
 export function mountTripDesk({doc=document,storage=localStorage}={}){
@@ -53,16 +53,12 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
    const tied=standings.filter(entry=>entry.skins===leader.skins);
    para(card,(tied.length>1?'Tied lead · ':'Leader · ')+tied.map(entry=>entry.name).join(', ')+' · '+leader.skins+' skins');
   }
-  const expected=storage.getItem(key);
   card.addEventListener('submit',event=>{
    event.preventDefault();
    try{
-    if(storage.getItem(key)!==expected)throw Error('Trip changed. Reopen the scorecard before saving.');
-    const updated=[...holes];updated[Number(picker.value)]=fields.map(field=>field.valueAsNumber);
-    const revised={...trip,rounds:trip.rounds.map(item=>item.id===round.id
-     ?{...item,groups:item.groups.map(entry=>entry.id===group.id?{...entry,scores:updated}:entry)}:item)};
-    const next=reconcileTripScorecard(revised,round.id,{playerIds:group.playerIds,holes:updated,
-     games:[{id:'practice-'+group.id,format:'skins',stakeCents:0}]});
+    const holeIndex=Number(picker.value);
+    const next=applyCupHole(read(),{roundId:round.id,groupId:group.id,holeIndex,
+     expected:holes[holeIndex],scores:fields.map(field=>field.valueAsNumber)});
     save(next);
     const nextRound=next.rounds.find(item=>item.id===round.id);
     openScorecard(next,nextRound,nextRound.groups.find(entry=>entry.id===group.id));
@@ -70,7 +66,7 @@ export function mountTripDesk({doc=document,storage=localStorage}={}){
   });
   body.querySelector('form')?.remove();
   body.append(card);
-  card.scrollIntoView({block:'start'});fields[0][0].focus();
+  card.scrollIntoView({block:'start'});fields[0].focus({preventScroll:true});
  }
  function draw(){
   body.replaceChildren();para(body,'PRIVATE LOCAL DRAFT · No guest joining, Firebase sync or live payouts.');

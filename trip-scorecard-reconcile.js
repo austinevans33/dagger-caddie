@@ -22,3 +22,22 @@ export function reconcileTripScorecard(trip,roundId,card){
  }
  return next;
 }
+
+// Apply one group's hole to the latest snapshot. The expected row lets a
+// transaction retry over other saved holes without overwriting a correction.
+export function applyCupHole(trip,{roundId,groupId,holeIndex,expected,scores}){
+ const round=trip?.rounds?.find(entry=>entry.id===roundId);
+ const group=round?.groups.find(entry=>entry.id===groupId);
+ if(!group||round.status!=='active')throw Error('This group is no longer open for scoring.');
+ if(!Number.isInteger(holeIndex)||holeIndex<0||holeIndex>=18||
+    !Array.isArray(scores)||scores.length!==group.playerIds.length||
+    scores.some(score=>!Number.isInteger(score)||score<1||score>20))throw Error('Enter a valid score for every golfer.');
+ const holes=(group.scores??Array(18).fill(null)).slice();
+ if(JSON.stringify(holes[holeIndex])===JSON.stringify(scores))return trip;
+ if(JSON.stringify(holes[holeIndex])!==JSON.stringify(expected))throw Error('This hole changed. Reopen the scorecard before correcting it.');
+ holes[holeIndex]=scores.slice();
+ const revised={...trip,rounds:trip.rounds.map(entry=>entry.id===roundId
+  ?{...entry,groups:entry.groups.map(row=>row.id===groupId?{...row,scores:holes}:row)}:entry)};
+ return reconcileTripScorecard(revised,roundId,{playerIds:group.playerIds,holes,
+  games:[{id:'practice-'+groupId,format:'skins',stakeCents:0}]});
+}
