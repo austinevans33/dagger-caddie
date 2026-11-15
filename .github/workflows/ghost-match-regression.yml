@@ -1,0 +1,37 @@
+name: House Ghost match regression
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'ghost-preview.html'
+      - 'app/**/ghost-*.js'
+      - 'app/**/house-ghost-*.js'
+      - 'tests/ghost-*.mjs'
+      - '.github/workflows/ghost-match-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  mapped-match:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test Ghost engine and shotgun routing
+        run: node --test tests/ghost-*.test.mjs
+      - name: Install browser runner
+        run: |
+          npm install --no-save --no-package-lock @playwright/test
+          npx playwright install --with-deps webkit
+      - name: Verify a mapped match on a phone viewport
+        run: |
+          python3 -m http.server 8768 --bind 127.0.0.1 &
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8768/ghost-preview.html -o /dev/null; then break; fi
+            sleep 1
+          done
+          npx playwright test tests/ghost-mapped-play.spec.mjs --workers=1 --reporter=line

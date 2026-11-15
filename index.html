@@ -7167,7 +7167,7 @@ function dccGhostShowPlayback() {
 
   const frame = document.createElement('iframe');
   frame.title = 'House Ghost playing this hole';
-  frame.src = 'ghost-preview.html?match=1&v=3';
+  frame.src = 'ghost-preview.html?match=1&v=mapped-play-3';
   frame.height = '440';
   frame.addEventListener('load', () => {
     const card = frame.contentDocument?.querySelector('main');
@@ -7410,14 +7410,14 @@ function dccGhostRender() {
   });
 }
 
-document.getElementById('dccGhostPlay').addEventListener('click', async event => {
-  const button = event.currentTarget;
-  const message = document.getElementById('dccGhostMessage');
-  if (dccGhostPending) {
-    dccGhostShowPlayback();
-    return;
-  }
-  button.disabled = true;
+let dccGhostPreparing = false;
+
+async function dccGhostPrepareHole() {
+  if (dccGhostPending) return true;
+  if (dccGhostPreparing) return false;
+  dccGhostPreparing = true;
+  const played = dccGhostHoles;
+  const length = dccGhostLength;
   const hole = dccGhostActualHole(dccGhostHoles.length);
   try {
     const {readCourseScorecard} = await import('./app/61f9e9de0a/active-course-context.js');
@@ -7431,7 +7431,33 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
     const officialPar = cached?.holes.find(facts => facts.number === hole)?.par;
     const par = [3,4,5].includes(officialPar) ? officialPar : Number(parField.value);
     const condition = dccGhostCondition || dccGhostPickCondition();
-    const pending = {hole, par, ghost: dccGhostConditionScore(par, tier, condition)};
+    const pending = {hole, par};
+    const facts = cached?.holes.find(entry => entry.number === hole);
+    if (facts?.yards && [3,4,5].includes(officialPar)) {
+      try {
+        const [{loadHoleSketch, SKETCH_WIDTH, SKETCH_HEIGHT}, {playMappedGhostHole}] = await Promise.all([
+          import('./app/61f9e9de0a/hole-sketch.js'),
+          import('./app/61f9e9de0a/ghost-mapped-lie.js?v=mapped-play-3')
+        ]);
+        const sketch = await loadHoleSketch(selection, hole, {signal:AbortSignal.timeout?.(3000)});
+        if (sketch.reviewedGeometry) {
+          const play = playMappedGhostHole({
+            route:sketch.annotations.route, shapes:sketch.shapes, width:SKETCH_WIDTH, height:SKETCH_HEIGHT,
+            yards:facts.yards, par, tier, condition,
+            seed:[selection.course.providerCourseId, selection.tee.providerTeeId, hole, tier, condition, crypto.randomUUID()].join('|')
+          });
+          if (play) pending.mappedPlay = play;
+        }
+      } catch {
+        // An unavailable map leaves the existing score-based playback available.
+      }
+    }
+    const currentCourse = dccGhostCourse === undefined
+      ? localStorage.getItem('dcc_active_round_course_v1') : dccGhostCourse;
+    if (played !== dccGhostHoles || length !== dccGhostLength || course !== currentCourse ||
+        hole !== dccGhostActualHole(played.length) || dccGhostPending ||
+        tier !== document.getElementById('dccGhostTier').value) return;
+    pending.ghost = pending.mappedPlay?.shots.length ?? dccGhostConditionScore(par, tier, condition);
     localStorage.setItem(DCC_GHOST_DRAFT_KEY, JSON.stringify({
       version: 1, tier, holesPlanned: dccGhostLength, startHole:dccGhostStartHole, condition,
       course, holes: dccGhostHoles, pending
@@ -7440,6 +7466,19 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
     dccGhostPending = pending;
     dccGhostCondition = condition;
     parField.value = String(par);
+    return true;
+  } finally {
+    dccGhostPreparing = false;
+  }
+}
+
+document.getElementById('dccGhostPlay').addEventListener('click', async event => {
+  if (dccGhostPreparing) return;
+  const button = event.currentTarget;
+  const message = document.getElementById('dccGhostMessage');
+  button.disabled = true;
+  try {
+    if (!await dccGhostPrepareHole()) return;
     message.textContent = 'Watch the Ghost, then record your score below.';
     dccGhostShowPlayback();
   } catch (error) {
@@ -7451,11 +7490,10 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
 });
 
 document.getElementById('dccGhostRecord')
-  .addEventListener('click', () => {
+  .addEventListener('click', async () => {
+    if (dccGhostPreparing) return;
     const scoreInput =
       document.getElementById('dccGhostPlayerScore');
-    const par = dccGhostPending?.par ?? Number(document.getElementById('dccGhostPar').value);
-    const tier = document.getElementById('dccGhostTier').value;
     const message = document.getElementById('dccGhostMessage');
     const value = scoreInput.value.trim();
 
@@ -7475,18 +7513,10 @@ document.getElementById('dccGhostRecord')
     }
 
     try {
-      // Generate the Ghost score exactly once for this hole.
-      // Select once, when the first hole is recorded.
-      // Never reroll a condition on refresh or Undo.
-      const condition =
-        dccGhostCondition || dccGhostPickCondition();
-
-      const ghostScore = dccGhostPending?.ghost ?? dccGhostConditionScore(
-        par,
-        tier,
-        condition
-      );
-
+      if (!await dccGhostPrepareHole()) return;
+      const {par, ghost:ghostScore} = dccGhostPending;
+      const tier = document.getElementById('dccGhostTier').value;
+      const condition = dccGhostCondition;
 
       const next = [
         ...dccGhostHoles,
