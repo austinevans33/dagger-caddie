@@ -1,0 +1,53 @@
+name: House Ghost match regression
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'ghost-preview.html'
+      - 'app/**/ghost-*.js'
+      - 'app/**/house-ghost-*.js'
+      - 'tests/ghost-*.mjs'
+      - '.github/workflows/ghost-match-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  mapped-match:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test Ghost engine and shotgun routing
+        run: node --test tests/ghost-*.test.mjs
+      - name: Install browser runner
+        run: |
+          npm install --no-save --no-package-lock @playwright/test
+          npx playwright install --with-deps webkit
+      - name: Verify a mapped match on a phone viewport
+        run: |
+          python3 -m http.server 8768 --bind 127.0.0.1 &
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8768/ghost-preview.html -o /dev/null; then break; fi
+            sleep 1
+          done
+          npx playwright test tests/ghost-mapped-play.spec.mjs --workers=1 --reporter=line
+      - name: Verify release assets and backend match the integration base
+        env:
+          INTEGRATION_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git fetch origin "$INTEGRATION_BASE" --depth=1
+          git diff --exit-code "$INTEGRATION_BASE" HEAD --             .firebaserc firebase.json firebase-config.js firestore.rules functions             app/61f9e9de0a/firebase-config.js _config.yml manifest.json dcc-*.png
+      - name: Rehearse the existing shortcut and legacy saved data
+        run: |
+          mkdir -p "$RUNNER_TEMP/dcc-public"
+          ln -s "$GITHUB_WORKSPACE" "$RUNNER_TEMP/dcc-public/dagger-caddie"
+          python3 -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/dcc-public" &
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8766/dagger-caddie/manifest.json -o /dev/null; then break; fi
+            sleep 1
+          done
+          npx playwright test tests/production-root.spec.mjs --browser=webkit --workers=1 --reporter=line

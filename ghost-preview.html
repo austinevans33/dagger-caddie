@@ -40,15 +40,16 @@ body.match {background:#f5f0e5}
  <g id="markers" transform="scale(0.9375 0.51162790698)"></g>
 </svg><small id="ghostMapStatus">Ghost shots are illustrative overlays, not measured GPS positions.</small></div>
 <div class="controls"><button id="back">← Previous shot</button><button id="next">Play next shot →</button></div><button class="ghost-watch" id="watch" type="button">▶ Watch Ghost play the hole</button>
-<p id="progress" role="status"></p></article>
+<p id="progress" role="status"></p><p id="ghostReaction" class="note" hidden></p></article>
 <article><strong>Shots played</strong><ol id="shots"></ol></article>
 </main><script type="module">
-import {ghostShotPlayback} from './app/61f9e9de0a/house-ghost-playback.js?v=ghost-match-1';
+import {ghostShotPlayback} from './app/61f9e9de0a/house-ghost-playback.js?v=mapped-play-1';
 import {ACTIVE_ROUND_KEY,readActiveRound} from './app/61f9e9de0a/starters-desk-session.js';
 import {loadYardageState} from './app/61f9e9de0a/yardage-live.js';
 import {drawGhostTracer} from './app/61f9e9de0a/ghost-tracer.js?v=friday-book-1';
-import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './app/61f9e9de0a/hole-sketch.js?v=founders-reference-2';
-import {renderSharedHoleSketch} from './app/61f9e9de0a/shared-hole-sketch.js?v=founders-reference-2';
+import {loadHoleSketch,placeGhostShots,SKETCH_WIDTH,SKETCH_HEIGHT} from './app/61f9e9de0a/hole-sketch.js?v=ghost-mapped-lie-1';
+import {mappedGhostShots,playMappedGhostHole} from './app/61f9e9de0a/ghost-mapped-lie.js?v=mapped-play-3';
+import {renderSharedHoleSketch} from './app/61f9e9de0a/shared-hole-sketch.js?v=ghost-mapped-lie-1';
 import {readYardageHole} from './app/61f9e9de0a/yardage-navigation.js';
 import {pencilOrientation} from './app/61f9e9de0a/yardage-pencil-orientation.js';
 const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let watchTimer=null;
@@ -100,7 +101,13 @@ const ghostTier=Object.hasOwn(TIER_NAMES,requestedTier)?requestedTier:
  Object.hasOwn(TIER_NAMES,savedTier)?savedTier:'tenFifteen';
 let selectedCourse=null;let verifiedHoles=[];let courseIdentity='friday-qa';
 let activeCourseSelection=null,sketchGeneration=0;
-let currentRoute=null,sketchPending=null;
+let currentRoute=null,reviewedShapes=[],sketchPending=null;
+const savedPlay=matchHole?.mappedPlay;
+const validPoint=point=>Number.isFinite(point?.x)&&point.x>=0&&point.x<=1&&Number.isFinite(point?.y)&&point.y>=0&&point.y<=1;
+const matchPlay=validPoint(savedPlay?.start)&&Array.isArray(savedPlay.shots)&&
+ savedPlay.shots.length===matchHole.ghost&&savedPlay.shots.at(-1)?.lie==='Holed'&&
+ savedPlay.shots.every(validPoint)?savedPlay:null;
+let mappedPlay=null;
 function sizeStage(height){
  $('trail').setAttribute('viewBox','0 0 '+SKETCH_WIDTH+' '+height);
  $('ghostHoleSketch').setAttribute('height',height);
@@ -117,7 +124,8 @@ function showUnmappedPencil(holeNumber){
 async function updateGhostHoleSketch(){
  const generation=++sketchGeneration;
  sketchPending?.abort();
- currentRoute=null;
+ currentRoute=null;reviewedShapes=[];
+ mappedPlay=null;
  const holeNumber=Number($('hole').value);
  if(params.get('from')==='yardage')$('ghostBack').href='yardage-preview.html?hole='+holeNumber;
  const svg=$('ghostHoleSketch'),status=$('ghostMapStatus');
@@ -140,7 +148,14 @@ async function updateGhostHoleSketch(){
   sizeStage(SKETCH_HEIGHT);
   renderSharedHoleSketch(svg,sketch.shapes,sketch.annotations,{height:SKETCH_HEIGHT});
   currentRoute=sketch.annotations.route;
-  status.textContent='Same mapped pencil drawing as Yardage Book. Simulated flights. ';
+  reviewedShapes=currentRoute&&sketch.reviewedGeometry?sketch.shapes:[];
+  if(matchHole&&reviewedShapes.length)mappedPlay=matchPlay;
+  if(!matchHole&&reviewedShapes.length){
+   const facts=verifiedHoles.find(hole=>hole.number===holeNumber);
+   mappedPlay=playMappedGhostHole({route:currentRoute,shapes:reviewedShapes,width:SKETCH_WIDTH,height:SKETCH_HEIGHT,
+    yards:facts?.yards,par:facts?.par,tier:ghostTier,seed:courseIdentity+'|'+holeNumber});
+  }
+  status.textContent=mappedPlay?'Simulated play on the Yardage Book drawing. ': 'Yardage Book drawing · schematic playback. ';
   if(sketch.source){
    const credit=document.createElement('a');
    credit.href=sketch.source;credit.textContent=sketch.credit;status.append(credit);
@@ -160,21 +175,39 @@ if(nativeNine){$('length').value='9';$('length').disabled=true}
 if(params.get('from')==='yardage')$('ghostBack').textContent='← Back to Yardage Book';
 function render(){
  const count=Number($('length').value),holeNumber=Number($('hole').value);
- const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity,tier:ghostTier,matchHole});
+ const state=ghostShotPlayback({count,holeNumber,shotsRevealed:revealed,courseName:selectedCourse||'Unverified practice course',holes:verifiedHoles,seed:courseIdentity,tier:ghostTier,matchHole,mappedPlay});
  revealed=state.shotsRevealed;
  $('headline').textContent=TIER_NAMES[ghostTier]+' · Hole '+holeNumber+' · Par '+state.par+(state.complete?' · Ghost '+state.score:' · Ghost playing');
  $('summary').textContent=(selectedCourse?selectedCourse+' · ':'Practice defaults · ')+(matchHole?'':state.coverage==='scorecard'?'selected-tee par & yards verified · ':'unverified hole facts · ')+state.label;
- const placement=placeGhostShots(state.visibleShots,currentRoute);
- drawGhostTracer($('trail'),placement.shots,{start:placement.start,animateLast:revealed>lastRendered});lastRendered=revealed;
+ const placement=mappedPlay?{shots:state.visibleShots,start:mappedPlay.start}:placeGhostShots(state.visibleShots,currentRoute);
+ const shots=mappedPlay?placement.shots:mappedGhostShots(placement.shots,reviewedShapes,SKETCH_WIDTH,SKETCH_HEIGHT);
+ drawGhostTracer($('trail'),shots,{start:placement.start,animateLast:revealed>lastRendered});lastRendered=revealed;
  $('markers').replaceChildren();
  const ns='http://www.w3.org/2000/svg';
- placement.shots.forEach((shot,i)=>{
+ shots.forEach((shot,i)=>{
   const dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',String(shot.x*320));dot.setAttribute('cy',String(shot.y*430));dot.setAttribute('r','10');dot.setAttribute('fill','#143126');dot.setAttribute('stroke','#fff');dot.setAttribute('stroke-width','2');
   const label=document.createElementNS(ns,'text');label.setAttribute('x',String(shot.x*320));label.setAttribute('y',String(shot.y*430+4));label.setAttribute('text-anchor','middle');label.setAttribute('font-size','12');label.setAttribute('fill','#fff');label.textContent=String(i+1);
   $('markers').append(dot,label);
  });
- $('shots').replaceChildren();state.visibleShots.forEach(s=>{const li=document.createElement('li');li.textContent=s.club+' · '+s.distanceLabel+' · '+s.lie;$('shots').append(li)});
+ $('shots').replaceChildren();
+ for(const shot of shots){
+  const li=document.createElement('li');
+  li.textContent=shot.club+' · '+shot.distanceLabel+' · '+(shot.mappedLie?'Simulated landing: '+shot.mappedLie:shot.lie);
+  $('shots').append(li);
+ }
  $('progress').textContent=state.complete?'Holed out in '+state.score+' strokes':revealed===0?'Ghost on the tee':revealed+' '+(revealed===1?'stroke':'strokes')+' played · still on the hole';
+ const lastShot=shots.at(-1);
+ const reaction=$('ghostReaction');
+ reaction.hidden=!lastShot;
+ if(lastShot){
+  const relative=state.score-state.par;
+  reaction.textContent=state.complete
+   ? relative<0?'The Ghost took a stroke off par.':relative>1?'The Ghost left the door open.':'The Ghost put a number on the card.'
+   : lastShot.club==='Putter'?'Still work left on the green.'
+   : lastShot.mappedLie==='Mapped water'?'The simulated line finished in the water.':lastShot.mappedLie==='Mapped bunker'?'The simulated line found sand.'
+   : lastShot.lie==='Rough / recovery'?'The Ghost has a recovery shot next.'
+   : lastShot.comment;
+ }
  $('back').disabled=!state.canRewind;$('next').disabled=!state.canAdvance;
  if(state.complete)stopWatch();
 }
