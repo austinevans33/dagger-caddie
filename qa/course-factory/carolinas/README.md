@@ -89,3 +89,5 @@ Compare the generated catalog, coverage, review and map bytes with the checked-i
 For a targeted audit, pass the complete regional manifest with repeatable `--course COURSE_ID` arguments. The runner validates the complete manifest, reads the same pinned snapshot, and audits only the selected courses in manifest order. The output includes `selection.json` and a `*-selected-courses.js` catalog fragment. Run the full batch before replacing a published regional catalog.
 
 Use `--require-strict` in review automation to return a failing exit status when any selected course misses strict geometry parity. The coverage report is still written for triage.
+
+The cache command accepts the same repeatable `--course COURSE_ID` selectors. Use `--offline` to check all pinned card files for those courses without network access before starting a geometry batch.
