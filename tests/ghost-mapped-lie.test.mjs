@@ -29,7 +29,7 @@ test('bunker and rough recoveries change the visible landing without rewriting s
 });
 
 import {readFile} from 'node:fs/promises';
-import {BAYONET_COURSE_ID,BAYONET_TEES} from '../app/61f9e9de0a/bayonet-verified-scorecard.js';
+import {BAYONET_COURSE_ID,BAYONET_PAR,BAYONET_TEES} from '../app/61f9e9de0a/bayonet-verified-scorecard.js';
 import {loadHoleSketch,SKETCH_WIDTH,SKETCH_HEIGHT} from '../app/61f9e9de0a/hole-sketch.js';
 import {playMappedGhostHole} from '../app/61f9e9de0a/ghost-mapped-lie.js';
 import {ghostShotPlayback} from '../app/61f9e9de0a/house-ghost-playback.js';
@@ -85,4 +85,25 @@ test('a reviewed par three can finish with a green and route but no fairway poly
  assert.equal(playMappedGhostHole({...options,par:4}),null);
  const play=playMappedGhostHole({...options,par:3});
  assert.equal(play?.shots.at(-1).lie,'Holed');
+});
+
+test('all Bayonet White holes finish with distinct scoring profiles over repeatable rounds',async()=>{
+ const course={provider:'opengolfapi',providerCourseId:BAYONET_COURSE_ID,holeCount:18};
+ const fetcher=async url=>new Response(await readFile(url));
+ const tiers=['scratch','fiveTen','tenFifteen','fifteenTwenty'];
+ const totals=tiers.map(()=>0);
+ for(let hole=1;hole<=18;hole++){
+  const sketch=await loadHoleSketch({course},hole,{fetcher});
+  assert.equal(sketch.reviewedGeometry,true);
+  for(const [index,tier] of tiers.entries()){
+   for(let retry=0;retry<16;retry++){
+    const play=playMappedGhostHole({route:sketch.annotations.route,shapes:sketch.shapes,width:SKETCH_WIDTH,height:SKETCH_HEIGHT,
+     yards:BAYONET_TEES.white.yards[hole-1],par:BAYONET_PAR[hole-1],tier,seed:'Bayonet|'+hole+'|'+tier+'|'+retry});
+    assert.equal(play?.shots.at(-1).lie,'Holed',tier+' on hole '+hole+' with seed '+retry);
+    totals[index]+=play.shots.length;
+   }
+  }
+ }
+ assert.ok(totals[0]/16>=67&&totals[0]/16<=76,'scratch stays near par 72 in this fixture');
+ assert.ok(totals.every((score,index)=>index===0||score>totals[index-1]));
 });

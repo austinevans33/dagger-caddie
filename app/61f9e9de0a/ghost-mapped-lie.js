@@ -78,8 +78,8 @@ export function playMappedGhostHole({route,shapes,width,height,yards,par,tier,se
  while(shots.length<18){
   const remaining=distance(position,green)*scale;
   if(lie==='green'){
-   const holed=remaining<.8||random()<skill.putt/(1+remaining/10);
-   const shortRoll=[green[0]+(position[0]-green[0])*.22,green[1]+(position[1]-green[1])*.22];
+   const holed=remaining<.35||random()<skill.putt/(1+(remaining/3)**1.6);
+   const shortRoll=[green[0]+(position[0]-green[0])*.35,green[1]+(position[1]-green[1])*.35];
    position=holed||classify(shortRoll)!=='green'?green:shortRoll;
    shots.push({...unit(position),club:'Putter',distanceLabel:Math.max(1,Math.round(remaining*3))+' ft',
     lie:holed?'Holed':'Green',comment:holed?'The putt drops.':'The putt leaves a shorter look.'});
