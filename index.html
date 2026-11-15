@@ -7410,14 +7410,12 @@ function dccGhostRender() {
   });
 }
 
-document.getElementById('dccGhostPlay').addEventListener('click', async event => {
-  const button = event.currentTarget;
-  const message = document.getElementById('dccGhostMessage');
-  if (dccGhostPending) {
-    dccGhostShowPlayback();
-    return;
-  }
-  button.disabled = true;
+let dccGhostPreparing = false;
+
+async function dccGhostPrepareHole() {
+  if (dccGhostPending) return true;
+  if (dccGhostPreparing) return false;
+  dccGhostPreparing = true;
   const played = dccGhostHoles;
   const length = dccGhostLength;
   const hole = dccGhostActualHole(dccGhostHoles.length);
@@ -7468,6 +7466,19 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
     dccGhostPending = pending;
     dccGhostCondition = condition;
     parField.value = String(par);
+    return true;
+  } finally {
+    dccGhostPreparing = false;
+  }
+}
+
+document.getElementById('dccGhostPlay').addEventListener('click', async event => {
+  if (dccGhostPreparing) return;
+  const button = event.currentTarget;
+  const message = document.getElementById('dccGhostMessage');
+  button.disabled = true;
+  try {
+    if (!await dccGhostPrepareHole()) return;
     message.textContent = 'Watch the Ghost, then record your score below.';
     dccGhostShowPlayback();
   } catch (error) {
@@ -7479,11 +7490,10 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
 });
 
 document.getElementById('dccGhostRecord')
-  .addEventListener('click', () => {
+  .addEventListener('click', async () => {
+    if (dccGhostPreparing) return;
     const scoreInput =
       document.getElementById('dccGhostPlayerScore');
-    const par = dccGhostPending?.par ?? Number(document.getElementById('dccGhostPar').value);
-    const tier = document.getElementById('dccGhostTier').value;
     const message = document.getElementById('dccGhostMessage');
     const value = scoreInput.value.trim();
 
@@ -7503,18 +7513,10 @@ document.getElementById('dccGhostRecord')
     }
 
     try {
-      // Generate the Ghost score exactly once for this hole.
-      // Select once, when the first hole is recorded.
-      // Never reroll a condition on refresh or Undo.
-      const condition =
-        dccGhostCondition || dccGhostPickCondition();
-
-      const ghostScore = dccGhostPending?.ghost ?? dccGhostConditionScore(
-        par,
-        tier,
-        condition
-      );
-
+      if (!await dccGhostPrepareHole()) return;
+      const {par, ghost:ghostScore} = dccGhostPending;
+      const tier = document.getElementById('dccGhostTier').value;
+      const condition = dccGhostCondition;
 
       const next = [
         ...dccGhostHoles,

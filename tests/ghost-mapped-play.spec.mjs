@@ -42,8 +42,29 @@ test('mapped Ghost match survives a reload and records its completed shotgun hol
  await expect(completion).toBeVisible({timeout:30_000});
  await page.getByLabel('Your strokes').fill('4');
  await page.getByRole('button',{name:'Record Hole Against Ghost'}).click();
- expect((await draft()).holes).toEqual([{holeNumber:4,par:4,player:4,ghost:pending.ghost}]);
+ await expect.poll(async()=>(await draft()).holes).toEqual([{holeNumber:4,par:4,player:4,ghost:pending.ghost}]);
  await play.click();
  await expect(frame.locator('#ghostMapStatus')).toContainText('Simulated play on the Yardage Book drawing.');
  expect((await draft()).pending.hole).toBe(5);
+ await page.getByLabel('Your strokes').fill('5');
+ await page.getByRole('button',{name:'Record Hole Against Ghost'}).click();
+ await expect.poll(async()=>(await draft()).holes.length).toBe(2);
+ // Direct recording must also prepare a mapped result before saving.
+ await page.evaluate(()=>{
+  const original=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){
+   if(key==='dcc_house_ghost_draft_v1'){
+    const pending=JSON.parse(value).pending;
+    if(pending)sessionStorage.setItem('testPreparedGhost',JSON.stringify(pending));
+   }
+   return original.call(this,key,value);
+  };
+ });
+ await page.getByLabel('Your strokes').fill('4');
+ await page.getByRole('button',{name:'Record Hole Against Ghost'}).click();
+ await expect.poll(async()=>(await draft()).holes.length).toBe(3);
+ const prepared=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('testPreparedGhost')));
+ expect(prepared.hole).toBe(6);
+ expect(prepared.mappedPlay.shots).toHaveLength(prepared.ghost);
+ expect((await draft()).holes.at(-1)).toMatchObject({holeNumber:6,ghost:prepared.ghost});
 });
