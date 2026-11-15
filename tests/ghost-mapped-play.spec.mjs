@@ -16,14 +16,15 @@ test('mapped Ghost match survives a reload and records its completed shotgun hol
   }}));
  });
  await page.goto(base+'/index.html');
- await page.waitForFunction(()=>typeof dccGhostRender==='function');
- await page.evaluate(()=>{
-  dccGhostLength=9;
-  dccGhostStartHole=4;
-  document.getElementById('dccGhostLength').value='9';
-  dccGhostRender();
-  document.getElementById('dccGhostPlay').click();
- });
+ const openGhost=async()=>{
+  await page.evaluate(()=>switchTab('games'));
+  await page.locator('#dccR91SoloPanel > summary').click();
+ };
+ await openGhost();
+ await page.locator('#dccGhostLength').selectOption('9');
+ await page.locator('#dccGhostStartHole').selectOption('4');
+ const play=page.locator('#dccGhostPlay');
+ await play.click();
  const frame=page.frameLocator('#dccGhostPlayback iframe');
  await expect(frame.locator('#ghostMapStatus')).toContainText('Simulated play on the Yardage Book drawing.');
  const draft=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')));
@@ -35,15 +36,14 @@ test('mapped Ghost match survives a reload and records its completed shotgun hol
  await expect(frame.locator('#shots li')).toHaveCount(pending.ghost);
  await expect(frame.locator('#markers circle')).toHaveCount(pending.ghost);
  await page.reload();
- await page.evaluate(()=>document.getElementById('dccGhostPlay').click());
+ await openGhost();
+ await play.click();
  expect((await draft()).pending).toEqual(pending);
  await expect(completion).toBeVisible({timeout:30_000});
- await page.evaluate(()=>{
-  document.getElementById('dccGhostPlayerScore').value='4';
-  document.getElementById('dccGhostRecord').click();
- });
+ await page.getByLabel('Your strokes').fill('4');
+ await page.getByRole('button',{name:'Record Hole Against Ghost'}).click();
  expect((await draft()).holes).toEqual([{holeNumber:4,par:4,player:4,ghost:pending.ghost}]);
- await page.evaluate(()=>document.getElementById('dccGhostPlay').click());
+ await play.click();
  await expect(frame.locator('#ghostMapStatus')).toContainText('Simulated play on the Yardage Book drawing.');
  expect((await draft()).pending.hole).toBe(5);
 });
