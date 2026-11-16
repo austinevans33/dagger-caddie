@@ -44,6 +44,17 @@ export function saveMatchbookRound(storage,card){
  }catch{/* Matchbook history is optional. */}
 }
 
+export function matchbookPersonalBest(storage,active,card){
+ const range=soloRange(card);
+ const scope=roundScope(active.selection,range);
+ try {
+  const scores=readHistory(storage).filter(row=>row?.scope===scope&&row.roundId!==card.identity&&
+   Array.isArray(row.strokes)&&row.strokes.length===range.end-range.start+1&&row.strokes.every(validStroke))
+   .map(row=>row.strokes[card.hole-range.start]);
+  return scores.length?Math.min(...scores):null;
+ } catch {return null;}
+}
+
 export function pastRoundTarget(storage,active,card){
  const range=soloRange(card),{start,end}=range;
  const scope=roundScope(active.selection,range);
