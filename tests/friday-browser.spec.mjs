@@ -1346,11 +1346,11 @@ test('Quail Ridge Club Legends scores once and survives a phone-width reload',as
   if(localStorage.getItem('dcc_active_round_course_v1'))return;
   const id='quail-ridge-sanford-nc';
   const selection={course:{provider:'dagger-founder',providerCourseId:id,name:'The Golf Club at Quail Ridge',region:'Sanford, NC'},
-   tee:{providerTeeId:'black',name:'Black',totalYards:6783},holeNumber:18};
+   tee:{providerTeeId:'black',name:'Black',totalYards:6783},holeNumber:17};
   localStorage.setItem('dagger_setup_complete','true');
   localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:20,selection}));
-  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:id+'|black|20',hole:18,length:9,nineStart:10,
-   scores:[...Array(9).fill(null),...Array(8).fill(4),null]}));
+  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:id+'|black|20',hole:17,length:9,nineStart:10,
+   scores:[...Array(9).fill(null),...Array(7).fill(4),null,null]}));
   localStorage.setItem('dagger_matchbook_rounds_v1',JSON.stringify([{roundId:id+'|black|10',
    scope:JSON.stringify(['dagger-founder',id,'black',6783,10,18]),strokes:Array(9).fill(5)}]));
   localStorage.setItem('dagger_foursome_active','{"protected":true}');
@@ -1365,10 +1365,11 @@ test('Quail Ridge Club Legends scores once and survives a phone-width reload',as
  await expect(moment).toBeEmpty();
  await page.locator('#tab-play').click();
  await page.locator('#dccHomeScorecard').click();
+ await page.getByRole('button',{name:'Pencil 4 strokes for hole 17'}).click();
  await page.getByRole('button',{name:'Pencil 4 strokes for hole 18'}).click();
  await page.locator('#dcc-paper-matchbook').click();
  const matchbook=page.getByRole('dialog',{name:'The Matchbook'});
- await expect(matchbook).toContainText('Club Legends, No. 18');
+ await expect(matchbook).toContainText('Club Legends, No. 17');
  await expect(matchbook).toContainText('BEAT THE CHALLENGE');
  expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":true}');
 });
