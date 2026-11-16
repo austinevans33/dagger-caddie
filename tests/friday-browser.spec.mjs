@@ -1338,3 +1338,37 @@ test('Ghost only offers manual hole par when there is no verified course scoreca
  await expect(page.locator('#dccGhostManualPar')).toBeVisible();
  await expect(page.locator('#dccGhostAutoPar')).toBeHidden();
 });
+
+test('Quail Ridge Club Legends scores once and survives a phone-width reload',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.route(url=>url.hostname!=='127.0.0.1'&&url.hostname!=='www.gstatic.com',route=>route.abort());
+ await page.addInitScript(()=>{
+  if(localStorage.getItem('dcc_active_round_course_v1'))return;
+  const id='quail-ridge-sanford-nc';
+  const selection={course:{provider:'dagger-founder',providerCourseId:id,name:'The Golf Club at Quail Ridge',region:'Sanford, NC'},
+   tee:{providerTeeId:'black',name:'Black',totalYards:6783},holeNumber:18};
+  localStorage.setItem('dagger_setup_complete','true');
+  localStorage.setItem('dcc_active_round_course_v1',JSON.stringify({version:1,selectedAt:20,selection}));
+  localStorage.setItem('dcc_solo_scorecard_v1',JSON.stringify({version:1,identity:id+'|black|20',hole:18,length:9,nineStart:10,
+   scores:[...Array(9).fill(null),...Array(8).fill(4),null]}));
+  localStorage.setItem('dagger_matchbook_rounds_v1',JSON.stringify([{roundId:id+'|black|10',
+   scope:JSON.stringify(['dagger-founder',id,'black',6783,10,18]),strokes:Array(9).fill(5)}]));
+  localStorage.setItem('dagger_foursome_active','{"protected":true}');
+ });
+ await page.goto('/playtest/',{waitUntil:'domcontentloaded'});
+ await page.locator('#tab-games').click();
+ const moment=page.locator('#dccAllHeartMoment');
+ await expect(moment).toContainText('Your saved best here is 5');
+ await moment.getByRole('button',{name:'Take the challenge'}).click();
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#tab-games').click();
+ await expect(moment).toBeEmpty();
+ await page.locator('#tab-play').click();
+ await page.locator('#dccHomeScorecard').click();
+ await page.getByRole('button',{name:'Pencil 4 strokes for hole 18'}).click();
+ await page.locator('#dcc-paper-matchbook').click();
+ const matchbook=page.getByRole('dialog',{name:'The Matchbook'});
+ await expect(matchbook).toContainText('Club Legends, No. 18');
+ await expect(matchbook).toContainText('BEAT THE CHALLENGE');
+ expect(await page.evaluate(()=>localStorage.getItem('dagger_foursome_active'))).toBe('{"protected":true}');
+});
