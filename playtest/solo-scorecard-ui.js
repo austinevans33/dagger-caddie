@@ -4,6 +4,7 @@ import {readActiveRound} from './starters-desk-session.js';
 import {startSoloCard,readSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard,soloRange} from './solo-scorecard.js?v=premium-paper-9';
 import {readCourseScorecard} from './active-course-context.js?v=cached-fallback-16';
 import {scorecardCoverage} from './course-scorecard-coverage.js';
+import {clubLegendReceipts} from './club-legends.js';
 import {soloMatchbook,saveMatchbookRound,pastRoundTarget} from './matchbook.js';
 import {formatSoloScorecardBackup} from './solo-scorecard-backup.js';
 
@@ -219,8 +220,11 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  $('dcc-paper-matchbook').addEventListener('click',async()=>{
   const active=readActiveRound(storage);
   if(!active)return;
-  const card=soloMatchbook(active,readSoloCard(storage),readCourseScorecard(storage,active.selection));
+  const state=readSoloCard(storage);
+  const card=soloMatchbook(active,state,readCourseScorecard(storage,active.selection));
   if(!card)return;
+  const [receipt]=clubLegendReceipts(storage,state);
+  if(receipt)card.highlight+=' · '+(receipt.kind==='legend'?'Walk with the Legends':'Club Legends')+', No. '+receipt.hole+': '+receipt.headline;
   try{(await import('./matchbook-view.js')).openMatchbook(card);}
   catch{$('dcc-paper-copy-status').textContent='Matchbook unavailable. Your scorecard is saved.';}
  });
