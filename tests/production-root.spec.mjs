@@ -109,3 +109,29 @@ test('root course routes open shared art and carry verified facts to Caddy',asyn
   await page.waitForURL('http://127.0.0.1:8766'+launch,{waitUntil:'domcontentloaded'});
   await expect(page.locator('#aiInput')).toHaveValue(/Oak Island.*hole 14.*262 yards/i);
 });
+
+test('Shining Rock check-in, Red alternate par, save, correction and reload at phone width',async ({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  page.on('dialog',dialog=>dialog.accept());
+  await page.goto(launch);
+  await page.getByRole('button',{name:/Change Course Choose/}).click();
+  await page.locator('#dccHomeCourseSearch').fill('Shining Rock');
+  await expect(page.locator('#dccHomeCourseSelect')).toContainText('The Rock');
+  await page.locator('#dccHomeTeeSelect').selectOption({label:'Red (No. 4 par 3) · 5154 yards'});
+  await page.locator('#dccHomeCourseConfirm').click();
+  await page.locator('#dccHomeScorecard').click();
+  await page.getByRole('button',{name:'Pencil 4 strokes for hole 1'}).click();
+  await page.getByRole('button',{name:'Select hole 1, 4 strokes'}).click();
+  await page.getByRole('button',{name:'Pencil 5 strokes for hole 1'}).click();
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  await expect(page.getByRole('button',{name:'Select hole 1, 5 strokes'})).toBeVisible();
+  await expect(page.locator('#dcc-paper-progress')).toContainText('HOLE 2');
+  await page.goto(launch+'yardage-preview.html?hole=4');
+  await expect(page.locator('#name')).toContainText('Shining Rock');
+  await expect(page.locator('#yards')).toContainText('108');
+  await expect(page.locator('#mapPar')).toContainText('Par 3');
+  await expect(page.locator('.field-sketch .route-mark')).toHaveCount(0);
+  await page.locator('#watchGhost').click();
+  await expect(page.locator('#headline')).toContainText('Par 3');
+});

@@ -75,6 +75,7 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
   }
   const identity = course.provider + ':' + course.providerCourseId;
   const mappedFounder = founderMapRecord(course);
+  if (mappedFounder?.status === 'scorecard-only') return buildHoleSketch([]);
   const bundled = mappedFounder?.status === 'bundled-reviewed-osm';
   const safeFounderArt = bundled
     ? {file: new URL('./course-art/' + mappedFounder.file, import.meta.url),ref: mappedFounder.ref,
