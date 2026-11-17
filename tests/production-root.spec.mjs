@@ -4,6 +4,7 @@ const launch = '/dagger-caddie/';
 const runtime = './app/61f9e9de0a/';
 
 test.use({baseURL:'http://127.0.0.1:8766', viewport:{width:390,height:844}, serviceWorkers:'block'});
+test.use({actionTimeout:6000,navigationTimeout:12000});
 test.beforeEach(async ({page})=>{
   await page.route('**/*', route=>{
     const url=new URL(route.request().url());
@@ -114,7 +115,7 @@ test('Shining Rock check-in, Red alternate par, save, correction and reload at p
   await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
   page.on('dialog',dialog=>dialog.accept());
   await page.goto(launch);
-  await page.getByRole('button',{name:/Change Course Choose/}).click();
+  await page.getByRole('button',{name:/Change Course/}).click();
   await page.locator('#dccHomeCourseSearch').fill('Shining Rock');
   await expect(page.locator('#dccHomeCourseSelect')).toContainText('The Rock');
   await page.locator('#dccHomeTeeSelect').selectOption({label:'Red (No. 4 par 3) · 5154 yards'});
