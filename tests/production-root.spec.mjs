@@ -115,11 +115,12 @@ test('Shining Rock check-in, Red alternate par, save, correction and reload at p
   await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
   page.on('dialog',dialog=>dialog.accept());
   await page.goto(launch);
-  await page.getByRole('button',{name:/Change Course/}).click();
-  await page.locator('#dccHomeCourseSearch').fill('Shining Rock');
-  await expect(page.locator('#dccHomeCourseSelect')).toContainText('The Rock');
-  await page.locator('#dccHomeTeeSelect').selectOption({label:'Red (No. 4 par 3) · 5154 yards'});
-  await page.locator('#dccHomeCourseConfirm').click();
+  await expect(page.locator('#dcc-starter-dialog')).toBeVisible();
+  await page.locator('#dcc-starter-query').fill('Shining Rock');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'The Rock'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Red (No. 4 par 3) · 5154 yards'});
+  await page.locator('#dcc-starter-checkin').click();
   await page.locator('#dccHomeScorecard').click();
   await page.getByRole('button',{name:'Pencil 4 strokes for hole 1'}).click();
   await page.getByRole('button',{name:'Select hole 1, 4 strokes'}).click();
