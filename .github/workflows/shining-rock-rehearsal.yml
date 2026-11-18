@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'app/**'
+      - 'index.html'
+      - 'tests/shining-rock-staging.spec.mjs'
       - 'tests/shining-rock.test.mjs'
       - 'tests/production-root.spec.mjs'
       - '.github/workflows/shining-rock-rehearsal.yml'
@@ -23,7 +25,20 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
-          git diff --exit-code "$BASE" HEAD -- .firebaserc firebase.json firebase-config.js firestore.rules functions manifest.json index.html _config.yml 'dcc-*.png' app/61f9e9de0a/firebase-config.js scripts/production-bundle.py .github/workflows/production-promotion.yml
+          git diff --exit-code "$BASE" HEAD -- .firebaserc firebase.json firebase-config.js firestore.rules functions manifest.json _config.yml 'dcc-*.png' app/61f9e9de0a/firebase-config.js scripts/production-bundle.py .github/workflows/production-promotion.yml
+          python3 - <<'PYCODE'
+          import os, subprocess
+          from pathlib import Path
+          before=subprocess.check_output(['git','show',os.environ['BASE']+':index.html']).decode()
+          after=Path('index.html').read_text()
+          start='// DCC STEP 30K-A — HOUSE GHOST MATCH ARCHIVE'
+          end='function dccGhostUpdateActions()'
+          def outside_ghost(text):
+              left, rest=text.split(start,1)
+              _, right=rest.split(end,1)
+              return left+right
+          assert outside_ghost(before)==outside_ghost(after), 'Unexpected change outside existing Ghost engine'
+          PYCODE
           node --test tests/*.test.mjs
       - uses: actions/jekyll-build-pages@v1
         with:
@@ -56,3 +71,11 @@ jobs:
             ${{ runner.temp }}/REHEARSAL_HEAD.txt
             ${{ runner.temp }}/REHEARSAL_TESTED_MERGE.txt
             ${{ runner.temp }}/shining-rock-rehearsal.tar.gz
+      - name: Test existing Money Room against staging
+        run: npx playwright test tests/shining-rock-staging.spec.mjs --browser=chromium --workers=1 --reporter=line
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shining-rock-browser-evidence
+          path: test-results/
+          retention-days: 14

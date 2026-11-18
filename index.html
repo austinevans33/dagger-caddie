@@ -7065,6 +7065,7 @@ function dccGhostArchiveMatch() {
     previous.tier === tier &&
     previous.holesPlanned === dccGhostLength &&
     previous.condition === (dccGhostCondition || 'normal') &&
+    previous.course === dccGhostCourse &&
     JSON.stringify(previous.holes) ===
       JSON.stringify(dccGhostHoles) &&
     typeof previous.archivedAt === 'string' &&
@@ -7083,6 +7084,7 @@ function dccGhostArchiveMatch() {
     tier,
     condition: dccGhostCondition || 'normal',
     holesPlanned: dccGhostLength,
+    course: dccGhostCourse,
     holes: dccGhostHoles.map(h => ({ ...h })),
     result: {
       lead: result.lead,
@@ -7111,6 +7113,7 @@ let dccGhostHoles = [];
 let dccGhostLength = 18;
 let dccGhostCondition = null;
 let dccGhostPending = null;
+let dccGhostRecording = false;
 let dccGhostCourse;
 let dccGhostResizeObserver;
 
@@ -7314,7 +7317,7 @@ function dccGhostRender() {
   
   
   document.getElementById('dccGhostRecord').disabled =
-    result.decided || dccGhostHoles.length >= dccGhostLength;
+    dccGhostRecording || result.decided || dccGhostHoles.length >= dccGhostLength;
 
   // Make the finish action explicit: completed rounds are archived on this click.
   // Do not archive incomplete rounds or silently rewrite existing stored data.
@@ -7373,6 +7376,7 @@ function dccGhostRender() {
 
 document.getElementById('dccGhostPlay').addEventListener('click', async event => {
   const button = event.currentTarget;
+  if (dccGhostRecording) return;
   const message = document.getElementById('dccGhostMessage');
   if (dccGhostPending) {
     dccGhostShowPlayback();
@@ -7412,10 +7416,11 @@ document.getElementById('dccGhostPlay').addEventListener('click', async event =>
 });
 
 document.getElementById('dccGhostRecord')
-  .addEventListener('click', () => {
+  .addEventListener('click', async () => {
+    if (dccGhostRecording) return;
     const scoreInput =
       document.getElementById('dccGhostPlayerScore');
-    const par = dccGhostPending?.par ?? Number(document.getElementById('dccGhostPar').value);
+    let par = dccGhostPending?.par ?? Number(document.getElementById('dccGhostPar').value);
     const tier = document.getElementById('dccGhostTier').value;
     const message = document.getElementById('dccGhostMessage');
     const value = scoreInput.value.trim();
@@ -7435,7 +7440,19 @@ document.getElementById('dccGhostRecord')
       return;
     }
 
+    dccGhostRecording = true;
+    document.getElementById('dccGhostRecord').disabled = true;
+    const holeNumber = dccGhostHoles.length + 1;
     try {
+      // Direct score entry uses the same frozen course as cinematic playback.
+      const course = dccGhostCourse === undefined
+        ? localStorage.getItem('dcc_active_round_course_v1') : dccGhostCourse;
+      const {readCourseScorecard} = await import('./app/61f9e9de0a/active-course-context.js');
+      if (holeNumber !== dccGhostHoles.length + 1) return;
+      const selection = JSON.parse(course || 'null')?.selection;
+      const card = selection && readCourseScorecard(localStorage, selection);
+      const officialPar = card?.holes.find(facts => facts.number === holeNumber)?.par;
+      if (!dccGhostPending && [3,4,5].includes(officialPar)) par = officialPar;
       // Generate the Ghost score exactly once for this hole.
       // Select once, when the first hole is recorded.
       // Never reroll a condition on refresh or Undo.
@@ -7463,12 +7480,13 @@ document.getElementById('dccGhostRecord')
           tier,
           holesPlanned: dccGhostLength,
           condition,
-          course: dccGhostCourse,
+          course,
           holes: next
 
         })
       );
 
+      dccGhostCourse = course;
       dccGhostHoles = next;
       dccGhostPending = null;
       dccGhostShowPlayback();
@@ -7495,6 +7513,9 @@ document.getElementById('dccGhostRecord')
       console.warn('House Ghost save failed:', error);
       message.textContent =
         'Could not save this hole. No score was added.';
+    } finally {
+      dccGhostRecording = false;
+      dccGhostRender();
     }
   });
 
@@ -7514,7 +7535,7 @@ document.getElementById('dccGhostLength')
 // DCC STEP 30D — UNDO THE MOST RECENT GHOST HOLE
 document.getElementById('dccGhostUndo')
   .addEventListener('click', () => {
-    if (!dccGhostHoles.length) return;
+    if (dccGhostRecording || !dccGhostHoles.length) return;
 
     const tier = document.getElementById('dccGhostTier').value;
     const next = dccGhostHoles.slice(0, -1);
@@ -7555,6 +7576,7 @@ document.getElementById('dccGhostUndo')
   // DCC STEP 30K-B — ARCHIVE BEFORE STARTING A NEW MATCH
   document.getElementById('dccGhostReset')
     .addEventListener('click', () => {
+      if (dccGhostRecording) return;
       const message = document.getElementById('dccGhostMessage');
       const scores = dccGhostHoles.map(
         h => [h.player, h.ghost]
