@@ -79,7 +79,7 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
   const bundled = mappedFounder?.status === 'bundled-reviewed-osm';
   const safeFounderArt = bundled
     ? {file: new URL('./course-art/' + mappedFounder.file, import.meta.url),ref: mappedFounder.ref,
-       credit:'© OpenStreetMap contributors (ODbL 1.0)',source:mappedFounder.source}
+       credit:mappedFounder.credit || '© OpenStreetMap contributors (ODbL 1.0)',source:mappedFounder.source}
     : mappedFounder?.status === 'external-unverified-hole-assignment'
       ? {file: mappedFounder.source,ref: mappedFounder.ref,
          credit:'© OpenStreetMap contributors via Zomma Golf (ODbL 1.0)',source:mappedFounder.source}
@@ -111,11 +111,13 @@ export async function loadHoleSketch(selection, holeNumber, {fetcher = fetch, si
       }
       const features = courseArtFeatures(records, holeNumber);
       if (features.length) return buildHoleSketch(features, {credit: entry.credit, source: entry.source,
-        approximateTee, referenceNote: (mappedFounder?.referenceNotes ?? entry.referenceNotes)?.[holeNumber]});
+        approximateTee, layoutNote:mappedFounder?.holeNotes?.[holeNumber] || mappedFounder?.layoutNote,
+        referenceNote: (mappedFounder?.referenceNotes ?? entry.referenceNotes)?.[holeNumber]});
     } catch (error) {
       if (signal?.aborted) throw error;
     }
   }
+  if (mappedFounder?.scorecardFallback) return buildHoleSketch([]);
   const key = identity + ':' + holeNumber;
   if (providerCache.has(key)) return providerCache.get(key);
   const timeout = AbortSignal.timeout?.(5000);

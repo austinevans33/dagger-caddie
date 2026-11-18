@@ -234,7 +234,7 @@ function updateSketch(selection,hole){
   }
   updateMode();
   const foot=document.createElement('p');foot.className='geometry-foot';
-  foot.textContent=annotations.route?'Illustrative layout · approximate tee area and trouble. Confirm carries on course. ':'Partial mapped shapes · No invented fairway or hazard outlines. ';
+  foot.textContent=sketch.layoutNote?sketch.layoutNote+' ':annotations.route?'Illustrative layout · approximate tee area and trouble. Confirm carries on course. ':'Partial mapped shapes · No invented fairway or hazard outlines. ';
   if(sketch.source){const credit=document.createElement('a');credit.href=sketch.source;credit.textContent=sketch.credit;foot.append(credit)}
   if(annotations.reference)foot.append(annotations.approximateTee?' · * Aerial reference':' · * Club booklet reference');
   box.append(foot);

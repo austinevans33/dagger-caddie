@@ -140,7 +140,7 @@ async function updateGhostHoleSketch(){
   sizeStage(SKETCH_HEIGHT);
   renderSharedHoleSketch(svg,sketch.shapes,sketch.annotations,{height:SKETCH_HEIGHT});
   currentRoute=sketch.annotations.route;
-  status.textContent='Same mapped pencil drawing as Yardage Book. Simulated flights. ';
+  status.textContent='Same mapped pencil drawing as Yardage Book. Simulated flights. '+(sketch.layoutNote?sketch.layoutNote+' ':'');
   if(sketch.source){
    const credit=document.createElement('a');
    credit.href=sketch.source;credit.textContent=sketch.credit;status.append(credit);

@@ -253,7 +253,12 @@ const founders=Object.freeze([
    image:'https://static.wixstatic.com/media/6c0871_8d21f96254a647bbbf524e19c228ea6e~mv2.png',
    sha256:'3b93c90d98bfcdee49b6df9ac7f27e105ef7f0e8aa1a2fb01b3a31f26c5602d4',
    checked:'2026-11-17',geography:'91 Clubhouse Lane, Northbridge, Massachusetts',teeYardageIsNotPinDistance:true},
-  map:{ref:'ma/shining-rock-golf-club',status:'scorecard-only'}
+  map:{ref:'ma/shining-rock-golf-club',file:'shining-rock-northbridge-ma.json',
+   status:'bundled-reviewed-osm',auditTee:'gold',scorecardFallback:true,
+   source:'https://www.openstreetmap.org/relation/17348373',
+   credit:'© OpenStreetMap contributors (ODbL 1.0) · aerial review: MassGIS 2025',
+   layoutNote:'Reference layout from mapped tee pads; tee colors are unassigned. Use the selected-tee scorecard yardage.',
+   holeNotes:{18:'Reference layout: OSM back-tee route is about 496 yards. Gold scorecard is 389 yards. Tee colors are unassigned; confirm your starting pad on course.'}}
  }
 
 ]);

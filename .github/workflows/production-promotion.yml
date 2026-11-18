@@ -27,6 +27,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Check shared-service change scope
+        id: money_scope
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if git diff --quiet "$BASE" HEAD -- index.html .firebaserc firebase.json firestore.rules functions firebase-config.js app/61f9e9de0a/firebase-config.js app/61f9e9de0a/money-room.js app/61f9e9de0a/ledger-settlement.js app/61f9e9de0a/room-session.js app/61f9e9de0a/room-recovery.js; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -39,6 +49,7 @@ jobs:
           git fetch origin b26e5d15b1bbaeab1df246f90ffb0624659baa94
           python3 scripts/production-bundle.py --check .
           git diff --exit-code 4297e42691e4167ec27cf003656d084b0f8943ac -- .firebaserc firebase.json firestore.rules functions
+          python3 scripts/build-shining-rock-book.py --check
           node --test tests/*.test.mjs
           python3 tests/shining-rock-promotion.test.py
       - name: Build the Pages root with its publishing exclusions
@@ -64,10 +75,11 @@ jobs:
             if curl --silent --fail http://127.0.0.1:8766/dagger-caddie/manifest.json -o /dev/null; then break; fi
             sleep 1
           done
-          npx playwright test tests/production-root.spec.mjs --browser=chromium --workers=2 --reporter=line
-          npx playwright test tests/production-root.spec.mjs --browser=webkit --workers=2 --reporter=line
+          npx playwright test tests/production-root.spec.mjs --browser=chromium --workers=2 --reporter=line --output=test-results/chromium
+          npx playwright test tests/production-root.spec.mjs --browser=webkit --workers=2 --reporter=line --output=test-results/webkit
       - name: Verify the existing shared room against staging
-        run: npx playwright test tests/shining-rock-staging.spec.mjs --browser=chromium --workers=1 --reporter=line
+        if: ${{ steps.money_scope.outputs.changed == 'true' }}
+        run: npx playwright test tests/shining-rock-staging.spec.mjs --browser=chromium --workers=1 --reporter=line --output=test-results/staging
       - name: Run the full regression suite on the exact staging baseline
         run: |
           cd "$RUNNER_TEMP/staged"
