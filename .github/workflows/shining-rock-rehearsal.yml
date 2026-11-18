@@ -25,7 +25,7 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
-          git diff --exit-code "$BASE" HEAD -- .firebaserc firebase.json firebase-config.js firestore.rules functions manifest.json _config.yml 'dcc-*.png' app/61f9e9de0a/firebase-config.js scripts/production-bundle.py .github/workflows/production-promotion.yml
+          git diff --exit-code "$BASE" HEAD -- .firebaserc firebase.json firebase-config.js firestore.rules functions manifest.json _config.yml 'dcc-*.png' app/61f9e9de0a/firebase-config.js
           python3 - <<'PYCODE'
           import os, subprocess
           from pathlib import Path

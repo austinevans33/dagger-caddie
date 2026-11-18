@@ -36,9 +36,11 @@ jobs:
       - name: Verify promotion and production backend isolation
         run: |
           git fetch origin 61f9e9de0a3a7950ce28f223541cdd12f897b5d8
+          git fetch origin c0c0fc9583b9938f0eee29a27a90791a64ddd4ab
           python3 scripts/production-bundle.py --check .
-          git diff --exit-code 390b501ffd0b923c6b009ca70509e32319b2e032 -- .firebaserc firebase.json firestore.rules functions
+          git diff --exit-code 4297e42691e4167ec27cf003656d084b0f8943ac -- .firebaserc firebase.json firestore.rules functions
           node --test tests/*.test.mjs
+          python3 tests/shining-rock-promotion.test.py
       - name: Build the Pages root with its publishing exclusions
         uses: actions/jekyll-build-pages@v1
         with:
@@ -64,6 +66,8 @@ jobs:
           done
           npx playwright test tests/production-root.spec.mjs --browser=chromium --workers=2 --reporter=line
           npx playwright test tests/production-root.spec.mjs --browser=webkit --workers=2 --reporter=line
+      - name: Verify the existing shared room against staging
+        run: npx playwright test tests/shining-rock-staging.spec.mjs --browser=chromium --workers=1 --reporter=line
       - name: Run the full regression suite on the exact staging baseline
         run: |
           cd "$RUNNER_TEMP/staged"
