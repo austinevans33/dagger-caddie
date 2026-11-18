@@ -46,9 +46,9 @@ jobs:
       - name: Verify promotion and production backend isolation
         run: |
           git fetch origin 61f9e9de0a3a7950ce28f223541cdd12f897b5d8
-          git fetch origin b26e5d15b1bbaeab1df246f90ffb0624659baa94
+          git fetch origin d9bc012add5d3ffddf292eb19351d3a49130c77c
           python3 scripts/production-bundle.py --check .
-          git diff --exit-code 4297e42691e4167ec27cf003656d084b0f8943ac -- .firebaserc firebase.json firestore.rules functions
+          git diff --exit-code 23c4c6888dc9b8c193ef635949bc031d31cdb208 -- .firebaserc firebase.json firestore.rules functions
           python3 scripts/build-shining-rock-book.py --check
           node --test tests/*.test.mjs
           python3 tests/shining-rock-promotion.test.py
