@@ -2,7 +2,7 @@
 
 Draft qualification only. Production promotion requires owner approval after acceptance.
 
-The source is PR #103's immutable runtime commit 7a24d01ebfa74d502a33751ebe73178308237de8. The release builder retains the 61f9e9de0a staging runtime, replaces only the five explicitly listed successor surfaces, pins the two historical Clubhouse hotfixes to the same source, and compares every runtime byte. The public source marker identifies the successor commit. The protected manifest, original brand assets and production Firebase client configuration still come from 390b501.
+The source is PR #103's immutable runtime commit b26e5d15b1bbaeab1df246f90ffb0624659baa94. The release builder retains the 61f9e9de0a staging runtime, replaces only the six explicitly listed successor surfaces, pins the two historical Clubhouse hotfixes to the same source, and compares every runtime byte. The public source marker identifies the successor commit. The protected manifest, original brand assets and production Firebase client configuration still come from 390b501.
 
 Backend source compares against pre-release main 4297e42691e4167ec27cf003656d084b0f8943ac. Earlier Tournament HQ source additions already exist on main. They stay in Git and outside the public Pages output. This release neither certifies nor deploys those backend additions. No workflow in this PR deploys Firebase or changes Pages settings.
 

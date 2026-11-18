@@ -57,3 +57,22 @@ test('Shining Rock full scoring survives reload and corrections while Ghost read
  assert.equal(readSoloCard(storage).scores[3],4);
  assert.equal(readSoloCard(storage).hole,5);
 });
+
+test('completed Ghost archive stays with original handler and partial archive retains selected course',async()=>{
+ const {archivePartialGhost}=await import('../app/61f9e9de0a/ghost-partial-archive.js');
+ const snapshot=JSON.stringify({version:1,selection:{course,tee:tees[0],holeNumber:1},selectedAt:123});
+ const entries=new Map();
+ const storage={getItem:key=>entries.get(key)??null,setItem:(key,value)=>entries.set(key,value)};
+ const draft={version:1,tier:'scratch',holesPlanned:18,course:snapshot,holes:Array.from({length:18},()=>({par:4,player:4,ghost:4}))};
+ storage.setItem('dcc_house_ghost_draft_v1',JSON.stringify(draft));
+ assert.deepEqual(archivePartialGhost(storage,{confirmArchive:()=>assert.fail('completed match must use original archive handler')}),{handled:false});
+ assert.equal(storage.getItem('dcc_house_ghost_archive_v1'),null);
+ draft.holes=draft.holes.slice(0,3);
+ storage.setItem('dcc_house_ghost_draft_v1',JSON.stringify(draft));
+ assert.equal(archivePartialGhost(storage,{confirmArchive:()=>true,now:123456}).archived,true);
+ const archive=JSON.parse(storage.getItem('dcc_house_ghost_archive_v1'));
+ assert.equal(archive.length,1);
+ assert.equal(archive[0].course,snapshot);
+ assert.deepEqual(archive[0].holes,draft.holes);
+ assert.deepEqual(JSON.parse(storage.getItem('dcc_house_ghost_draft_v1')).holes,[]);
+});

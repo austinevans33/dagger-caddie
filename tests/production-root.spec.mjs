@@ -167,6 +167,7 @@ for(const [teeLabel,teeId,tier] of [
 ]) {
   test('original Ghost completes 18 Shining Rock holes on '+teeId,async ({page},testInfo)=>{
     test.setTimeout(180000);
+    page.on('dialog',dialog=>dialog.accept());
     await checkInRock(page,teeLabel);
     await openOriginalGhost(page);
     await page.locator('#dccGhostTier').selectOption(tier);

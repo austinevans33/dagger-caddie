@@ -10,13 +10,14 @@ export function archivePartialGhost(storage,{confirmArchive=()=>false,now=Date.n
  if(!valid)throw Error('Ghost draft is invalid; refusing to clear it.');
  let lead=0;for(const h of draft.holes){lead+=Math.sign(h.ghost-h.player);}
  const decided=Math.abs(lead)>(length-draft.holes.length)||draft.holes.length===length;
- // A decided match (including 7&5 on hole 13) also needs a safe archive path.
+ // Completed matches use the original completion handler and its duplicate protection.
+ if(decided)return {handled:false};
 
  if(!confirmArchive())return {handled:true,archived:false};
  const existing=JSON.parse(storage.getItem(ARCHIVE)||'[]');
  if(!Array.isArray(existing))throw Error('Ghost archive is invalid; draft preserved.');
  const id='ghost-'+now+'-'+Math.random().toString(36).slice(2);
- const record={version:1,id,archivedAt:new Date(now).toISOString(),tier:draft.tier,condition:draft.condition||'normal',holesPlanned:length,holes:draft.holes.map(h=>({...h})),result:{lead,status:(decided?'Completed':'Unfinished')+' · '+draft.holes.length+' of '+length+' holes',played:draft.holes.length}};
+ const record={version:1,id,archivedAt:new Date(now).toISOString(),tier:draft.tier,condition:draft.condition||'normal',holesPlanned:length,course:draft.course,holes:draft.holes.map(h=>({...h})),result:{lead,status:(decided?'Completed':'Unfinished')+' · '+draft.holes.length+' of '+length+' holes',played:draft.holes.length}};
  // All-or-nothing from the golfer's perspective: never remove the only copy.
  storage.setItem(ARCHIVE,JSON.stringify([record,...existing]));
  try{storage.setItem(DRAFT,JSON.stringify({version:1,tier:draft.tier,holesPlanned:length,condition:null,holes:[]}));}
