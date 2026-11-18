@@ -1,0 +1,1105 @@
+{
+  "course_ref": "ma/shining-rock-golf-club",
+  "reviewed": "2026-11-18",
+  "source_sha256": "ab445c0c61990a614164cc4a2f049bf1b63f088441b5f6fe1cc20e65ab652b97",
+  "candidate_sha256": "f3a0905cf29ce5949c08fc452c4a3505b7a46d02952c3cfe8c848b9729795f3f",
+  "imagery": {
+    "source": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer",
+    "year": 2025,
+    "zoom": 18,
+    "tileOrigin": [
+      78898,
+      97152
+    ],
+    "tiles": [
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78898",
+        "sha256": "f7f2f37a012e007a53b5335df9c52ddf6ea62a71b3611d26342d31ace9487f63"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78899",
+        "sha256": "9b21eac6f52cbc7a717f10596fb409133bccf1ab1e405dc852707be4a963001e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78900",
+        "sha256": "9a33402f440add3397be208dd6c4749f8f11a79621b71192c9b70d9a52ed302d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78901",
+        "sha256": "5a93f8b1f6f23088a98af608239d4297ad24656df0a80af29dacb6a08a1a74e6"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78902",
+        "sha256": "924762ee15bb47dd15aeeeecb8bce0bb39cc7e0fe0c4333191e4b07543776454"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78903",
+        "sha256": "49fcdefcbe3d8705a0e0e180ab6929cef998c287da484b2cc1965c88b4ef18c0"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78904",
+        "sha256": "a7243d32166b1c671aece984402bd55c7abfd3a2e89fedeb051bbbc24e556968"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78905",
+        "sha256": "9c0197a0cbbbd60b1ebefaaa5075e039782e3054677e23255c18fb141b3fb39f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78906",
+        "sha256": "556fcf3430be0459dffefbb588c133ace8b19c9e1cd4b5bad615b2777e05afd1"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78907",
+        "sha256": "f0eb769acf51a539da94bd121d09e2d7b65775091c75d274a9f5d36d929d64ac"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78908",
+        "sha256": "fe6b5308d3865104c18f84caa2a8620da7c1b43cde944eb5b5d5dee9df09e2d0"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78909",
+        "sha256": "c31d8de4a45e69d062163c9e7fbe3ae027848d262c05a48d025e833ceb8b0082"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78910",
+        "sha256": "b2906c33acfc389e472b5f486dea6272565bb2ff126926500f8f50decb500f9d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78911",
+        "sha256": "dca4ee7f20e5631079712bd91fe9c3581692ad7ed55c01b59726c7d92f9c90f2"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97152/78912",
+        "sha256": "20d29154825a4148dc1950a22dd6a977f3f112b81f20e5d9ecfc499ab688015d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78898",
+        "sha256": "d356722678c99853e4ff037d63c07d4f1d8a30b416204b0ff10df33cb4133fd4"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78899",
+        "sha256": "ae1add6a94e4ff2e0585ac66024468457fd0d22b0f099540a439bd2d8685cee3"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78900",
+        "sha256": "8da3e78499cdb51900c3b8df556006e33c580b624cd3f6127d1e080d72f744cd"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78901",
+        "sha256": "174ec0dc6e0a41e0c8c886f20f6d2f676e05a361972c86cef5ffa1638eadd709"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78902",
+        "sha256": "a6cb3bcba23e8927e8f5553b31c618b538a3f853ade22b54c83c3a98c4dff6be"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78903",
+        "sha256": "89cee842ac65ee99efd7bf9351998e725cd26beef6b9724cd461b0b97cb719ad"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78904",
+        "sha256": "e857718f0b535e38ac394a867510aa254934a0ee3fe3b3bbe0b5bf377bf9a13e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78905",
+        "sha256": "4651da42181fe0d8e82daec2687d875c22dec0a5e3ecd97bca7396af91a32353"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78906",
+        "sha256": "3567f3b3657663d2315b952bdfd0e5f42a94537d99c03cc97973be52faa3d64b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78907",
+        "sha256": "21916b9c494a307a866fe43e3cf9108a544af2b90d4beeb07f2ce13798cce8c7"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78908",
+        "sha256": "5c8044bbad1e7344409011a6bdc36d505f86ccd2ccba0b3b58eff9773f112b75"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78909",
+        "sha256": "d3a6131947856b12c2f3407a474bd831497173a2df62c516fb28612659abe3fa"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78910",
+        "sha256": "e27cf8c417749099d2c58e24e2d798611b84914c24082bfd2aebb53cf2381a85"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78911",
+        "sha256": "02064a5dbce70c333d4d5f7685c8b138e1968232cae14fca94bccfd32158f8e8"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97153/78912",
+        "sha256": "80752ed0c1d26ab3b14cd71aae881aa55b2dc9b647a5cb8afc39ac147e73590d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78898",
+        "sha256": "dfa5061f0d2be73366f373abdbfa7cdf6374f285bb0e476c75d034452b70c783"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78899",
+        "sha256": "e905fb3ffc408e2f0f3af48bca7007f52f946f65f3d6eac43921b0b64e11780e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78900",
+        "sha256": "7f7eaeca4691b61ca043b207843bc745393c2178897d0fd5f7249f0e055d9c29"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78901",
+        "sha256": "264c1dbffe412280a7f5fb35ca606f5c6d9da5476ea6fb09d6ce4f3021d63447"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78902",
+        "sha256": "883705e05dbb9a437b3d0a133e4da7edd22f7458046a53bd7df7e6bdc1ee1efc"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78903",
+        "sha256": "f0a9526fc1e397b6cfd00d012521794597f17aed0e8f328bba68992f78978aaa"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78904",
+        "sha256": "a1d89bdbff6c7c5bfa3af036da3b703469ff3047c3c8c20b6f9e76fc0863659d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78905",
+        "sha256": "e79cd3d5253a854bb02e15faaea551cf81a685441caef89d7b4aff094cbf31fc"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78906",
+        "sha256": "626065a0fffe20d7c382ea6416515cb21497912a2b21dfb84d7bffa7349087c1"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78907",
+        "sha256": "b0449a0e11dbb8a01f51a8c99435f002dd3364d59ce5f8945861a68609d8d01a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78908",
+        "sha256": "3733e4ec389f5547a2def6c30c4b5db80031cc0e3fa3ed0d45e230e1801fced0"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78909",
+        "sha256": "03eaf574733f2f901ef62b62452265546275d469242c3f393d963234b3c02e3b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78910",
+        "sha256": "1f2b3766ac990c8ac21e90a2b8c24fe112cad68f33ed8ea8fb7304202dc39242"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78911",
+        "sha256": "b7b437e928e4b3b96812f46e2304d5fd63e67000e869d1a3bbfdd41a85ea8b6a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97154/78912",
+        "sha256": "15c9ecd52fc3a8b64d39c3192d78869fed6ad2d70895760605f855266ffc8269"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78898",
+        "sha256": "32080e5d64544df6d931cfc58c005c4e0e597de971b36716c1e9c4166647432b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78899",
+        "sha256": "98e82543e8c7e0fea0286ceae8c94ddeda31a228b6d9eca633a207c16f98c24e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78900",
+        "sha256": "4453b575a4c6c92bca177b52fd28d1ce52ad67fd9a67febe311e937491664739"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78901",
+        "sha256": "728a2771ca0cb1255068891afb192a3dc14dab5860c4bfae3d8c151404ef50ac"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78902",
+        "sha256": "eaa70e631ec539c7deef3afe81dcf47e51c2c85aee62823373503fc7d69de83d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78903",
+        "sha256": "f3882585ae0588a4457b035ceb0a0b679f5803ac2230b1413e0656df9b9bed07"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78904",
+        "sha256": "1c127d8670ba9e67e0b5dd212d933533d3a99e44a407b08255751f9dfe0d2559"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78905",
+        "sha256": "dcbd14fa001968ad7c770a76242f8954a12cfed6203138d3fb4c76c6082006cb"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78906",
+        "sha256": "a932ca5b24d5645342a849e82b15b2738291eccfdb713f2d72a5e5e2f51faaae"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78907",
+        "sha256": "308f54b9c0e30f3d6afa707c5fba01b5b24c9570d8985e515d8fec49b7b79c5f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78908",
+        "sha256": "81809d70026768d0bfaebb5acc487dfa0c1e147d1a866f4a7668b74833b4676f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78909",
+        "sha256": "173090d34a5059f54fc379ed601b81249755f5a8324a212ab1d2248375cde50c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78910",
+        "sha256": "7dbf3f5b53da692551065cb84a9fb4d236c2edee0695971758ac6aab281cc396"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78911",
+        "sha256": "29ec7755c482fc9bda55a3568967effab6262f3fb5192a451d495f3a0a751792"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97155/78912",
+        "sha256": "b10592b3269f722d58c4cbe7370f7abaa7af313400e661aaebc5fd5387150205"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78898",
+        "sha256": "1c2e0ff5fc9fb2c52b752c5e2cea8a791c883750771ac02a6cdb0bb5898599e0"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78899",
+        "sha256": "89dd95096a6d6764559bf9dc93b26d8eb87a47b0129a335cf93e4abaef5e7df8"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78900",
+        "sha256": "798687caf009a8f295450dc9bc106483de8628f3ca22ad057cf111ad70890b72"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78901",
+        "sha256": "87a1c777e334a9ccfa08abe24b2ef763fd25896a6c783020b8512e07e5efbbaf"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78902",
+        "sha256": "93e9ff4b5ad4d6b901877251fcfa70998b4167c83136e8df4f4d8759b41a416a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78903",
+        "sha256": "fdf0b75a60c2efb676edc1db28a5a2bb6a7335299c9b02390956f58a41cfb882"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78904",
+        "sha256": "c144c7a77a449764f2756b76b2c55afe924560987cbdd0b0f3462b9c6adebb7d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78905",
+        "sha256": "ff35973cec0f9e77a7b40ceb2d177a9312ac154f2347a79fb81b9a00bd28dcce"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78906",
+        "sha256": "a18ead9ac2e7e2dc6652047029a75221cb185072968a771c269141541b295bb6"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78907",
+        "sha256": "2be4b39e6420331396a73105bc4b0f51a6922b291b6da5d263555d7717fc98cf"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78908",
+        "sha256": "aa4a3bf6b04c77a20ed5d9c7f987b40b3a8e4b2f267c4beab2f096009810bfbc"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78909",
+        "sha256": "dc371b400b923c3c0647a7a76901af10eae88be52deeb465f705ef792a7dd3f3"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78910",
+        "sha256": "75f8168edab13b0998971a0de52ccb374d7a5f368b4f211574f024c745e746ac"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78911",
+        "sha256": "2ace37906129f0a27939758d062fa0047f73c0eca12c4da4354ceb4b8d266828"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97156/78912",
+        "sha256": "340db8092a08ccf4878a8b4829508c43285058436da270ab54dd50d2140a7510"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78898",
+        "sha256": "51abd065ad5ad6e4505b4ed3c08316da566f66c11676c381a312729accc7ba7d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78899",
+        "sha256": "18066175491dfccc5ceacd87b7a81984ddc18f4790f08456f14801ff8f726d59"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78900",
+        "sha256": "e5cbd08f6024e45e7a2996b4d5cff0f8060fb3683cc5c7b6dc24ff90b0687cc3"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78901",
+        "sha256": "79242c05fd689b54ae324f722f568634eebbe65c338b050ddf0894ba0ee9db94"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78902",
+        "sha256": "6a371fd109f981b50a90e638df5137c71cfcbcec7a651dd696afb14f23da471c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78903",
+        "sha256": "f14dd7dcc93af27b2d85868dfc80982d1470ff1119bd51423b247e93065d153f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78904",
+        "sha256": "a0e3adb87f0362841d7ced5cc70be33a62d38e7c2d5feddfd9d0dc7d8756d84e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78905",
+        "sha256": "ab8acb766e6fa03a4537f39468faa5d7d1fad4afa4d0165454e31959bb38af02"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78906",
+        "sha256": "d9b54d110e9be749a091d6ab28c22dffe530ec30f59183892330c0c4172355de"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78907",
+        "sha256": "9bfe0bf95021a057989b89e6a8b7077e06947e98a56f5fa0b820c634b2ef0f51"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78908",
+        "sha256": "b9a50dc81cc45b4f0851d1a49a3d97e2d57731c7c98144756849486403c8ca70"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78909",
+        "sha256": "5e0a02441bbee70c934322c292d2b4db44907b68535e7cee1b6ad191440e073f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78910",
+        "sha256": "5a297d1a7b86b6680d3e8f3568349424a7f110a84bb89956969ca42979ba0714"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78911",
+        "sha256": "7ca1ee9e5a7b64c083804bfa9fd6c6e49dde8340060622f6e798f22d6b65dd9a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97157/78912",
+        "sha256": "05ce37ee0a163c9007a5972dbdc47aa659db4dcd9fd28cf6fa63cf6a9c338253"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78898",
+        "sha256": "e017f4f3de3c4e45022c1f519bfa709c06f07fc9e168d1ec60751af22495bff0"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78899",
+        "sha256": "f745cab23f556c565059a2ae13ad2b24e2ebd08b345c65490c08ddf5dc3d3eaf"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78900",
+        "sha256": "89f8ace74ab2a9b1183aa74ed1d3fd26eccb28e8f12bcf1df7317199b8d18719"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78901",
+        "sha256": "fc125e0b4da7a75ad1058e7a0e3eefb4c460a45ea964ff4efc3842d32c3c9c32"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78902",
+        "sha256": "1d7055ad1600196a5046879a03cf0d34a6b9cbc68ee9e25f4a6c38e8265f1b68"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78903",
+        "sha256": "bca9c96be2bbecb94175e41fc424eac0b8c7164c07df27814fe7f979c3f37614"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78904",
+        "sha256": "9e8ff78874ed338c2939d0a8d755a099e0ca2c69886f85f09e626937cf4a1f7f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78905",
+        "sha256": "33875a537ccfd0767c66d807af7c0530098574d668bf4f4de228fdd4f13dba0b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78906",
+        "sha256": "788622b910959812a0ecc7fc04b0c5f808bc99405330ed8b7758a62efaf640ad"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78907",
+        "sha256": "41a171867af3ee0800f78af87f4f144740ab7b3cb58fb86195c4fd81d321d00c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78908",
+        "sha256": "2a259a07751e4e0ebacae02d73ef82c08fa24cee381a6ea1906f5fc0e2b88e9f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78909",
+        "sha256": "cdeb9fa0191c7dab0245f4eba892101b57b9ec984a8fc744f0d44711218709ef"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78910",
+        "sha256": "32976c833d1ba8e3eab433eebcf9c43151319ffb727d292af637a9d3dd723d93"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78911",
+        "sha256": "6e9298218a65ca03471cc613c1b26f9f8b3e227bb5e330261db0bfeedd663944"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97158/78912",
+        "sha256": "5287a8cedde87d18088765a10de1e922506abe66e5c8bba7478d7bc0eeeb11af"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78898",
+        "sha256": "d7f495a9337b1abe93d5d3db9989802d70c7869dbecfbb5cfefdd383a55d8d45"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78899",
+        "sha256": "a5fad79e6cc83abdbbca6f7b1da94596c73e348fca03641c579a18b5b17053b6"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78900",
+        "sha256": "6c32363d1950f95897196d60b965a9fe562a73e155b5d29659cb69b8abb49eba"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78901",
+        "sha256": "137e757b61a9c42e6752da373fa2961c2593ee6873e8d97b49b21d4e87953d76"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78902",
+        "sha256": "f378435d97007b907b0bf9fae8ef91a606c418fd013986936cf86a4904b19b2d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78903",
+        "sha256": "00a1256d59b7efc434d1ef4c9216274040f3ad39fd183afc5f3a9844339654e5"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78904",
+        "sha256": "2d0dbdd2d411f12c3eb1359f8a4e94c2bc687a7cd381aa1566817f3c4f31560f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78905",
+        "sha256": "a471624acc5f1808eec4b40cc36a03b3b8133c05bb118186e7c9e2231d8ded7f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78906",
+        "sha256": "73a590a5b2a4a2f3adbdb8a41b72059dc22863e737926cb29a32075c0999f3da"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78907",
+        "sha256": "0e59b2e43b4912141bd99bed24e7a7b83ed534a1938cc09c4678dbc394fbe94d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78908",
+        "sha256": "93f3dcc8886b4149f6e59cd423db244c32070708d94b5b1ee41d8a24c4af4777"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78909",
+        "sha256": "183369166cb6c71d1e799d461975e9f9645f865184236409f3cd0373def9dded"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78910",
+        "sha256": "5d45cfa0aed183731c39dcf0fd53d060ce0299d575914a8b283332f24438a2d3"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78911",
+        "sha256": "348a4e889821fda966ec71afd50ed135ff2b423b693a3c27a0401756c89b497d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97159/78912",
+        "sha256": "11efd7089723749368af480536d724c0837c36040de1ea12b1735743870bb92b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78898",
+        "sha256": "fcd094dc1abbc0b7da0fd94c6f8fd466497e44216b303ceb07487abfe5134b95"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78899",
+        "sha256": "741dffc0b779fbadf8fbdaf991f48be58dd4c4545ee8562413924c592c5b579e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78900",
+        "sha256": "d1fb7c94f48984a99b9af99ffb41e96942779e5a6bff973213b714552e694a6c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78901",
+        "sha256": "ca0d4bd50110a66ae09919392d789951a59bf8e15f60536a2ba4e853866f4432"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78902",
+        "sha256": "528cde93ece95129ec7f4d6a2de0d80b30b7f695df88629476f93545927ed90f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78903",
+        "sha256": "867e8b77a3bee6845bf2f9eb84c56fff83b63fd0c3b193aa8d4ac7a0f0d27830"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78904",
+        "sha256": "480920cd283c0f0245523bcd3276ab7c2df91c5053ef0f9f85136392f18975ac"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78905",
+        "sha256": "df148ee98ca8b7dcab6cb1f3b8f1e23f741eca4ede5520e981196ea2dfe841a7"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78906",
+        "sha256": "6327d5c49ab8886fb741a6b299fe5cef7ae134d2cb61faae178430fd6bc5fdb0"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78907",
+        "sha256": "0c34a02ba3d62165c32114789f989822e6e61b1448ca336c0fd820a7bd7af363"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78908",
+        "sha256": "1365ade81eef1b423ca24b721255d220b5492eb7dddba244adcd154fd4987c06"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78909",
+        "sha256": "53660c7155d769a6ac099e620846b6e95f52bbd8b3d7852f6e2fd2bd6e88aa0d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78910",
+        "sha256": "aa464c6c3f7cddc105230e5c26b4b7b5b0616e8f7378b414d90416aefcf9891a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78911",
+        "sha256": "08b88c5daf1b9a8b07bda3d3ebd1e9d976055c4a24feaf5c2f0deee0e7148660"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97160/78912",
+        "sha256": "0873e8d67ae4a187e18524aecfdaae99af2e486839aaf42eeb6cdc524c68637c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78898",
+        "sha256": "6f109d82421d3fcf04d8cfe63ee85ce6d2a2d1b893f2c717ff52c145b09f826b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78899",
+        "sha256": "3dd146d2ddc99aa34c7c3b6bf214493625c4f7f8063072e486e082fe3b8f1fb9"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78900",
+        "sha256": "463e3070312847ba3e96bbb8e2af58334bb504e935bc524d748415e4b912c0da"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78901",
+        "sha256": "c86da6077cec63e27a022d0db5249a0e80167b38d859ff9c3b75ef3d91fc6135"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78902",
+        "sha256": "bdf0f0ed5de0860eeb10849d12fcfae6a897df73c3e3a2b97f4e0add11e9dfc0"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78903",
+        "sha256": "091680b4cc7ab272139764e173b4874be3b0ea2e6ec9f37e9c1c6ef03497aec9"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78904",
+        "sha256": "b58e00dedcf8df3088249ff9e71075e1179825897c64b410189e92efc4f15044"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78905",
+        "sha256": "36a74af3c32f79270a8698c479151d19b8347d0c497e2695fddd568e0bd9a63f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78906",
+        "sha256": "9a6419008885c085ae619163236d5433b15825fa0bdba9626beee8d4584d6c69"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78907",
+        "sha256": "e0fd8ba030bc283b4158782b859b282299528470c3a2a9d759aebaa3c4b8c9a8"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78908",
+        "sha256": "4cee44d1a0ba6418ff3b978897d174cdcb852ef3228a9713c3138ad7f0d8957f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78909",
+        "sha256": "5977f4a1fcf842433f47f87667cd6fe9a41622b31087451779862a39955d6257"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78910",
+        "sha256": "630853398c95162353d9aa8a062b3ab2f7d15a67c853bd99c1a55518ff303b2a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78911",
+        "sha256": "e62af3ddeff4bc55ae7e85c0e5e0d3a4f61d2bbdfeaac75058d3faeebba0d7a4"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97161/78912",
+        "sha256": "7810c5c5714414985e16b284fdc22f766c50ce26a27dfe40aab2ba91580cc511"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78898",
+        "sha256": "94964ecd4bafc9c13f7e440df931479c7f2cda387c4049487e9a8cc22f61e41c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78899",
+        "sha256": "ac8bd3ad5f944da4e574cf8250908331ae09a6fd964f442005e787939caed1a8"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78900",
+        "sha256": "034091ae3d7dbe3e9e701347f4402c8d3f318d1e3b18f84b14a5275f3bf494e5"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78901",
+        "sha256": "b8a748fbdd33fcf66b1acdef8520e814d21f497cf48d74ad010de36bf231b57a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78902",
+        "sha256": "ec2dd833977d12df030ac3d482194795a95f1ea8a3dc72196434679872c03bc2"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78903",
+        "sha256": "a14b83bb21088679acd9c00c60329ff43aa8b09ac9c58cafbf2da25a3ee7c0b5"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78904",
+        "sha256": "8150d9a1c71bc674cbe2d8a0b97dec2d3da5fd161a212ee0045f5a295d606e20"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78905",
+        "sha256": "c4733a26f67f3f047e08f2773c6ea6004853c06c645ce5cf2accd23265dd8175"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78906",
+        "sha256": "15ac7dcba9f528cdd5501b1014f4eaa5dd52655b2e5f6959569aa1c6e798911e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78907",
+        "sha256": "bafd364f4ab28df183b48b389768b30554070b00c074fedf452d209f7562f08b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78908",
+        "sha256": "b51a422cf4d8979bfb460e8fae18b180886b3123cd68205e2dd34fe645510fe3"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78909",
+        "sha256": "8a9356f4261c62ca889001925a07d5dd80afdb48ed9ab95cc1cb4852e613d902"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78910",
+        "sha256": "f3814b5a795eb0d1a65b0202d7ca328c0397fd6e0945e53d30b68e4ed0d29296"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78911",
+        "sha256": "927d0ea73c56347753d63390a7fc4bc172c5f6b3d2a49ec37d5fdea40013f4fd"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97162/78912",
+        "sha256": "e1b8201ae32bc99d8e766f536347047ccaead7cdc32a823106a7ca7f6d9c7174"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78898",
+        "sha256": "fd329f3b0541ad7a3cd034122694a2c81dafb35f3a474d690d1c38c248459546"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78899",
+        "sha256": "a31d153281a043da5fcc0ea6b2292a8eddb80ea6bcdab75e4e197e25a4ec34ce"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78900",
+        "sha256": "cc0a47e547e22896329a65b76bc525cb324a600af2aac526cfac512de7d0e897"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78901",
+        "sha256": "b661340193f7506e1b3a73e7c7cd2d41dcf224ca8cb18cbaa928de7238ccf810"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78902",
+        "sha256": "6a319f8a252d512f50aedaeacc2cf13c2d75b4733aa59d6f83ed64b6fc48662e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78903",
+        "sha256": "0af7b9a6be5e0e9300253e79004a9f1e9c99626a78c2b4ee0ca141c38abc5636"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78904",
+        "sha256": "590ad7f1cac0dfa9fb46fcfaf3fe2004ac8958c583c2df4a57580be74eee7a99"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78905",
+        "sha256": "a6b5b54c1c6f5344e4eaab1bba850c2f3a787bff0432aa07e750ce6cd64e5c9c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78906",
+        "sha256": "0bbfe478186e991957e941fc715fab0b83d7e80138e9066b70e39df9bd73eedc"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78907",
+        "sha256": "e434655d67a93b487f112f22469ba8b5ca753937c668ae6d32aebc4d5c68c82a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78908",
+        "sha256": "10bf1fd546cdd6e7f9ab0962977f01e75c83e2c700953167cba45e6fb8101d06"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78909",
+        "sha256": "cc503f837e0f79ee97c77c9d3244cf42c8489206591a9a79d2833a5b60f7aacb"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78910",
+        "sha256": "adf0d5d355a4fddde22748d6c38195c12002f360fa15e3accfae4f8db703dbe2"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78911",
+        "sha256": "54fcb8f150df56e53b42afaf20a8e5f6adc8bd0aebf69d160fa955f2d00b850d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97163/78912",
+        "sha256": "8e13c227c6254b5787f9965b96e345f39ebe3446a663cf734e37102209d2ff45"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78898",
+        "sha256": "129a94c614501009f331ca990fe75f9fa61cda7f1ed00b9d24767feff81b99cc"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78899",
+        "sha256": "4215cfbb10ad1ee06f48d5dd72b41c6dd72dc6fb3f4273e541c73af02cd1d15a"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78900",
+        "sha256": "1ecf8a32136edcbe7004c5d1abf46264808266dfad4442b96eb9c7d450cf0d89"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78901",
+        "sha256": "b213d26319e6fa6830405c9d1f9e9e80983ca099124c7b35360c851aadab08c0"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78902",
+        "sha256": "c5165373f3be09991a370844456e312f4f9ae4c91e330f825d87be1a21fa837d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78903",
+        "sha256": "5f136117fe520c8bf7f8e9dc7a51de992f8ac3ceb40fbd14b622fcb1af267476"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78904",
+        "sha256": "f8bada145e9d277f4979b99573f281a6ae5383551e1f74921d5ee50ea3df440e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78905",
+        "sha256": "0e1300e8d00f06568d7fbce73412fb2eaf0e0e469ef3ee647daa5a8686b43c34"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78906",
+        "sha256": "9c3496fc05ed23b162ee899d8e1135c0c18de2465efb1dccb3141f4f5448ed2e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78907",
+        "sha256": "49529bae2d547adeaa639b99915354b96a7f68bf7bc1ad710cfa4c084cd77d1c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78908",
+        "sha256": "50d8aa919ee7dfcde9ca9ca7d9a0ac040cf1523baaee74b35daf5aaf1c423c7b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78909",
+        "sha256": "16cd797104c3e1ab22abe39d6c9c4c21c2a2f79bf1824ed80a507521ea4cb90e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78910",
+        "sha256": "e0770c443e681e91364d5036cca1759c9afc62aadcf74ce5b96dfde522b94d6e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78911",
+        "sha256": "0d10e73e68f4b335de2562cefd235aa5d34355e285f200ee1a769a99e92afe1f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97164/78912",
+        "sha256": "5de29c8f787b3c05f811141e067ea3ad02c7dd5d3cf3ca29b4df1ba357e368be"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78898",
+        "sha256": "fea6158374288305830ee1be741cb4c46794ac9cd219e82588de9f7392f6d02d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78899",
+        "sha256": "c1a3c3a950c14af88ade01a30b9c7b7fe50350dd30bd50f867e91a852ea2e51f"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78900",
+        "sha256": "4d74743a7ff7244b4c8bb25e9cdf103fa6e89d827812cffa20171370308d7a1b"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78901",
+        "sha256": "aa71b20e272073776cb1e198de467678e6050565d379eb00dd565da0ad1330f9"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78902",
+        "sha256": "6043398541b6e8455d26caf84bcdbb8a3c862cd6a0aa7fe8397787e6705796e2"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78903",
+        "sha256": "006a2d2d8802e721069ec4110faa6e9e224469c4c2d95985f5252ec4d91e08c4"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78904",
+        "sha256": "28bcb30e909f4cc4425f9a4da2a0158535ff2e709dcae72c42c06cdc1ef555fb"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78905",
+        "sha256": "ba72798d546925efa0aea947488a7f8c584a5cc00ee6c4a4941b239061ffbf78"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78906",
+        "sha256": "ca8b6af24595090d5bcaa2c7b05a684d8fe642ca12bd52c57ee6e827737b814c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78907",
+        "sha256": "2bb5959bbf98460bb83dd75b09225ac6a13047311773a22813d04952558090bc"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78908",
+        "sha256": "67fb78b4ce063610ff1b615b8850103887566bc1ea90bd33abcd1062af174d6e"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78909",
+        "sha256": "c5f2a56cf8c4e2747c1b8fd43a5ac9703d601390f724f05adb44e8ee3269cf53"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78910",
+        "sha256": "909d0aa189ee649bb731731459d7d0c8612a1cdfb5323b35889cfdffaf70337c"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78911",
+        "sha256": "1674fb62c823071095b91eb3036f2f0eef426b4a1b3cd2582164521c785cfd9d"
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Aerial_Imagery_2025/MapServer/tile/18/97165/78912",
+        "sha256": "710f1ee6d35f29126c55b6a14179e7b49406ae8aebf1d85be41197ce6c6fdd80"
+      }
+    ]
+  },
+  "excluded": {
+    "way/901999595": "Practice fairway beside parking lot, outside championship Hole 1",
+    "way/901999597": "Practice fairway beside parking lot, outside championship Hole 1",
+    "way/902019411": "Isolated turf island outside championship Hole 9",
+    "way/1262825179": "Driving range tee outside championship Hole 9",
+    "way/1262825180": "Driving range tee outside championship Hole 9"
+  },
+  "holes": [
+    {
+      "number": 1,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Westward route; four tee pads; main fairway, green and five bunkers align. Exclude the two practice fairways beside the parking lot."
+    },
+    {
+      "number": 2,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Southeast dogleg; four tee pads; green and four bunkers align with imagery."
+    },
+    {
+      "number": 3,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Northwest dogleg; four tee pads; two fairway sections and four greenside bunkers align."
+    },
+    {
+      "number": 4,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Southeast dogleg; seven mapped tee pads including forward tee near approach; green, fairway and two bunkers align. Tee colors are not assigned from aerial imagery."
+    },
+    {
+      "number": 5,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Westward par three; five tee pads; green surround and three bunkers align."
+    },
+    {
+      "number": 6,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Northwest dogleg; five tee pads; green and seven bunker outlines align."
+    },
+    {
+      "number": 7,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Northeast dogleg; five tee pads; fairway, green and four bunkers align. Shared pond outline is behind the green."
+    },
+    {
+      "number": 8,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Northeast par three; five tee pads; green, fairway and four bunkers align. Shared pond extent is seasonal."
+    },
+    {
+      "number": 9,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Eastward par five; main fairway and seven bunkers align. Exclude the isolated turf island and two driving-range tee pads."
+    },
+    {
+      "number": 10,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Southeast route; four tee pads; green and four bunkers align."
+    },
+    {
+      "number": 11,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Southeast dogleg; four tee pads; green and three bunkers align."
+    },
+    {
+      "number": 12,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Southeast par three; five tee pads; green and three bunkers align. Southern mapped water depression is dry in spring 2025 imagery; its water extent is not a current-condition claim."
+    },
+    {
+      "number": 13,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Southward par five; five tee pads; long fairway, green and five bunkers align."
+    },
+    {
+      "number": 14,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Northwest dogleg; four tee pads; two fairway sections, green and three bunkers align."
+    },
+    {
+      "number": 15,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Northward par three; two tee pads; green surround and two bunkers align."
+    },
+    {
+      "number": 16,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Southeast par five; five tee pads; long fairway, green and five bunkers align."
+    },
+    {
+      "number": 17,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Northward route; four tee pads; green, fairway and four bunkers align."
+    },
+    {
+      "number": 18,
+      "status": "reviewed-reference-layout",
+      "checks": {
+        "osm_hole_ref": true,
+        "tee_origin": true,
+        "green": true,
+        "fairway": true,
+        "bunkers": true,
+        "water_outline": true
+      },
+      "note": "Northwest home hole; all five pads, green, fairway, four bunkers and pond align. OSM route starts at back pad way/887700311 and measures about 496 yards. Colors are unidentified; do not equate this origin with the current 389-yard Gold card."
+    }
+  ],
+  "limitations": [
+    "No tee colors inferred from imagery",
+    "No surveyed or live pin distances",
+    "Mapped water extents do not establish current water or penalty-area boundaries"
+  ]
+}

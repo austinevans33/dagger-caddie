@@ -13,16 +13,21 @@ STAGED = "61f9e9de0a3a7950ce28f223541cdd12f897b5d8"
 HOTFIX_FILES = frozenset({"app/61f9e9de0a/clubhouse-home.js", "app/61f9e9de0a/clubhouse-home.css"})
 LEGACY = "390b501ffd0b923c6b009ca70509e32319b2e032"
 # Reviewable successor pin. Every changed runtime byte comes from this immutable source.
-SUCCESSOR = "b26e5d15b1bbaeab1df246f90ffb0624659baa94"
-PRE_RELEASE = "4297e42691e4167ec27cf003656d084b0f8943ac"
+SUCCESSOR = "d9bc012add5d3ffddf292eb19351d3a49130c77c"
+PRE_RELEASE = "23c4c6888dc9b8c193ef635949bc031d31cdb208"
 SUCCESSOR_FILES = frozenset({
     "index.html",
+    "yardage-preview.html",
+    "ghost-preview.html",
+    "app/61f9e9de0a/course-art/shining-rock-northbridge-ma.json",
     "app/61f9e9de0a/founders-verified-scorecards.js",
     "app/61f9e9de0a/hole-sketch.js",
     "app/61f9e9de0a/yardage-live.js",
     "app/61f9e9de0a/money-room.js",
     "app/61f9e9de0a/ghost-partial-archive.js",
 })
+
+SUCCESSOR_NEW_FILES = frozenset({"app/61f9e9de0a/course-art/shining-rock-northbridge-ma.json"})
 
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
 PREFIX = "app/" + STAGED[:10] + "/"
@@ -74,7 +79,7 @@ def expected_files():
     bundle[PREFIX + "source-sha.txt"] = (STAGED + "\n").encode()
     # Previously allowed Clubhouse hotfixes are now also pinned and compared byte for byte.
     for path in SUCCESSOR_FILES | HOTFIX_FILES:
-        assert path in bundle, f"Successor cannot introduce an unrelated runtime file: {path}"
+        assert path in bundle or path in SUCCESSOR_NEW_FILES, f"Successor cannot introduce an unrelated runtime file: {path}"
         bundle[path] = object_bytes(SUCCESSOR, path)
     bundle[PREFIX + "source-sha.txt"] = (SUCCESSOR + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
@@ -121,7 +126,8 @@ def main():
     else:
         live_paths = {name: object_bytes(LEGACY, name) for name in ROOT_ASSETS}
         if args.verify_rollback:
-            live_paths.update({path: object_bytes(PRE_RELEASE, path) for path in expected})
+            baseline_paths = set(git("ls-tree", "-r", "--name-only", PRE_RELEASE).decode().splitlines())
+            live_paths.update({path: object_bytes(PRE_RELEASE, path) for path in expected if path in baseline_paths})
             live_paths[""] = live_paths["index.html"]
         else:
             live_paths.update(expected)

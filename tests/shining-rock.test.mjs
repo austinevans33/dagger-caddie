@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {founderCatalogRecords,founderTeesForCourse,founderVerifiedScorecard} from '../app/61f9e9de0a/founders-verified-scorecards.js';
 import {loadHoleSketch} from '../app/61f9e9de0a/hole-sketch.js';
@@ -10,6 +11,8 @@ import {ghostShotPlayback} from '../app/61f9e9de0a/house-ghost-playback.js';
 const [course]=founderCatalogRecords('Shining Rock');
 const tees=founderTeesForCourse(course);
 const sum=values=>values.reduce((a,b)=>a+b,0);
+const art=JSON.parse(readFileSync(new URL('../app/61f9e9de0a/course-art/shining-rock-northbridge-ma.json',import.meta.url),'utf8'));
+const fetchArt=async()=>({ok:true,json:async()=>art});
 
 test('The Rock official tee cards match both nines, totals and Red number 4',()=>{
  assert.equal(course.providerCourseId,'shining-rock-northbridge-ma');
@@ -48,8 +51,8 @@ test('Shining Rock full scoring survives reload and corrections while Ghost read
   assert.equal(ghost.par,hole.par);
   assert(ghost.complete);
   assert.equal((await loadHoleSketch(selection,hole.number,{
-   fetcher:()=>assert.fail('unverified geometry must stay offline')
-  })).coverage,'scorecard');
+   fetcher:fetchArt
+  })).coverage,'layout');
  }
  assert.equal(sum(readSoloCard(storage).scores),71);
  setSoloHole(storage,4);
@@ -75,4 +78,39 @@ test('completed Ghost archive stays with original handler and partial archive re
  assert.equal(archive[0].course,snapshot);
  assert.deepEqual(archive[0].holes,draft.holes);
  assert.deepEqual(JSON.parse(storage.getItem('dcc_house_ghost_draft_v1')).holes,[]);
+});
+
+test('all reviewed Shining Rock maps meet existing Bayonet structure and retain tee-specific cards',async()=>{
+ const {auditFounderGeometry,mappedRouteYards}=await import('../app/61f9e9de0a/founder-geometry-audit.js');
+ const gold=founderVerifiedScorecard({course,tee:tees[0]});
+ const audit=auditFounderGeometry({records:art.features,holes:gold.holes,metadata:art.metadata,expectedRef:'ma/shining-rock-golf-club'});
+ assert.equal(audit.pass,true);
+ assert.equal(audit.quality.mappedHoles,18);
+ assert.equal(audit.quality.fairwayHoles,18);
+ assert(mappedRouteYards(art.features,18)>490);
+ assert.equal(gold.holes[17].yards,389);
+ for(const tee of tees){
+  for(let number=1;number<=18;number++){
+   const sketch=await loadHoleSketch({course,tee,holeNumber:number},number,{fetcher:fetchArt});
+   assert.equal(sketch.coverage,'layout');
+   assert(sketch.annotations.route.tee[1]>sketch.annotations.route.green[1]);
+   assert(sketch.shapes.some(s=>s.type==='green'));
+   assert(sketch.shapes.some(s=>s.type==='tee'));
+   assert(sketch.shapes.some(s=>s.type==='fairway'));
+   assert.match(sketch.layoutNote,/unassigned/);
+  }
+ }
+ assert(!art.features.some(f=>['way/901999595','way/901999597','way/902019411','way/1262825179','way/1262825180'].includes(f.properties.osm_id)));
+});
+
+test('missing reviewed artwork falls back without requesting unverified provider geometry',async()=>{
+ const {loadHoleSketch:fresh}=await import('../app/61f9e9de0a/hole-sketch.js?missing-rock-art');
+ let requests=0;
+ const sketch=await fresh({course,tee:tees[0],holeNumber:18},18,{fetcher:async url=>{
+  requests++;
+  assert.match(String(url),/course-art\/shining-rock-northbridge-ma.json$/);
+  return {ok:false};
+ }});
+ assert.equal(sketch.coverage,'scorecard');
+ assert.equal(requests,1);
 });

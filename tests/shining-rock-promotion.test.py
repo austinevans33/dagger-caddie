@@ -33,6 +33,7 @@ class SuccessorIntegrity(unittest.TestCase):
         for name in ["index.html",
                      "app/61f9e9de0a/founders-verified-scorecards.js",
                      "app/61f9e9de0a/money-room.js",
+                     "app/61f9e9de0a/course-art/shining-rock-northbridge-ma.json",
                      "app/61f9e9de0a/clubhouse-home.js"]:
             with self.subTest(path=name):
                 path = self.site / name

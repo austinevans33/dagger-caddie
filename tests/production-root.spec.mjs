@@ -135,7 +135,7 @@ test('Shining Rock check-in, Red alternate par, save, correction and reload at p
   await expect(page.locator('#name')).toContainText('Shining Rock');
   await expect(page.locator('#yards')).toContainText('108');
   await expect(page.locator('#mapPar')).toContainText('Par 3');
-  await expect(page.locator('.field-sketch .route-mark')).toHaveCount(0);
+  await expect(page.locator('.field-sketch .route-mark')).toHaveCount(1);
   await page.locator('#watchGhost').click();
   await expect(page.locator('#headline')).toContainText('Par 3');
 });
@@ -157,6 +157,15 @@ async function openOriginalGhost(page) {
   await expect(page.locator('#dccGhostTier')).toBeVisible();
 }
 
+const rockTeeYards={
+  gold:[430,440,518,343,241,310,330,217,501,384,381,223,512,355,194,648,312,389],
+  blue:[411,425,518,328,219,310,330,176,485,360,372,203,500,345,180,608,312,389],
+  green:[411,384,504,282,219,300,290,148,485,360,372,188,478,345,180,563,312,375],
+  white:[372,384,504,282,190,300,290,148,445,332,360,188,478,345,147,563,301,375],
+  red:[304,285,457,275,123,240,263,140,420,320,330,166,448,292,140,478,275,365],
+};
+rockTeeYards['red-par-3']=rockTeeYards.red.map((yards,i)=>i===3?108:yards);
+
 for(const [teeLabel,teeId,tier] of [
   ['Gold · 6728 yards','gold','scratch'],
   ['Blue · 6471 yards','blue','fiveTen'],
@@ -169,10 +178,19 @@ for(const [teeLabel,teeId,tier] of [
     test.setTimeout(180000);
     page.on('dialog',dialog=>dialog.accept());
     await checkInRock(page,teeLabel);
+    const pars=[4,4,5,teeId==='red-par-3'?3:4,3,4,4,3,5,4,4,3,5,4,3,5,4,4];
+    const book=await page.context().newPage();
+    await book.goto(launch+'yardage-preview.html?hole=1');
+    await expect(book.locator('#teeCaption')).toHaveText(teeLabel.split(' · ')[0]+' tees');
+    for(let hole=1;hole<=18;hole++){
+      await book.locator('#hole').selectOption(String(hole));
+      await expect(book.locator('#mapPar')).toHaveText('Par '+pars[hole-1]);
+      await expect(book.locator('#mapYards')).toHaveText(rockTeeYards[teeId][hole-1]+' yds');
+    }
+    await book.close();
     await openOriginalGhost(page);
     await page.locator('#dccGhostTier').selectOption(tier);
     const course=await page.evaluate(()=>localStorage.getItem('dcc_active_round_course_v1'));
-    const pars=[4,4,5,teeId==='red-par-3'?3:4,3,4,4,3,5,4,4,3,5,4,3,5,4,4];
     for(let hole=1;hole<=18;hole++){
       await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE '+hole+' · PAR '+pars[hole-1]);
       await page.locator('#dccGhostPlay').click();
@@ -186,7 +204,7 @@ for(const [teeLabel,teeId,tier] of [
       }
       const frame=page.frameLocator('#dccGhostPlayback iframe');
       await expect(frame.locator('#headline')).toContainText('Par '+pars[hole-1]);
-      await expect(frame.locator('.route-mark')).toHaveCount(0);
+      await expect(frame.locator('.route-mark')).toHaveCount(1);
       // Record a halved hole to exercise all 18, regardless of random opponent form.
       await page.locator('#dccGhostPlayerScore').fill(String(pending.ghost));
       await page.locator('#dccGhostRecord').click();
@@ -326,4 +344,39 @@ test('a completed Ghost loss can be recorded through the existing manual ticket 
   await page.reload();
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')))).toEqual(ledger);
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')))).toEqual(match);
+});
+
+test('all Shining Rock book pages share reviewed geometry with original Ghost playback',async ({page},testInfo)=>{
+  test.setTimeout(120000);
+  await checkInRock(page,'Gold · 6728 yards');
+  for(let hole=1;hole<=18;hole++){
+    await page.goto(launch+'yardage-preview.html?hole='+hole);
+    await expect(page.locator('#mapYards')).toHaveText(rockTeeYards.gold[hole-1]+' yds');
+    const route=page.locator('.field-sketch .route-mark');
+    await expect(route).toHaveAttribute('d',/^M/);
+    const geometry=await route.getAttribute('d');
+    await expect(page.locator('.geometry-foot')).toContainText('unassigned');
+    if(hole===18){
+      await expect(page.locator('.geometry-foot')).toContainText('496');
+      await expect(page.locator('.geometry-foot')).toContainText('389');
+      await page.screenshot({path:testInfo.outputPath('shining-rock-18-yardage-book.png'),fullPage:true});
+    }
+    await page.locator('#watchGhost').click();
+    await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',geometry);
+    await page.locator('#next').click();
+    await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+  }
+});
+
+test('a failed Shining Rock map download preserves scorecard and original Ghost fallback',async ({page})=>{
+  await checkInRock(page,'Gold · 6728 yards');
+  await page.route('**/course-art/shining-rock-northbridge-ma.json',route=>route.fulfill({status:404,body:'Unavailable'}));
+  await page.goto(launch+'yardage-preview.html?hole=18');
+  await expect(page.locator('#mapYards')).toHaveText('389 yds');
+  await expect(page.locator('.field-sketch .route-mark')).toHaveCount(0);
+  await page.locator('#watchGhost').click();
+  await expect(page.locator('#headline')).toContainText('Par 4');
+  await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveCount(0);
+  await page.locator('#next').click();
+  await expect(page.locator('#progress')).toContainText('stroke');
 });
