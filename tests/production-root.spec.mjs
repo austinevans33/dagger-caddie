@@ -284,3 +284,45 @@ test('existing local ticket resolves manually and requires explicit payment conf
   await page.reload();
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')))).toEqual(paid);
 });
+
+test('a completed Ghost loss can be recorded through the existing manual ticket workflow',async ({page})=>{
+  test.setTimeout(120000);
+  await checkInRock(page,'Gold · 6728 yards');
+  page.on('dialog',dialog=>dialog.accept());
+  await page.locator('[data-dcc-go="ticket"]').click();
+  await page.locator('#dccPropNew').click();
+  await page.locator('#dccPropText').fill('QA Ghost wins this Shining Rock match');
+  await page.locator('#dccPropMe').fill('QA Golfer');
+  await page.locator('#dccPropOther').fill('QA Partner');
+  await page.locator('#dccPropStake').fill('5');
+  await page.locator('#dccPropOdds').fill('1');
+  await page.locator('#dccPropForm button[type=submit]').click();
+  await openOriginalGhost(page);
+  await page.locator('#dccGhostTier').selectOption('scratch');
+  for(let hole=1;hole<=10;hole++){
+    await page.locator('#dccGhostPlay').click();
+    await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'))?.pending?.hole)).toBe(hole);
+    const ghost=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')).pending.ghost);
+    await page.locator('#dccGhostPlayerScore').fill(String(ghost+1));
+    await page.locator('#dccGhostRecord').click();
+    await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'))?.holes.length)).toBe(hole);
+    await expect(page.locator('#dccGhostPosition')).toContainText(hole===10?'10&8':hole+' UP');
+  }
+  await expect(page.locator('#dccGhostRecord')).toBeDisabled();
+  await page.locator('#tab-bets').click();
+  const ticket=page.locator('#dccPropList article').first();
+  // Ghost play records no financial result until the existing result action is used.
+  await expect(ticket).toContainText('OPEN');
+  await expect(page.locator('#dccSimpleNet')).toHaveText('$0.00');
+  await ticket.locator('[data-result=yes]').click();
+  await expect(ticket).toContainText('QA Partner owes QA Golfer $5.00');
+  await expect(ticket).toContainText('UNSETTLED');
+  await expect(page.locator('#dccSimpleNet')).toHaveText('+$5.00');
+  const ledger=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')));
+  const match=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')));
+  expect(ledger).toHaveLength(1);
+  expect(ledger[0].settled).toBe(false);
+  await page.reload();
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')))).toEqual(ledger);
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')))).toEqual(match);
+});
