@@ -13,7 +13,7 @@ STAGED = "61f9e9de0a3a7950ce28f223541cdd12f897b5d8"
 HOTFIX_FILES = frozenset({"app/61f9e9de0a/clubhouse-home.js", "app/61f9e9de0a/clubhouse-home.css"})
 LEGACY = "390b501ffd0b923c6b009ca70509e32319b2e032"
 # Reviewable successor pin. Every changed runtime byte comes from this immutable source.
-SUCCESSOR = "c0c0fc9583b9938f0eee29a27a90791a64ddd4ab"
+SUCCESSOR = "7a24d01ebfa74d502a33751ebe73178308237de8"
 PRE_RELEASE = "4297e42691e4167ec27cf003656d084b0f8943ac"
 SUCCESSOR_FILES = frozenset({
     "index.html",

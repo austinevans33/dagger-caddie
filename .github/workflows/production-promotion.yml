@@ -36,7 +36,7 @@ jobs:
       - name: Verify promotion and production backend isolation
         run: |
           git fetch origin 61f9e9de0a3a7950ce28f223541cdd12f897b5d8
-          git fetch origin c0c0fc9583b9938f0eee29a27a90791a64ddd4ab
+          git fetch origin 7a24d01ebfa74d502a33751ebe73178308237de8
           python3 scripts/production-bundle.py --check .
           git diff --exit-code 4297e42691e4167ec27cf003656d084b0f8943ac -- .firebaserc firebase.json firestore.rules functions
           node --test tests/*.test.mjs
