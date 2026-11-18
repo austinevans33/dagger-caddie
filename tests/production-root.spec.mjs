@@ -1,5 +1,7 @@
 import {test, expect} from '@playwright/test';
 
+test.describe.configure({mode:'parallel'});
+
 const launch = '/dagger-caddie/';
 const runtime = './app/61f9e9de0a/';
 
@@ -151,7 +153,7 @@ async function checkInRock(page, teeLabel) {
 async function openOriginalGhost(page) {
   await page.locator('#tab-games').click();
   const solo=page.locator('#dccR91SoloPanel');
-  if(!await solo.getAttribute('open')) await solo.locator('summary').first().click();
+  if(!await solo.evaluate(node=>node.open)) await solo.locator('summary').first().click();
   await expect(page.locator('#dccGhostTier')).toBeVisible();
 }
 
