@@ -6,7 +6,7 @@ const stagingConfig=readFileSync('playtest/firebase-config.js','utf8');
 if(!stagingConfig.includes('projectId: "'+project+'"')) throw Error('Explicit staging project required');
 const launch='http://127.0.0.1:8766/dagger-caddie/';
 
-test.use({viewport:{width:390,height:844},serviceWorkers:'block'});
+test.use({viewport:{width:390,height:844},serviceWorkers:'block',actionTimeout:10000,navigationTimeout:20000});
 test('two staging sessions share Shining Rock room scores, corrections and final balances',async ({page,browser})=>{
   test.setTimeout(210000);
   const guestContext=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
@@ -59,15 +59,16 @@ test('two staging sessions share Shining Rock room scores, corrections and final
       const inputs=page.locator('#roomScoreRows input');
       await inputs.nth(0).fill(String(a));await inputs.nth(1).fill(String(b));
       await page.locator('#roomSaveHole').click();
-      await expect(page.locator('#roomStatus')).toContainText('Hole '+hole+' recorded');
+      await expect(page.locator('#roomLedgerBody tr').nth(hole-1).locator('td').nth(1)).toHaveText(String(a));
+      await expect(page.locator('#roomLedgerBody tr').nth(hole-1).locator('td').nth(2)).toHaveText(String(b));
     }
     await saveHole(1,4,5);
     await expect(guest.locator('#roomStandings')).toContainText('QA Rock Host: +$1.00');
     await saveHole(1,6,5);
     await expect(guest.locator('#roomStandings')).toContainText('QA Rock Host: −$1.00');
     await page.reload();await guest.reload();
-    await page.locator('[data-dcc-go="money"]').click();
-    await guest.locator('[data-dcc-go="money"]').click();
+    await page.locator('#tab-bets').click();
+    await guest.locator('#tab-bets').click();
     await expect(page.locator('#roomStatus')).toContainText('LIVE',{timeout:45000});
     await expect(guest.locator('#roomStatus')).toContainText('LIVE',{timeout:45000});
     await expect(guest.locator('#roomStandings')).toContainText('QA Rock Host: −$1.00');
