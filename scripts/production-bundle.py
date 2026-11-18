@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and verify the pinned GitHub Pages promotion without deploying it."""
+"""Qualify the exact Shining Rock successor while preserving the Pages origin and backend."""
 import argparse
 import json
 from pathlib import Path
@@ -9,10 +9,21 @@ from time import time_ns
 from urllib.request import Request, urlopen
 
 STAGED = "61f9e9de0a3a7950ce28f223541cdd12f897b5d8"
-# Explicitly reviewed, narrowly scoped post-promotion hotfix files.
-# All other bundled files must remain byte-identical to the verified staging build.
+# Historical Clubhouse hotfixes are part of the exact successor pin below.
 HOTFIX_FILES = frozenset({"app/61f9e9de0a/clubhouse-home.js", "app/61f9e9de0a/clubhouse-home.css"})
 LEGACY = "390b501ffd0b923c6b009ca70509e32319b2e032"
+# Reviewable successor pin. Every changed runtime byte comes from this immutable source.
+SUCCESSOR = "b26e5d15b1bbaeab1df246f90ffb0624659baa94"
+PRE_RELEASE = "4297e42691e4167ec27cf003656d084b0f8943ac"
+SUCCESSOR_FILES = frozenset({
+    "index.html",
+    "app/61f9e9de0a/founders-verified-scorecards.js",
+    "app/61f9e9de0a/hole-sketch.js",
+    "app/61f9e9de0a/yardage-live.js",
+    "app/61f9e9de0a/money-room.js",
+    "app/61f9e9de0a/ghost-partial-archive.js",
+})
+
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
 PREFIX = "app/" + STAGED[:10] + "/"
 PAGES = ("index.html", "yardage-preview.html", "ghost-preview.html", "19th-hole.html")
@@ -61,14 +72,18 @@ def expected_files():
     for path in SHARED:
         bundle[PREFIX + path] = object_bytes(STAGED, path)
     bundle[PREFIX + "source-sha.txt"] = (STAGED + "\n").encode()
+    # Previously allowed Clubhouse hotfixes are now also pinned and compared byte for byte.
+    for path in SUCCESSOR_FILES | HOTFIX_FILES:
+        assert path in bundle, f"Successor cannot introduce an unrelated runtime file: {path}"
+        bundle[path] = object_bytes(SUCCESSOR, path)
+    bundle[PREFIX + "source-sha.txt"] = (SUCCESSOR + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
 
 def verify(directory, expected):
     for path, value in expected.items():
-        if path not in HOTFIX_FILES:
-            assert (directory / path).read_bytes() == value, f"Bundle differs: {path}"
+        assert (directory / path).read_bytes() == value, f"Bundle differs: {path}"
     actual = {str(path.relative_to(directory)) for path in (directory / PREFIX).rglob("*") if path.is_file()}
     assert actual == {p for p in expected if p.startswith(PREFIX)}, "Unexpected release runtime files"
     for asset in ROOT_ASSETS:
@@ -98,8 +113,7 @@ def main():
             dest.write_bytes(value)
     elif args.check:
         for path, value in expected.items():
-            if path not in HOTFIX_FILES:
-                assert (args.check / path).read_bytes() == value, f"Checkout differs: {path}"
+            assert (args.check / path).read_bytes() == value, f"Checkout differs: {path}"
         for path in ROOT_ASSETS:
             assert (args.check / path).read_bytes() == object_bytes(LEGACY, path), f"Legacy asset differs: {path}"
     elif args.verify_site:
@@ -107,11 +121,10 @@ def main():
     else:
         live_paths = {name: object_bytes(LEGACY, name) for name in ROOT_ASSETS}
         if args.verify_rollback:
-            live_paths["index.html"] = object_bytes(LEGACY, "index.html")
+            live_paths.update({path: object_bytes(PRE_RELEASE, path) for path in expected})
+            live_paths[""] = live_paths["index.html"]
         else:
             live_paths.update(expected)
-            for hotfix in HOTFIX_FILES:
-                live_paths[hotfix] = (Path(__file__).resolve().parent.parent / hotfix).read_bytes()
             live_paths[""] = expected["index.html"]
         nonce = time_ns()
         for path, value in live_paths.items():
