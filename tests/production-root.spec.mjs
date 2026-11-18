@@ -175,7 +175,7 @@ for(const [teeLabel,teeId,tier] of [
     for(let hole=1;hole<=18;hole++){
       await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE '+hole+' · PAR '+pars[hole-1]);
       await page.locator('#dccGhostPlay').click();
-      await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')).pending?.hole)).toBe(hole);
+      await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'))?.pending?.hole)).toBe(hole);
       const pending=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')).pending);
       expect(pending.par).toBe(pars[hole-1]);
       if(hole===4){
@@ -189,7 +189,7 @@ for(const [teeLabel,teeId,tier] of [
       // Record a halved hole to exercise all 18, regardless of random opponent form.
       await page.locator('#dccGhostPlayerScore').fill(String(pending.ghost));
       await page.locator('#dccGhostRecord').click();
-      await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')).holes.length)).toBe(hole);
+      await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'))?.holes.length)).toBe(hole);
       await expect(page.locator('#dccGhostTier')).toBeDisabled();
       await expect(page.locator('#dccGhostPosition')).toContainText(/ALL SQUARE|HALVED/i);
       if(hole===9 || hole===18){
@@ -229,7 +229,7 @@ test('direct Ghost recording freezes Shining Rock context and rejects a double s
       const button=document.getElementById('dccGhostRecord');
       button.click();button.click();
     });
-    await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')).holes.length)).toBe(hole);
+    await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'))?.holes.length)).toBe(hole);
   }
   const draft=await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')));
   expect(draft.course).toBe(course);
