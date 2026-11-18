@@ -7197,6 +7197,7 @@ try {
 
     document.getElementById('dccGhostTier').value = saved.tier;
     dccShowGhostIdentity();
+    if (dccGhostPending) dccGhostShowPlayback();
   }
 } catch (error) {
   console.warn('House Ghost draft could not be loaded:', error);
