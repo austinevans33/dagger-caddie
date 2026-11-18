@@ -232,6 +232,29 @@ const founders=Object.freeze([
   map:{file:'pine-hills-winder-ga.json',source:'https://www.openstreetmap.org/way/34772934',
    ref:'ga/pine-hills-golf-club',status:'bundled-reviewed-osm',auditTee:'blue'}
  }
+,
+ {
+  id:'shining-rock-northbridge-ma',name:'Shining Rock Golf Club — The Rock',region:'Northbridge, MA',
+  par:[4,4,5,4,3,4,4,3,5,4,4,3,5,4,3,5,4,4],
+  handicapMen:[7,5,1,11,9,15,13,17,3,10,8,16,4,12,18,2,14,6],
+  tees:{
+   gold:{label:'Gold',yards:[430,440,518,343,241,310,330,217,501,384,381,223,512,355,194,648,312,389]},
+   blue:{label:'Blue',yards:[411,425,518,328,219,310,330,176,485,360,372,203,500,345,180,608,312,389]},
+   green:{label:'Green',yards:[411,384,504,282,219,300,290,148,485,360,372,188,478,345,180,563,312,375]},
+   white:{label:'White',yards:[372,384,504,282,190,300,290,148,445,332,360,188,478,345,147,563,301,375]},
+   red:{label:'Red (No. 4 par 4)',yards:[304,285,457,275,123,240,263,140,420,320,330,166,448,292,140,478,275,365],
+    handicap:[9,7,1,5,17,11,13,15,3,10,8,16,6,12,18,2,14,4]},
+   'red-par-3':{label:'Red (No. 4 par 3)',yards:[304,285,457,108,123,240,263,140,420,320,330,166,448,292,140,478,275,365],
+    handicap:[9,7,1,5,17,11,13,15,3,10,8,16,6,12,18,2,14,4],par:[4,4,5,3,3,4,4,3,5,4,4,3,5,4,3,5,4,4]}
+  },
+  source:'shining-rock-club-scorecard',
+  provenance:{source:'Shining Rock Golf Club official current The Rock scorecard',
+   url:'https://www.shiningrockgolf.com/boston-public-golf',
+   image:'https://static.wixstatic.com/media/6c0871_8d21f96254a647bbbf524e19c228ea6e~mv2.png',
+   sha256:'3b93c90d98bfcdee49b6df9ac7f27e105ef7f0e8aa1a2fb01b3a31f26c5602d4',
+   checked:'2026-11-17',geography:'91 Clubhouse Lane, Northbridge, Massachusetts',teeYardageIsNotPinDistance:true},
+  map:{ref:'ma/shining-rock-golf-club',status:'scorecard-only'}
+ }
 
 ]);
 const sum=values=>values.reduce((n,x)=>n+x,0);
@@ -264,6 +287,7 @@ export function founderCatalogRecords(query=''){
  return courseBooks.filter(f=>(f.name+' '+f.region).toLowerCase().includes(term)||
   (f.id==='kings-grant-fayetteville-nc'&&/kings?\s+grant|king.s\s+grant/i.test(term))||
   (f.id==='quail-ridge-sanford-nc'&&/quail\s+ridge/i.test(term))
+  ||(f.id==='shining-rock-northbridge-ma'&&/shinn?ing rock/.test(term)&&!term.includes('acorn'))
  ).map(f=>({provider:founderProvider,providerCourseId:f.id,name:f.name,region:f.region,...(f.holeCount?{holeCount:f.holeCount}:{})}));
 }
 export function founderTeesForCourse(course){

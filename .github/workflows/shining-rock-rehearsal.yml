@@ -1,0 +1,82 @@
+name: Shining Rock course rehearsal
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'index.html'
+      - 'tests/shining-rock-staging.spec.mjs'
+      - 'tests/shining-rock.test.mjs'
+      - 'tests/production-root.spec.mjs'
+      - '.github/workflows/shining-rock-rehearsal.yml'
+permissions:
+  contents: read
+jobs:
+  course-rehearsal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify course and preserved production surfaces
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git diff --exit-code "$BASE" HEAD -- .firebaserc firebase.json firebase-config.js firestore.rules functions manifest.json _config.yml 'dcc-*.png' app/61f9e9de0a/firebase-config.js scripts/production-bundle.py .github/workflows/production-promotion.yml
+          python3 - <<'PYCODE'
+          import os, subprocess
+          from pathlib import Path
+          before=subprocess.check_output(['git','show',os.environ['BASE']+':index.html']).decode()
+          after=Path('index.html').read_text()
+          start='// DCC STEP 30K-A — HOUSE GHOST MATCH ARCHIVE'
+          end='function dccGhostUpdateActions()'
+          def outside_ghost(text):
+              left, rest=text.split(start,1)
+              _, right=rest.split(end,1)
+              return left+right
+          assert outside_ghost(before)==outside_ghost(after), 'Unexpected change outside existing Ghost engine'
+          PYCODE
+          node --test tests/*.test.mjs
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - name: Test production-shaped Pages output at iPhone width
+        run: |
+          npm install --no-save --no-package-lock @playwright/test
+          npx playwright install --with-deps chromium webkit
+          mkdir -p "$RUNNER_TEMP/public"
+          ln -s "$GITHUB_WORKSPACE/_site" "$RUNNER_TEMP/public/dagger-caddie"
+          python3 -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/public" &
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8766/dagger-caddie/manifest.json -o /dev/null; then break; fi
+            sleep 1
+          done
+          npx playwright test tests/production-root.spec.mjs --browser=chromium --workers=2 --reporter=line
+          npx playwright test tests/production-root.spec.mjs --browser=webkit --workers=2 --reporter=line
+      - name: Package exact rehearsal after acceptance
+        env:
+          CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          printf '%s\n' "$CANDIDATE_HEAD" > "$RUNNER_TEMP/REHEARSAL_HEAD.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/REHEARSAL_TESTED_MERGE.txt"
+          tar -czf "$RUNNER_TEMP/shining-rock-rehearsal.tar.gz" -C _site .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shining-rock-pages-rehearsal
+          path: |
+            ${{ runner.temp }}/REHEARSAL_HEAD.txt
+            ${{ runner.temp }}/REHEARSAL_TESTED_MERGE.txt
+            ${{ runner.temp }}/shining-rock-rehearsal.tar.gz
+      - name: Test existing Money Room against staging
+        if: ${{ !cancelled() }}
+        run: npx playwright test tests/shining-rock-staging.spec.mjs --browser=chromium --workers=1 --reporter=line
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shining-rock-browser-evidence
+          path: test-results/
+          retention-days: 14

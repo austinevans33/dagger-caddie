@@ -3,6 +3,7 @@ import {installLedgerSettlement} from './ledger-settlement.js';
 installLedgerSettlement(window);
 installBingoMoney();
 import {firebaseConfig} from './firebase-config.js';
+import {readActiveRound} from './starters-desk-session.js';
 import {createRoomSession,singleFlight,invitationFrom} from './room-session.js';
 import {createInvitationSharing, drawInvitationQr} from './invitation-qr.js';
 import {rememberRoom,forgetRoom,recoverRoom,readWithDeadline} from './room-recovery.js';
@@ -128,6 +129,7 @@ function render(){
   $('roomWho').textContent =
     `${matchState} · ${roleName}\n` +
     `${room.players.join(' vs ')}\n` +
+    (room.round?.selection?room.round.selection.course.name+' · '+room.round.selection.tee.name+'\n':'') +
     `${room.format.toUpperCase()} · $${room.stake} per unit`;
 
   $('roomWho').style.whiteSpace = 'pre-line';
@@ -377,7 +379,9 @@ async function create(){const attempt=++actionVersion;try{
  if(!me||players.length<2||players.length>4||new Set(players.map(n=>n.toLowerCase())).size!==players.length)throw Error('Enter 2–4 distinct golfer names including yourself.');
  if(needed&&players.length!==needed)throw Error(`${format} requires ${needed} players.`);
  const stake=Number($('roomStake').value);if(!Number.isFinite(stake)||stake<0||stake>10000)throw Error('Invalid stake.');
- const {doc,setDoc}=functions;const id=rand(16),code=rand(8);const model={name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
+ const selectedRound=readActiveRound(roomStore);
+ const roundContext=selectedRound?{round:selectedRound,roundIdentity:selectedRound.selection.course.providerCourseId+'|'+selectedRound.selection.tee.providerTeeId+'|'+selectedRound.selectedAt}:{};
+ const {doc,setDoc}=functions;const id=rand(16),code=rand(8);const model={...roundContext,name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
  await readWithDeadline(()=>setDoc(doc(db,'rooms',id),model));assertOperation(attempt,operationUid);await readWithDeadline(()=>setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()}));assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);assertOperation(attempt,operationUid);status('Money Room created and LIVE. You are the ONLY scorekeeper. Share the QR invitation.');
  }catch(e){if(attempt===actionVersion)status('Could not confirm room creation: '+e.message+(e.code==='unavailable'?' The network timed out; check your connection before starting another room.':'')+' No new room was confirmed on this phone.');}}
 async function join(){
