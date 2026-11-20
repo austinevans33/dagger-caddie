@@ -400,6 +400,7 @@ test('Verdae uses the existing scorecard, Yardage Book, original Ghost and Ledge
   await page.reload();
   await page.locator('#dccHomeScorecard').click();
   await expect(page.getByRole('button',{name:'Select hole 1, 4 strokes'})).toBeVisible();
+  await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
 
   const book = await page.context().newPage();
   await book.goto(launch+'yardage-preview.html?hole=1');
