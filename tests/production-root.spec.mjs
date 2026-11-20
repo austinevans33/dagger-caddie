@@ -380,3 +380,77 @@ test('a failed Shining Rock map download preserves scorecard and original Ghost 
   await page.locator('#next').click();
   await expect(page.locator('#progress')).toContainText('stroke');
 });
+
+test('Verdae uses the existing scorecard, Yardage Book, original Ghost and Ledger', async ({page})=>{
+  test.setTimeout(120000);
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  page.on('dialog',dialog=>dialog.accept());
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Verdae');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Greenville, SC'}).click();
+  const tee = page.locator('#dcc-starter-tees');
+  for(const label of ['Black · 7104 yards','Blue · 6754 yards','White · 6226 yards','Gold · 5494 yards','Red · 5022 yards']){
+    await expect(tee.locator('option').filter({hasText:label})).toHaveCount(1);
+  }
+  await tee.selectOption({label:'Black · 7104 yards'});
+  await page.locator('#dcc-starter-checkin').click();
+  await page.locator('#dccHomeScorecard').click();
+  await page.getByRole('button',{name:'Pencil 4 strokes for hole 1'}).click();
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  await expect(page.getByRole('button',{name:'Select hole 1, 4 strokes'})).toBeVisible();
+
+  const book = await page.context().newPage();
+  await book.goto(launch+'yardage-preview.html?hole=1');
+  const pars = [4,3,4,4,5,3,4,4,5,4,3,4,4,5,3,4,4,5];
+  const yards = [360,167,458,437,536,229,453,474,540,468,215,369,435,541,175,340,392,515];
+  await expect(book.locator('#teeCaption')).toHaveText('Black tees');
+  for(let hole=1;hole<=18;hole++){
+    await book.locator('#hole').selectOption(String(hole));
+    await expect(book.locator('#mapPar')).toHaveText('Par '+pars[hole-1]);
+    await expect(book.locator('#mapYards')).toHaveText(yards[hole-1]+' yds');
+    await expect(book.locator('.geometry-label')).toHaveText('Hole '+hole+' · Scorecard notes');
+  }
+  await book.close();
+
+  await openOriginalGhost(page);
+  for(let hole=1;hole<=18;hole++){
+    await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE '+hole+' · PAR '+pars[hole-1]);
+    await page.locator('#dccGhostPlay').click();
+    await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'))?.pending?.hole)).toBe(hole);
+    const pending = await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')).pending);
+    if(hole===9){
+      await page.reload();
+      await openOriginalGhost(page);
+      expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')).pending)).toEqual(pending);
+    }
+    const playback = page.frameLocator('#dccGhostPlayback iframe');
+    await expect(playback.locator('#headline')).toContainText('Par '+pars[hole-1]);
+    await expect(playback.locator('#ghostMapStatus')).toContainText('No mapped hole outlines available');
+    await page.locator('#dccGhostPlayerScore').fill(String(pending.ghost));
+    await page.locator('#dccGhostRecord').click();
+    await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'))?.holes.length)).toBe(hole);
+  }
+  await expect(page.locator('#dccGhostProgress')).toContainText('MATCH COMPLETE · 18 OF 18');
+  await page.locator('#dccGhostReset').click();
+  const archives = await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_archive_v1')));
+  expect(archives).toHaveLength(1);
+  expect(archives[0].course).toContain('the-preserve-at-verdae-greenville-sc');
+  expect(archives[0].holes.map(hole=>hole.par)).toEqual(pars);
+
+  await page.locator('#tab-play').click();
+  await page.locator('[data-dcc-go="ticket"]').click();
+  await page.locator('#dccPropNew').click();
+  await page.locator('#dccPropText').fill('QA Verdae round');
+  await page.locator('#dccPropMe').fill('QA Golfer');
+  await page.locator('#dccPropOther').fill('QA Opponent');
+  await page.locator('#dccPropStake').fill('5');
+  await page.locator('#dccPropOdds').fill('2');
+  await page.locator('#dccPropForm button[type=submit]').click();
+  const ticket = page.locator('#dccPropList article').first();
+  await ticket.locator('[data-result=yes]').click();
+  await expect(page.locator('#dccSimpleNet')).toHaveText('+$10.00');
+  await ticket.locator('[data-paid="1"]').click();
+  await expect(ticket).toContainText('marked paid');
+});
