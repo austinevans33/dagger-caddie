@@ -401,5 +401,182 @@ export const courseFactoryCourses = [
       "status": "bundled-reviewed-osm",
       "auditTee": "gold"
     }
+  },
+  {
+    "id": "the-preserve-at-verdae-greenville-sc",
+    "name": "The Preserve at Verdae Golf Club",
+    "region": "Greenville, SC",
+    "par": [
+      4,
+      3,
+      4,
+      4,
+      5,
+      3,
+      4,
+      4,
+      5,
+      4,
+      3,
+      4,
+      4,
+      5,
+      3,
+      4,
+      4,
+      5
+    ],
+    "tees": {
+      "black": {
+        "label": "Black",
+        "yards": [
+          360,
+          167,
+          458,
+          437,
+          536,
+          229,
+          453,
+          474,
+          540,
+          468,
+          215,
+          369,
+          435,
+          541,
+          175,
+          340,
+          392,
+          515
+        ]
+      },
+      "blue": {
+        "label": "Blue",
+        "yards": [
+          355,
+          154,
+          425,
+          410,
+          525,
+          218,
+          420,
+          424,
+          497,
+          443,
+          188,
+          363,
+          419,
+          530,
+          169,
+          335,
+          380,
+          499
+        ]
+      },
+      "white": {
+        "label": "White",
+        "yards": [
+          305,
+          135,
+          400,
+          384,
+          492,
+          192,
+          382,
+          411,
+          461,
+          400,
+          156,
+          341,
+          360,
+          515,
+          145,
+          315,
+          357,
+          475
+        ]
+      },
+      "gold": {
+        "label": "Gold",
+        "yards": [
+          302,
+          96,
+          370,
+          327,
+          438,
+          156,
+          288,
+          340,
+          410,
+          368,
+          145,
+          302,
+          326,
+          483,
+          118,
+          270,
+          313,
+          442
+        ]
+      },
+      "red": {
+        "label": "Red",
+        "yards": [
+          274,
+          75,
+          367,
+          323,
+          420,
+          115,
+          262,
+          310,
+          395,
+          340,
+          112,
+          260,
+          317,
+          413,
+          110,
+          250,
+          303,
+          376
+        ]
+      }
+    },
+    "handicapMen": [
+      15,
+      17,
+      1,
+      3,
+      9,
+      11,
+      5,
+      7,
+      13,
+      4,
+      10,
+      14,
+      2,
+      8,
+      18,
+      16,
+      6,
+      12
+    ],
+    "source": "course-factory-official-scorecard",
+    "provenance": {
+      "source": "The Preserve at Verdae club-published scorecard",
+      "url": "https://www.thepreserveatverdae.com/about-us/scorecard/",
+      "image": "https://www.thepreserveatverdae.com/wp-content/uploads/sites/7866/2022/12/2022-scorecared-2.jpg",
+      "sourceSha256": "db5665ca6b72e6d2b04c83d283efda5b7f4b020562630d08a3af1540a39d6a8f",
+      "checked": "2026-11-20",
+      "geography": "650 Verdae Boulevard, Greenville, SC 29607",
+      "teeYardageIsNotPinDistance": true,
+      "audit": "The printed card supplies one stroke-index row. No separate women’s allocation or hole-by-hole hybrid tee assignments are published."
+    },
+    "map": {
+      "ref": "sc/the-preserve-at-verdae-golf-club",
+      "status": "scorecard-only"
+    }
   }
 ];

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Qualify the exact Shining Rock successor while preserving the Pages origin and backend."""
+"""Qualify the exact course-data successor while preserving the Pages origin and backend."""
 import argparse
 import json
 from pathlib import Path
@@ -14,7 +14,8 @@ HOTFIX_FILES = frozenset({"app/61f9e9de0a/clubhouse-home.js", "app/61f9e9de0a/cl
 LEGACY = "390b501ffd0b923c6b009ca70509e32319b2e032"
 # Reviewable successor pin. Every changed runtime byte comes from this immutable source.
 SUCCESSOR = "d9bc012add5d3ffddf292eb19351d3a49130c77c"
-PRE_RELEASE = "23c4c6888dc9b8c193ef635949bc031d31cdb208"
+PRE_RELEASE = "3dacb664d905fc1cadde811b17b2fc131c8e7653"
+VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
     "yardage-preview.html",
@@ -81,7 +82,10 @@ def expected_files():
     for path in SUCCESSOR_FILES | HOTFIX_FILES:
         assert path in bundle or path in SUCCESSOR_NEW_FILES, f"Successor cannot introduce an unrelated runtime file: {path}"
         bundle[path] = object_bytes(SUCCESSOR, path)
-    bundle[PREFIX + "source-sha.txt"] = (SUCCESSOR + "\n").encode()
+    for path in (PREFIX + "south-carolina-course-factory.js", PREFIX + "opengolf-catalog.js"):
+        assert path in bundle
+        bundle[path] = object_bytes(VERDAE_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (VERDAE_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
