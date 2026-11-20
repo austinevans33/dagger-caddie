@@ -44,10 +44,11 @@ export async function searchOpenGolfCourses(query,{fetcher=fetch,signal}={}){
   if(!response.ok)throw Error('Course search unavailable ('+response.status+').');
   const remote=searchResultCourses(await response.json());
   const normalized=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const normalizedName=v=>normalized(String(v||'').replace(/^\s*the\s+/i,''));
   const filtered=remote.filter(course=>!local.some(f=>{
    const region=normalized(course.region),city=normalized(f.region.split(',')[0]);
-   const remoteName=normalized(course.name),founderName=normalized(f.name).replace(/^the/,'');
-   return region.includes(city)&&(remoteName.includes(founderName)||founderName.includes(remoteName));
+   const remoteName=normalizedName(course.name),founderName=normalizedName(f.name);
+   return remoteName&&founderName&&region.includes(city)&&(remoteName.includes(founderName)||founderName.includes(remoteName));
   }));
   return [...local,...filtered];
  }catch(error){
