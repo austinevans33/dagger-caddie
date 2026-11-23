@@ -1,8 +1,8 @@
 import {buildGhostRound} from './house-ghost-round.js';
 // Single source for traced Ghost strokes and Ledger match results.
 // Incomplete golfer holes do not count as played or settled.
-export function ghostLedgerSnapshot({courseName,holes=[],playerScores=[],seed='house-ghost',count=18}={}){
- const round=buildGhostRound({courseName,holes,seed,count});
+export function ghostLedgerSnapshot({courseName,holes=[],playerScores=[],seed='house-ghost',count=18,tier=null,matchHoles=[]}={}){
+ const round=buildGhostRound({courseName,holes,seed,count,tier,matchHoles});
  if(!Array.isArray(playerScores))throw Error('Invalid golfer scores');
  let lead=0,played=0,blocked=false,hasOutOfOrderScores=false;const ledger=[];
  for(let i=0;i<count;i++){

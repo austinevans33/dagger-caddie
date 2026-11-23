@@ -319,3 +319,15 @@ export function founderMapRecord(course){
  const f=exactFounder(course);
  return f?.map||null;
 }
+
+// Batch-safe inventory: verified scorecard records and map readiness, without fabricating geometry.
+export function founderFactoryInventory(){
+ return Object.freeze(courseBooks.map(book=>Object.freeze({
+  id:book.id,name:book.name,region:book.region,holeCount:book.holeCount??18,
+  teeCount:Object.keys(book.tees).length,
+  scorecardReady:true,
+  yardageBookStatus:book.map?.status??'unmapped',
+  mapFile:book.map?.status==='bundled-reviewed-osm'?book.map.file:null,
+  ghostScorecardReady:true
+ })));
+}
