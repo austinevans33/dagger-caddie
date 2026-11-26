@@ -55,14 +55,19 @@ const $=id=>document.getElementById(id);let revealed=0;let lastRendered=0;let wa
 const TIER_NAMES=Object.freeze({scratch:'The Undertaker',fiveTen:'The Sandbagger',tenFifteen:'The Weekend Menace',fifteenTwenty:'The Liability'});
 const params=new URLSearchParams(location.search);
 let matchDraft=null;
+let matchCourseHoles;
 if(params.get('match')==='1'){
  document.body.classList.add('match');
  try {
   const draft=JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1'));
   const pending=draft?.pending;
+  const courseHoles = [9,18].includes(draft?.courseHoles) ? draft.courseHoles : draft?.holesPlanned;
   if(pending&&Object.hasOwn(TIER_NAMES,draft.tier)&&[9,18].includes(draft.holesPlanned)&&
-     Number.isInteger(pending.hole)&&pending.hole>=1&&pending.hole<=draft.holesPlanned&&
-     [3,4,5].includes(pending.par)&&Number.isInteger(pending.ghost)&&pending.ghost>=1&&pending.ghost<=20)matchDraft=draft;
+     Number.isInteger(pending.hole)&&pending.hole>=1&&pending.hole<=courseHoles&&
+     [3,4,5].includes(pending.par)&&Number.isInteger(pending.ghost)&&pending.ghost>=1&&pending.ghost<=20){
+    matchDraft=draft;
+    matchCourseHoles=courseHoles;
+  }
  } catch {}
 }
 // iOS Safari does not reliably hand a vertical swipe from a tall same-origin
@@ -155,7 +160,7 @@ if(matchHole){$('back').textContent='Previous shot';$('next').textContent='Next 
 function stopWatch(){if(watchTimer!==null){clearInterval(watchTimer);watchTimer=null;}$('watch').textContent=matchHole?'▶ Replay hole':'▶ Watch Ghost play the hole'}
 for(let n=1;n<=(nativeNine?9:18);n++)$('hole').add(new Option('Hole '+n,n));
 $('hole').value=String(matchHole?.hole??(nativeNine?Math.min(firstHole,9):firstHole));
-if(matchDraft)$('length').value=String(matchDraft.holesPlanned);
+if(matchDraft)$('length').value=String(matchCourseHoles);
 if(nativeNine){$('length').value='9';$('length').disabled=true}
 if(params.get('from')==='yardage')$('ghostBack').textContent='← Back to Yardage Book';
 function render(){

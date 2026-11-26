@@ -258,6 +258,34 @@ test('direct Ghost recording freezes Shining Rock context and rejects a double s
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')))).toEqual(draft);
 });
 
+test('a nine-hole Ghost match can start on 18 and resume across the turn', async ({page}) => {
+  await checkInRock(page, 'Gold · 6728 yards');
+  await openOriginalGhost(page);
+  await page.locator('#dccGhostLength').selectOption('9');
+  const start = page.locator('#dccGhostStartHole');
+  await start.selectOption('18');
+  await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE 18 · PAR 4');
+  await page.locator('#dccGhostPlay').click();
+  await expect(start).toBeDisabled();
+
+  const frame = page.frameLocator('#dccGhostPlayback iframe');
+  await expect(frame.locator('#headline')).toContainText('Hole 18 · Par 4');
+  await page.reload();
+  await openOriginalGhost(page);
+  await expect(start).toHaveValue('18');
+  await expect(start).toBeDisabled();
+  await expect(frame.locator('#headline')).toContainText('Hole 18 · Par 4');
+  const draft = () => page.evaluate(() => JSON.parse(localStorage.getItem('dcc_house_ghost_draft_v1')));
+  const {pending} = await draft();
+  await page.locator('#dccGhostPlayerScore').fill(String(pending.ghost));
+  await page.locator('#dccGhostRecord').click();
+  await expect(page.locator('#dccGhostHistory')).toContainText('HOLE 18 · PAR 4');
+  await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE 1 · PAR 4');
+  expect((await draft()).holes[0].holeNumber).toBe(18);
+  await page.locator('#dccGhostUndo').click();
+  await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE 18 · PAR 4');
+});
+
 test('existing local ticket resolves manually and requires explicit payment confirmation',async ({page,browser})=>{
   await checkInRock(page,'Gold · 6728 yards');
   let confirmPayment=false;
@@ -268,9 +296,11 @@ test('existing local ticket resolves manually and requires explicit payment conf
   await page.locator('#dccPropMe').fill('QA Golfer');
   await page.locator('#dccPropOther').fill('QA Opponent');
   await page.locator('#dccPropStake').fill('5');
+  await page.locator('#dccPropHole').fill('18');
   await page.locator('#dccPropOdds').fill('2');
   await page.locator('#dccPropForm button[type=submit]').click();
   const ticket=page.locator('#dccPropList article').first();
+  await expect(ticket).toContainText('Hole 18');
   await expect(ticket).toContainText('OPEN');
   await expect(page.locator('#dccSimpleNet')).toHaveText('$0.00');
   // Independent phone storage proves the supported local ticket has no remote acceptance.
