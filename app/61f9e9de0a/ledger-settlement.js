@@ -1,11 +1,16 @@
+import {roundHoleOrder} from './round-hole-order.js';
 // Keep the approved Ledger UI intact; settle Nassau only from complete segments.
 export function settleLedgerWager(game, original) {
   if (game.format !== 'nassau') return original(game);
   const score = game.players.map(() => 0);
   const stake = Number(game.stake) || 0;
   if (score.length !== 2) return {score, carry: 1};
+  // Legacy tickets retain physical front/back semantics. Explicit play-order tickets
+  // settle first nine played / second nine played instead, using physical-hole scores.
+  const order = roundHoleOrder({startHole:game.startHole??1});
+  const rows = game.nassauSegments==='play-order' ? order.map(n=>game.holes[n-1]) : game.holes;
   for (const [start, end] of [[0, 9], [9, 18], [0, 18]]) {
-    const holes = game.holes.slice(start, end);
+    const holes = rows.slice(start, end);
     if (holes.length !== end - start || !holes.every(h =>
       Array.isArray(h) && h.length === 2 && h.every(v => Number.isInteger(v) && v >= 1 && v <= 20))) continue;
     const wins = holes.reduce((total, h) => total + Math.sign(h[1] - h[0]), 0);
