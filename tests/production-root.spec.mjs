@@ -143,11 +143,10 @@ test('Shining Rock check-in, Red alternate par, save, correction and reload at p
 async function checkInRock(page, teeLabel) {
   await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
   await page.goto(launch);
-  await page.locator('#dcc-starter-query').fill('Shining Rock');
-  await page.locator('#dcc-starter-search').click();
-  await page.locator('#dcc-starter-results button').filter({hasText:'The Rock'}).click();
-  await page.locator('#dcc-starter-tees').selectOption({label:teeLabel});
-  await page.locator('#dcc-starter-checkin').click();
+  await page.locator('[data-dcc-go="course"]').click();
+  await page.locator('#dccHomeCourseSearch').fill('Shining Rock');
+  await page.locator('#dccHomeTeeSelect').selectOption({label:teeLabel});
+  await page.locator('#dccHomeCourseConfirm').click();
 }
 
 async function openOriginalGhost(page) {
@@ -416,15 +415,14 @@ test('Verdae uses the existing scorecard, Yardage Book, original Ghost and Ledge
   await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
   page.on('dialog',dialog=>dialog.accept());
   await page.goto(launch);
-  await page.locator('#dcc-starter-query').fill('Verdae');
-  await page.locator('#dcc-starter-search').click();
-  await page.locator('#dcc-starter-results button').filter({hasText:'Greenville, SC'}).click();
-  const tee = page.locator('#dcc-starter-tees');
+  await page.locator('[data-dcc-go="course"]').click();
+  await page.locator('#dccHomeCourseSearch').fill('Verdae');
+  const tee = page.locator('#dccHomeTeeSelect');
   for(const label of ['Black · 7104 yards','Blue · 6754 yards','White · 6226 yards','Gold · 5494 yards','Red · 5022 yards']){
     await expect(tee.locator('option').filter({hasText:label})).toHaveCount(1);
   }
   await tee.selectOption({label:'Black · 7104 yards'});
-  await page.locator('#dcc-starter-checkin').click();
+  await page.locator('#dccHomeCourseConfirm').click();
   await page.locator('#dccHomeScorecard').click();
   await page.getByRole('button',{name:'Pencil 4 strokes for hole 1'}).click();
   await page.reload();
