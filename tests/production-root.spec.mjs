@@ -515,7 +515,7 @@ test('Caddy shot logging keeps measured dispersion separate from target yardage'
   await page.waitForFunction(()=>typeof document.getElementById('askHoleCaddy')?.onclick==='function');
   await page.locator('#askHoleCaddy').click();
   await expect(page.locator('#aiInput')).toBeVisible();
-  await page.locator('#aiShotReport > summary').click();
+  await page.locator('#dccTurnShotLog').click();
   await page.getByText('Add launch-monitor measurements',{exact:true}).click();
   await page.locator('#aiShotClub').selectOption('7 Iron');
   for(const [carry,lateral] of [[155,-8],[159,0],[161,6]]){

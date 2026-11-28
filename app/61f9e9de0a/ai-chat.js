@@ -225,6 +225,29 @@ function showMeasuredShotHistory(){
 $('aiShotClub').addEventListener('change',showMeasuredShotHistory);
 measuredFields.addEventListener('toggle',()=>{if(measuredFields.open)showMeasuredShotHistory();});
 
+function mountCaddyTurnShotLog(){
+ const heading=$('dccCaddyTurnHead'),report=$('aiShotReport');
+ if(!heading||!report||$('dccTurnShotLog'))return;
+ const shotContainer=()=>report.closest('.dcc-r75-tools')||report;
+ const button=document.createElement('button');
+ button.type='button';
+ button.id='dccTurnShotLog';
+ button.className='btn-secondary';
+ button.textContent='Record a shot';
+ button.style.gridColumn='1 / -1';
+ button.setAttribute('aria-controls','aiShotReport');
+ heading.querySelector('.dcc-caddy-turn-top').append(button);
+ button.addEventListener('click',()=>{
+  shotContainer().style.setProperty('display','block','important');
+  report.open=true;
+  report.scrollIntoView({block:'nearest'});
+ });
+ $('tab-play')?.addEventListener('click',()=>shotContainer().style.removeProperty('display'));
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountCaddyTurnShotLog,{once:true});
+else mountCaddyTurnShotLog();
+window.addEventListener('load',mountCaddyTurnShotLog,{once:true});
+
 function updateShotReport() {
   shotReport.quality.forEach(button => {
     const selected = button.dataset.quality === shotQuality;
