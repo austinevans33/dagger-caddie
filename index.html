@@ -8787,6 +8787,8 @@ document.addEventListener('dcc:solo-hole-change',event=>{
  if(!$('newWagers').open)dccRefreshWagerStart();
 });
 dccRefreshWagerStart();
+// Keep the existing wager engine reachable from the current Ticket Window.
+$('dccVisibleTickets').after($('newWagers'));
 function renderFoursome(){
  $('wPlaying').hidden=!activeW;
  if(activeW){const g=activeW;$('wHole').textContent=String(dccWagerHole(g)??'—');const result=wagerMath(g);$('wLead').textContent=result.invalid?'Invalid historic game scores · review backup':money(result.score[0])+(g.format==='skins'&&result.carry>1?' · '+result.carry+' skins at stake':'')+(g.format==='nassau'&&result.pending.length?' · '+result.pending.length+' matches pending':'');
