@@ -4472,5 +4472,203 @@ export const courseFactoryCourses = [
       "ref": "nc/carolina-colours",
       "status": "scorecard-only"
     }
+  },
+  {
+    "id": "lonnie-poole-raleigh-nc",
+    "name": "Lonnie Poole Golf Course",
+    "region": "Raleigh, NC",
+    "par": [
+      5,
+      3,
+      5,
+      4,
+      4,
+      3,
+      5,
+      3,
+      4,
+      4,
+      5,
+      4,
+      4,
+      3,
+      5,
+      4,
+      3,
+      4
+    ],
+    "tees": {
+      "nc-state-competition": {
+        "label": "NC State Competition",
+        "yards": [
+          578,
+          235,
+          552,
+          373,
+          462,
+          163,
+          589,
+          177,
+          490,
+          389,
+          665,
+          472,
+          448,
+          194,
+          549,
+          405,
+          135,
+          482
+        ]
+      },
+      "black": {
+        "label": "Black",
+        "yards": [
+          542,
+          207,
+          526,
+          373,
+          459,
+          151,
+          554,
+          163,
+          439,
+          369,
+          631,
+          424,
+          410,
+          159,
+          549,
+          379,
+          118,
+          463
+        ]
+      },
+      "red": {
+        "label": "Red",
+        "yards": [
+          507,
+          181,
+          501,
+          350,
+          419,
+          143,
+          554,
+          138,
+          395,
+          369,
+          582,
+          391,
+          375,
+          159,
+          504,
+          379,
+          110,
+          441
+        ]
+      },
+      "wolfpack": {
+        "label": "Wolfpack",
+        "yards": [
+          507,
+          181,
+          468,
+          298,
+          385,
+          131,
+          493,
+          138,
+          358,
+          345,
+          553,
+          356,
+          337,
+          138,
+          468,
+          341,
+          110,
+          425
+        ]
+      },
+      "green": {
+        "label": "Green",
+        "yards": [
+          400,
+          143,
+          327,
+          242,
+          271,
+          87,
+          400,
+          95,
+          286,
+          237,
+          477,
+          295,
+          303,
+          100,
+          399,
+          234,
+          92,
+          323
+        ]
+      },
+      "gray-green-hybrid": {
+        "label": "Gray/Green Hybrid",
+        "yards": [
+          400,
+          160,
+          450,
+          257,
+          271,
+          107,
+          444,
+          115,
+          322,
+          287,
+          477,
+          295,
+          303,
+          121,
+          427,
+          285,
+          92,
+          323
+        ]
+      }
+    },
+    "handicapMen": [
+      11,
+      9,
+      1,
+      13,
+      5,
+      17,
+      7,
+      15,
+      3,
+      16,
+      2,
+      8,
+      10,
+      14,
+      6,
+      12,
+      18,
+      4
+    ],
+    "source": "course-factory-official-scorecard",
+    "provenance": {
+      "source": "Official course scorecard",
+      "url": "https://lonniepoolegolfcourse.com/about/scorecard/",
+      "sourceSha256": "aa32776770034ac7b2e75415510aa0a6774a1ec099b8156df4204ecce0624ee1",
+      "checked": "2026-11-28",
+      "geography": "Raleigh, NC",
+      "teeYardageIsNotPinDistance": true
+    },
+    "map": {
+      "ref": "nc/lonnie-poole",
+      "status": "scorecard-only"
+    }
   }
 ];
