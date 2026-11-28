@@ -18,6 +18,7 @@ PRE_RELEASE = "8a07777e19c26529d1adccbc0296961977e7b3a4"
 KINGDOM_SOURCE = "227f400e0c358c6abda06f70fa5efa17b6e712dd"
 GAMEPLAY_SOURCE = "daa3da1216430076328afc918686e6ee3b64c0e0"
 HEART_SOURCE = "00b6fa3f70f12d2164df630cf1b87ccb417e6ee7"
+EXACT_LEGEND_SOURCE = "1ccf78e8e8be9ba3082849cfb7e279f9b6087a77"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -136,7 +137,10 @@ def expected_files():
     assert HEART_REPLACEMENT in bundle and HEART_ADDITIONS.isdisjoint(bundle)
     for path in HEART_ADDITIONS | {HEART_REPLACEMENT}:
         bundle[path] = object_bytes(HEART_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (HEART_SOURCE + "\n").encode()
+    journal = PREFIX + "all-heart-journal.js"
+    assert journal in bundle
+    bundle[journal] = object_bytes(EXACT_LEGEND_SOURCE, journal)
+    bundle[PREFIX + "source-sha.txt"] = (EXACT_LEGEND_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
