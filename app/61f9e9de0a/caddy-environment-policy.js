@@ -1,10 +1,10 @@
 // Prevent stale modeled weather or a previous course from entering Caddy prompts.
 // This is a freshness policy, not a claim of live on-course measurements.
-import {sameCourseSelection} from './course-identity.js';
+import {sameActiveRound} from './starters-desk-session.js';
 export const CADDY_ENVIRONMENT_MAX_AGE_MS=15*60*1000;
 export function needsCaddyEnvironmentRefresh(active,environment,fetchedAt,now=Date.now()){
  if(!active?.selection)return false;
- if(!environment?.selection||!sameCourseSelection(active.selection,environment.selection))return true;
+ if(!sameActiveRound(active,environment))return true;
  if(!Number.isFinite(fetchedAt)||fetchedAt<=0||fetchedAt>now)return true;
  return now-fetchedAt>=CADDY_ENVIRONMENT_MAX_AGE_MS;
 }

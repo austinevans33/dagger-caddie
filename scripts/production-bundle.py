@@ -17,6 +17,7 @@ SUCCESSOR = "d9bc012add5d3ffddf292eb19351d3a49130c77c"
 PRE_RELEASE = "8a07777e19c26529d1adccbc0296961977e7b3a4"
 KINGDOM_SOURCE = "227f400e0c358c6abda06f70fa5efa17b6e712dd"
 NC_BATCH_SOURCE = "f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf"
+INTELLIGENCE_SOURCE = "8c9933177866fdc2e60ae93c72f3c6315b8e6e51"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -55,6 +56,16 @@ NC_BATCH_ART = frozenset({
     "app/61f9e9de0a/course-art/mill-creek-mebane-nc.json",
     "app/61f9e9de0a/course-art/hillandale-durham-nc.json",
 })
+
+INTELLIGENCE_REPLACEMENTS = frozenset({
+    "app/61f9e9de0a/ai-chat.js",
+    "app/61f9e9de0a/caddy-environment-policy.js",
+    "app/61f9e9de0a/round-environment.js",
+    "app/61f9e9de0a/shot-record-context.js",
+    "app/61f9e9de0a/starters-desk-session.js",
+    "app/61f9e9de0a/starters-desk-ui.js",
+})
+INTELLIGENCE_ADDITION = "app/61f9e9de0a/measured-shot-dispersion.js"
 
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
 PREFIX = "app/" + STAGED[:10] + "/"
@@ -118,7 +129,10 @@ def expected_files():
     assert NC_BATCH_CATALOG in bundle and NC_BATCH_ART.isdisjoint(bundle)
     for path in NC_BATCH_ART | {NC_BATCH_CATALOG}:
         bundle[path] = object_bytes(NC_BATCH_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (NC_BATCH_SOURCE + "\n").encode()
+    assert INTELLIGENCE_REPLACEMENTS <= bundle.keys() and INTELLIGENCE_ADDITION not in bundle
+    for path in INTELLIGENCE_REPLACEMENTS | {INTELLIGENCE_ADDITION}:
+        bundle[path] = object_bytes(INTELLIGENCE_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (INTELLIGENCE_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 

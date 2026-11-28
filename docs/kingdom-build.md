@@ -35,3 +35,9 @@ The first three maps are exact original Course Factory review blobs from `5b98d3
 Full candidate preflight across the curated catalog found 38 courses and 38 scorecard/Ghost-ready courses, 23 with at least one full drawing, and 15 with all holes fully drawn. These are runtime preflight counts. End-to-end and release qualification are tracked separately in CI. OpenGolfAPI listings are outside these counts.
 
 The next acquisition pass should reopen the prior Seven Lakes review and Pine Island proof before requesting new geometry. Mill Creek No. 17 can keep verified tee, green and routing while its fairway remains omitted.
+
+### Shared course conditions and measured shots
+
+- Course conditions now bind to the exact round timestamp as well as course, tee and starting hole. The Starter’s Desk and Caddy share a pending lookup. Re-checking in to the same tee cannot replay another round’s response.
+- The existing shot report accepts optional, paired launch-monitor carry and signed lateral values. They are stored with the existing log and summarized only from source-labeled measurements of the selected club. Target distance, qualitative misses, modeled weather and Ghost traces do not create measured dispersion.
+- Shot context retains the exact round timestamp. The next dependent work is to use the shared context in Ghost play and attach physical shot events to confirmed wager instances without manufacturing distances or financial results.
