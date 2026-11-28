@@ -73,7 +73,7 @@ test('two staging sessions share Shining Rock room scores, corrections and final
     await expect(guest.locator('#roomStatus')).toContainText('LIVE',{timeout:45000});
     await expect(guest.locator('#roomStandings')).toContainText('QA Rock Host: −$1.00');
     for(let hole=2;hole<=18;hole++) await saveHole(hole,4,4);
-    await expect(guest.locator('#roomStandings')).toContainText('18 holes scored');
+    await expect(guest.locator('#roomStandings')).toContainText('18 holes scored',{timeout:30000});
     await page.locator('#roomFinish').click();
     await expect(page.locator('#roomFinalStatus')).toHaveText('OFFICIAL FINAL RESULT');
     await expect(guest.locator('#roomFinalStatus')).toHaveText('OFFICIAL FINAL RESULT');

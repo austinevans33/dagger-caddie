@@ -8772,20 +8772,22 @@ function dccWagerHole(game, index=game.holes.length){
  if(!Number.isInteger(start)||start<1||start>count)return null;
  return (start-1+Math.min(index,count-1))%count+1;
 }
+let dccWagerStartEdited=false;
 function dccRefreshWagerStart(){
  const picker=$('wStartHole');
  let count=18;
  try{
   if(JSON.parse(localStorage.getItem('dcc_active_round_course_v1')||'null')?.selection?.course?.holeCount===9)count=9;
  }catch{}
- picker.replaceChildren(...Array.from({length:count},(_,i)=>new Option('Hole '+(i+1),String(i+1))));
- picker.value=String(dccCurrentPhysicalRoundHole());
+ if(picker.options.length!==count){
+  picker.replaceChildren(...Array.from({length:count},(_,i)=>new Option('Hole '+(i+1),String(i+1))));
+  dccWagerStartEdited=false;
+ }
+ if(!dccWagerStartEdited)picker.value=String(dccCurrentPhysicalRoundHole());
 }
-$('newWagers').addEventListener('toggle',event=>{if(event.currentTarget.open)dccRefreshWagerStart();});
-document.addEventListener('dcc:course-selected',dccRefreshWagerStart);
-document.addEventListener('dcc:solo-hole-change',event=>{
- if(!$('newWagers').open)dccRefreshWagerStart();
-});
+$('wStartHole').addEventListener('change',()=>{dccWagerStartEdited=true;});
+document.addEventListener('dcc:course-selected',()=>{dccWagerStartEdited=false;dccRefreshWagerStart();});
+document.addEventListener('dcc:solo-hole-change',dccRefreshWagerStart);
 dccRefreshWagerStart();
 // Keep the existing wager engine reachable from the current Ticket Window.
 $('dccVisibleTickets').after($('newWagers'));

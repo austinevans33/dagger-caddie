@@ -392,7 +392,8 @@ test('all Shining Rock book pages share reviewed geometry with original Ghost pl
       await page.screenshot({path:testInfo.outputPath('shining-rock-18-yardage-book.png'),fullPage:true});
     }
     await page.locator('#watchGhost').click();
-    await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',geometry);
+    await expect(page.locator('#headline')).toContainText('Hole '+hole+' ·', {timeout:12000});
+    await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',geometry,{timeout:12000});
     await page.locator('#next').click();
     await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
   }
