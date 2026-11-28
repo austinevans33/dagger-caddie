@@ -1,14 +1,14 @@
 import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
-import {getRoundEnvironment} from './round-environment.js?v=location-shapes-23';
+import {getRoundEnvironment} from './round-environment.js';
 import {yardageSelectionKey} from './yardage-navigation.js';
-import {readActiveRound} from './starters-desk-session.js';
-import {sameCourseSelection} from './course-identity.js';
+import {readActiveRound,sameActiveRound} from './starters-desk-session.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js?v=weather-cache-22';
 import {buildCaddyCourseFacts} from './caddy-course-facts.js?v=weather-cache-22';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js?v=weather-cache-22';
 import {createShotRecordContext,recordedMissNotes} from './shot-record-context.js?v=friday-book-1';
+import {normalizeShotMeasurement,measuredClubDispersion} from './measured-shot-dispersion.js';
 import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
 import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=weather-cache-22';
 import {mountStartersDesk} from './starters-desk-ui.js?v=weather-cache-22';
@@ -48,7 +48,7 @@ let conversation=[],working=false,authPromise=null;
 let activeRoundEnvironment=null;
 let roundEnvironmentFetchedAt=0;
 let roundEnvironmentLoading=null;
-let roundEnvironmentLoadingSelection=null;
+let roundEnvironmentLoadingRound=null;
 let conditionsUI=null;
 let golferConfirmedTarget=false;
 let yardageDraftContext=null;
@@ -87,12 +87,11 @@ async function refreshCaddyRoundEnvironment(){
  const active=readActiveRound(localStorage);
  if(!active){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;renderCaddyConditions();return null;}
  // Share in-flight requests only for the same course and tee, never a previous round.
- if(roundEnvironmentLoading&&roundEnvironmentLoadingSelection&&sameCourseSelection(active.selection,roundEnvironmentLoadingSelection))return roundEnvironmentLoading;
- const selection=active.selection;
+ if(roundEnvironmentLoading&&roundEnvironmentLoadingRound&&sameActiveRound(active,roundEnvironmentLoadingRound))return roundEnvironmentLoading;
  renderCaddyConditions(true);
  const pending=getRoundEnvironment({storage:localStorage}).then(result=>{
   const current=readActiveRound(localStorage);
-  if(current&&result.selection&&sameCourseSelection(current.selection,result.selection)&&result.state!=='selection-changed'){
+  if(sameActiveRound(current,result)&&result.state!=='selection-changed'){
    activeRoundEnvironment=result;
    roundEnvironmentFetchedAt=Date.now();
    renderCaddyConditions();
@@ -101,11 +100,11 @@ async function refreshCaddyRoundEnvironment(){
   }
   if(!current){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;}
   return null;
- }).catch(()=>{const current=readActiveRound(localStorage);if(current&&sameCourseSelection(current.selection,selection)){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;}return null;});
+ }).catch(()=>{const current=readActiveRound(localStorage);if(sameActiveRound(current,active)){activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;}return null;});
  roundEnvironmentLoading=pending;
- roundEnvironmentLoadingSelection=selection;
+ roundEnvironmentLoadingRound=active;
  try{return await pending;}
- finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingSelection=null;}renderCaddyConditions();}
+ finally{if(roundEnvironmentLoading===pending){roundEnvironmentLoading=null;roundEnvironmentLoadingRound=null;}renderCaddyConditions();}
 }
 document.addEventListener('dcc:yardage-caddy-context',event=>{
  resetCaddyTarget();
@@ -116,7 +115,7 @@ document.addEventListener('dcc:course-cleared',()=>{activeRoundEnvironment=null;
 document.addEventListener('dcc:course-selected',()=>{activeRoundEnvironment=null;roundEnvironmentFetchedAt=0;caddyTargetHole=readSoloCard(localStorage)?.hole??null;resetCaddyTarget();void refreshCaddyRoundEnvironment();});
 document.addEventListener('dcc:round-environment',event=>{
  const incoming=event.detail,active=readActiveRound(localStorage);
- if(active&&incoming?.selection&&sameCourseSelection(active.selection,incoming.selection)){activeRoundEnvironment=incoming;roundEnvironmentFetchedAt=Date.now();renderCaddyConditions();}
+ if(sameActiveRound(active,incoming)){activeRoundEnvironment=incoming;roundEnvironmentFetchedAt=Date.now();renderCaddyConditions();}
 });
 conditionsUI=mountCaddyConditions({onRefresh:refreshCaddyRoundEnvironment});
 document.getElementById('yards')?.addEventListener('input',()=>{golferConfirmedTarget=true;renderCaddyConditions();});
@@ -190,6 +189,65 @@ const shotReport = {
   status: document.getElementById('aiShotStatus')
 };
 
+const measuredFields=document.createElement('details');
+measuredFields.className='dcc-shot-measurements';
+const measuredSummary=document.createElement('summary');
+measuredSummary.textContent='Add launch-monitor measurements';
+measuredFields.append(measuredSummary);
+const numericField=(id,text,min,max)=>{
+ const label=document.createElement('label'),input=document.createElement('input');
+ label.htmlFor=id;
+ label.textContent=text;
+ input.id=id;
+ input.type='number';
+ input.inputMode='decimal';
+ input.min=String(min);
+ input.max=String(max);
+ input.step='any';
+ measuredFields.append(label,input);
+ return input;
+};
+const measuredCarry=numericField('dccMeasuredCarry','Measured carry (yards)',1,700);
+const measuredLateral=numericField('dccMeasuredLateral','Measured lateral (yards, left is negative)',-300,300);
+const measuredSummaryOutput=document.createElement('p');
+measuredSummaryOutput.setAttribute('role','status');
+measuredFields.append(measuredSummaryOutput);
+$('aiShotYards').parentElement.parentElement.after(measuredFields);
+function showMeasuredShotHistory(){
+ try{
+  const result=measuredClubDispersion(JSON.parse(localStorage.getItem('dagger_shot_log')||'[]'),$('aiShotClub').value);
+  const fmt=n=>String(Math.round(n*10)/10);
+  measuredSummaryOutput.textContent=result
+   ?result.count+' measured shots · Carry '+result.carry.map(fmt).join('–')+' yd · Lateral '+result.lateral.map(fmt).join(' to ')+' yd'
+   :'Record three measured shots with this club to see its dispersion.';
+ }catch{measuredSummaryOutput.textContent='Measured shot history is unavailable.';}
+}
+$('aiShotClub').addEventListener('change',showMeasuredShotHistory);
+measuredFields.addEventListener('toggle',()=>{if(measuredFields.open)showMeasuredShotHistory();});
+
+function mountCaddyTurnShotLog(){
+ const heading=$('dccCaddyTurnHead'),report=$('aiShotReport');
+ if(!heading||!report||$('dccTurnShotLog'))return;
+ const shotContainer=()=>report.closest('.dcc-r75-tools')||report;
+ const button=document.createElement('button');
+ button.type='button';
+ button.id='dccTurnShotLog';
+ button.className='btn-secondary';
+ button.textContent='Record a shot';
+ button.style.gridColumn='1 / -1';
+ button.setAttribute('aria-controls','aiShotReport');
+ heading.querySelector('.dcc-caddy-turn-top').append(button);
+ button.addEventListener('click',()=>{
+  shotContainer().style.setProperty('display','block','important');
+  report.open=true;
+  report.scrollIntoView({block:'nearest'});
+ });
+ $('tab-play')?.addEventListener('click',()=>shotContainer().style.removeProperty('display'));
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountCaddyTurnShotLog,{once:true});
+else mountCaddyTurnShotLog();
+window.addEventListener('load',mountCaddyTurnShotLog,{once:true});
+
 function updateShotReport() {
   shotReport.quality.forEach(button => {
     const selected = button.dataset.quality === shotQuality;
@@ -242,6 +300,14 @@ updateShotReport();
 
 shotReport.record.addEventListener('click', () => {
   if (!shotQuality) return;
+  const hasMeasurement=!!(measuredCarry.value||measuredLateral.value);
+  const measurement=hasMeasurement&&measuredCarry.value&&measuredLateral.value&&normalizeShotMeasurement({
+    source:'launch-monitor',carryYards:measuredCarry.valueAsNumber,lateralYards:measuredLateral.valueAsNumber
+  });
+  if(hasMeasurement&&(!measurement||!$('aiShotClub').value)){
+    shotReport.status.textContent='Select a club and enter both measured distances, or clear both fields.';
+    return;
+  }
 
   const activeShotRound=readActiveRound(localStorage);
   const shotHole=Number(caddyDraftHole(activeShotRound)??readSoloCard(localStorage)?.hole??activeShotRound?.selection?.holeNumber);
@@ -259,6 +325,7 @@ yards: Number(document.getElementById('aiShotYards').value) || null,
 caddie: activeCaddie(),
 source: 'ai-chat',
 courseContext:shotCourseContext,
+...(measurement?{measurement}:{}),
 date: new Date().toISOString()
 
   };
@@ -279,6 +346,9 @@ shotHorizontal = null;
 shotVertical = null;
 
 document.getElementById('aiShotYards').value = '';
+measuredCarry.value='';
+measuredLateral.value='';
+showMeasuredShotHistory();
 
 updateShotReport();
 

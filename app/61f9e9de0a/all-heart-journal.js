@@ -11,6 +11,12 @@ export const ALL_HEART_HISTORY = 'dcc_all_heart_history_v1';
 export const ALL_HEART_DISABLED = 'dcc_all_heart_disabled_v1';
 const MAX_ROUND_OFFERS = 2;
 const COOLDOWN_HOLES = 4;
+const SAWGRASS_LEGEND = Object.freeze({
+  courseId:'tpc-sawgrass-stadium-fl', holeNumber:17, verified:true,
+  player:'Tiger Woods', event:'the third round of the 2001 PLAYERS Championship',
+  strokes:2,
+  sourceUrl:'https://www.pgatour.com/article/news/latest/2024/03/11/relive-the-top-50-defining-moments-in-the-players-championship-history-tpc-sawgrass'
+});
 
 function readJournal(storage) {
   const value = JSON.parse(storage.getItem(ALL_HEART_HISTORY) || '[]');
@@ -73,6 +79,8 @@ export function allHeartRoundOffer(storage, active, card, {gate = naturalAllHear
   const context = {
     courseId: course.providerCourseId, holeNumber: card.hole, playPosition: position,
     par: facts.par, roundActive: true, maxPerRound: MAX_ROUND_OFFERS, cooldownHoles: COOLDOWN_HOLES,
+    historicalChallenge: course.provider==='dagger-founder' && course.providerCourseId===SAWGRASS_LEGEND.courseId &&
+      card.hole===SAWGRASS_LEGEND.holeNumber && facts.par===3 ? SAWGRASS_LEGEND : null,
     legendaryAdaptation: adaptation,
     ghostRival: best > 1 ? {eligible:true, strokes:best, clubLegend:true} :
       ghost ? {eligible:true, strokes:ghost} : null

@@ -56,3 +56,12 @@ The next acquisition pass should reopen the prior Seven Lakes review and Pine Is
 Recovered previously researched course files from `c32c77e` after re-fetching and matching the original club scorecard bytes. Greensboro National, 12 Oaks, Hope Valley and Country Hills join the scorecard and House Ghost catalogs. The original OSM drawings are retained byte-for-byte. Greensboro National 16, 12 Oaks 11 and Hope Valley 14 remain partial. Country Hills has all 18 complete drawing records.
 
 With this batch the runtime preflight reports 42 discovered, 42 scorecard-ready, 27 with drawings, 42 Ghost-ready and 16 with complete drawing preflight. Full course-by-course gameplay verification and geometries for the other 26 are distinct from those counts.
+### North Carolina batch 03
+
+Seven Lakes and Pine Island use their official scorecards while geometry remains under review. The Seven Lakes page changed bytes, so the acquisition pass matched both nines, every tee, all totals, pars and handicap rows against the previous transcription. The Pine Island official PDF matches the earlier byte pin. Seven Lakes Hole 16 has an identifiable forward tee, while the longer markers remain unresolved. Pine Island's prior map review reports route and par assignment conflicts on holes 2, 3, 4 and 7. These exceptions hold back geometry. Both courses can score and simulate House Ghost from their published cards.
+
+The candidate preflight now finds 44 verified scorecards and Ghost profiles, 27 courses with drawings, and 16 fully drawn. Coverage counts are separate from full gameplay or production release acceptance.
+
+### Kingdom II integration
+
+This candidate takes the exact Seven Lakes and Pine Island catalog, the sourced Sawgrass Legend and the independently qualified measured-shot work after PR #117. It preserves the any-hole Starter's Desk picker and merges its weather call with the exact round identity. The combined candidate excludes the versioned shared-room changes until the deployed staging policy can be reconciled. See kingdom-checkpoint.md for exact prior builds, rollback and manual steps.

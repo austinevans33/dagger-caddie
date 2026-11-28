@@ -615,3 +615,80 @@ test('Country Hills plays from the official tee card using the reviewed drawing'
   await page.locator('#next').click();
   await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });
+for (const course of [
+  {query:'Seven Lakes Golf Club', region:'West End, NC', tee:'Black · 6856 yards', hole:16, par:3, yards:188},
+  {query:'Pine Island Country Club', region:'Charlotte, NC', tee:'Blue · 6377 yards', hole:2, par:5, yards:493},
+]) {
+  test(course.query + ' uses its verified card and Ghost while geometry is withheld', async ({page}) => {
+    await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+    await page.goto(launch);
+    await page.locator('#dcc-starter-query').fill(course.query);
+    await page.locator('#dcc-starter-search').click();
+    await page.locator('#dcc-starter-results button').filter({hasText:course.region}).click();
+    await page.locator('#dcc-starter-tees').selectOption({label:course.tee});
+    await page.locator('#dcc-starter-checkin').click();
+    await page.goto(launch + 'yardage-preview.html?hole=' + course.hole);
+    await expect(page.locator('#mapYards')).toHaveText(course.yards + ' yds');
+    await expect(page.locator('#mapPar')).toHaveText('Par ' + course.par);
+    await expect(page.locator('.geometry-label')).toHaveText('Hole ' + course.hole + ' · Scorecard notes');
+    await page.locator('#watchGhost').click();
+    await expect(page.locator('#headline')).toContainText('Hole ' + course.hole + ' · Par ' + course.par);
+    await expect(page.locator('#ghostMapStatus')).toContainText('No mapped hole outlines available');
+    await page.locator('#next').click();
+    await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+  });
+}
+test('Sawgrass 17 shows the sourced exact-hole Legend and writes the Club Record', async ({page}) => {
+  await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('TPC Sawgrass');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Ponte Vedra Beach, FL'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'The Players · 7245 yards'});
+  await page.locator('#dcc-starter-start').selectOption('17');
+  await page.locator('#dcc-starter-checkin').click();
+  await page.evaluate(async () => {
+    const {naturalAllHeartGate} = await import('./app/61f9e9de0a/all-heart-journal.js');
+    const key = 'dcc_active_round_course_v1', active = JSON.parse(localStorage.getItem(key));
+    const prefix = active.selection.course.providerCourseId + '|' + active.selection.tee.providerTeeId + '|';
+    for (let delta = 1; delta <= 1000; delta++) {
+      if (!naturalAllHeartGate(prefix + (active.selectedAt + delta),17)) continue;
+      active.selectedAt += delta;
+      localStorage.setItem(key, JSON.stringify(active));
+      return;
+    }
+    throw Error('Could not qualify a deterministic test draw');
+  });
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  const moment = page.getByRole('region',{name:'All Heart Moment'});
+  await expect(moment).toContainText('Tiger Woods made 2 here');
+  await moment.getByRole('button',{name:'Take the challenge'}).click();
+  await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Target 2 strokes');
+  await page.getByRole('button',{name:'Pencil 2 strokes for hole 17'}).click();
+  await page.getByText('All Heart Club Record',{exact:true}).click();
+  await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole 17 · MATCHED THE CHALLENGE. 2 strokes');
+});
+test('Caddy shot logging keeps measured dispersion separate from target yardage',async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('dagger_profile',JSON.stringify([{name:'7 Iron',n:3,carry:155}])));
+  await checkInRock(page,'Gold · 6728 yards');
+  await page.goto(launch+'yardage-preview.html?hole=1');
+  await page.waitForFunction(()=>typeof document.getElementById('askHoleCaddy')?.onclick==='function');
+  await page.locator('#askHoleCaddy').click();
+  await expect(page.locator('#aiInput')).toBeVisible();
+  await page.locator('#dccTurnShotLog').click();
+  await page.getByText('Add launch-monitor measurements',{exact:true}).click();
+  await page.locator('#aiShotClub').selectOption('7 Iron');
+  for(const [carry,lateral] of [[155,-8],[159,0],[161,6]]){
+    await page.locator('#aiShotYards').fill('175');
+    await page.locator('#dccMeasuredCarry').fill(String(carry));
+    await page.locator('#dccMeasuredLateral').fill(String(lateral));
+    await page.locator('#aiShotQuality [data-quality="Good"]').click();
+    await page.locator('#aiRecordShot').click();
+  }
+  await expect(page.locator('.dcc-shot-measurements [role="status"]')).toHaveText('3 measured shots · Carry 155–161 yd · Lateral -8 to 6 yd');
+  const records=await page.evaluate(()=>JSON.parse(localStorage.getItem('dagger_shot_log')));
+  expect(records.map(row=>row.yards)).toEqual([175,175,175]);
+  expect(records.map(row=>row.measurement.carryYards)).toEqual([155,159,161]);
+  expect(records.every(row=>Number.isSafeInteger(row.courseContext?.roundSelectedAt))).toBe(true);
+});
