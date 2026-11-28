@@ -735,6 +735,6 @@ for (const round of [
     await page.getByText('All Heart Club Record',{exact:true}).click();
     await expect(page.locator('#dccAllHeartRecord li')).toHaveCount(1);
     await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole ' + round.offers[0] + ' ·');
-    await expect(page.locator('#dccHomeScorecard')).toContainText('18/18 HOLES SCORED');
+    await expect(page.locator('#dcc-paper-launch')).toContainText('18/18 HOLES SCORED');
   });
 }
