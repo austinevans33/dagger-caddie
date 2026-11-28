@@ -65,7 +65,7 @@ jobs:
           git fetch origin d9bc012add5d3ffddf292eb19351d3a49130c77c
           git fetch origin 8701933596c6abc0f7861e182a0214e8c187966b
           git fetch origin 227f400e0c358c6abda06f70fa5efa17b6e712dd
-          git fetch origin a206abe3590078ed0fd557bd51af8093444974a6
+          git fetch origin a5874903c2e5975a2d0730391f435bd1d01d67a1
           python3 scripts/production-bundle.py --check .
           python3 scripts/build-shining-rock-book.py --check
           node --test tests/*.test.mjs
