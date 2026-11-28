@@ -65,3 +65,9 @@ The candidate preflight now finds 44 verified scorecards and Ghost profiles, 27 
 ### Kingdom II integration
 
 This candidate takes the exact Seven Lakes and Pine Island catalog, the sourced Sawgrass Legend and the independently qualified measured-shot work after PR #117. It preserves the any-hole Starter's Desk picker and merges its weather call with the exact round identity. The combined candidate excludes the versioned shared-room changes until the deployed staging policy can be reconciled. See kingdom-checkpoint.md for exact prior builds, rollback and manual steps.
+
+### Kingdom II North Carolina batch and resumable review
+
+Carolina Colours joins as a verified scorecard-only course. Both club scorecard images are byte-identical to the earlier transcription sources. The full candidate preflight now reports 45 discovered, scorecard-ready and Ghost-ready, 27 with drawings and 16 with complete drawings. North Carolina accounts for 22 scorecard/Ghost-ready, 15 with drawings and 10 with complete drawings.
+
+Run `node scripts/kingdom-course-preflight.mjs --region NC --checkpoint /tmp/dagger-nc-review.json`. On retry this reuses each completed course after checking the exact bundled runtime and course list. The result lists the physical holes that remain partial, unavailable or scorecard-only without blocking the other courses. Treat a checkpoint from a different candidate as a different run.

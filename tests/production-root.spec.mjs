@@ -692,3 +692,49 @@ test('Caddy shot logging keeps measured dispersion separate from target yardage'
   expect(records.map(row=>row.measurement.carryYards)).toEqual([155,159,161]);
   expect(records.every(row=>Number.isSafeInteger(row.courseContext?.roundSelectedAt))).toBe(true);
 });
+
+for (const round of [
+  {course:'Shining Rock', region:'The Rock', tee:'Gold · 6728 yards', date:'2026-11-01T13:00:00Z',
+    par:[4,4,5,4,3,4,4,3,5,4,4,3,5,4,3,5,4,4], offers:[7]},
+  {course:'Verdae', region:'Greenville, SC', tee:'Black · 7104 yards', date:'2026-11-02T13:00:00Z',
+    par:[4,3,4,4,5,3,4,4,5,4,3,4,4,5,3,4,4,5], offers:[1,11]},
+]) {
+  test(round.course + ' surfaces natural All Heart offers during a full round', async ({page}) => {
+    test.setTimeout(90000);
+    await page.clock.setFixedTime(new Date(round.date));
+    await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+    await page.goto(launch);
+    await page.locator('#dcc-starter-query').fill(round.course);
+    await page.locator('#dcc-starter-search').click();
+    await page.locator('#dcc-starter-results button').filter({hasText:round.region}).click();
+    await page.locator('#dcc-starter-tees').selectOption({label:round.tee});
+    await page.locator('#dcc-starter-checkin').click();
+    await page.locator('#dccHomeScorecard').click();
+    const offered = [];
+    const moment = page.getByRole('region',{name:'All Heart Moment',exact:true});
+    for (const [index,par] of round.par.entries()) {
+      const hole = index + 1;
+      const score = par + (hole % 3 === 1 ? 1 : 0);
+      const pencil = page.getByRole('button',{name:'Pencil ' + score + ' strokes for hole ' + hole,exact:true});
+      await expect(pencil).toBeVisible();
+      if (await moment.count()) {
+        offered.push(hole);
+        if (offered.length === 1) {
+          await moment.getByRole('button',{name:'Take the challenge'}).click();
+          await page.reload();
+          await page.locator('#dccHomeScorecard').click();
+          await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Hole ' + hole);
+        } else {
+          await moment.getByRole('button',{name:'Not this hole'}).click();
+          await expect(moment).toHaveCount(0);
+        }
+      }
+      await pencil.click();
+    }
+    expect(offered).toEqual(round.offers);
+    await page.getByText('All Heart Club Record',{exact:true}).click();
+    await expect(page.locator('#dccAllHeartRecord li')).toHaveCount(1);
+    await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole ' + round.offers[0] + ' ·');
+    await expect(page.locator('#dccHomeScorecard')).toContainText('18/18 HOLES SCORED');
+  });
+}
