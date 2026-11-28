@@ -20,6 +20,7 @@ GAMEPLAY_SOURCE = "daa3da1216430076328afc918686e6ee3b64c0e0"
 HEART_SOURCE = "00b6fa3f70f12d2164df630cf1b87ccb417e6ee7"
 NC_BATCH_SOURCE = "f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf"
 NC_BATCH_02_SOURCE = "ec0838e9916214393d05f0b9749a799f851dfc55"
+NC_BATCH_03_SOURCE = "146694e3304cf30a9dc54e553e65bb0118ee8437"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -158,7 +159,8 @@ def expected_files():
     assert NC_BATCH_02_ART.isdisjoint(bundle)
     for path in NC_BATCH_02_ART | {NC_BATCH_CATALOG}:
         bundle[path] = object_bytes(NC_BATCH_02_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = ("cdd4cef51b3945a58e77a8d6f792cda6e60449cd\n").encode()
+    bundle[NC_BATCH_CATALOG] = object_bytes(NC_BATCH_03_SOURCE, NC_BATCH_CATALOG)
+    bundle[PREFIX + "source-sha.txt"] = (NC_BATCH_03_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
