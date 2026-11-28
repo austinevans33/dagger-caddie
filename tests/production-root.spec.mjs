@@ -534,3 +534,40 @@ test('shotgun solo check-in drives mid-round Ghost and local wager scoring by ph
   if(!await wager.evaluate(node=>node.open))await wager.locator('summary').click();
   await expect(page.locator('#wHole')).toHaveText('18');
 });
+
+test('All Heart appears on the scorecard-only Verdae book and keeps the accepted challenge through reload',async ({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Verdae');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Greenville, SC'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Black · 7104 yards'});
+  await page.locator('#dcc-starter-start').selectOption('12');
+  await page.locator('#dcc-starter-checkin').click();
+  // Pick an eligible draw in this isolated QA browser. The shipped UI has no force switch.
+  await page.evaluate(async ()=>{
+    const {naturalAllHeartGate}=await import('./app/61f9e9de0a/all-heart-journal.js');
+    const key='dcc_active_round_course_v1',active=JSON.parse(localStorage.getItem(key));
+    const prefix=active.selection.course.providerCourseId+'|'+active.selection.tee.providerTeeId+'|';
+    for(let delta=1;delta<=1000;delta++){
+      if(!naturalAllHeartGate(prefix+(active.selectedAt+delta),12))continue;
+      active.selectedAt+=delta;
+      localStorage.setItem(key,JSON.stringify(active));
+      return;
+    }
+    throw Error('Could not qualify a deterministic test draw');
+  });
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  const moment=page.getByRole('region',{name:'All Heart Moment'});
+  await expect(moment).toContainText('ALL HEART. NO EXCUSES.');
+  await moment.getByRole('button',{name:'Take the challenge'}).click();
+  await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Target 4 strokes');
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Hole 12');
+  await page.getByRole('button',{name:'Pencil 4 strokes for hole 12'}).click();
+  await page.getByText('All Heart Club Record',{exact:true}).click();
+  await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole 12 · MATCHED THE CHALLENGE. 4 strokes');
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')||'[]'))).toEqual([]);
+});
