@@ -2,7 +2,7 @@ name: Production promotion gate
 
 on:
   pull_request:
-    branches: [main, integration/kingdom-build-20261127, feature/kingdom-any-hole-20261127]
+    branches: [main, integration/kingdom-build-20261127, feature/kingdom-any-hole-20261127, integration/kingdom-qualified-20261127]
     paths:
       - 'app/**'
       - 'index.html'
@@ -53,6 +53,7 @@ jobs:
           git fetch origin 00b6fa3f70f12d2164df630cf1b87ccb417e6ee7
           git fetch origin f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf
           git fetch origin ec0838e9916214393d05f0b9749a799f851dfc55
+          git fetch origin a90d0375beb4877fa36fdabbb6e7a89ba8e87fe2
           python3 scripts/production-bundle.py --check .
           git diff --exit-code 23c4c6888dc9b8c193ef635949bc031d31cdb208 -- .firebaserc firebase.json firestore.rules functions
           python3 scripts/build-shining-rock-book.py --check
