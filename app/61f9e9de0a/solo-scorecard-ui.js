@@ -1,7 +1,7 @@
 // The Caddy's paper scorecard: presentation-only replacement for solo scoring.
 // Scores remain in the original isolated localStorage key; no bets/Ghost writes.
 import {readActiveRound} from './starters-desk-session.js';
-import {startSoloCard,readSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard,soloRange} from './solo-scorecard.js?v=premium-paper-9';
+import {startSoloCard,readSoloCard,saveSoloScore,setSoloHole,setSoloLength,summarizeSoloCard,soloRange,soloPlayOrder} from './solo-scorecard.js?v=premium-paper-9';
 import {readCourseScorecard} from './active-course-context.js?v=cached-fallback-16';
 import {scorecardCoverage} from './course-scorecard-coverage.js';
 import {formatSoloScorecardBackup} from './solo-scorecard-backup.js';
@@ -109,7 +109,8 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   $('dcc-paper-length').value=String(length);
   $('dcc-paper-length').disabled=nativeNine;
   $('dcc-paper-progress').textContent='HOLE '+state.hole+'  ·  ENTER STROKES';
-  $('dcc-paper-prev').disabled=state.hole<=range.start;$('dcc-paper-next').disabled=state.hole>=range.end;
+  const order=soloPlayOrder(state,nativeNine?9:18),position=order.indexOf(state.hole);
+  $('dcc-paper-prev').disabled=position<=0;$('dcc-paper-next').disabled=position<0||position>=order.length-1;
   const grid=$('dcc-paper-grid');grid.replaceChildren();
   const allHoles=Array.from({length:18},(_,i)=>scorecard?.holes.find(h=>h.number===i+1)||null);
   const sumFacts=(facts,key)=>facts.every(h=>h&&Number.isInteger(h[key]))?facts.reduce((n,h)=>n+h[key],0):null;
@@ -173,8 +174,15 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
   }
  });
  $('dcc-paper-new-round').addEventListener('click',()=>doc.dispatchEvent(new CustomEvent('dcc:request-new-round')));
- $('dcc-paper-prev').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole>soloRange(state).start){const next=setSoloHole(storage,state.hole-1);if(next){render();broadcast(next.hole);}}});
- $('dcc-paper-next').addEventListener('click',()=>{const state=startSoloCard(storage);if(state&&state.hole<soloRange(state).end){const next=setSoloHole(storage,state.hole+1);if(next){render();broadcast(next.hole);}}});
+ function moveInPlayOrder(offset){
+  const state=startSoloCard(storage),active=readActiveRound(storage);
+  if(!state||!active)return;
+  const order=soloPlayOrder(state,active.selection.course.holeCount??18);
+  const next=setSoloHole(storage,order[order.indexOf(state.hole)+offset]);
+  if(next){render();broadcast(next.hole);}
+ }
+ $('dcc-paper-prev').addEventListener('click',()=>moveInPlayOrder(-1));
+ $('dcc-paper-next').addEventListener('click',()=>moveInPlayOrder(1));
  $('dcc-paper-length').addEventListener('change',event=>{const next=setSoloLength(storage,Number(event.target.value));if(next){render();broadcast(next.hole);}});
  doc.addEventListener('dcc:round-environment',render);doc.addEventListener('dcc:course-selected',render);doc.addEventListener('dcc:course-cleared',render);doc.addEventListener('click',event=>{if(event.target.closest?.('.staff-pick'))setTimeout(render,0);});
  render();
