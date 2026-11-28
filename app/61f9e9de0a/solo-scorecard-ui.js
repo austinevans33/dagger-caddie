@@ -1,3 +1,4 @@
+import {mountAllHeartInRound} from './all-heart-inround.js';
 // The Caddy's paper scorecard: presentation-only replacement for solo scoring.
 // Scores remain in the original isolated localStorage key; no bets/Ghost writes.
 import {readActiveRound} from './starters-desk-session.js';
@@ -71,7 +72,7 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  if(doc.getElementById('dcc-solo-scorecard'))return;
  const style=doc.createElement('style');style.textContent=paperCSS;doc.head.append(style);
  const card=doc.createElement('section');card.id='dcc-solo-scorecard';
- card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div><div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-copy">Copy Round Card</button><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div><div id="dcc-paper-copy-status" role="status" aria-live="polite" style="font:11px/1.4 system-ui;color:#34543c;margin-top:5px"></div></div>`;
+ card.innerHTML=`<div class="dcc-paper-head"><small>AS IT LIES · TO THE STANDARD</small><strong>DAGGER COUNTRY CLUB</strong><div style="font-size:12px;margin-top:4px;letter-spacing:.12em">THE CADDY’S SCORECARD</div></div><div class="dcc-paper-body"><div class="dcc-paper-meta"><span id="dcc-paper-course"></span><label>Round <select id="dcc-paper-length"><option value="18">18 holes</option><option value="9">9 holes</option></select></label></div><div class="dcc-paper-coverage" id="dcc-paper-coverage" role="status" aria-live="polite"><strong>Checking verified hole information…</strong></div><div id="dcc-paper-grid"></div><div class="dcc-paper-total" id="dcc-paper-totals" aria-live="polite"></div><div class="dcc-paper-navigation"><button type="button" id="dcc-paper-prev">← PREV</button><span id="dcc-paper-progress" class="dcc-paper-pencil"></span><button type="button" id="dcc-paper-next">NEXT →</button></div><div id="dccAllHeartMoment" aria-live="polite"></div><div class="dcc-paper-scorebuttons" id="dcc-paper-entries"></div><details id="dccAllHeartRecord"><summary>All Heart Club Record</summary></details><div class="dcc-paper-recap" id="dcc-paper-recap" hidden><strong id="dcc-paper-recap-title"></strong><p id="dcc-paper-recap-copy"></p><small style="display:block;margin-top:8px">Score-based preview · full AI Caddy recap comes with the verified backend</small></div><div class="dcc-paper-actions"><button type="button" id="dcc-paper-copy">Copy Round Card</button><button type="button" id="dcc-paper-new-round">Change Course / New Round</button></div><div id="dcc-paper-copy-status" role="status" aria-live="polite" style="font:11px/1.4 system-ui;color:#34543c;margin-top:5px"></div></div>`;
  const dialog=doc.createElement('dialog');dialog.id='dcc-paper-dialog';
  dialog.setAttribute('aria-label','Dagger Country Club scorecard');
  const bar=doc.createElement('div');bar.className='dcc-paper-dialog-bar';
@@ -84,11 +85,12 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
  const target=doc.querySelector('.ai-card[data-tab="play"]')||doc.querySelector('[data-tab="play"]');
  if(courseStrip)courseStrip.insertAdjacentElement('afterend',launch);
  else (target||doc.body).prepend(launch);
- launch.addEventListener('click',()=>{if(launch.hidden||dialog.open)return;dialog.showModal();dialog.scrollTop=0;});
+ launch.addEventListener('click',()=>{if(launch.hidden||dialog.open)return;dialog.showModal();dialog.scrollTop=0;render();});
  close.addEventListener('click',()=>dialog.close());
  // Never move the live card or recreate its scoring listeners on open/close.
  // Native dialog Escape support and focus restoration work in iPhone Safari.
  const $=id=>card.querySelector('#'+id);
+ const allHeart=mountAllHeartInRound({doc,storage,root:$('dccAllHeartMoment'),record:$('dccAllHeartRecord')});
  function broadcast(hole){doc.dispatchEvent(new CustomEvent('dcc:solo-hole-change',{detail:{hole}}));}
  function render(){
   const active=readActiveRound(storage),state=startSoloCard(storage);
@@ -149,9 +151,10 @@ export function mountSoloScorecard({doc=document,storage=localStorage}={}){
    const b=doc.createElement('button');b.type='button';b.textContent=String(score);
    if(state.scores[state.hole-1]===score)b.className='selected';
    b.setAttribute('aria-label','Pencil '+score+' strokes for hole '+state.hole);
-   b.addEventListener('click',()=>{const next=saveSoloScore(storage,score);if(next){render();broadcast(next.hole);}});
+   b.addEventListener('click',()=>{const next=saveSoloScore(storage,score);if(next){allHeart.scored(active,next,state.hole,scorecard);render();broadcast(next.hole);}});
    entries.append(b);
   }
+  if(dialog.open)allHeart.refresh(active,state);
   const summary=summarizeSoloCard(state,pars);
   const selectedCaddy=doc.querySelector('.staff-pick.active')?.dataset.caddie||'keith';
   const recap=writeRecap(summary,selectedCaddy);

@@ -17,6 +17,7 @@ SUCCESSOR = "d9bc012add5d3ffddf292eb19351d3a49130c77c"
 PRE_RELEASE = "8a07777e19c26529d1adccbc0296961977e7b3a4"
 KINGDOM_SOURCE = "227f400e0c358c6abda06f70fa5efa17b6e712dd"
 GAMEPLAY_SOURCE = "daa3da1216430076328afc918686e6ee3b64c0e0"
+HEART_SOURCE = "00b6fa3f70f12d2164df630cf1b87ccb417e6ee7"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -58,6 +59,17 @@ GAMEPLAY_REPLACEMENTS = frozenset({
     "app/61f9e9de0a/solo-scorecard.js",
     "app/61f9e9de0a/starters-desk-ui.js",
 })
+
+HEART_ADDITIONS = frozenset({
+    "app/61f9e9de0a/all-heart-inround.js",
+    "app/61f9e9de0a/all-heart-journal.js",
+    "app/61f9e9de0a/all-heart-moment-card.js",
+    "app/61f9e9de0a/all-heart-moments.js",
+    "app/61f9e9de0a/all-heart-receipts.js",
+    "app/61f9e9de0a/legendary-adaptations.js",
+    "app/61f9e9de0a/matchbook.js",
+})
+HEART_REPLACEMENT = "app/61f9e9de0a/solo-scorecard-ui.js"
 
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
 PREFIX = "app/" + STAGED[:10] + "/"
@@ -121,7 +133,10 @@ def expected_files():
     assert GAMEPLAY_REPLACEMENTS <= bundle.keys()
     for path in GAMEPLAY_REPLACEMENTS:
         bundle[path] = object_bytes(GAMEPLAY_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (GAMEPLAY_SOURCE + "\n").encode()
+    assert HEART_REPLACEMENT in bundle and HEART_ADDITIONS.isdisjoint(bundle)
+    for path in HEART_ADDITIONS | {HEART_REPLACEMENT}:
+        bundle[path] = object_bytes(HEART_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (HEART_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
