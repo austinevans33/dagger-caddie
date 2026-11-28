@@ -22,6 +22,7 @@ NC_BATCH_SOURCE = "f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf"
 NC_BATCH_02_SOURCE = "ec0838e9916214393d05f0b9749a799f851dfc55"
 KINGDOM_TWO_SOURCE = "a90d0375beb4877fa36fdabbb6e7a89ba8e87fe2"
 KINGDOM_NC_SOURCE = "501a493d6f77b5895702a7354926df93d6050a43"
+KINGDOM_ROOMS_AND_ART_SOURCE = "bf1152075f6c5f120450c106b480d080a8b5105e"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -171,7 +172,13 @@ def expected_files():
     for path in kingdom_two_replacements | {measured_dispersion}:
         bundle[path] = object_bytes(KINGDOM_TWO_SOURCE, path)
     bundle[NC_BATCH_CATALOG] = object_bytes(KINGDOM_NC_SOURCE, NC_BATCH_CATALOG)
-    bundle[PREFIX + "source-sha.txt"] = (KINGDOM_NC_SOURCE + "\n").encode()
+    room_and_art_updates = {NC_BATCH_CATALOG, PREFIX + "all-heart-journal.js",
+        PREFIX + "all-heart-inround.js", PREFIX + "money-room.js"}
+    seven_lakes = PREFIX + "course-art/seven-lakes-west-end-nc.json"
+    assert room_and_art_updates <= bundle.keys() and seven_lakes not in bundle
+    for path in room_and_art_updates | {seven_lakes}:
+        bundle[path] = object_bytes(KINGDOM_ROOMS_AND_ART_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (KINGDOM_ROOMS_AND_ART_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
