@@ -45,3 +45,11 @@ The staging deployment rejected #114's rotated shared-room protocol in its lates
 ### Exact release and rollback
 
 Use the #120 gate artifact at the exact head above. Match the artifact's PR-head and tested-tree files, confirm the current Pages publishing source, and complete the installed-iPhone, saved-round and signed-in Caddy rehearsal described in [production-promotion.md](production-promotion.md). Record the owner-approved exact release hash before a single squash promotion to main. Verify deployed public bytes, the Pages deployment SHA and all Shining Rock drawings and Ghost access at the actual app origin. If a release regression blocks the existing shortcut, accounts, scoring or room recovery, revert the single promotion commit through a rollback PR and verify the prior pinned public bundle on the same origin. Keep Firebase and local storage in place.
+
+### Follow-up test evidence
+
+The exact #120 runtime also passed two supplemental local Chromium tests at 390 × 844. They exercised an archived-Ghost Grudge and a same-tee personal-best Club Legends challenge through real score entry and their Club Record receipts.
+
+#121 passed the [production gate](https://github.com/austinevans33/dagger-caddie/actions/runs/46140723595) and [course rehearsal](https://github.com/austinevans33/dagger-caddie/actions/runs/46140723580). It remains a separately qualified enhancement.
+
+[PR #122](https://github.com/austinevans33/dagger-caddie/pull/122), head `85a4ffe99dfdaa2b46c645e8382f6776d19a5ebd`, restores the pinned scorecard acquisition tools and feeds them the real Lonnie Poole course. Six tees are scorecard and Ghost-ready. Gray's 2,804-yard sum conflicts with the club's printed 2,795-yard back nine and is withheld. Geometry remains withheld. Local 130 Node and the Python cache test passed. The exact [promotion gate](https://github.com/austinevans33/dagger-caddie/actions/runs/46141121945) and [course rehearsal](https://github.com/austinevans33/dagger-caddie/actions/runs/46141121969) carry the branch's current qualification state. #122 is outside the fixed #120 release.
