@@ -7,6 +7,7 @@ on:
       - 'ghost-preview.html'
       - 'qa-scorecard/shining-rock/**'
       - 'scripts/build-shining-rock-book.py'
+      - 'scripts/production-bundle.py'
       - 'index.html'
       - 'tests/shining-rock-staging.spec.mjs'
       - 'tests/shining-rock.test.mjs'
@@ -46,20 +47,29 @@ jobs:
           before=subprocess.check_output(['git','show',os.environ['BASE']+':index.html']).decode()
           after=Path('index.html').read_text()
           start='// DCC STEP 30K-A — HOUSE GHOST MATCH ARCHIVE'
-          end='function dccGhostUpdateActions()'
+          end='// DCC STEP 26A — MATCH PLAY SCORING FOUNDATION'
+          picker='<label for="dccGhostStartHole">Starting hole</label>\n<select id="dccGhostStartHole"></select>\n'
+          assert after.count(picker)<=1, 'Ghost starter picker must be unique'
+          after=after.replace(picker, '')
           def outside_ghost(text):
               left, rest=text.split(start,1)
               _, right=rest.split(end,1)
               return left+right
           assert outside_ghost(before)==outside_ghost(after), 'Unexpected change outside existing Ghost engine'
           PYCODE
+          git fetch origin 61f9e9de0a3a7950ce28f223541cdd12f897b5d8
+          git fetch origin d9bc012add5d3ffddf292eb19351d3a49130c77c
+          git fetch origin 8701933596c6abc0f7861e182a0214e8c187966b
+          git fetch origin 227f400e0c358c6abda06f70fa5efa17b6e712dd
+          python3 scripts/production-bundle.py --check .
           python3 scripts/build-shining-rock-book.py --check
           node --test tests/*.test.mjs
       - uses: actions/jekyll-build-pages@v1
         with:
           source: ./
           destination: ./_site
-      - name: Test production-shaped Pages output at iPhone width
+      - name: Prepare the candidate browser and local Pages server
+        id: browser_setup
         run: |
           npm install --no-save --no-package-lock @playwright/test
           npx playwright install --with-deps chromium webkit
@@ -70,6 +80,8 @@ jobs:
             if curl --silent --fail http://127.0.0.1:8766/dagger-caddie/manifest.json -o /dev/null; then break; fi
             sleep 1
           done
+      - name: Test production-shaped Pages output at iPhone width
+        run: |
           npx playwright test tests/production-root.spec.mjs --browser=chromium --workers=2 --reporter=line --output=test-results/chromium
           npx playwright test tests/production-root.spec.mjs --browser=webkit --workers=2 --reporter=line --output=test-results/webkit
       - name: Package exact rehearsal after acceptance
@@ -87,7 +99,7 @@ jobs:
             ${{ runner.temp }}/REHEARSAL_TESTED_MERGE.txt
             ${{ runner.temp }}/shining-rock-rehearsal.tar.gz
       - name: Test existing Money Room against staging
-        if: ${{ !cancelled() && steps.money_scope.outputs.changed == 'true' }}
+        if: ${{ !cancelled() && steps.browser_setup.outcome == 'success' && steps.money_scope.outputs.changed == 'true' }}
         run: npx playwright test tests/shining-rock-staging.spec.mjs --browser=chromium --workers=1 --reporter=line --output=test-results/staging
       - uses: actions/upload-artifact@v4
         if: always()

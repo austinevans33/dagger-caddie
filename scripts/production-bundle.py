@@ -14,7 +14,8 @@ HOTFIX_FILES = frozenset({"app/61f9e9de0a/clubhouse-home.js", "app/61f9e9de0a/cl
 LEGACY = "390b501ffd0b923c6b009ca70509e32319b2e032"
 # Reviewable successor pin. Every changed runtime byte comes from this immutable source.
 SUCCESSOR = "d9bc012add5d3ffddf292eb19351d3a49130c77c"
-PRE_RELEASE = "3dacb664d905fc1cadde811b17b2fc131c8e7653"
+PRE_RELEASE = "8a07777e19c26529d1adccbc0296961977e7b3a4"
+KINGDOM_SOURCE = "227f400e0c358c6abda06f70fa5efa17b6e712dd"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -29,6 +30,23 @@ SUCCESSOR_FILES = frozenset({
 })
 
 SUCCESSOR_NEW_FILES = frozenset({"app/61f9e9de0a/course-art/shining-rock-northbridge-ma.json"})
+
+# Exact runtime delta from the integrated, reviewable source commit.
+KINGDOM_REPLACEMENTS = frozenset({
+    "index.html",
+    "ghost-preview.html",
+    "app/61f9e9de0a/founders-verified-scorecards.js",
+    "app/61f9e9de0a/house-ghost-ledger.js",
+    "app/61f9e9de0a/house-ghost-playback.js",
+    "app/61f9e9de0a/house-ghost-round.js",
+    "app/61f9e9de0a/ledger-settlement.js",
+    "app/61f9e9de0a/solo-scorecard.js",
+})
+KINGDOM_ADDITIONS = frozenset({
+    "app/61f9e9de0a/course-factory-acquisition.js",
+    "app/61f9e9de0a/course-factory-batch.js",
+    "app/61f9e9de0a/round-hole-order.js",
+})
 
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
 PREFIX = "app/" + STAGED[:10] + "/"
@@ -85,7 +103,11 @@ def expected_files():
     for path in (PREFIX + "south-carolina-course-factory.js", PREFIX + "opengolf-catalog.js"):
         assert path in bundle
         bundle[path] = object_bytes(VERDAE_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (VERDAE_SOURCE + "\n").encode()
+    assert KINGDOM_REPLACEMENTS <= bundle.keys()
+    assert KINGDOM_ADDITIONS.isdisjoint(bundle)
+    for path in KINGDOM_REPLACEMENTS | KINGDOM_ADDITIONS:
+        bundle[path] = object_bytes(KINGDOM_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (KINGDOM_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 

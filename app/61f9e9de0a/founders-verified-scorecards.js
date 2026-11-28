@@ -319,3 +319,29 @@ export function founderMapRecord(course){
  const f=exactFounder(course);
  return f?.map||null;
 }
+
+// Batch-safe inventory: verified scorecard records and map readiness, without fabricating geometry.
+export function founderFactoryInventory(){
+ return Object.freeze(courseBooks.map(book=>Object.freeze({
+  id:book.id,name:book.name,region:book.region,holeCount:book.holeCount??18,
+  teeCount:Object.keys(book.tees).length,
+  scorecardReady:true,
+  yardageBookStatus:book.map?.status??'unmapped',
+  mapFile:book.map?.status==='bundled-reviewed-osm'?book.map.file:null,
+  ghostScorecardReady:true
+ })));
+}
+
+// Produce one canonical, sourced tee per course for batch artwork preflight.
+// Prefer the pinned geometry audit tee; never infer a missing scorecard.
+export function founderFactoryEntries(){
+ return Object.freeze(courseBooks.map(book=>{
+  const course={provider:founderProvider,providerCourseId:book.id,name:book.name,region:book.region,...(book.holeCount?{holeCount:book.holeCount}:{})};
+  const tees=founderTeesForCourse(course);
+  const tee=tees.find(t=>t.providerTeeId===book.map?.auditTee)??tees[0];
+  const selection={course,tee,holeNumber:1};
+  const card=founderVerifiedScorecard(selection);
+  if(!card)throw Error('Missing canonical factory scorecard: '+book.id);
+  return Object.freeze({selection,holes:card.holes,source:card.source,provenance:card.provenance});
+ }));
+}
