@@ -18,3 +18,10 @@
 | 3. Course Factory | #108 acquisition and inventory helpers | Run previously researched NC candidates through real source and geometry audits. Count each readiness stage separately. |
 | 4. Course intelligence | Existing shared course/conditions modules | Continue after the acquisition pipeline passes a real batch. |
 | 5. Golf Trip Mode | Existing Cup De Diesel Nips design and history | Resume after shared round and course contracts are stable. |
+
+### Mission 2 gameplay stack
+
+- This stack adds the actual Starter’s Desk starting-hole picker. Solo page navigation and score advancement follow the same play order, including native nine-hole courses.
+- An unlocked Ghost starts at the active paper hole by default. It can still be set explicitly. A running match retains its original start and partial history stores it.
+- Local wagers retain packed, ordered score rows for backward compatibility. The physical hole is derived from the saved start, including when copying a verified round score. Nassau archives reject unresolved segments.
+- Remote shared rooms still use the legacy ordering. An older reachable web client can join a new room and recalculate Skins or Nassau with the old order. Before opting rooms into rotated financial settlement, prove version compatibility and old-client fail-closed behavior in staging. The Firebase rules and projects are untouched by this stack.

@@ -49,18 +49,23 @@ jobs:
           start='// DCC STEP 30K-A — HOUSE GHOST MATCH ARCHIVE'
           end='// DCC STEP 26A — MATCH PLAY SCORING FOUNDATION'
           picker='<label for="dccGhostStartHole">Starting hole</label>\n<select id="dccGhostStartHole"></select>\n'
-          assert after.count(picker)<=1, 'Ghost starter picker must be unique'
-          after=after.replace(picker, '')
-          def outside_ghost(text):
+          wager_picker='<div><label for="wStartHole">Starting hole</label><select id="wStartHole"></select></div>\n'
+          def outside_gameplay(text):
+              assert text.count(picker)<=1 and text.count(wager_picker)<=1, 'Starting-hole controls must be unique'
+              text=text.replace(picker, '').replace(wager_picker, '')
               left, rest=text.split(start,1)
               _, right=rest.split(end,1)
+              text=left+right
+              left, rest=text.split('function wagerMath(game){',1)
+              _, right=rest.split("const freshGame=",1)
               return left+right
-          assert outside_ghost(before)==outside_ghost(after), 'Unexpected change outside existing Ghost engine'
+          assert outside_gameplay(before)==outside_gameplay(after), 'Unexpected root markup or code outside Ghost and local wagers'
           PYCODE
           git fetch origin 61f9e9de0a3a7950ce28f223541cdd12f897b5d8
           git fetch origin d9bc012add5d3ffddf292eb19351d3a49130c77c
           git fetch origin 8701933596c6abc0f7861e182a0214e8c187966b
           git fetch origin 227f400e0c358c6abda06f70fa5efa17b6e712dd
+          git fetch origin daa3da1216430076328afc918686e6ee3b64c0e0
           python3 scripts/production-bundle.py --check .
           python3 scripts/build-shining-rock-book.py --check
           node --test tests/*.test.mjs

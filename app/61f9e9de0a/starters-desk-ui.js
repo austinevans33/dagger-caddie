@@ -3,6 +3,7 @@
 import {readActiveRound,clearActiveRound,saveActiveRound} from './starters-desk-session.js';
 import {searchOpenGolfCourses,loadOpenGolfTees} from './opengolf-catalog.js';
 import {getRoundEnvironment} from './round-environment.js?v=location-shapes-23';
+import {roundHoleOrder} from './round-hole-order.js';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {archiveAndClearSoloRound} from './solo-round-reset.js';
 export function mountStartersDesk({doc=document,storage=localStorage}={}){
@@ -29,12 +30,13 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  const button=doc.createElement('button');button.id='dcc-starter-open';button.type='button';button.textContent='THE STARTER’S DESK';
  const dialog=doc.createElement('dialog');dialog.id='dcc-starter-dialog';
  dialog.setAttribute('aria-label','Dagger Country Club Starter’s Desk');
- dialog.innerHTML=`<div class="dcc-starter-head"><div class="dcc-starter-eyebrow">DAGGER COUNTRY CLUB · THE FIRST TEE</div><h2 style="color:#f3e9d3!important;-webkit-text-fill-color:#f3e9d3!important;opacity:1!important">The Starter’s Desk</h2><p>“Where shall we be conducting today’s investigation into your handicap?”</p></div><div class="dcc-starter-body"><p id="dcc-starter-current"></p><label for="dcc-starter-query">Course name</label><input id="dcc-starter-query" placeholder="Search a golf course by name" maxlength="100"/><button type="button" id="dcc-starter-search">Find courses</button><div id="dcc-starter-results" aria-live="polite"></div><label for="dcc-starter-tees">Your tees</label><select id="dcc-starter-tees" disabled><option value="">Select a course first</option></select><label for="dcc-starter-caddy">Your caddy</label><select id="dcc-starter-caddy" aria-label="Choose your caddy"><option value="keith">Keith · Head Caddy</option><option value="reginald">Reginald · Traditions</option><option value="vinny">Vinny · Wagering</option><option value="kyle">Kyle · Almost enlisted</option></select><button type="button" id="dcc-starter-checkin" disabled>Begin Round</button><button class="secondary" id="dcc-starter-later" type="button">My course isn’t listed yet — enter the clubhouse</button><p style="font-size:10px;opacity:.75">Course data © OpenStreetMap contributors (ODbL 1.0) via OpenGolfAPI.</p></div>`;
+ dialog.innerHTML=`<div class="dcc-starter-head"><div class="dcc-starter-eyebrow">DAGGER COUNTRY CLUB · THE FIRST TEE</div><h2 style="color:#f3e9d3!important;-webkit-text-fill-color:#f3e9d3!important;opacity:1!important">The Starter’s Desk</h2><p>“Where shall we be conducting today’s investigation into your handicap?”</p></div><div class="dcc-starter-body"><p id="dcc-starter-current"></p><label for="dcc-starter-query">Course name</label><input id="dcc-starter-query" placeholder="Search a golf course by name" maxlength="100"/><button type="button" id="dcc-starter-search">Find courses</button><div id="dcc-starter-results" aria-live="polite"></div><label for="dcc-starter-tees">Your tees</label><select id="dcc-starter-tees" disabled><option value="">Select a course first</option></select><label for="dcc-starter-start">Starting hole</label><select id="dcc-starter-start" disabled><option value="1">Hole 1</option></select><label for="dcc-starter-caddy">Your caddy</label><select id="dcc-starter-caddy" aria-label="Choose your caddy"><option value="keith">Keith · Head Caddy</option><option value="reginald">Reginald · Traditions</option><option value="vinny">Vinny · Wagering</option><option value="kyle">Kyle · Almost enlisted</option></select><button type="button" id="dcc-starter-checkin" disabled>Begin Round</button><button class="secondary" id="dcc-starter-later" type="button">My course isn’t listed yet — enter the clubhouse</button><p style="font-size:10px;opacity:.75">Course data © OpenStreetMap contributors (ODbL 1.0) via OpenGolfAPI.</p></div>`;
  dialog.querySelector('.dcc-starter-head h2').style.setProperty('color','#f3e9d3','important');
  dialog.querySelector('.dcc-starter-head h2').style.setProperty('-webkit-text-fill-color','#f3e9d3','important');
  const query=dialog.querySelector('#dcc-starter-query');
  const results=dialog.querySelector('#dcc-starter-results');
  const tees=dialog.querySelector('#dcc-starter-tees');
+ const start=dialog.querySelector('#dcc-starter-start');
  const checkin=dialog.querySelector('#dcc-starter-checkin');
  let selected=null,available=[],requestId=0;
  const caddyPicker=dialog.querySelector('#dcc-starter-caddy');
@@ -52,7 +54,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
  syncCaddy();
  caddyPicker.addEventListener('change',chooseCaddy);
  dialog.querySelector('#dcc-starter-search').addEventListener('click',async()=>{
-  const current=++requestId;selected=null;available=[];checkin.disabled=true;tees.disabled=true;
+  const current=++requestId;selected=null;available=[];checkin.disabled=true;tees.disabled=true;start.disabled=true;
   tees.replaceChildren(new Option('Select a course first',''));
   results.textContent='Consulting the course register…';
   try{
@@ -64,7 +66,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
     const item=doc.createElement('button');item.type='button';item.className='secondary';
     item.textContent=course.name+' · '+course.region;
     item.addEventListener('click',async()=>{
-     const turn=++requestId;selected=null;checkin.disabled=true;tees.disabled=true;
+     const turn=++requestId;selected=null;checkin.disabled=true;tees.disabled=true;start.disabled=true;
      results.textContent='Checking the available tees…';
      try{
       const entries=await loadOpenGolfTees(course);
@@ -73,6 +75,9 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
       selected=entries[0].course;available=entries[0].tees;
       results.textContent='Selected: '+selected.name;
       tees.replaceChildren(new Option('Select your tees',''),...available.map((t,i)=>new Option(t.name+' · '+t.totalYards+' yards',String(i))));
+      const order=roundHoleOrder({count:selected.holeCount??18});
+      start.replaceChildren(...order.map(hole=>new Option('Hole '+hole,String(hole))));
+      start.disabled=false;
       tees.disabled=false;
      }catch{if(turn===requestId)results.textContent='Could not retrieve tee details. You can enter without checking in.';}
     });
@@ -94,8 +99,9 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
    if(!result.ok){results.textContent='Could not safely archive the current round. Your scores were retained.';return;}
   }
   chooseCaddy();
-  if(saveActiveRound(storage,{course:selected,tee,holeNumber:1})){
-   doc.dispatchEvent(new CustomEvent('dcc:course-selected',{detail:{course:selected,tee,holeNumber:1}}));
+  const holeNumber=Number(start.value);
+  if(saveActiveRound(storage,{course:selected,tee,holeNumber})){
+   doc.dispatchEvent(new CustomEvent('dcc:course-selected',{detail:{course:selected,tee,holeNumber}}));
    dialog.close();
    // Check-in never waits on the network; verified hole data arrives separately.
    getRoundEnvironment({storage}).then(context=>{if(context.state!=='selection-changed')doc.dispatchEvent(new CustomEvent('dcc:round-environment',{detail:context}));}).catch(()=>{});
@@ -116,7 +122,7 @@ export function mountStartersDesk({doc=document,storage=localStorage}={}){
   const result=archiveAndClearSoloRound(storage);
   if(!result.ok){results.textContent='Could not safely archive your round. Nothing was intentionally discarded.';return;}
   // Invalidate any previous course/tee requests so a late response cannot restore a stale selection.
-  ++requestId;selected=null;available=[];query.value='';checkin.disabled=true;tees.disabled=true;tees.replaceChildren(new Option('Select a course first',''));
+  ++requestId;selected=null;available=[];query.value='';checkin.disabled=true;tees.disabled=true;start.disabled=true;tees.replaceChildren(new Option('Select a course first',''));
   results.textContent='Round archived. Search for a new course to check in.';
   dialog.querySelector('#dcc-starter-current').textContent='No course checked in yet.';
   doc.dispatchEvent(new CustomEvent('dcc:course-cleared'));

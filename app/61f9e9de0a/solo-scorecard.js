@@ -7,6 +7,15 @@ export function soloRange(card){
  const start=card?.length===9&&card.nineStart===10?10:1;
  return {start,end:card?.length===9?start+8:18};
 }
+export function soloPlayOrder(card, courseHoles=18){
+ const range=soloRange(card);
+ if(card.length===9&&courseHoles===18){
+  return Array.from({length:9},(_,index)=>range.start+index);
+ }
+ const savedStart=card.startHole??1;
+ const startHole=savedStart<=courseHoles?savedStart:1;
+ return roundHoleOrder({count:courseHoles,startHole});
+}
 export function readSoloCard(storage){
  try{const x=JSON.parse(storage.getItem(SOLO_CARD_KEY)||'null');if(x?.version!==1||!Array.isArray(x.scores)||x.scores.length!==18||x.scores.some(n=>n!==null&&!validScore(n))||!Number.isInteger(x.hole)||x.hole<1||x.hole>18||(x.startHole!==undefined&&(!Number.isInteger(x.startHole)||x.startHole<1||x.startHole>18))||![undefined,9,18].includes(x.length)||![undefined,1,10].includes(x.nineStart))return null;return x;}catch{return null;}
 }
@@ -17,7 +26,7 @@ export function startSoloCard(storage){
  const nativeNine=round.selection.course.holeCount===9;
  if(old?.identity===identity){
   if(!nativeNine||old.length===9&&old.nineStart!==10&&old.hole<=9)return old;
-  const corrected={...old,hole:Math.min(old.hole,9),length:9,nineStart:1};
+  const corrected={...old,hole:Math.min(old.hole,9),startHole:Math.min(old.startHole??1,9),length:9,nineStart:1};
   try{storage.setItem(SOLO_CARD_KEY,JSON.stringify(corrected));return corrected;}catch{return null;}
  }
  const card={version:1,identity,hole:round.selection.holeNumber,startHole:round.selection.holeNumber,scores:Array(18).fill(null),length:nativeNine?9:18};
@@ -26,12 +35,9 @@ export function startSoloCard(storage){
 export function saveSoloScore(storage,score){
  const card=startSoloCard(storage);if(!card||!validScore(score))return null;
  const next={...card,scores:[...card.scores]};next.scores[next.hole-1]=score;
- if(card.length===9){if(next.hole<soloRange(card).end)next.hole++;}
- else {
-  const order=roundHoleOrder({startHole:card.startHole??1});
-  const index=order.indexOf(next.hole);
-  if(index<order.length-1)next.hole=order[index+1];
- }
+ const order=soloPlayOrder(card,readActiveRound(storage)?.selection.course.holeCount??18);
+ const position=order.indexOf(next.hole);
+ if(position>=0&&position<order.length-1)next.hole=order[position+1];
  try{storage.setItem(SOLO_CARD_KEY,JSON.stringify(next));return next;}catch{return null;}
 }
 export function setSoloHole(storage,hole){

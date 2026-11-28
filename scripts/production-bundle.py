@@ -16,6 +16,7 @@ LEGACY = "390b501ffd0b923c6b009ca70509e32319b2e032"
 SUCCESSOR = "d9bc012add5d3ffddf292eb19351d3a49130c77c"
 PRE_RELEASE = "8a07777e19c26529d1adccbc0296961977e7b3a4"
 KINGDOM_SOURCE = "227f400e0c358c6abda06f70fa5efa17b6e712dd"
+GAMEPLAY_SOURCE = "daa3da1216430076328afc918686e6ee3b64c0e0"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -46,6 +47,16 @@ KINGDOM_ADDITIONS = frozenset({
     "app/61f9e9de0a/course-factory-acquisition.js",
     "app/61f9e9de0a/course-factory-batch.js",
     "app/61f9e9de0a/round-hole-order.js",
+})
+
+GAMEPLAY_REPLACEMENTS = frozenset({
+    "index.html",
+    "app/61f9e9de0a/ghost-partial-archive.js",
+    "app/61f9e9de0a/ledger-settlement.js",
+    "app/61f9e9de0a/paper-to-game-prefill.js",
+    "app/61f9e9de0a/solo-scorecard-ui.js",
+    "app/61f9e9de0a/solo-scorecard.js",
+    "app/61f9e9de0a/starters-desk-ui.js",
 })
 
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
@@ -107,7 +118,10 @@ def expected_files():
     assert KINGDOM_ADDITIONS.isdisjoint(bundle)
     for path in KINGDOM_REPLACEMENTS | KINGDOM_ADDITIONS:
         bundle[path] = object_bytes(KINGDOM_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (KINGDOM_SOURCE + "\n").encode()
+    assert GAMEPLAY_REPLACEMENTS <= bundle.keys()
+    for path in GAMEPLAY_REPLACEMENTS:
+        bundle[path] = object_bytes(GAMEPLAY_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (GAMEPLAY_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 

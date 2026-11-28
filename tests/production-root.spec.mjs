@@ -392,7 +392,8 @@ test('all Shining Rock book pages share reviewed geometry with original Ghost pl
       await page.screenshot({path:testInfo.outputPath('shining-rock-18-yardage-book.png'),fullPage:true});
     }
     await page.locator('#watchGhost').click();
-    await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',geometry);
+    await expect(page.locator('#headline')).toContainText('Hole '+hole+' ·', {timeout:12000});
+    await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',geometry,{timeout:12000});
     await page.locator('#next').click();
     await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
   }
@@ -446,6 +447,7 @@ test('Verdae uses the existing scorecard, Yardage Book, original Ghost and Ledge
   await book.close();
 
   await openOriginalGhost(page);
+  await page.locator('#dccGhostStartHole').selectOption('1');
   for(let hole=1;hole<=18;hole++){
     await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE '+hole+' · PAR '+pars[hole-1]);
     await page.locator('#dccGhostPlay').click();
@@ -484,4 +486,52 @@ test('Verdae uses the existing scorecard, Yardage Book, original Ghost and Ledge
   await expect(page.locator('#dccSimpleNet')).toHaveText('+$10.00');
   await ticket.locator('[data-paid="1"]').click();
   await expect(ticket).toContainText('marked paid');
+});
+
+test('shotgun solo check-in drives mid-round Ghost and local wager scoring by physical hole',async ({page})=>{
+  page.on('dialog',dialog=>dialog.accept());
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Shining Rock');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'The Rock'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Gold · 6728 yards'});
+  await page.locator('#dcc-starter-start').selectOption('18');
+  await page.locator('#dcc-starter-checkin').click();
+  await page.locator('#dccHomeScorecard').click();
+  await page.getByRole('button',{name:'Pencil 4 strokes for hole 18'}).click();
+  await expect(page.locator('#dcc-paper-progress')).toContainText('HOLE 1');
+  await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
+  await page.reload();
+  await openOriginalGhost(page);
+  await expect(page.locator('#dccGhostStartHole')).toHaveValue('1');
+  await page.locator('#dccGhostStartHole').selectOption('18');
+  await page.locator('#dccGhostPlay').click();
+  await expect(page.frameLocator('#dccGhostPlayback iframe').locator('#headline')).toContainText('Hole 18 · Par 4');
+
+  await page.locator('#tab-play').click();
+  await page.locator('[data-dcc-go="ticket"]').click();
+  const wager=page.locator('#newWagers');
+  if(!await wager.evaluate(node=>node.open))await wager.locator('summary').click();
+  await expect(page.locator('#wStartHole')).toHaveValue('1');
+  await page.locator('#wStartHole').selectOption('18');
+  await page.locator('#wFormat').selectOption('nassau');
+  await page.locator('#wStart').click();
+  await expect(page.locator('#wHole')).toHaveText('18');
+  await page.locator('#dccPaperGamePlayer').selectOption('0');
+  await page.locator('#dccPaperGameUse').click();
+  await expect(page.locator('#ws0')).toHaveValue('4');
+  await page.locator('#ws1').fill('5');
+  await page.locator('#wSaveHole').click();
+  await expect(page.locator('#wHole')).toHaveText('1');
+  await expect(page.locator('#wLead')).toContainText('3 matches pending');
+  await page.locator('#wFinish').click();
+  await expect(page.locator('#wStatus')).toContainText('3 unsettled matches');
+  await page.locator('#wUndoHole').click();
+  await expect(page.locator('#wHole')).toHaveText('18');
+  await page.reload();
+  await page.locator('#tab-play').click();
+  await page.locator('[data-dcc-go="ticket"]').click();
+  if(!await wager.evaluate(node=>node.open))await wager.locator('summary').click();
+  await expect(page.locator('#wHole')).toHaveText('18');
 });
