@@ -507,3 +507,25 @@ test('previously reviewed NC courses expose real art or an honest scorecard fall
   await page.locator('#next').click();
   await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });
+
+test('Country Hills plays from the official tee card using the reviewed drawing', async ({page}) => {
+  await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Country Hills Golf Course');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Gibsonville, NC'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Blue · 5873 yards'});
+  await page.locator('#dcc-starter-checkin').click();
+  await page.locator('#dccHomeScorecard').click();
+  await page.getByRole('button', {name:'Pencil 4 strokes for hole 1'}).click();
+  await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
+  await page.goto(launch + 'yardage-preview.html?hole=1');
+  await expect(page.locator('#mapYards')).toHaveText('385 yds');
+  const sketch = page.locator('.field-sketch .route-mark');
+  await expect(sketch).toHaveCount(1);
+  const route = await sketch.getAttribute('d');
+  await page.locator('#watchGhost').click();
+  await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d', route);
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+});

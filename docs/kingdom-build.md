@@ -35,3 +35,9 @@ The first three maps are exact original Course Factory review blobs from `5b98d3
 Full candidate preflight across the curated catalog found 38 courses and 38 scorecard/Ghost-ready courses, 23 with at least one full drawing, and 15 with all holes fully drawn. These are runtime preflight counts. End-to-end and release qualification are tracked separately in CI. OpenGolfAPI listings are outside these counts.
 
 The next acquisition pass should reopen the prior Seven Lakes review and Pine Island proof before requesting new geometry. Mill Creek No. 17 can keep verified tee, green and routing while its fairway remains omitted.
+
+### North Carolina batch 02
+
+Recovered previously researched course files from `c32c77e` after re-fetching and matching the original club scorecard bytes. Greensboro National, 12 Oaks, Hope Valley and Country Hills join the scorecard and House Ghost catalogs. The original OSM drawings are retained byte-for-byte. Greensboro National 16, 12 Oaks 11 and Hope Valley 14 remain partial. Country Hills has all 18 complete drawing records.
+
+With this batch the runtime preflight reports 42 discovered, 42 scorecard-ready, 27 with drawings, 42 Ghost-ready and 16 with complete drawing preflight. Full course-by-course gameplay verification and geometries for the other 26 are distinct from those counts.
