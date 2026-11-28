@@ -514,7 +514,7 @@ test('Country Hills plays from the official tee card using the reviewed drawing'
   await page.locator('#dcc-starter-query').fill('Country Hills Golf Course');
   await page.locator('#dcc-starter-search').click();
   await page.locator('#dcc-starter-results button').filter({hasText:'Gibsonville, NC'}).click();
-  await page.locator('#dcc-starter-tees').selectOption('blue');
+  await page.locator('#dcc-starter-tees').selectOption({label:'Blue · 5873 yards'});
   await page.locator('#dcc-starter-checkin').click();
   await page.locator('#dccHomeScorecard').click();
   await page.getByRole('button', {name:'Pencil 4 strokes for hole 1'}).click();
