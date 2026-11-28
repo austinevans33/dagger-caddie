@@ -18,3 +18,20 @@
 | 3. Course Factory | #108 acquisition and inventory helpers | Run previously researched NC candidates through real source and geometry audits. Count each readiness stage separately. |
 | 4. Course intelligence | Existing shared course/conditions modules | Continue after the acquisition pipeline passes a real batch. |
 | 5. Golf Trip Mode | Existing Cup De Diesel Nips design and history | Resume after shared round and course contracts are stable. |
+
+### North Carolina batch 01
+
+Run `node scripts/kingdom-course-preflight.mjs the-woods-whispering-pines-nc mill-creek-mebane-nc hillandale-durham-nc neuse-clayton-nc`. The command runs the current production course catalog, pinned-art loader and Ghost simulator. An unavailable or incomplete drawing stays visible in the result without stopping other courses.
+
+| Course | Club card checked | Full drawings | Partial drawings | Scorecard Ghost |
+| --- | --- | ---: | ---: | --- |
+| The Woods, Whispering Pines | Club PDF byte-identical to the prior pin, official HTML re-fetched | 18 | 0 | Yes |
+| Mill Creek, Mebane | Both club card images byte-identical to the prior pins | 17 | 1 (Hole 17) | Yes |
+| Hillandale, Durham | Club image byte-identical to the prior pin | 18 | 0 | Yes |
+| Neuse, Clayton | Club image byte-identical to the prior pin | 0 | 0 | Yes |
+
+The first three maps are exact original Course Factory review blobs from `5b98d3a`. Their SHA-256 digests are checked again by the batch regression. The Woods catalog pins the unaffected club PDF while retaining the refreshed HTML location. Neuse carries the clean scorecard-only record from `81f76d4`. Its lack of verified geometry does not block scoring or Ghost.
+
+Full candidate preflight across the curated catalog found 38 courses and 38 scorecard/Ghost-ready courses, 23 with at least one full drawing, and 15 with all holes fully drawn. These are runtime preflight counts. End-to-end and release qualification are tracked separately in CI. OpenGolfAPI listings are outside these counts.
+
+The next acquisition pass should reopen the prior Seven Lakes review and Pine Island proof before requesting new geometry. Mill Creek No. 17 can keep verified tee, green and routing while its fairway remains omitted.
