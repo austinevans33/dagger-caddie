@@ -18,6 +18,8 @@ PRE_RELEASE = "8a07777e19c26529d1adccbc0296961977e7b3a4"
 KINGDOM_SOURCE = "227f400e0c358c6abda06f70fa5efa17b6e712dd"
 GAMEPLAY_SOURCE = "daa3da1216430076328afc918686e6ee3b64c0e0"
 HEART_SOURCE = "00b6fa3f70f12d2164df630cf1b87ccb417e6ee7"
+NC_BATCH_SOURCE = "f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf"
+NC_BATCH_02_SOURCE = "ec0838e9916214393d05f0b9749a799f851dfc55"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -70,6 +72,20 @@ HEART_ADDITIONS = frozenset({
     "app/61f9e9de0a/matchbook.js",
 })
 HEART_REPLACEMENT = "app/61f9e9de0a/solo-scorecard-ui.js"
+
+NC_BATCH_CATALOG = "app/61f9e9de0a/north-carolina-course-factory.js"
+NC_BATCH_ART = frozenset({
+    "app/61f9e9de0a/course-art/the-woods-whispering-pines-nc.json",
+    "app/61f9e9de0a/course-art/mill-creek-mebane-nc.json",
+    "app/61f9e9de0a/course-art/hillandale-durham-nc.json",
+})
+
+NC_BATCH_02_ART = frozenset({
+    "app/61f9e9de0a/course-art/greensboro-national-summerfield-nc.json",
+    "app/61f9e9de0a/course-art/12-oaks-holly-springs-nc.json",
+    "app/61f9e9de0a/course-art/hope-valley-durham-nc.json",
+    "app/61f9e9de0a/course-art/country-hills-gibsonville-nc.json",
+})
 
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
 PREFIX = "app/" + STAGED[:10] + "/"
@@ -136,7 +152,13 @@ def expected_files():
     assert HEART_REPLACEMENT in bundle and HEART_ADDITIONS.isdisjoint(bundle)
     for path in HEART_ADDITIONS | {HEART_REPLACEMENT}:
         bundle[path] = object_bytes(HEART_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (HEART_SOURCE + "\n").encode()
+    assert NC_BATCH_CATALOG in bundle and NC_BATCH_ART.isdisjoint(bundle)
+    for path in NC_BATCH_ART | {NC_BATCH_CATALOG}:
+        bundle[path] = object_bytes(NC_BATCH_SOURCE, path)
+    assert NC_BATCH_02_ART.isdisjoint(bundle)
+    for path in NC_BATCH_02_ART | {NC_BATCH_CATALOG}:
+        bundle[path] = object_bytes(NC_BATCH_02_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = ("cdd4cef51b3945a58e77a8d6f792cda6e60449cd\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
