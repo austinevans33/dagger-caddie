@@ -507,3 +507,27 @@ test('previously reviewed NC courses expose real art or an honest scorecard fall
   await page.locator('#next').click();
   await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });
+
+test('Caddy shot logging keeps measured dispersion separate from target yardage',async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('dagger_profile',JSON.stringify([{name:'7 Iron',n:3,carry:155}])));
+  await checkInRock(page,'Gold · 6728 yards');
+  await page.goto(launch+'yardage-preview.html?hole=1');
+  await page.waitForFunction(()=>typeof document.getElementById('askHoleCaddy')?.onclick==='function');
+  await page.locator('#askHoleCaddy').click();
+  await expect(page.locator('#aiInput')).toBeVisible();
+  await page.locator('#aiShotReport > summary').click();
+  await page.getByText('Add launch-monitor measurements',{exact:true}).click();
+  await page.locator('#aiShotClub').selectOption('7 Iron');
+  for(const [carry,lateral] of [[155,-8],[159,0],[161,6]]){
+    await page.locator('#aiShotYards').fill('175');
+    await page.locator('#dccMeasuredCarry').fill(String(carry));
+    await page.locator('#dccMeasuredLateral').fill(String(lateral));
+    await page.locator('#aiShotQuality [data-quality="Good"]').click();
+    await page.locator('#aiRecordShot').click();
+  }
+  await expect(page.locator('.dcc-shot-measurements [role="status"]')).toHaveText('3 measured shots · Carry 155–161 yd · Lateral -8 to 6 yd');
+  const records=await page.evaluate(()=>JSON.parse(localStorage.getItem('dagger_shot_log')));
+  expect(records.map(row=>row.yards)).toEqual([175,175,175]);
+  expect(records.map(row=>row.measurement.carryYards)).toEqual([155,159,161]);
+  expect(records.every(row=>Number.isSafeInteger(row.courseContext?.roundSelectedAt))).toBe(true);
+});

@@ -8,6 +8,7 @@ export function createShotRecordContext(active,holeNumber,environment,fetchedAt,
   course:{provider:course.provider,providerCourseId:course.providerCourseId,name:course.name,region:course.region},
   tee:{providerTeeId:tee.providerTeeId,name:tee.name},
   holeNumber,
+  ...(Number.isSafeInteger(active.selectedAt)?{roundSelectedAt:active.selectedAt}:{}),
   locationSource:'selected-course-not-shot-gps',
   measuredCarryYards:null,
   measuredLateralYards:null
