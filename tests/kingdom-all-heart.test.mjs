@@ -131,3 +131,20 @@ test('reopening the scorecard repairs a missed receipt after the score was saved
  assert.equal(allHeartClubRecord(storage).length,1);
  assert.equal(allHeartClubRecord(storage)[0].receipt.outcome,'matched');
 });
+
+test('the actual Sawgrass 17 scorecard offers and records the sourced Tiger Woods Legend', () => {
+  const storage = memory();
+  const [sawgrass] = founderCatalogRecords('TPC Sawgrass');
+  const [selectedTee] = founderTeesForCourse(sawgrass);
+  assert(saveActiveRound(storage,{course:sawgrass, tee:selectedTee, holeNumber:17},1700000000200));
+  const active = readActiveRound(storage), card = startSoloCard(storage);
+  const offer = allHeartRoundOffer(storage,active,card,force);
+  assert.equal(offer.moment.type,'legend');
+  assert.match(offer.moment.description,/Tiger Woods made 2 here/);
+  assert.match(offer.moment.sourceUrl,/pgatour\.com/);
+  assert.equal(offer.moment.targetStrokes,2);
+  assert(respondToAllHeart(storage,card,offer,true));
+  assert.equal(completeAllHeartHole(storage,saveSoloScore(storage,2),17).outcome,'matched');
+  assert.equal(allHeartClubRecord(storage)[0].hole,17);
+  assert.notEqual(allHeartRoundOffer(storage,active,setSoloHole(storage,18),force)?.moment.sourceUrl,offer.moment.sourceUrl);
+});
