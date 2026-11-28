@@ -81,3 +81,7 @@ Neuse stays scorecard-only. Seventeen routes and endpoints passed the boundary r
 Pine Island stays scorecard-only. The fresh route tags still conflict with the official card at 2, 3, 4 and 7, and the distance audit rejects all supported audit tees. Raw SHA-256: `613c267041bd2e3a30216034de5da4d99e582a0a5a45a119d64c37ca9487ba4b`.
 
 With Seven Lakes, the candidate has 45 scorecards and Ghost profiles, 28 with drawings including 12 partially complete, and 16 fully drawn. Counts describe preflight coverage.
+
+### Caddy round provenance follow-up
+
+The Yardage Book now gives the Caddy draft the exact round timestamp as well as course/tee identity. A draft from an earlier round can still be edited but cannot select the current shot's hole. The club recommendation context includes only accepted launch-monitor carry and lateral sample ranges for clubs in the saved bag. Targets, past scorecard distances and Ghost shots are excluded. This follow-up is isolated for review while the next release candidate runs its exact gate.

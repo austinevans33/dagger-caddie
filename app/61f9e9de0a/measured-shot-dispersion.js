@@ -15,3 +15,16 @@ export function measuredClubDispersion(shots,club) {
   const carries=measured.map(shot=>shot.carryYards),misses=measured.map(shot=>shot.lateralYards);
   return {count:measured.length,carry:[Math.min(...carries),Math.max(...carries)],lateral:[Math.min(...misses),Math.max(...misses)]};
 }
+
+export function describeMeasuredBag(shots,clubNames) {
+  if(!Array.isArray(clubNames))return '';
+  const rounded=range=>range.map(value=>Math.round(value*10)/10).join(' to ');
+  const observations=[];
+  for(const club of [...new Set(clubNames)].slice(0,14)) {
+    const result=measuredClubDispersion(shots,club);
+    if(!result)continue;
+    observations.push(club+' ('+result.count+' measured, carry '+rounded(result.carry)+
+      ' yd, lateral '+rounded(result.lateral)+' yd)');
+  }
+  return observations.join('; ');
+}

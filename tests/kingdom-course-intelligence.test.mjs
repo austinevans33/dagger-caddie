@@ -52,3 +52,27 @@ test('dispersion uses only explicitly measured carry and signed lateral values o
  assert.deepEqual(measuredClubDispersion(shots,'7 Iron'),{count:3,carry:[162,169],lateral:[-10,12]});
  assert.equal(measuredClubDispersion(shots,'8 Iron'),null);
 });
+
+test('Caddy draft provenance rejects the same tee on a different round and legacy unscoped drafts', async () => {
+  const {yardageDraftHoleForRound,saveHoleQuestion,takeHoleQuestion}=await import('../app/61f9e9de0a/yardage-caddy-handoff.js');
+  const {yardageSelectionKey}=await import('../app/61f9e9de0a/yardage-navigation.js');
+  const selection={course:{provider:'dagger-founder',providerCourseId:'sample'},tee:{providerTeeId:'blue'}};
+  const active={selection,selectedAt:100};
+  const context={selectionKey:yardageSelectionKey(selection),roundSelectedAt:100,holeNumber:17};
+  const map=new Map();
+  const storage={getItem:key=>map.get(key),setItem:(key,value)=>map.set(key,value),removeItem:key=>map.delete(key)};
+  assert(saveHoleQuestion(storage,'An editable draft for this exact round.',101,context));
+  const draft=takeHoleQuestion(storage,102,{withContext:true});
+  assert.equal(yardageDraftHoleForRound(draft.context,active),17);
+  assert.equal(yardageDraftHoleForRound(draft.context,{...active,selectedAt:101}),null);
+  assert.equal(yardageDraftHoleForRound({...draft.context,roundSelectedAt:undefined},active),null);
+});
+
+test('Caddy measurement briefing only uses validated measured bag clubs and sample ranges', async () => {
+  const {describeMeasuredBag}=await import('../app/61f9e9de0a/measured-shot-dispersion.js');
+  const sample=(club,carryYards,lateralYards,source='launch-monitor')=>({club,measurement:{source,carryYards,lateralYards}});
+  const shots=[sample('7 Iron',143,-5),sample('7 Iron',148,8),sample('7 Iron',146,0),
+    sample('7 Iron',699,90,'house-ghost'),{club:'7 Iron',yards:220},sample('8 Iron',124,0)];
+  assert.equal(describeMeasuredBag(shots,['7 Iron','8 Iron','7 Iron']),
+    '7 Iron (3 measured, carry 143 to 148 yd, lateral -5 to 8 yd)');
+});
