@@ -615,3 +615,27 @@ test('Country Hills plays from the official tee card using the reviewed drawing'
   await page.locator('#next').click();
   await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });
+
+for (const course of [
+  {query:'Seven Lakes Golf Club', region:'West End, NC', tee:'Black · 6856 yards', hole:16, par:3, yards:188},
+  {query:'Pine Island Country Club', region:'Charlotte, NC', tee:'Blue · 6377 yards', hole:2, par:5, yards:493},
+]) {
+  test(course.query + ' uses its verified card and Ghost while geometry is withheld', async ({page}) => {
+    await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+    await page.goto(launch);
+    await page.locator('#dcc-starter-query').fill(course.query);
+    await page.locator('#dcc-starter-search').click();
+    await page.locator('#dcc-starter-results button').filter({hasText:course.region}).click();
+    await page.locator('#dcc-starter-tees').selectOption({label:course.tee});
+    await page.locator('#dcc-starter-checkin').click();
+    await page.goto(launch + 'yardage-preview.html?hole=' + course.hole);
+    await expect(page.locator('#mapYards')).toHaveText(course.yards + ' yds');
+    await expect(page.locator('#mapPar')).toHaveText('Par ' + course.par);
+    await expect(page.locator('.geometry-label')).toHaveText('Hole ' + course.hole + ' · Scorecard notes');
+    await page.locator('#watchGhost').click();
+    await expect(page.locator('#headline')).toContainText('Hole ' + course.hole + ' · Par ' + course.par);
+    await expect(page.locator('#ghostMapStatus')).toContainText('No mapped hole outlines available');
+    await page.locator('#next').click();
+    await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+  });
+}
