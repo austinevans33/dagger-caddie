@@ -1,4 +1,5 @@
 // Authentication and operation coordination only; no presentation changes.
+import {validRoomId} from './room-order-contract.js';
 export function createRoomSession(auth, signInGuest) {
   let pending = null;
   return {
@@ -28,10 +29,10 @@ export function singleFlight(action) {
 export function invitationFrom(input) {
   const text = String(input || '').trim();
   let id, code;
-  const compact = /^([0-9a-f]{32}):([0-9a-f]{16})$/.exec(text);
+  const compact = /^((?:r2-)?[0-9a-f]{32}):([0-9a-f]{16})$/.exec(text);
   if (compact) return {id:compact[1],code:compact[2]};
   try { const url = new URL(text); id = url.searchParams.get('room'); code = url.searchParams.get('invite'); }
   catch { [id, code] = text.split(':'); }
-  if (!/^[0-9a-f]{32}$/.test(id || '') || !/^[0-9a-f]{16}$/.test(code || '')) return null;
+  if (!validRoomId(id) || !/^[0-9a-f]{16}$/.test(code || '')) return null;
   return {id, code};
 }

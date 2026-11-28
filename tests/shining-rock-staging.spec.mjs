@@ -7,7 +7,9 @@ if(!stagingConfig.includes('projectId: "'+project+'"')) throw Error('Explicit st
 const launch='http://127.0.0.1:8766/dagger-caddie/';
 
 test.use({viewport:{width:390,height:844},serviceWorkers:'block',actionTimeout:10000,navigationTimeout:20000});
-test('two staging sessions share Shining Rock room scores, corrections and final balances',async ({page,browser})=>{
+for(const startHole of [1,18]){
+test('two staging sessions share Shining Rock room scores, corrections and final balances from Hole '+startHole,async ({page,browser})=>{
+  const order=Array.from({length:18},(_,index)=>(startHole-1+index)%18+1);
   test.setTimeout(210000);
   const guestContext=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
   const guest=await guestContext.newPage();
@@ -41,11 +43,13 @@ test('two staging sessions share Shining Rock room scores, corrections and final
     await page.locator('#roomPlayers').fill('QA Rock Guest');
     await page.locator('#roomFormat').selectOption('hole');
     await page.locator('#roomStake').fill('1');
+    if(startHole===18)await page.locator('#roomStartHole').selectOption('18');
     await page.locator('#roomCreate').click();
     await expect(page.locator('#roomStatus')).toContainText(/LIVE|Could not/, {timeout:45000});
     await expect(page.locator('#roomStatus')).toContainText('LIVE');
     const code=await page.locator('#roomCode').inputValue();
-    expect(code).toMatch(/^[a-f0-9]{32}:[a-f0-9]{16}$/);
+    expect(code).toMatch(startHole===18?/^r2-[a-f0-9]{32}:[a-f0-9]{16}$/:/^[a-f0-9]{32}:[a-f0-9]{16}$/);
+    await expect(page.locator('#roomHole')).toHaveValue(String(startHole));
     await prepare(guest);
     await guest.locator('#roomMe').fill('QA Rock Guest');
     await guest.locator('#roomCode').fill(code);
@@ -59,12 +63,18 @@ test('two staging sessions share Shining Rock room scores, corrections and final
       const inputs=page.locator('#roomScoreRows input');
       await inputs.nth(0).fill(String(a));await inputs.nth(1).fill(String(b));
       await page.locator('#roomSaveHole').click();
-      await expect(page.locator('#roomLedgerBody tr').nth(hole-1).locator('td').nth(1)).toHaveText(String(a));
-      await expect(page.locator('#roomLedgerBody tr').nth(hole-1).locator('td').nth(2)).toHaveText(String(b));
+      await expect(page.locator('#roomLedgerBody tr').nth(order.indexOf(hole)).locator('td').nth(1)).toHaveText(String(a));
+      await expect(page.locator('#roomLedgerBody tr').nth(order.indexOf(hole)).locator('td').nth(2)).toHaveText(String(b));
     }
-    await saveHole(1,4,5);
+    await saveHole(startHole,4,5);
+    await expect(page.locator('#roomHole')).toHaveValue(String(order[1]));
     await expect(guest.locator('#roomStandings')).toContainText('QA Rock Host: +$1.00');
-    await saveHole(1,6,5);
+    if(startHole===18){
+      await expect(guest.locator('#roomWho')).toContainText('Starts on Hole 18');
+      await page.locator('#roomUndoHole').click();
+      await expect(guest.locator('#roomStandings')).toContainText('0 holes scored');
+    }
+    await saveHole(startHole,6,5);
     await expect(guest.locator('#roomStandings')).toContainText('QA Rock Host: −$1.00');
     await page.reload();await guest.reload();
     await page.locator('#tab-bets').click();
@@ -72,7 +82,7 @@ test('two staging sessions share Shining Rock room scores, corrections and final
     await expect(page.locator('#roomStatus')).toContainText('LIVE',{timeout:45000});
     await expect(guest.locator('#roomStatus')).toContainText('LIVE',{timeout:45000});
     await expect(guest.locator('#roomStandings')).toContainText('QA Rock Host: −$1.00');
-    for(let hole=2;hole<=18;hole++) await saveHole(hole,4,4);
+    for(const hole of order.slice(1))await saveHole(hole,4,4);
     await expect(guest.locator('#roomStandings')).toContainText('18 holes scored');
     await page.locator('#roomFinish').click();
     await expect(page.locator('#roomFinalStatus')).toHaveText('OFFICIAL FINAL RESULT');
@@ -85,9 +95,11 @@ test('two staging sessions share Shining Rock room scores, corrections and final
       expect(archives.filter(record=>record.roomId===code.split(':')[0])).toHaveLength(1);
       const record=archives.find(record=>record.roomId===code.split(':')[0]);
       expect(record.payouts).toEqual([-1,1]);
+      if(startHole===18)expect(record.playOrder).toEqual({version:2,startHole});
       expect(record.round.selection.course.providerCourseId).toBe('shining-rock-northbridge-ma');
       expect(record.roundIdentity).toBe(record.round.selection.course.providerCourseId+'|gold|'+record.round.selectedAt);
       expect(record).not.toHaveProperty('paid');
     }
   }finally{await guestContext.close();}
 });
+}
