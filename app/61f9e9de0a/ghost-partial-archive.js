@@ -17,7 +17,7 @@ export function archivePartialGhost(storage,{confirmArchive=()=>false,now=Date.n
  const existing=JSON.parse(storage.getItem(ARCHIVE)||'[]');
  if(!Array.isArray(existing))throw Error('Ghost archive is invalid; draft preserved.');
  const id='ghost-'+now+'-'+Math.random().toString(36).slice(2);
- const record={version:1,id,archivedAt:new Date(now).toISOString(),tier:draft.tier,condition:draft.condition||'normal',holesPlanned:length,course:draft.course,holes:draft.holes.map(h=>({...h})),result:{lead,status:(decided?'Completed':'Unfinished')+' · '+draft.holes.length+' of '+length+' holes',played:draft.holes.length}};
+ const record={version:1,id,archivedAt:new Date(now).toISOString(),tier:draft.tier,condition:draft.condition||'normal',holesPlanned:length,startHole:draft.startHole??1,course:draft.course,holes:draft.holes.map(h=>({...h})),result:{lead,status:(decided?'Completed':'Unfinished')+' · '+draft.holes.length+' of '+length+' holes',played:draft.holes.length}};
  // All-or-nothing from the golfer's perspective: never remove the only copy.
  storage.setItem(ARCHIVE,JSON.stringify([record,...existing]));
  try{storage.setItem(DRAFT,JSON.stringify({version:1,tier:draft.tier,holesPlanned:length,condition:null,holes:[]}));}

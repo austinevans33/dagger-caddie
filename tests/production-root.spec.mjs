@@ -392,7 +392,8 @@ test('all Shining Rock book pages share reviewed geometry with original Ghost pl
       await page.screenshot({path:testInfo.outputPath('shining-rock-18-yardage-book.png'),fullPage:true});
     }
     await page.locator('#watchGhost').click();
-    await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',geometry);
+    await expect(page.locator('#headline')).toContainText('Hole '+hole+' ·', {timeout:12000});
+    await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',geometry,{timeout:12000});
     await page.locator('#next').click();
     await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
   }
@@ -446,6 +447,7 @@ test('Verdae uses the existing scorecard, Yardage Book, original Ghost and Ledge
   await book.close();
 
   await openOriginalGhost(page);
+  await page.locator('#dccGhostStartHole').selectOption('1');
   for(let hole=1;hole<=18;hole++){
     await expect(page.locator('#dccGhostAutoPar')).toContainText('HOLE '+hole+' · PAR '+pars[hole-1]);
     await page.locator('#dccGhostPlay').click();
@@ -484,4 +486,132 @@ test('Verdae uses the existing scorecard, Yardage Book, original Ghost and Ledge
   await expect(page.locator('#dccSimpleNet')).toHaveText('+$10.00');
   await ticket.locator('[data-paid="1"]').click();
   await expect(ticket).toContainText('marked paid');
+});
+
+test('shotgun solo check-in drives mid-round Ghost and local wager scoring by physical hole',async ({page})=>{
+  page.on('dialog',dialog=>dialog.accept());
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Shining Rock');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'The Rock'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Gold · 6728 yards'});
+  await page.locator('#dcc-starter-start').selectOption('18');
+  await page.locator('#dcc-starter-checkin').click();
+  await page.locator('#dccHomeScorecard').click();
+  await page.getByRole('button',{name:'Pencil 4 strokes for hole 18'}).click();
+  await expect(page.locator('#dcc-paper-progress')).toContainText('HOLE 1');
+  await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
+  await page.reload();
+  await openOriginalGhost(page);
+  await expect(page.locator('#dccGhostStartHole')).toHaveValue('1');
+  await page.locator('#dccGhostStartHole').selectOption('18');
+  await page.locator('#dccGhostPlay').click();
+  await expect(page.frameLocator('#dccGhostPlayback iframe').locator('#headline')).toContainText('Hole 18 · Par 4');
+
+  await page.locator('#tab-play').click();
+  await page.locator('[data-dcc-go="ticket"]').click();
+  const wager=page.locator('#newWagers');
+  if(!await wager.evaluate(node=>node.open))await wager.locator('summary').click();
+  await expect(page.locator('#wStartHole')).toHaveValue('1');
+  await page.locator('#wStartHole').selectOption('18');
+  await page.locator('#wFormat').selectOption('nassau');
+  await page.locator('#wStart').click();
+  await expect(page.locator('#wHole')).toHaveText('18');
+  await page.locator('#dccPaperGamePlayer').selectOption('0');
+  await page.locator('#dccPaperGameUse').click();
+  await expect(page.locator('#ws0')).toHaveValue('4');
+  await page.locator('#ws1').fill('5');
+  await page.locator('#wSaveHole').click();
+  await expect(page.locator('#wHole')).toHaveText('1');
+  await expect(page.locator('#wLead')).toContainText('3 matches pending');
+  await page.locator('#wFinish').click();
+  await expect(page.locator('#wStatus')).toContainText('3 unsettled matches');
+  await page.locator('#wUndoHole').click();
+  await expect(page.locator('#wHole')).toHaveText('18');
+  await page.reload();
+  await page.locator('#tab-play').click();
+  await page.locator('[data-dcc-go="ticket"]').click();
+  if(!await wager.evaluate(node=>node.open))await wager.locator('summary').click();
+  await expect(page.locator('#wHole')).toHaveText('18');
+});
+
+test('All Heart appears on the scorecard-only Verdae book and keeps the accepted challenge through reload',async ({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Verdae');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Greenville, SC'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Black · 7104 yards'});
+  await page.locator('#dcc-starter-start').selectOption('12');
+  await page.locator('#dcc-starter-checkin').click();
+  // Pick an eligible draw in this isolated QA browser. The shipped UI has no force switch.
+  await page.evaluate(async ()=>{
+    const {naturalAllHeartGate}=await import('./app/61f9e9de0a/all-heart-journal.js');
+    const key='dcc_active_round_course_v1',active=JSON.parse(localStorage.getItem(key));
+    const prefix=active.selection.course.providerCourseId+'|'+active.selection.tee.providerTeeId+'|';
+    for(let delta=1;delta<=1000;delta++){
+      if(!naturalAllHeartGate(prefix+(active.selectedAt+delta),12))continue;
+      active.selectedAt+=delta;
+      localStorage.setItem(key,JSON.stringify(active));
+      return;
+    }
+    throw Error('Could not qualify a deterministic test draw');
+  });
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  const moment=page.getByRole('region',{name:'All Heart Moment'});
+  await expect(moment).toContainText('ALL HEART. NO EXCUSES.');
+  await moment.getByRole('button',{name:'Take the challenge'}).click();
+  await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Target 4 strokes');
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Hole 12');
+  await page.getByRole('button',{name:'Pencil 4 strokes for hole 12'}).click();
+  await page.getByText('All Heart Club Record',{exact:true}).click();
+  await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole 12 · MATCHED THE CHALLENGE. 4 strokes');
+  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')||'[]'))).toEqual([]);
+});
+test('previously reviewed NC courses expose real art or an honest scorecard fallback',async ({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('dagger_setup_complete','true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('The Woods Golf Club');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Whispering Pines, NC'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Oak · 6070 yards'});
+  await page.locator('#dcc-starter-checkin').click();
+  await page.locator('#dccHomeScorecard').click();
+  await page.getByRole('button',{name:'Pencil 4 strokes for hole 1'}).click();
+  await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
+  await page.goto(launch+'yardage-preview.html?hole=1');
+  await expect(page.locator('#mapYards')).toHaveText('362 yds');
+  const sketch=page.locator('.field-sketch .route-mark');
+  await expect(sketch).toHaveCount(1);
+  const route=await sketch.getAttribute('d');
+  await page.locator('#watchGhost').click();
+  await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+});
+
+test('Country Hills plays from the official tee card using the reviewed drawing', async ({page}) => {
+  await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Country Hills Golf Course');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Gibsonville, NC'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Blue · 5873 yards'});
+  await page.locator('#dcc-starter-checkin').click();
+  await page.locator('#dccHomeScorecard').click();
+  await page.getByRole('button', {name:'Pencil 4 strokes for hole 1'}).click();
+  await page.locator('#dcc-paper-dialog .dcc-paper-close').click();
+  await page.goto(launch + 'yardage-preview.html?hole=1');
+  await expect(page.locator('#mapYards')).toHaveText('385 yds');
+  const sketch = page.locator('.field-sketch .route-mark');
+  await expect(sketch).toHaveCount(1);
+  const route = await sketch.getAttribute('d');
+  await page.locator('#watchGhost').click();
+  await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d', route);
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });

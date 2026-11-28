@@ -4844,6 +4844,7 @@ section[data-tab="bets"] .dcc-action-front,section[data-tab="bets"] .dcc-r57-led
 <div class="grid"><div><label>Your name</label><input id="wMyName" maxlength="24" value="Me"/></div><div><label>Opponent 1</label><input id="wP2" maxlength="24" value="Player 2"/></div><div><label>Opponent 2 (optional)</label><input id="wP3" maxlength="24" placeholder="Player 3"/></div><div><label>Opponent 3 (optional)</label><input id="wP4" maxlength="24" placeholder="Player 4"/></div></div>
 <div class="grid" style="margin-top:8px"><div><label>Game type</label><select id="wFormat"><option value="skins">Skins · Gross</option><option value="hole">Head-to-Head · $ Per Hole</option><option value="nassau">Nassau · 1 vs 1</option></select></div><div><label>Stake ($)</label><input id="wStake" max="10000" min="0" step="0.5" type="number" value="5"/></div></div>
 <p class="muted">For skins, stake is the cost per skin paid by each other player. For Nassau, stake applies separately to front, back and overall. No automatic presses or handicaps.</p>
+<div><label for="wStartHole">Starting hole</label><select id="wStartHole"></select></div>
 <button class="btn-secondary" id="wStart" type="button">Start foursome game</button>
 <div hidden="" id="wPlaying"><div class="bet-summary" style="grid-template-columns:repeat(2,1fr)"><div class="betbox"><strong>Hole</strong><span id="wHole">1</span></div><div class="betbox"><strong>Result</strong><span id="wLead">All square</span></div></div>
 <p class="muted" id="wInstruction">Enter gross strokes for this hole, then save.</p>
@@ -7116,6 +7117,22 @@ let dccGhostHoles = [];
 // DCC STEP 30E — Existing drafts are 18-hole matches.
 let dccGhostLength = 18;
 let dccGhostStartHole = 1;
+let dccGhostStartChosen = false;
+
+function dccCurrentPhysicalRoundHole() {
+  try {
+    const round = JSON.parse(localStorage.getItem('dcc_active_round_course_v1') || 'null');
+    const selection = round?.selection;
+    const courseHoles = selection?.course?.holeCount === 9 ? 9 : 18;
+    const identity = dccCurrentRoundIdentity();
+    if (identity) {
+      const card = JSON.parse(localStorage.getItem('dcc_solo_scorecard_v1') || 'null');
+      const hole = card?.identity === identity ? card.hole : selection.holeNumber;
+      if (Number.isInteger(hole) && hole >= 1 && hole <= courseHoles) return hole;
+    }
+  } catch {}
+  return 1;
+}
 let dccGhostCondition = null;
 let dccGhostPending = null;
 let dccGhostRecording = false;
@@ -7198,6 +7215,7 @@ try {
     const courseHoles = dccGhostCourseHoleCount();
     if (Number.isInteger(saved.startHole) && saved.startHole >= 1 && saved.startHole <= courseHoles) {
       dccGhostStartHole = saved.startHole;
+      dccGhostStartChosen = true;
     }
     const pending = saved.pending;
     if (pending?.hole === dccGhostNextHole() &&
@@ -7290,6 +7308,7 @@ function dccGhostRender() {
     startSelect.replaceChildren(...Array.from({length: courseHoles}, (_, index) =>
       new Option('Hole ' + (index + 1), String(index + 1))));
   }
+  if (!locked && !dccGhostStartChosen) dccGhostStartHole = dccCurrentPhysicalRoundHole();
   if (dccGhostStartHole > courseHoles) dccGhostStartHole = 1;
   startSelect.value = String(dccGhostStartHole);
   startSelect.disabled = locked || dccGhostRecording;
@@ -7521,6 +7540,7 @@ document.getElementById('dccGhostRecord')
 
       dccGhostCourse = course;
       dccGhostHoles = next;
+      dccGhostStartChosen = true;
       dccGhostPending = null;
       dccGhostShowPlayback();
 
@@ -7558,6 +7578,7 @@ document.getElementById('dccGhostStartHole').addEventListener('change', event =>
     const hole = Number(event.target.value);
     if (Number.isInteger(hole) && hole >= 1 && hole <= dccGhostCourseHoleCount()) {
       dccGhostStartHole = hole;
+      dccGhostStartChosen = true;
     }
   }
   dccGhostRender();
@@ -7603,6 +7624,7 @@ document.getElementById('dccGhostUndo')
       );
 
       dccGhostHoles = next;
+      dccGhostStartChosen = true;
       dccGhostPending = null;
       dccGhostShowPlayback();
 
@@ -7664,6 +7686,7 @@ document.getElementById('dccGhostUndo')
 
         dccGhostHoles = [];
         dccGhostStartHole = 1;
+        dccGhostStartChosen = false;
         dccGhostCondition = null;
         dccGhostPending = null;
         dccGhostCourse = undefined;
@@ -7786,6 +7809,7 @@ function dccGhostRenderArchive() {
 // Preserve the existing Ghost startup render.
 document.addEventListener('dcc:course-selected', dccGhostRender);
 document.addEventListener('dcc:course-cleared', dccGhostRender);
+document.addEventListener('dcc:solo-hole-change', dccGhostRender);
 dccGhostRender();
 dccGhostUpdateActions();
 dccGhostRenderArchive();
@@ -8743,11 +8767,35 @@ function wagerMath(game){
  return {score,carry,pending};
 }
 function money(v){return(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);}
+function dccWagerHole(game, index=game.holes.length){
+ const count=game.courseHoles===9?9:18,start=game.startHole??1;
+ if(!Number.isInteger(start)||start<1||start>count)return null;
+ return (start-1+Math.min(index,count-1))%count+1;
+}
+let dccWagerStartEdited=false;
+function dccRefreshWagerStart(){
+ const picker=$('wStartHole');
+ let count=18;
+ try{
+  if(JSON.parse(localStorage.getItem('dcc_active_round_course_v1')||'null')?.selection?.course?.holeCount===9)count=9;
+ }catch{}
+ if(picker.options.length!==count){
+  picker.replaceChildren(...Array.from({length:count},(_,i)=>new Option('Hole '+(i+1),String(i+1))));
+  dccWagerStartEdited=false;
+ }
+ if(!dccWagerStartEdited)picker.value=String(dccCurrentPhysicalRoundHole());
+}
+$('wStartHole').addEventListener('change',()=>{dccWagerStartEdited=true;});
+document.addEventListener('dcc:course-selected',()=>{dccWagerStartEdited=false;dccRefreshWagerStart();});
+document.addEventListener('dcc:solo-hole-change',dccRefreshWagerStart);
+dccRefreshWagerStart();
+// Keep the existing wager engine reachable from the current Ticket Window.
+$('dccVisibleTickets').after($('newWagers'));
 function renderFoursome(){
  $('wPlaying').hidden=!activeW;
- if(activeW){const g=activeW,idx=Math.min(g.holes.length,17);$('wHole').textContent=String(idx+1);const result=wagerMath(g);$('wLead').textContent=result.invalid?'Invalid historic game scores · review backup':money(result.score[0])+(g.format==='skins'&&result.carry>1?' · '+result.carry+' skins at stake':'')+(g.format==='nassau'&&result.pending.length?' · '+result.pending.length+' matches pending':'');
+ if(activeW){const g=activeW;$('wHole').textContent=String(dccWagerHole(g)??'—');const result=wagerMath(g);$('wLead').textContent=result.invalid?'Invalid historic game scores · review backup':money(result.score[0])+(g.format==='skins'&&result.carry>1?' · '+result.carry+' skins at stake':'')+(g.format==='nassau'&&result.pending.length?' · '+result.pending.length+' matches pending':'');
   $('wScoreFields').innerHTML='';g.players.forEach((p,i)=>{const d=document.createElement('div'),l=document.createElement('label'),inpt=document.createElement('input');l.textContent=p+' strokes';inpt.id='ws'+i;inpt.type='number';inpt.min='1';inpt.max='15';inpt.step='1';inpt.placeholder='Strokes';d.append(l,inpt);$('wScoreFields').append(d);});
-  $('wInstruction').textContent=g.format==='skins'?'Lowest unique gross score wins the skin; ties carry over.':g.format==='nassau'?'Front 9, back 9 and overall are three separate matches.':'Every hole won or lost changes the balance by the stake.';
+  $('wInstruction').textContent=g.format==='skins'?'Lowest unique gross score wins the skin; ties carry over.':g.format==='nassau'?(g.startHole&&g.startHole!==1?'First nine played, second nine played and overall are three separate matches.':'Front 9, back 9 and overall are three separate matches.'):'Every hole won or lost changes the balance by the stake.';
  }
  $('wHistory').innerHTML='';let total=0;
  wHistory.forEach((g,archiveIndex)=>{const result=wagerMath(g),complete=!result.invalid&&(!result.pending||!result.pending.length),net=complete?result.score[0]:null;if(net!==null)total+=net;const row=document.createElement('tr');row.dataset.archiveIndex=String(archiveIndex);[new Date(g.ended).toLocaleDateString(),g.format,net===null?'Incomplete / review':money(net)].forEach(v=>{const cell=document.createElement('td');cell.textContent=v;row.append(cell)});$('wHistory').append(row);});
@@ -8762,8 +8810,11 @@ try{
 }catch{}
 }
 $('wStart').onclick=()=>{if(activeW&&!confirm('Replace your current unarchived foursome game?'))return;const names=[$('wMyName').value,$('wP2').value,$('wP3').value,$('wP4').value].map(x=>x.trim()).filter(Boolean),format=$('wFormat').value,stake=Number($('wStake').value);if(names.length<2||new Set(names.map(x=>x.toLowerCase())).size!==names.length||stake<0||!Number.isFinite(stake)){alert('Enter at least two different player names and a valid stake.');return;}const players=format==='skins'?names:names.slice(0,2);const roundIdentity=dccCurrentRoundIdentity();
-activeW={...freshWager(),players,format,stake,...(roundIdentity?{roundIdentity}:{})};wStore();renderFoursome();};
-$('wSaveHole').onclick=()=>{if(!activeW)return;if(activeW.holes.length>=18){$('wStatus').textContent='18 holes completed. Archive the match.';return;}const h=activeW.players.map((_,i)=>wVal($('ws'+i).value));if(h.some(x=>x===null)){ $('wStatus').textContent='Enter a valid stroke score for every player.';return;}activeW.holes.push(h);wStore();renderFoursome();$('wStatus').textContent='Hole saved. Nice work, accountants.';};
+const picker=$('wStartHole'),courseHoles=picker.options.length,startHole=Number(picker.value);
+if(![9,18].includes(courseHoles)||!Number.isInteger(startHole)||startHole<1||startHole>courseHoles)return;
+if(format==='nassau'&&courseHoles===9){alert('A Nassau needs an 18-hole course. Choose Skins or Head-to-Head.');return;}
+activeW={...freshWager(),players,format,stake,startHole,courseHoles,...(roundIdentity?{roundIdentity}:{})};wStore();renderFoursome();};
+$('wSaveHole').onclick=()=>{if(!activeW)return;const limit=activeW.courseHoles===9?9:18;if(!dccWagerHole(activeW)||activeW.holes.length>=limit){$('wStatus').textContent='Review starting hole or archive the completed match.';return;}const h=activeW.players.map((_,i)=>wVal($('ws'+i).value));if(h.some(x=>x===null)){ $('wStatus').textContent='Enter a valid stroke score for every player.';return;}activeW.holes.push(h);wStore();renderFoursome();$('wStatus').textContent='Hole saved. Nice work, accountants.';};
 // Explicit single-player paper-score prefill for the next game hole. No wager write.
 (function mountPaperGamePrefill(){
  const fields=document.getElementById('wScoreFields');if(!fields||document.getElementById('dccPaperGamePrefill'))return;
@@ -8783,12 +8834,12 @@ $('wSaveHole').onclick=()=>{if(!activeW)return;if(activeW.holes.length>=18){$('w
  button.addEventListener('click',async()=>{
   const game=activeW,index=select.value;
   if(!game||index===''){status.textContent='Select your game player first.';return}
-  const holeNumber=game.holes.length+1;
+  const holeNumber=dccWagerHole(game);
   try{
    const [{readRoundScoreSnapshot},{paperStrokeForGameHole}]=await Promise.all([
     import('./app/61f9e9de0a/round-score-snapshot.js'),import('./app/61f9e9de0a/paper-to-game-prefill.js')
    ]);
-   if(game!==activeW||holeNumber!==game.holes.length+1){status.textContent='Game changed. Please try again.';return}
+   if(game!==activeW||holeNumber!==dccWagerHole(game)||game.holes.length>=(game.courseHoles??18)){status.textContent='Game changed. Please try again.';return}
    const candidate=paperStrokeForGameHole(readRoundScoreSnapshot(localStorage),game,{playerIndex:Number(index),holeNumber});
    if(!candidate.ok){status.textContent=candidate.reason;return}
    const input=document.getElementById('ws'+index);

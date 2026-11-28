@@ -18,3 +18,11 @@ test('legacy Nassau keeps physical front nine regardless of starting hole',()=>{
 test('non-Nassau wager retains original settlement',()=>{
  const game={format:'skins'};assert.equal(settleLedgerWager(game,g=>g),game);
 });
+test('packed shotgun wager never reports pending segments as settled',()=>{
+ const game={format:'nassau',players:['A','B'],stake:5,startHole:18,courseHoles:18,holes:Array.from({length:9},()=>[4,5])};
+ const result=settleLedgerWager(game,original);
+ assert.deepEqual(result.score,[5,-5]);
+ assert.deepEqual(result.pending.map(row=>[row.label,row.played]),[['Second nine played',0],['Overall',9]]);
+ game.holes.push(...Array.from({length:9},()=>[4,5]));
+ assert.deepEqual(settleLedgerWager(game,original),{score:[15,-15],carry:1,pending:[]});
+});
