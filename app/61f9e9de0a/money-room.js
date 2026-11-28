@@ -17,6 +17,16 @@ const money=v=>(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);
 const isConfigured=firebaseConfig&&firebaseConfig.apiKey&&firebaseConfig.projectId;
 let db=null,auth=null,functions=null,room=null,roomId='',invite='',roomUnsub=null,user=null,host=false,session=null;
 let connectionVersion=0,actionVersion=0,navigationVersion=0,authInitialized=false,roomServerFresh=false;
+// All Heart may propose opening a manual ticket only for this live round.
+export function confirmedDareRoomPlayers(roundIdentity, hole) {
+ const uid=auth?.currentUser?.uid;
+ if(!roomServerFresh || !uid || room?.hostUid!==uid || room.archived ||
+    !roundIdentity || room.roundIdentity!==roundIdentity ||
+    !Number.isInteger(hole) || hole<1 || hole>18 || room.holes?.[hole] ||
+    !Array.isArray(room.players) || room.players.length<2 || room.players.length>4) return 0;
+ return room.players.length;
+}
+
 document.addEventListener('click',event=>{
  if(!event.isTrusted)return;
  if(event.target.closest?.('[id^="tab-"]'))navigationVersion++;

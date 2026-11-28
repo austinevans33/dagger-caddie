@@ -1,18 +1,30 @@
 // Shared read-only round environment. Never infer course location from device GPS.
 // Every asynchronous result is bound to the same selected course and tee.
-import {readActiveRound} from './starters-desk-session.js';
-import {sameCourseSelection} from './course-identity.js';
+import {readActiveRound,sameActiveRound} from './starters-desk-session.js';
 import {getActiveCourseContext} from './active-course-context.js?v=cached-fallback-16';
 import {loadCourseLocation} from './course-location.js?v=location-shapes-23';
 import {loadOpenMeteoWeather} from './open-meteo-weather.js';
 import {readCachedCourseWeather,saveCachedCourseWeather} from './course-weather-cache.js';
-export async function getRoundEnvironment({storage,fetcher,signal,now=Date.now()}={}){
+const pendingByStorage=new WeakMap();
+export function getRoundEnvironment(options={}){
+ const {storage,fetcher,signal,now}=options;
  const active=readActiveRound(storage);
+ if(!active||fetcher||signal||now!==undefined)return readRoundEnvironment(active,options);
+ const existing=pendingByStorage.get(storage);
+ if(existing&&sameActiveRound(active,existing.active))return existing.promise;
+ const promise=readRoundEnvironment(active,options).finally(()=>{
+  if(pendingByStorage.get(storage)?.promise===promise)pendingByStorage.delete(storage);
+ });
+ pendingByStorage.set(storage,{active,promise});
+ return promise;
+}
+async function readRoundEnvironment(active,{storage,fetcher,signal,now=Date.now()}){
+
  if(!active)return Object.freeze({state:'not-selected',holes:[],weather:null,livePinDistance:false});
  const selection=active.selection;
  // Course scorecard and course-coordinate lookup are independent public reads.
  // Run them concurrently to avoid three serial network waits on the first tee.
- const same=()=>{const latest=readActiveRound(storage);return !!latest&&sameCourseSelection(latest.selection,selection);};
+ const same=()=>sameActiveRound(active,readActiveRound(storage));
  const scorecardTask=getActiveCourseContext({storage,fetcher,signal,now});
  const weatherTask=(async()=>{
   try{
@@ -38,7 +50,7 @@ export async function getRoundEnvironment({storage,fetcher,signal,now=Date.now()
  const [scorecard,{weather,weatherState}]=await Promise.all([scorecardTask,weatherTask]);
  if(!same())return Object.freeze({state:'selection-changed',holes:[],weather:null,livePinDistance:false});
  return Object.freeze({
-  state:scorecard.state,selection,holes:scorecard.holes||[],
+  state:scorecard.state,selection,selectedAt:active.selectedAt,holes:scorecard.holes||[],
   scorecardSource:scorecard.source||null,weather,weatherState,
   weatherSource:weather?.source||null,livePinDistance:false
  });

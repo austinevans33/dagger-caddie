@@ -131,3 +131,34 @@ test('reopening the scorecard repairs a missed receipt after the score was saved
  assert.equal(allHeartClubRecord(storage).length,1);
  assert.equal(allHeartClubRecord(storage)[0].receipt.outcome,'matched');
 });
+
+test('the actual Sawgrass 17 scorecard offers and records the sourced Tiger Woods Legend', () => {
+  const storage = memory();
+  const [sawgrass] = founderCatalogRecords('TPC Sawgrass');
+  const [selectedTee] = founderTeesForCourse(sawgrass);
+  assert(saveActiveRound(storage,{course:sawgrass, tee:selectedTee, holeNumber:17},1700000000200));
+  const active = readActiveRound(storage), card = startSoloCard(storage);
+  const offer = allHeartRoundOffer(storage,active,card,force);
+  assert.equal(offer.moment.type,'legend');
+  assert.match(offer.moment.description,/Tiger Woods made 2 here/);
+  assert.match(offer.moment.sourceUrl,/pgatour\.com/);
+  assert.equal(offer.moment.targetStrokes,2);
+  assert(respondToAllHeart(storage,card,offer,true));
+  assert.equal(completeAllHeartHole(storage,saveSoloScore(storage,2),17).outcome,'matched');
+  assert.equal(allHeartClubRecord(storage)[0].hole,17);
+  assert.notEqual(allHeartRoundOffer(storage,active,setSoloHole(storage,18),force)?.moment.sourceUrl,offer.moment.sourceUrl);
+});
+
+test('a confirmed group Dare opens a proposal without writing a challenge result or ticket', () => {
+  const {storage,active,card}=setup(17);
+  const confirmed={...force,moneyRoomPlayers:2};
+  const offer=allHeartRoundOffer(storage,active,card,confirmed);
+  assert.equal(offer.moment.action,'open-ticket-window');
+  assert.equal(allHeartRoundOffer(storage,active,card,force),null);
+  assert.equal(allHeartRoundOffer(storage,active,card,confirmed).state,'offered');
+  assert(respondToAllHeart(storage,card,offer,true));
+  assert.equal(allHeartRoundOffer(storage,active,card,confirmed),null);
+  assert.equal(completeAllHeartHole(storage,saveSoloScore(storage,4),17),null);
+  assert.equal(allHeartClubRecord(storage).length,0);
+  assert.equal(storage.getItem('dcc_side_bets_local_r66_v1'),null);
+});

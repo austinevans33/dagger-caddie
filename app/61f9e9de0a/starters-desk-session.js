@@ -1,6 +1,6 @@
 // Starter's Desk — local active-round selection only. No backend write.
 // A course/tee selection is not proof of valid distances or live conditions.
-import {normalizeCourseSelection} from './course-identity.js';
+import {normalizeCourseSelection,sameCourseSelection} from './course-identity.js';
 export const ACTIVE_ROUND_KEY='dcc_active_round_course_v1';
 export function saveActiveRound(storage,selection,now=Date.now()){
  const value=normalizeCourseSelection(selection);
@@ -21,3 +21,7 @@ export function clearActiveRound(storage){
  try{storage.removeItem(ACTIVE_ROUND_KEY);return true;}catch{return false;}
 }
 export function shouldOfferStarterDesk(storage){return !readActiveRound(storage);}
+
+export function sameActiveRound(a,b){
+ return !!a&&!!b&&a.selectedAt===b.selectedAt&&sameCourseSelection(a.selection,b.selection);
+}

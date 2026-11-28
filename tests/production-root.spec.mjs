@@ -615,3 +615,152 @@ test('Country Hills plays from the official tee card using the reviewed drawing'
   await page.locator('#next').click();
   await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });
+for (const course of [
+  {query:'Pine Island Country Club', region:'Charlotte, NC', tee:'Blue · 6377 yards', hole:2, par:5, yards:493},
+]) {
+  test(course.query + ' uses its verified card and Ghost while geometry is withheld', async ({page}) => {
+    await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+    await page.goto(launch);
+    await page.locator('#dcc-starter-query').fill(course.query);
+    await page.locator('#dcc-starter-search').click();
+    await page.locator('#dcc-starter-results button').filter({hasText:course.region}).click();
+    await page.locator('#dcc-starter-tees').selectOption({label:course.tee});
+    await page.locator('#dcc-starter-checkin').click();
+    await page.goto(launch + 'yardage-preview.html?hole=' + course.hole);
+    await expect(page.locator('#mapYards')).toHaveText(course.yards + ' yds');
+    await expect(page.locator('#mapPar')).toHaveText('Par ' + course.par);
+    await expect(page.locator('.geometry-label')).toHaveText('Hole ' + course.hole + ' · Scorecard notes');
+    await page.locator('#watchGhost').click();
+    await expect(page.locator('#headline')).toContainText('Hole ' + course.hole + ' · Par ' + course.par);
+    await expect(page.locator('#ghostMapStatus')).toContainText('No mapped hole outlines available');
+    await page.locator('#next').click();
+    await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+  });
+}
+test('Sawgrass 17 shows the sourced exact-hole Legend and writes the Club Record', async ({page}) => {
+  await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('TPC Sawgrass');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Ponte Vedra Beach, FL'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'The Players · 7245 yards'});
+  await page.locator('#dcc-starter-start').selectOption('17');
+  await page.locator('#dcc-starter-checkin').click();
+  await page.evaluate(async () => {
+    const {naturalAllHeartGate} = await import('./app/61f9e9de0a/all-heart-journal.js');
+    const key = 'dcc_active_round_course_v1', active = JSON.parse(localStorage.getItem(key));
+    const prefix = active.selection.course.providerCourseId + '|' + active.selection.tee.providerTeeId + '|';
+    for (let delta = 1; delta <= 1000; delta++) {
+      if (!naturalAllHeartGate(prefix + (active.selectedAt + delta),17)) continue;
+      active.selectedAt += delta;
+      localStorage.setItem(key, JSON.stringify(active));
+      return;
+    }
+    throw Error('Could not qualify a deterministic test draw');
+  });
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  const moment = page.getByRole('region',{name:'All Heart Moment'});
+  await expect(moment).toContainText('Tiger Woods made 2 here');
+  await moment.getByRole('button',{name:'Take the challenge'}).click();
+  await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Target 2 strokes');
+  await page.getByRole('button',{name:'Pencil 2 strokes for hole 17'}).click();
+  await page.getByText('All Heart Club Record',{exact:true}).click();
+  await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole 17 · MATCHED THE CHALLENGE. 2 strokes');
+});
+test('Caddy shot logging keeps measured dispersion separate from target yardage',async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('dagger_profile',JSON.stringify([{name:'7 Iron',n:3,carry:155}])));
+  await checkInRock(page,'Gold · 6728 yards');
+  await page.goto(launch+'yardage-preview.html?hole=1');
+  await page.waitForFunction(()=>typeof document.getElementById('askHoleCaddy')?.onclick==='function');
+  await page.locator('#askHoleCaddy').click();
+  await expect(page.locator('#aiInput')).toBeVisible();
+  await page.locator('#dccTurnShotLog').click();
+  await page.getByText('Add launch-monitor measurements',{exact:true}).click();
+  await page.locator('#aiShotClub').selectOption('7 Iron');
+  for(const [carry,lateral] of [[155,-8],[159,0],[161,6]]){
+    await page.locator('#aiShotYards').fill('175');
+    await page.locator('#dccMeasuredCarry').fill(String(carry));
+    await page.locator('#dccMeasuredLateral').fill(String(lateral));
+    await page.locator('#aiShotQuality [data-quality="Good"]').click();
+    await page.locator('#aiRecordShot').click();
+  }
+  await expect(page.locator('.dcc-shot-measurements [role="status"]')).toHaveText('3 measured shots · Carry 155–161 yd · Lateral -8 to 6 yd');
+  const records=await page.evaluate(()=>JSON.parse(localStorage.getItem('dagger_shot_log')));
+  expect(records.map(row=>row.yards)).toEqual([175,175,175]);
+  expect(records.map(row=>row.measurement.carryYards)).toEqual([155,159,161]);
+  expect(records.every(row=>Number.isSafeInteger(row.courseContext?.roundSelectedAt))).toBe(true);
+});
+
+for (const round of [
+  {course:'Shining Rock', region:'The Rock', tee:'Gold · 6728 yards', date:'2026-11-01T13:00:00Z',
+    par:[4,4,5,4,3,4,4,3,5,4,4,3,5,4,3,5,4,4], offers:[7]},
+  {course:'Verdae', region:'Greenville, SC', tee:'Black · 7104 yards', date:'2026-11-02T13:00:00Z',
+    par:[4,3,4,4,5,3,4,4,5,4,3,4,4,5,3,4,4,5], offers:[1,11]},
+]) {
+  test(round.course + ' surfaces natural All Heart offers during a full round', async ({page}) => {
+    test.setTimeout(90000);
+    await page.clock.setFixedTime(new Date(round.date));
+    await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+    await page.goto(launch);
+    await page.locator('#dcc-starter-query').fill(round.course);
+    await page.locator('#dcc-starter-search').click();
+    await page.locator('#dcc-starter-results button').filter({hasText:round.region}).click();
+    await page.locator('#dcc-starter-tees').selectOption({label:round.tee});
+    await page.locator('#dcc-starter-checkin').click();
+    await page.locator('#dccHomeScorecard').click();
+    const offered = [];
+    const moment = page.getByRole('region',{name:'All Heart Moment',exact:true});
+    for (const [index,par] of round.par.entries()) {
+      const hole = index + 1;
+      const score = par + (hole % 3 === 1 ? 1 : 0);
+      const pencil = page.getByRole('button',{name:'Pencil ' + score + ' strokes for hole ' + hole,exact:true});
+      await expect(pencil).toBeVisible();
+      if (await moment.count()) {
+        offered.push(hole);
+        if (offered.length === 1) {
+          await moment.getByRole('button',{name:'Take the challenge'}).click();
+          await page.reload();
+          await page.locator('#dccHomeScorecard').click();
+          await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Hole ' + hole);
+        } else {
+          await moment.getByRole('button',{name:'Not this hole'}).click();
+          await expect(moment).toHaveCount(0);
+        }
+      }
+      await pencil.click();
+    }
+    expect(offered).toEqual(round.offers);
+    await page.getByText('All Heart Club Record',{exact:true}).click();
+    await expect(page.locator('#dccAllHeartRecord li')).toHaveCount(1);
+    await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole ' + round.offers[0] + ' ·');
+    await expect(page.locator('#dcc-paper-launch')).toContainText('18/18 HOLES SCORED');
+  });
+}
+
+test('Seven Lakes loads all 18 reference drawings and keeps Hole 16 Black yardage distinct', async ({page}) => {
+  test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Seven Lakes Golf Club');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'West End, NC'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Black · 6856 yards'});
+  await page.locator('#dcc-starter-checkin').click();
+  await page.goto(launch+'yardage-preview.html?hole=1');
+  const yards = [520,387,424,374,184,390,199,583,417,146,531,409,379,355,531,188,402,437];
+  for (const [index, distance] of yards.entries()) {
+    await page.locator('#hole').selectOption(String(index+1));
+    await expect(page.locator('#mapYards')).toHaveText(distance+' yds');
+    await expect(page.locator('.field-sketch .route-mark')).toHaveAttribute('d',/^M/);
+  }
+  await page.locator('#hole').selectOption('16');
+  await expect(page.locator('#mapYards')).toHaveText('188 yds');
+  await expect(page.locator('.geometry-foot')).toContainText('mapped forward tee pad');
+  const route = await page.locator('.field-sketch .route-mark').getAttribute('d');
+  await page.locator('#watchGhost').click();
+  await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+  await expect(page.locator('#ghostMapStatus')).toContainText('does not start at the selected tee');
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+});
