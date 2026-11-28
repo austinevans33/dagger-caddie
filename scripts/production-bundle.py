@@ -21,6 +21,7 @@ HEART_SOURCE = "00b6fa3f70f12d2164df630cf1b87ccb417e6ee7"
 NC_BATCH_SOURCE = "f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf"
 NC_BATCH_02_SOURCE = "ec0838e9916214393d05f0b9749a799f851dfc55"
 KINGDOM_TWO_SOURCE = "a90d0375beb4877fa36fdabbb6e7a89ba8e87fe2"
+KINGDOM_NC_SOURCE = "501a493d6f77b5895702a7354926df93d6050a43"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -169,7 +170,8 @@ def expected_files():
     assert kingdom_two_replacements <= bundle.keys() and measured_dispersion not in bundle
     for path in kingdom_two_replacements | {measured_dispersion}:
         bundle[path] = object_bytes(KINGDOM_TWO_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (KINGDOM_TWO_SOURCE + "\n").encode()
+    bundle[NC_BATCH_CATALOG] = object_bytes(KINGDOM_NC_SOURCE, NC_BATCH_CATALOG)
+    bundle[PREFIX + "source-sha.txt"] = (KINGDOM_NC_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
