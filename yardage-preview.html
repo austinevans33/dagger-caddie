@@ -246,7 +246,10 @@ $('hole').onchange=()=>{number=Number($('hole').value);draw()};
 $('askHoleCaddy').onclick=()=>{
  const {page}=resolveYardageState({active:{selection:latest.selection},context:{state:latest.state,holes:latest.holes||[],selection:latest.selection},holeNumber:number});
  const question=latest.selection?composeHoleQuestion({courseName:latest.selection.course?.name,teeName:latest.selection.tee?.name,holeNumber:number,par:page.hole?.par,yards:page.hole?.yards,trouble:[describeSketchTrouble(activeAnnotations),activeAnnotations?.reference?.note].filter(Boolean).join('. ')}):null;
- if(!question||!saveHoleQuestion(sessionStorage,question,Date.now(),{selectionKey:yardageSelectionKey(latest.selection),holeNumber:number})){document.querySelector('#status').textContent='Unable to prepare the caddy question. Your current round is unchanged.';return}
+ const active=readActiveRound(localStorage);
+ const selectionKey=yardageSelectionKey(latest.selection);
+ const roundSelectedAt=active&&yardageSelectionKey(active.selection)===selectionKey?active.selectedAt:null;
+ if(!question||!saveHoleQuestion(sessionStorage,question,Date.now(),{selectionKey,holeNumber:number,roundSelectedAt})){document.querySelector('#status').textContent='Unable to prepare the caddy question. Your current round is unchanged.';return}
  rememberHole();
  try{sessionStorage.setItem('dccCaddyTurn','1');sessionStorage.setItem('dccCaddyReturnHole',String(number))}catch{}
  location.assign('./');

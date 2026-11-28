@@ -2,13 +2,13 @@ import {mountSoloScorecard} from './solo-scorecard-ui.js?v=scorecard-screen-21';
 import {readSoloCard} from './solo-scorecard.js?v=premium-paper-9';
 import {buildCaddyTarget} from './caddy-target-policy.js';
 import {getRoundEnvironment} from './round-environment.js';
-import {yardageSelectionKey} from './yardage-navigation.js';
+import {yardageDraftHoleForRound} from './yardage-caddy-handoff.js';
 import {readActiveRound,sameActiveRound} from './starters-desk-session.js';
 import {createCaddyCourseBriefing} from './caddy-course-briefing.js?v=weather-cache-22';
 import {buildCaddyCourseFacts} from './caddy-course-facts.js?v=weather-cache-22';
 import {needsCaddyEnvironmentRefresh,safeCaddyEnvironment} from './caddy-environment-policy.js?v=weather-cache-22';
 import {createShotRecordContext,recordedMissNotes} from './shot-record-context.js?v=friday-book-1';
-import {normalizeShotMeasurement,measuredClubDispersion} from './measured-shot-dispersion.js';
+import {normalizeShotMeasurement,measuredClubDispersion,describeMeasuredBag} from './measured-shot-dispersion.js';
 import {buildCaddyClubBaseline,formatCaddyClubBaseline} from './caddy-club-baseline.js';
 import {describeCaddyConditions,mountCaddyConditions} from './caddy-conditions-ui.js?v=weather-cache-22';
 import {mountStartersDesk} from './starters-desk-ui.js?v=weather-cache-22';
@@ -554,14 +554,17 @@ function add(role,content){
   }
 }
 function caddyDraftHole(active){
- return yardageDraftContext?.selectionKey===yardageSelectionKey(active?.selection)?yardageDraftContext?.holeNumber:null;
+ return yardageDraftHoleForRound(yardageDraftContext,active);
 }
 function context(){
  const profile=savedClubProfile().filter(club=>typeof club?.name==='string');
  let clubs=profile.map(x=>`${x.name}: ${x.manualCarry??x.carry??'?'} yd`).join(', ').slice(0,900);
  try{
   const shots=JSON.parse(localStorage.getItem('dagger_shot_log')||'[]');
-  const misses=recordedMissNotes(shots,profile.map(club=>club.name)).join('; ');
+  const clubNames=profile.map(club=>club.name);
+  const observations=describeMeasuredBag(shots,clubNames);
+  const misses=recordedMissNotes(shots,clubNames).join('; ');
+  if(observations)clubs='Launch-monitor sample ranges (left is negative): '+observations+' | Saved carries: '+clubs;
   if(misses)clubs+=' | Recorded direction outcomes: '+misses;
  }catch{}
  clubs=clubs.slice(0,1200);

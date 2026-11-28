@@ -1,5 +1,7 @@
 // UI-only, one-time handoff from verified Yardage Book facts to existing Caddy composer.
 // Never sends an AI request or writes scoring, wagers, Firebase or a target-distance field.
+import {yardageSelectionKey} from './yardage-navigation.js';
+
 const KEY='dcc_yardage_caddy_handoff_v1';
 const MAX_AGE=20*60*1000;
 export function composeHoleQuestion({courseName,teeName,holeNumber,par,yards,trouble}={}){
@@ -20,9 +22,9 @@ export function saveHoleQuestion(session,question,now=Date.now(),context=null){
  try{session.setItem(KEY,JSON.stringify({version:1,question,createdAt:now,context:normalizeContext(context)}));return true}catch{return false}
 }
 function normalizeContext(context){
- const {selectionKey,holeNumber}=context||{};
+ const {selectionKey,holeNumber,roundSelectedAt}=context||{};
  return typeof selectionKey==='string'&&selectionKey.length<=250&&Number.isInteger(holeNumber)&&holeNumber>=1&&holeNumber<=18
-  ?{selectionKey,holeNumber}:null;
+  ?{selectionKey,holeNumber,...(Number.isSafeInteger(roundSelectedAt)?{roundSelectedAt}:{})}:null;
 }
 export function takeHoleQuestion(session,now=Date.now(),{withContext=false}={}){
  try{
@@ -31,4 +33,12 @@ export function takeHoleQuestion(session,now=Date.now(),{withContext=false}={}){
   const data=JSON.parse(value);
   return data?.version===1&&Number.isSafeInteger(data.createdAt)&&now>=data.createdAt&&now-data.createdAt<=MAX_AGE&&typeof data.question==='string'&&data.question.length>=20&&data.question.length<=600?(withContext?{question:data.question,context:normalizeContext(data.context)}:data.question):null;
  }catch{return null}
+}
+
+export function yardageDraftHoleForRound(draft,active){
+ const context=normalizeContext(draft);
+ if(!context||!Number.isSafeInteger(context.roundSelectedAt)||
+    context.roundSelectedAt!==active?.selectedAt||
+    context.selectionKey!==yardageSelectionKey(active.selection))return null;
+ return context.holeNumber;
 }

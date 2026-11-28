@@ -23,6 +23,7 @@ NC_BATCH_02_SOURCE = "ec0838e9916214393d05f0b9749a799f851dfc55"
 KINGDOM_TWO_SOURCE = "a90d0375beb4877fa36fdabbb6e7a89ba8e87fe2"
 KINGDOM_NC_SOURCE = "501a493d6f77b5895702a7354926df93d6050a43"
 KINGDOM_ROOMS_AND_ART_SOURCE = "bf1152075f6c5f120450c106b480d080a8b5105e"
+CADDY_ROUND_CONTEXT_SOURCE = "733dca9e79a2269abe83b4c06b000042c070878e"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -178,7 +179,12 @@ def expected_files():
     assert room_and_art_updates <= bundle.keys() and seven_lakes not in bundle
     for path in room_and_art_updates | {seven_lakes}:
         bundle[path] = object_bytes(KINGDOM_ROOMS_AND_ART_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (KINGDOM_ROOMS_AND_ART_SOURCE + "\n").encode()
+    caddy_round_context_files = {"yardage-preview.html", PREFIX + "ai-chat.js",
+        PREFIX + "yardage-caddy-handoff.js", PREFIX + "measured-shot-dispersion.js"}
+    assert caddy_round_context_files <= bundle.keys()
+    for path in caddy_round_context_files:
+        bundle[path] = object_bytes(CADDY_ROUND_CONTEXT_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (CADDY_ROUND_CONTEXT_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
