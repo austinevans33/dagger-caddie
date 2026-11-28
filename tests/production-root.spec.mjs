@@ -509,6 +509,7 @@ test('shotgun solo check-in drives mid-round Ghost and local wager scoring by ph
   await expect(page.frameLocator('#dccGhostPlayback iframe').locator('#headline')).toContainText('Hole 18 · Par 4');
 
   await page.locator('#tab-bets').click();
+  await page.locator('.dcc-r60-legacy-ticket > summary').click();
   const wager=page.locator('#newWagers');
   if(!await wager.evaluate(node=>node.open))await wager.locator('summary').click();
   await expect(page.locator('#wStartHole')).toHaveValue('1');
@@ -529,6 +530,7 @@ test('shotgun solo check-in drives mid-round Ghost and local wager scoring by ph
   await expect(page.locator('#wHole')).toHaveText('18');
   await page.reload();
   await page.locator('#tab-bets').click();
+  await page.locator('.dcc-r60-legacy-ticket > summary').click();
   if(!await wager.evaluate(node=>node.open))await wager.locator('summary').click();
   await expect(page.locator('#wHole')).toHaveText('18');
 });

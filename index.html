@@ -7215,6 +7215,7 @@ try {
     const courseHoles = dccGhostCourseHoleCount();
     if (Number.isInteger(saved.startHole) && saved.startHole >= 1 && saved.startHole <= courseHoles) {
       dccGhostStartHole = saved.startHole;
+      dccGhostStartChosen = true;
     }
     const pending = saved.pending;
     if (pending?.hole === dccGhostNextHole() &&
@@ -7539,6 +7540,7 @@ document.getElementById('dccGhostRecord')
 
       dccGhostCourse = course;
       dccGhostHoles = next;
+      dccGhostStartChosen = true;
       dccGhostPending = null;
       dccGhostShowPlayback();
 
@@ -7622,6 +7624,7 @@ document.getElementById('dccGhostUndo')
       );
 
       dccGhostHoles = next;
+      dccGhostStartChosen = true;
       dccGhostPending = null;
       dccGhostShowPlayback();
 
