@@ -49,7 +49,8 @@ jobs:
           start='// DCC STEP 30K-A — HOUSE GHOST MATCH ARCHIVE'
           end='// DCC STEP 26A — MATCH PLAY SCORING FOUNDATION'
           picker='<label for="dccGhostStartHole">Starting hole</label>\n<select id="dccGhostStartHole"></select>\n'
-          assert after.count(picker)<=1, 'Ghost starter picker must be unique'
+          assert before.count(picker)<=1 and after.count(picker)<=1, 'Ghost starter picker must be unique'
+          before=before.replace(picker, '')
           after=after.replace(picker, '')
           def outside_ghost(text):
               left, rest=text.split(start,1)
@@ -61,6 +62,7 @@ jobs:
           git fetch origin d9bc012add5d3ffddf292eb19351d3a49130c77c
           git fetch origin 8701933596c6abc0f7861e182a0214e8c187966b
           git fetch origin 227f400e0c358c6abda06f70fa5efa17b6e712dd
+          git fetch origin f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf
           python3 scripts/production-bundle.py --check .
           python3 scripts/build-shining-rock-book.py --check
           node --test tests/*.test.mjs

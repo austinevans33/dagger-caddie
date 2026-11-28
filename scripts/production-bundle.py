@@ -16,6 +16,7 @@ LEGACY = "390b501ffd0b923c6b009ca70509e32319b2e032"
 SUCCESSOR = "d9bc012add5d3ffddf292eb19351d3a49130c77c"
 PRE_RELEASE = "8a07777e19c26529d1adccbc0296961977e7b3a4"
 KINGDOM_SOURCE = "227f400e0c358c6abda06f70fa5efa17b6e712dd"
+NC_BATCH_SOURCE = "f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -46,6 +47,13 @@ KINGDOM_ADDITIONS = frozenset({
     "app/61f9e9de0a/course-factory-acquisition.js",
     "app/61f9e9de0a/course-factory-batch.js",
     "app/61f9e9de0a/round-hole-order.js",
+})
+
+NC_BATCH_CATALOG = "app/61f9e9de0a/north-carolina-course-factory.js"
+NC_BATCH_ART = frozenset({
+    "app/61f9e9de0a/course-art/the-woods-whispering-pines-nc.json",
+    "app/61f9e9de0a/course-art/mill-creek-mebane-nc.json",
+    "app/61f9e9de0a/course-art/hillandale-durham-nc.json",
 })
 
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
@@ -107,7 +115,10 @@ def expected_files():
     assert KINGDOM_ADDITIONS.isdisjoint(bundle)
     for path in KINGDOM_REPLACEMENTS | KINGDOM_ADDITIONS:
         bundle[path] = object_bytes(KINGDOM_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (KINGDOM_SOURCE + "\n").encode()
+    assert NC_BATCH_CATALOG in bundle and NC_BATCH_ART.isdisjoint(bundle)
+    for path in NC_BATCH_ART | {NC_BATCH_CATALOG}:
+        bundle[path] = object_bytes(NC_BATCH_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (NC_BATCH_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 
