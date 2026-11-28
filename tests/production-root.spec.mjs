@@ -616,7 +616,6 @@ test('Country Hills plays from the official tee card using the reviewed drawing'
   await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
 });
 for (const course of [
-  {query:'Seven Lakes Golf Club', region:'West End, NC', tee:'Black · 6856 yards', hole:16, par:3, yards:188},
   {query:'Pine Island Country Club', region:'Charlotte, NC', tee:'Blue · 6377 yards', hole:2, par:5, yards:493},
 ]) {
   test(course.query + ' uses its verified card and Ghost while geometry is withheld', async ({page}) => {
@@ -738,3 +737,30 @@ for (const round of [
     await expect(page.locator('#dcc-paper-launch')).toContainText('18/18 HOLES SCORED');
   });
 }
+
+test('Seven Lakes loads all 18 reference drawings and keeps Hole 16 Black yardage distinct', async ({page}) => {
+  test.setTimeout(90000);
+  await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('Seven Lakes Golf Club');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'West End, NC'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'Black · 6856 yards'});
+  await page.locator('#dcc-starter-checkin').click();
+  await page.goto(launch+'yardage-preview.html?hole=1');
+  const yards = [520,387,424,374,184,390,199,583,417,146,531,409,379,355,531,188,402,437];
+  for (const [index, distance] of yards.entries()) {
+    await page.locator('#hole').selectOption(String(index+1));
+    await expect(page.locator('#mapYards')).toHaveText(distance+' yds');
+    await expect(page.locator('.field-sketch .route-mark')).toHaveAttribute('d',/^M/);
+  }
+  await page.locator('#hole').selectOption('16');
+  await expect(page.locator('#mapYards')).toHaveText('188 yds');
+  await expect(page.locator('.geometry-foot')).toContainText('mapped forward tee pad');
+  const route = await page.locator('.field-sketch .route-mark').getAttribute('d');
+  await page.locator('#watchGhost').click();
+  await expect(page.locator('#ghostHoleSketch .route-mark')).toHaveAttribute('d',route);
+  await expect(page.locator('#ghostMapStatus')).toContainText('does not start at the selected tee');
+  await page.locator('#next').click();
+  await expect(page.locator('#traces .dcc-ghost-tracer')).toHaveCount(1);
+});

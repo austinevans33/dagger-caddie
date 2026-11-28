@@ -71,3 +71,13 @@ This candidate takes the exact Seven Lakes and Pine Island catalog, the sourced 
 Carolina Colours joins as a verified scorecard-only course. Both club scorecard images are byte-identical to the earlier transcription sources. The full candidate preflight now reports 45 discovered, scorecard-ready and Ghost-ready, 27 with drawings and 16 with complete drawings. North Carolina accounts for 22 scorecard/Ghost-ready, 15 with drawings and 10 with complete drawings.
 
 Run `node scripts/kingdom-course-preflight.mjs --region NC --checkpoint /tmp/dagger-nc-review.json`. On retry this reuses each completed course after checking the exact bundled runtime and course list. The result lists the physical holes that remain partial, unavailable or scorecard-only without blocking the other courses. Treat a checkpoint from a different candidate as a different run.
+
+### November 28 geometry review
+
+Re-ran the existing independent-assignment and typed OSM importer against fresh OpenStreetMap extracts. Seven Lakes had 18 unique mapped routes whose pars match the club card and 18 boundary-checked tee and green endpoints. Hole 7 has no unambiguous fairway, so it remains partial. Hole 16 uses the identified forward pad supported by the prior NC OneMap and USGS NAIP review. The book and Ghost disclose reference geometry, display the selected club-card yardage independently, and draw no inferred back tees. The Gold card is the runtime geometry audit reference only. Raw OSM extract SHA-256: `a3de869208dfd8d7d073fe68531780c3dbe54fda84f4dba1c2e4b517ced9cc01`.
+
+Neuse stays scorecard-only. Seventeen routes and endpoints passed the boundary review; the current Hole 8 line leaves the mapped boundary for 14.3 yards even after the three-meter tolerance. Its endpoint ways are 756778773 and 756778783. The test preserves the boundary guard while a club or aerial source corroborates the line. Raw SHA-256: `559436c54b53fdbe9f616ade68aef8b5432cdc79a873bc1eb0eeb9c8354c01fc`.
+
+Pine Island stays scorecard-only. The fresh route tags still conflict with the official card at 2, 3, 4 and 7, and the distance audit rejects all supported audit tees. Raw SHA-256: `613c267041bd2e3a30216034de5da4d99e582a0a5a45a119d64c37ca9487ba4b`.
+
+With Seven Lakes, the candidate has 45 scorecards and Ghost profiles, 28 with drawings including 12 partially complete, and 16 fully drawn. Counts describe preflight coverage.

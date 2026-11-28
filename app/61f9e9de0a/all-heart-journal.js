@@ -55,7 +55,7 @@ function archivedGhostTarget(storage, selection, hole) {
   return null;
 }
 
-export function allHeartRoundOffer(storage, active, card, {gate = naturalAllHeartGate} = {}) {
+export function allHeartRoundOffer(storage, active, card, {gate = naturalAllHeartGate, moneyRoomPlayers = 0} = {}) {
   if (!active || !card || storage.getItem(ALL_HEART_DISABLED) === 'true') return null;
   const {selection, selectedAt} = active;
   const {course, tee} = selection;
@@ -70,7 +70,10 @@ export function allHeartRoundOffer(storage, active, card, {gate = naturalAllHear
   const entries = readJournal(storage);
   const round = entries.filter(entry => entry.roundId === card.identity);
   const prior = round.find(entry => entry.hole === card.hole);
-  if (prior) return ['offered','accepted'].includes(prior.state) ? prior : null;
+  if (prior) {
+    if (prior.moment.action==='open-ticket-window' && moneyRoomPlayers<2) return null;
+    return ['offered','accepted'].includes(prior.state) ? prior : null;
+  }
   if (!gate(card.identity, card.hole)) return null;
   const hasTraveling = round.some(entry => entry.moment.traveling);
   const best = hasTraveling ? null : matchbookPersonalBest(storage, active, card);
@@ -81,7 +84,7 @@ export function allHeartRoundOffer(storage, active, card, {gate = naturalAllHear
     par: facts.par, roundActive: true, maxPerRound: MAX_ROUND_OFFERS, cooldownHoles: COOLDOWN_HOLES,
     historicalChallenge: course.provider==='dagger-founder' && course.providerCourseId===SAWGRASS_LEGEND.courseId &&
       card.hole===SAWGRASS_LEGEND.holeNumber && facts.par===3 ? SAWGRASS_LEGEND : null,
-    legendaryAdaptation: adaptation,
+    legendaryAdaptation: adaptation, moneyRoomPlayers,
     ghostRival: best > 1 ? {eligible:true, strokes:best, clubLegend:true} :
       ghost ? {eligible:true, strokes:ghost} : null
   };
@@ -99,7 +102,9 @@ export function respondToAllHeart(storage, card, offer, accepted) {
   const rows = readJournal(storage);
   const index = rows.findIndex(row=>row.roundId===offer.roundId&&row.hole===offer.hole&&row.state==='offered');
   if (index < 0) return false;
-  rows[index] = {...rows[index], state:accepted?'accepted':'dismissed'};
+  const state = !accepted ? 'dismissed' :
+    rows[index].moment.action==='open-ticket-window' ? 'ticket-opened' : 'accepted';
+  rows[index] = {...rows[index], state};
   writeJournal(storage,rows);
   return true;
 }

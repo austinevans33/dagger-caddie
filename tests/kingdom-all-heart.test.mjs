@@ -148,3 +148,17 @@ test('the actual Sawgrass 17 scorecard offers and records the sourced Tiger Wood
   assert.equal(allHeartClubRecord(storage)[0].hole,17);
   assert.notEqual(allHeartRoundOffer(storage,active,setSoloHole(storage,18),force)?.moment.sourceUrl,offer.moment.sourceUrl);
 });
+
+test('a confirmed group Dare opens a proposal without writing a challenge result or ticket', () => {
+  const {storage,active,card}=setup(17);
+  const confirmed={...force,moneyRoomPlayers:2};
+  const offer=allHeartRoundOffer(storage,active,card,confirmed);
+  assert.equal(offer.moment.action,'open-ticket-window');
+  assert.equal(allHeartRoundOffer(storage,active,card,force),null);
+  assert.equal(allHeartRoundOffer(storage,active,card,confirmed).state,'offered');
+  assert(respondToAllHeart(storage,card,offer,true));
+  assert.equal(allHeartRoundOffer(storage,active,card,confirmed),null);
+  assert.equal(completeAllHeartHole(storage,saveSoloScore(storage,4),17),null);
+  assert.equal(allHeartClubRecord(storage).length,0);
+  assert.equal(storage.getItem('dcc_side_bets_local_r66_v1'),null);
+});

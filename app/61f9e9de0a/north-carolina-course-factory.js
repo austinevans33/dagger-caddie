@@ -3737,7 +3737,14 @@ export const courseFactoryCourses = [
     },
     "map": {
       "ref": "nc/seven-lakes",
-      "status": "scorecard-only"
+      "status": "bundled-reviewed-osm",
+      "file": "seven-lakes-west-end-nc.json",
+      "source": "https://www.openstreetmap.org/relation/6390097",
+      "auditTee": "gold",
+      "layoutNote": "Reference layout from mapped tee pads; tee colors are unassigned. Use the selected-tee scorecard yardage.",
+      "holeNotes": {
+        "16": "Reference layout uses the mapped forward tee pad. The drawing does not start at the selected tee. Use the selected-tee scorecard yardage."
+      }
     }
   },
   {

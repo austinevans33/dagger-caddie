@@ -37,6 +37,18 @@ test('two staging sessions share Shining Rock room scores, corrections and final
   }
   try{
     await prepare(page);
+    await page.evaluate(async () => {
+      const {naturalAllHeartGate}=await import('./app/61f9e9de0a/all-heart-journal.js');
+      const key='dcc_active_round_course_v1',active=JSON.parse(localStorage.getItem(key));
+      const prefix=active.selection.course.providerCourseId+'|'+active.selection.tee.providerTeeId+'|';
+      for(let delta=1;delta<=1000;delta++){
+        if(!naturalAllHeartGate(prefix+(active.selectedAt+delta),17))continue;
+        active.selectedAt+=delta;
+        localStorage.setItem(key,JSON.stringify(active));
+        return;
+      }
+      throw Error('Could not qualify the staging test draw');
+    });
     await page.locator('#roomMe').fill('QA Rock Host');
     await page.locator('#roomPlayers').fill('QA Rock Guest');
     await page.locator('#roomFormat').selectOption('hole');
@@ -54,6 +66,20 @@ test('two staging sessions share Shining Rock room scores, corrections and final
     await expect(guest.locator('#roomStatus')).toContainText('LIVE');
     await expect(guest.locator('#roomWho')).toContainText('Shining Rock');
     await expect(guest.locator('#roomEditor')).toBeHidden();
+    await page.evaluate(async () => {
+      const {startSoloCard,setSoloHole}=await import('./app/61f9e9de0a/solo-scorecard.js?v=premium-paper-9');
+      startSoloCard(localStorage);
+      setSoloHole(localStorage,17);
+    });
+    await page.locator('#tab-play').click();
+    await page.locator('#dccHomeScorecard').click();
+    const dare=page.getByRole('region',{name:'All Heart Moment',exact:true});
+    await dare.getByRole('button',{name:'Open Ticket Window'}).click();
+    await expect(page.locator('#dccPropFormWrap')).toBeVisible();
+    await expect(page.locator('#dccPropHole')).toHaveValue('17');
+    await expect(page.locator('#dccPropStake')).toHaveValue('');
+    expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')||'[]'))).toEqual([]);
+    await page.locator('#dccPropNew').click();
     async function saveHole(hole,a,b){
       await page.locator('#roomHole').selectOption(String(hole));
       const inputs=page.locator('#roomScoreRows input');

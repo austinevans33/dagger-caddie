@@ -1,6 +1,7 @@
 import {mountAllHeartMoment} from './all-heart-moment-card.js';
 import {allHeartRoundOffer, respondToAllHeart, completeAllHeartHole, reconcileAllHeartScores, allHeartClubRecord, ALL_HEART_DISABLED} from './all-heart-journal.js';
 import {soloMatchbook, saveMatchbookRound} from './matchbook.js';
+import {confirmedDareRoomPlayers} from './money-room.js?v=ledger-layout-1';
 
 export function mountAllHeartInRound({doc, storage, root, record}) {
   const style=doc.createElement('style');
@@ -24,7 +25,8 @@ export function mountAllHeartInRound({doc, storage, root, record}) {
         item.textContent=entry.course+' · Hole '+entry.hole+' · '+entry.receipt.headline+' '+entry.receipt.strokes+' strokes';
         return item;
       }));
-      const offer=allHeartRoundOffer(storage,active,card);
+      const moneyRoomPlayers=confirmedDareRoomPlayers(card?.identity, card?.hole);
+      const offer=allHeartRoundOffer(storage,active,card,{moneyRoomPlayers});
       if(!offer)return;
       if(offer.state==='accepted'){
         const panel=doc.createElement('section');
@@ -38,6 +40,22 @@ export function mountAllHeartInRound({doc, storage, root, record}) {
       }
       const answer=accepted=>{
         try {
+          if(accepted && offer.moment.action==='open-ticket-window'){
+            const openTicket=doc.getElementById('dccGamesTicketWindow');
+            const ticketForm=doc.getElementById('dccPropFormWrap');
+            const holeField=doc.getElementById('dccPropHole');
+            if(!openTicket||!ticketForm||!holeField||
+                confirmedDareRoomPlayers(current.card.identity,offer.hole)<2){
+              refresh(current.active,current.card);
+              return;
+            }
+            if(!respondToAllHeart(storage,current.card,offer,true))return;
+            const alreadyOpen=ticketForm.open;
+            root.closest('dialog')?.close();
+            openTicket.click();
+            if(!alreadyOpen&&!holeField.value)holeField.value=String(offer.hole);
+            return;
+          }
           if(respondToAllHeart(storage,current.card,offer,accepted)) refresh(current.active,current.card);
         } catch {/* Score entry is independent. */}
       };
