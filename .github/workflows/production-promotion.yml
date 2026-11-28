@@ -50,7 +50,7 @@ jobs:
           git fetch origin 8701933596c6abc0f7861e182a0214e8c187966b
           git fetch origin 227f400e0c358c6abda06f70fa5efa17b6e712dd
           git fetch origin f1c1b52b7f30674dcddf0cb9a20ce723e7dc75cf
-          git fetch origin 69843fdb68e55c276ebd5b9b413b4d5c2c99ea26
+          git fetch origin 8c9933177866fdc2e60ae93c72f3c6315b8e6e51
           python3 scripts/production-bundle.py --check .
           git diff --exit-code 23c4c6888dc9b8c193ef635949bc031d31cdb208 -- .firebaserc firebase.json firestore.rules functions
           python3 scripts/build-shining-rock-book.py --check
