@@ -25,3 +25,11 @@
 - An unlocked Ghost starts at the active paper hole by default. It can still be set explicitly. A running match retains its original start and partial history stores it.
 - Local wagers retain packed, ordered score rows for backward compatibility. The physical hole is derived from the saved start, including when copying a verified round score. Nassau archives reject unresolved segments.
 - Remote shared rooms still use the legacy ordering. An older reachable web client can join a new room and recalculate Skins or Nassau with the old order. Before opting rooms into rotated financial settlement, prove version compatibility and old-client fail-closed behavior in staging. The Firebase rules and projects are untouched by this stack.
+
+### All Heart scorecard stack
+
+- The approved selector, scorecard card styling, receipt builder, Matchbook targets, and Royal Birkdale adaptations come from #73, #81 and #102.
+- The original pilot was only on a staging branch, mounted under Games, and restricted to a narrow tee list. This stack hosts the same challenge presentation next to the official scoring controls, using local official scorecards independently of artwork.
+- Offers and acceptance persist by round and physical hole. The production draw is fixed per round and hole. Unit tests force eligible types through an injected draw, and the isolated browser case uses a qualifying Verdae round fixture. There is no production force switch.
+- The natural test observed 248 offers in 196 of 240 complete Shining Rock rounds. The cap is two offers and four intervening holes, in played order. No synthetic wager or payout is created.
+- Exact-hole Legend rendering requires a verified fact at a published course; the delivered natural Legend source is the Birkdale adaptation. The shared-room Dare-to-Ticket Window still needs authenticated, synchronized room context before it can be enabled.
