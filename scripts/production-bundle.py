@@ -17,6 +17,7 @@ SUCCESSOR = "d9bc012add5d3ffddf292eb19351d3a49130c77c"
 PRE_RELEASE = "8a07777e19c26529d1adccbc0296961977e7b3a4"
 KINGDOM_SOURCE = "227f400e0c358c6abda06f70fa5efa17b6e712dd"
 GAMEPLAY_SOURCE = "3dea266061f954e05be0c45750dea4c3cae8d515"
+ROOM_ORDER_SOURCE = "f46a4b849f15accd94305a236652d5c4169504ff"
 VERDAE_SOURCE = "8701933596c6abc0f7861e182a0214e8c187966b"
 SUCCESSOR_FILES = frozenset({
     "index.html",
@@ -58,6 +59,13 @@ GAMEPLAY_REPLACEMENTS = frozenset({
     "app/61f9e9de0a/solo-scorecard.js",
     "app/61f9e9de0a/starters-desk-ui.js",
 })
+
+ROOM_ORDER_REPLACEMENTS = frozenset({
+    "app/61f9e9de0a/money-room.js",
+    "app/61f9e9de0a/room-session.js",
+    "app/61f9e9de0a/room-recovery.js",
+})
+ROOM_ORDER_ADDITION = "app/61f9e9de0a/room-order-contract.js"
 
 LIVE = "https://austinevans33.github.io/dagger-caddie/"
 PREFIX = "app/" + STAGED[:10] + "/"
@@ -121,7 +129,10 @@ def expected_files():
     assert GAMEPLAY_REPLACEMENTS <= bundle.keys()
     for path in GAMEPLAY_REPLACEMENTS:
         bundle[path] = object_bytes(GAMEPLAY_SOURCE, path)
-    bundle[PREFIX + "source-sha.txt"] = (GAMEPLAY_SOURCE + "\n").encode()
+    assert ROOM_ORDER_REPLACEMENTS <= bundle.keys() and ROOM_ORDER_ADDITION not in bundle
+    for path in ROOM_ORDER_REPLACEMENTS | {ROOM_ORDER_ADDITION}:
+        bundle[path] = object_bytes(ROOM_ORDER_SOURCE, path)
+    bundle[PREFIX + "source-sha.txt"] = (ROOM_ORDER_SOURCE + "\n").encode()
     assert all(STAGE_PROJECT not in value for value in bundle.values())
     return bundle
 

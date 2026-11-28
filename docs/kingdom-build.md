@@ -25,3 +25,9 @@
 - An unlocked Ghost starts at the active paper hole by default. It can still be set explicitly. A running match retains its original start and partial history stores it.
 - Local wagers retain packed, ordered score rows for backward compatibility. The physical hole is derived from the saved start, including when copying a verified round score. Nassau archives reject unresolved segments.
 - Remote shared rooms still use the legacy ordering. An older reachable web client can join a new room and recalculate Skins or Nassau with the old order. Before opting rooms into rotated financial settlement, prove version compatibility and old-client fail-closed behavior in staging. The Firebase rules and projects are untouched by this stack.
+
+### Shared Money Room stack
+
+The scorekeeper picks any physical starting hole. Hole scores retain physical keys, while the server-confirmed immutable order determines traversal, Skins carryovers, Nassau legs, undo and history. New rotated rooms use versioned `r2-` document IDs with the same random token lengths. Old clients reject the ID before joining or recovering. Original rooms remain readable and retain their order and payouts. The Firestore rules already protect immutable room metadata on updates. Rules, authentication, membership, writes, QR generation and both projects remain on their existing paths.
+
+The staging acceptance creates a legacy room and a versioned Hole 18 room, with two sessions each. It checks wraparound, host-only controls, undo, corrections, reconnect, final balances and exactly one archive per device. Record remote results once these gates complete.
