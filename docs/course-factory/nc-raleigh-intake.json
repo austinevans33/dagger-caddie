@@ -1,0 +1,48 @@
+{
+  "courses": [
+    {
+      "id": "lonnie-poole-raleigh-nc",
+      "name": "Lonnie Poole Golf Course",
+      "region": "Raleigh, NC",
+      "scorecard": {
+        "format": "html",
+        "url": "https://lonniepoolegolfcourse.com/about/scorecard/",
+        "sha256": "aa32776770034ac7b2e75415510aa0a6774a1ec099b8156df4204ecce0624ee1",
+        "handicap": "Handicap",
+        "tees": {
+          "nc-state-competition": {
+            "label": "NC State Competition",
+            "total": 7358
+          },
+          "black": {
+            "label": "Black",
+            "total": 6916
+          },
+          "red": {
+            "label": "Red",
+            "total": 6498
+          },
+          "wolfpack": {
+            "label": "Wolfpack",
+            "total": 6032
+          },
+          "green": {
+            "label": "Green",
+            "total": 4711
+          },
+          "gray-green-hybrid": {
+            "label": "Gray/Green Hybrid",
+            "total": 5136
+          }
+        }
+      }
+    }
+  ],
+  "exceptions": [
+    {
+      "courseId": "lonnie-poole-raleigh-nc",
+      "tee": "Gray",
+      "issue": "Published holes 10-18 total 2804, while the club lists 2795. Hold the Gray row until corrected by the club."
+    }
+  ]
+}

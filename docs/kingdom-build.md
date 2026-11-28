@@ -81,3 +81,7 @@ Neuse stays scorecard-only. Seventeen routes and endpoints passed the boundary r
 Pine Island stays scorecard-only. The fresh route tags still conflict with the official card at 2, 3, 4 and 7, and the distance audit rejects all supported audit tees. Raw SHA-256: `613c267041bd2e3a30216034de5da4d99e582a0a5a45a119d64c37ca9487ba4b`.
 
 With Seven Lakes, the candidate has 45 scorecards and Ghost profiles, 28 with drawings including 12 partially complete, and 16 fully drawn. Counts describe preflight coverage.
+
+### Raleigh intake follow-up
+
+Restored the pinned official scorecard cache and transcription CLI from the earlier Course Factory work. Ran both against Lonnie Poole's official HTML. Six tee rows matched every printed nine-hole subtotal and total and now load into the scorecard and original Ghost. The Gray back-nine values sum to 2,804 while the printed subtotal is 2,795. Gray stays out of the selector until the club confirms the correction. Geometry remains scorecard-only. The source pin and exception are in `docs/course-factory/nc-raleigh-intake.json`.
