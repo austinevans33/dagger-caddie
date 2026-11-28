@@ -33,3 +33,5 @@
 - Offers and acceptance persist by round and physical hole. The production draw is fixed per round and hole. Unit tests force eligible types through an injected draw, and the isolated browser case uses a qualifying Verdae round fixture. There is no production force switch.
 - The natural test observed 248 offers in 196 of 240 complete Shining Rock rounds. The cap is two offers and four intervening holes, in played order. No synthetic wager or payout is created.
 - Exact-hole Legend rendering requires a verified fact at a published course; the delivered natural Legend source is the Birkdale adaptation. The shared-room Dare-to-Ticket Window still needs authenticated, synchronized room context before it can be enabled.
+
+The first exact-hole Legend uses the PGA TOUR's documented account of Tiger Woods making a birdie two in the third round of the 2001 PLAYERS Championship. Eligibility is scoped to the verified TPC Sawgrass Players Stadium Course, physical Hole 17, par 3. It shares the ordinary All Heart draw, cooldown, acceptance and Club Record. The Birkdale adaptations still travel to eligible verified scorecards.

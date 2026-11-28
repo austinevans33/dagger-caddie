@@ -572,3 +572,35 @@ test('All Heart appears on the scorecard-only Verdae book and keeps the accepted
   await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole 12 · MATCHED THE CHALLENGE. 4 strokes');
   expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('dcc_side_bets_local_r66_v1')||'[]'))).toEqual([]);
 });
+
+test('Sawgrass 17 shows the sourced exact-hole Legend and writes the Club Record', async ({page}) => {
+  await page.addInitScript(() => localStorage.setItem('dagger_setup_complete', 'true'));
+  await page.goto(launch);
+  await page.locator('#dcc-starter-query').fill('TPC Sawgrass');
+  await page.locator('#dcc-starter-search').click();
+  await page.locator('#dcc-starter-results button').filter({hasText:'Ponte Vedra Beach, FL'}).click();
+  await page.locator('#dcc-starter-tees').selectOption({label:'The Players · 7245 yards'});
+  await page.locator('#dcc-starter-start').selectOption('17');
+  await page.locator('#dcc-starter-checkin').click();
+  await page.evaluate(async () => {
+    const {naturalAllHeartGate} = await import('./app/61f9e9de0a/all-heart-journal.js');
+    const key = 'dcc_active_round_course_v1', active = JSON.parse(localStorage.getItem(key));
+    const prefix = active.selection.course.providerCourseId + '|' + active.selection.tee.providerTeeId + '|';
+    for (let delta = 1; delta <= 1000; delta++) {
+      if (!naturalAllHeartGate(prefix + (active.selectedAt + delta),17)) continue;
+      active.selectedAt += delta;
+      localStorage.setItem(key, JSON.stringify(active));
+      return;
+    }
+    throw Error('Could not qualify a deterministic test draw');
+  });
+  await page.reload();
+  await page.locator('#dccHomeScorecard').click();
+  const moment = page.getByRole('region',{name:'All Heart Moment'});
+  await expect(moment).toContainText('Tiger Woods made 2 here');
+  await moment.getByRole('button',{name:'Take the challenge'}).click();
+  await expect(page.getByRole('region',{name:'Accepted All Heart challenge'})).toContainText('Target 2 strokes');
+  await page.getByRole('button',{name:'Pencil 2 strokes for hole 17'}).click();
+  await page.getByText('All Heart Club Record',{exact:true}).click();
+  await expect(page.locator('#dccAllHeartRecord li')).toContainText('Hole 17 · MATCHED THE CHALLENGE. 2 strokes');
+});
