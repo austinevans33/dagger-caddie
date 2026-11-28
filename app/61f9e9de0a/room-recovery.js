@@ -1,10 +1,11 @@
 // Saves only a room locator. Scores and privileges always come from Firebase.
+import {validRoomId} from './room-order-contract.js';
 export const ROOM_BOOKMARK_KEY = 'dagger_active_money_room';
 
 function normalize(value) {
   if (!value || value.version !== 1 || typeof value.uid !== 'string' ||
       !value.uid.length || value.uid.length > 128 ||
-      !/^[a-f0-9]{32}$/.test(value.id || '') || !/^[a-f0-9]{16}$/.test(value.invite || '') ||
+      !validRoomId(value.id) || !/^[a-f0-9]{16}$/.test(value.invite || '') ||
       typeof value.name !== 'string' || !value.name.trim() || value.name.length > 24) return null;
   return {version: 1, uid: value.uid, id: value.id, invite: value.invite, name: value.name.trim()};
 }

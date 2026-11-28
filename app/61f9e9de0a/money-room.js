@@ -4,6 +4,8 @@ installLedgerSettlement(window);
 installBingoMoney();
 import {firebaseConfig} from './firebase-config.js';
 import {readActiveRound} from './starters-desk-session.js';
+import {readRoundScoreSnapshot} from './round-score-snapshot.js';
+import {validRoomId,moneyRoomOrder,computeRoomSettlement} from './room-order-contract.js';
 import {createRoomSession,singleFlight,invitationFrom} from './room-session.js';
 import {createInvitationSharing, drawInvitationQr} from './invitation-qr.js';
 import {rememberRoom,forgetRoom,recoverRoom,readWithDeadline} from './room-recovery.js';
@@ -11,6 +13,22 @@ const roomStore={getItem:key=>localStorage.getItem(key),setItem:(key,value)=>loc
 const invitationSharing=createInvitationSharing();
 
 const $=id=>document.getElementById(id);
+const roomStart=document.createElement('select');
+roomStart.id='roomStartHole';
+roomStart.replaceChildren(...Array.from({length:18},(_,i)=>new Option('Hole '+(i+1),String(i+1))));
+const roomStartLabel=document.createElement('label');
+roomStartLabel.htmlFor=roomStart.id;
+roomStartLabel.textContent='Starting hole';
+const startingHoleField=document.createElement('div');
+startingHoleField.append(roomStartLabel,roomStart);
+$('roomFormat').parentElement.after(startingHoleField);
+function defaultRoomStart(){
+ const selected=readActiveRound(roomStore);
+ roomStart.value=String(readRoundScoreSnapshot(roomStore)?.activeHole??selected?.selection.holeNumber??1);
+}
+$('roomSetup').addEventListener('toggle',()=>{if($('roomSetup').open)defaultRoomStart()});
+document.addEventListener('dcc:course-selected',defaultRoomStart);
+defaultRoomStart();
 const status=t=>{$('roomStatus').textContent=t;};
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=v=>(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);
@@ -63,49 +81,15 @@ function syncHostQr() {
  }
 }
 
-function compute(model){
- const players=model.players||[];const n=players.length,holes=model.holes||{},stake=Number(model.stake)||0;
- const totals=Array(n).fill(0),ledger=[];let carry=1,settled=0;
- let cumulativeMatch=0;
- // Skins cannot award later holes until every preceding hole is scored.
- // Otherwise a late score correction can rewrite money already shown as won.
- let skinsSequenceComplete=true,skinsBlockedByGap=false;
- const segs=[{from:1,to:9,finished:false},{from:10,to:18,finished:false},{from:1,to:18,finished:false}];
- for(let hole=1;hole<=18;hole++){
-   const scores=holes[hole];const valid=Array.isArray(scores)&&scores.length===n&&scores.every(v=>Number.isInteger(v)&&v>=1&&v<=20);
-   let event='—';
-   if(!valid&&model.format==='skins')skinsSequenceComplete=false;
-   if(valid){
-     settled++;
-     if(model.format==='skins'){
-       if(!skinsSequenceComplete){skinsBlockedByGap=true;event='Pending earlier hole · skins not settled';}
-       else {
-        const low=Math.min(...scores), winners=scores.map((x,i)=>x===low?i:-1).filter(i=>i>=0);
-        if(winners.length===1){const win=winners[0],pot=stake*carry;totals[win]+=(n-1)*pot;for(let i=0;i<n;i++)if(i!==win)totals[i]-=pot;event=players[win]+' · '+carry+' skin'+(carry===1?'':'s');carry=1;}
-        else{event='Tie · carry '+carry+' → '+(carry+1);carry++;}
-       }
-     } else if(model.format==='hole'){
-       if(scores[0]===scores[1])event='Halved';else{const w=scores[0]<scores[1]?0:1;totals[w]+=stake;totals[1-w]-=stake;cumulativeMatch+=w===0?1:-1;event=players[w]+' wins';}
-     } else if(model.format==='vegas'){
-       const a=Math.min(scores[0],scores[1])*10+Math.max(scores[0],scores[1]),b=Math.min(scores[2],scores[3])*10+Math.max(scores[2],scores[3]);const diff=(b-a)*stake;
-       totals[0]+=diff/2;totals[1]+=diff/2;totals[2]-=diff/2;totals[3]-=diff/2;event=a+'–'+b+' · '+(diff===0?'Tie':diff>0?'Team 1':'Team 2');
-     } else if(model.format==='nassau'){
-       event=scores[0]===scores[1]?'Halved':players[scores[0]<scores[1]?0:1]+' wins hole';
-     }
-   }
-   // Nassau settlements are provisional until all holes in a segment are entered.
-   if(model.format==='nassau'&&n===2){
-     for(const seg of segs){if(seg.to!==hole)continue;let diff=0,count=0;for(let k=seg.from;k<=seg.to;k++){const v=holes[k];if(Array.isArray(v)&&v.length===2&&v.every(x=>Number.isInteger(x)&&x>=1&&x<=20)){count++;diff+=v[0]<v[1]?1:v[0]>v[1]?-1:0;}}
-       if(count===seg.to-seg.from+1){seg.finished=true;if(diff!==0){const w=diff>0?0:1;totals[w]+=stake;totals[1-w]-=stake;event+=' · Nassau segment settled';}}}}
-   ledger.push({hole,scores:valid?scores:null,event,totals:[...totals],carry});
- }
- return {totals,carry,settled,ledger,matchDiff:cumulativeMatch,skinsPending:model.format==='skins'&&skinsBlockedByGap};
+function compute(model,id=roomId){
+ return computeRoomSettlement(model,moneyRoomOrder(id,model));
 }
 function roomLabel(){const me=user?.uid||'';return (me===room?.hostUid?'Scorekeeper':'Read-only member');}
 let lastRenderedRoomId=null;
 function render(){
  if(!room)return;
  const sameRoom=lastRenderedRoomId===roomId;
+ const order=moneyRoomOrder(roomId,room);
  const selectedHole=sameRoom?Number($('roomHole').value):NaN;
  // Keep a scorekeeper's unsaved draft intact if a background snapshot arrives.
  const editingScore=sameRoom&&$('roomScoreRows')?.contains(document.activeElement);
@@ -130,6 +114,7 @@ function render(){
     `${matchState} · ${roleName}\n` +
     `${room.players.join(' vs ')}\n` +
     (room.round?.selection?room.round.selection.course.name+' · '+room.round.selection.tee.name+'\n':'') +
+    (room.playOrder?'Starts on Hole '+order[0]+'\n':'') +
     `${room.format.toUpperCase()} · $${room.stake} per unit`;
 
   $('roomWho').style.whiteSpace = 'pre-line';
@@ -143,9 +128,9 @@ function render(){
 
  $('roomHostName').value=room.hostName||'Scorekeeper';
  if(!sameRoom||$('roomHole').options.length!==18){
-  $('roomHole').innerHTML=Array.from({length:18},(_,i)=>`<option value="${i+1}">Hole ${i+1}</option>`).join('');
+  $('roomHole').innerHTML=order.map(hole=>`<option value="${hole}">Hole ${hole}</option>`).join('');
  }
- const pending=Array.from({length:18},(_,i)=>i+1).find(i=>!room.holes?.[i])||18;
+ const pending=order.find(hole=>!room.holes?.[hole])??order.at(-1);
  $('roomHole').value=String(Number.isInteger(selectedHole)&&selectedHole>=1&&selectedHole<=18?selectedHole:pending);
  $('roomScoreHead').innerHTML='<tr><th>Player</th><th>Strokes</th></tr>';
  const h=Number($('roomHole').value);
@@ -242,7 +227,7 @@ function renderFinishSummary(model,x){
  $('roomFinalStatus').textContent=x.skinsPending?'ARCHIVED · INCOMPLETE SKINS':x.settled===18?'OFFICIAL FINAL RESULT':'ARCHIVED · PARTIAL MATCH';
  $('roomFinalMeta').textContent=model.format.toUpperCase()+' · '+settlementLabel(model,x)+' · $'+model.stake+' per unit';
  $('roomFinalPayouts').replaceChildren();
- if(model.format==='nassau'&&x.settled<18){$('roomFinalStatus').textContent='ARCHIVED · INCOMPLETE NASSAU';$('roomFinalMeta').textContent='Not a final settlement · '+settlementLabel(model,x)+' · back-nine/overall may be pending';}
+ if(model.format==='nassau'&&x.settled<18){$('roomFinalStatus').textContent='ARCHIVED · INCOMPLETE NASSAU';$('roomFinalMeta').textContent='Not a final settlement · '+settlementLabel(model,x)+' · one or more legs are pending';}
  if(model.format==='skins'&&x.skinsPending)$('roomFinalMeta').textContent='Not a final settlement · '+settlementLabel(model,x);
  model.players.forEach((name,i)=>{
   const row=document.createElement('div');row.className='ledger-line';
@@ -256,7 +241,7 @@ function renderMatchHistory(){
  list.replaceChildren();
  let records=[];
  try{records=JSON.parse(localStorage.getItem('dagger_room_archives')||'[]');if(!Array.isArray(records))records=[];}catch{}
- const valid=records.filter(v=>v&&Array.isArray(v.players)&&v.roomId).sort((a,b)=>(b.ended||0)-(a.ended||0));
+ const valid=records.filter(v=>v&&Array.isArray(v.players)&&moneyRoomOrder(v.roomId,v)).sort((a,b)=>(b.ended||0)-(a.ended||0));
  $('roomMatchHistoryCount').textContent=valid.length+' saved on this phone';
  if(!valid.length){const p=document.createElement('p');p.className='game-note';p.textContent='Completed matches saved on this phone will appear here.';list.append(p);return;}
  valid.slice(0,12).forEach(record=>{
@@ -265,7 +250,7 @@ function renderMatchHistory(){
   title.textContent=record.players.join(' vs ')+' · '+(record.format||'match').toUpperCase()+' · '+new Date(record.ended||record.created).toLocaleDateString();
   card.append(title);
   const body=document.createElement('div');body.className='ledger-hole';
-  const x=compute(record);
+  const x=compute(record,record.roomId);
   const note=document.createElement('p');note.className='game-note';note.textContent=((record.format==='nassau'&&x.settled<18)?'INCOMPLETE NASSAU · NOT FINAL · ':x.skinsPending?'INCOMPLETE SKINS · NOT FINAL · ':'')+settlementLabel(record,x);body.append(note);
   record.players.forEach((name,i)=>{const line=document.createElement('div');line.className='ledger-line';const label=document.createElement('span');label.textContent=name;const amount=document.createElement('strong');amount.textContent=money(x.totals[i]);line.append(label,amount);body.append(line);});
   const holes=document.createElement('details');holes.className='ledger-detail';
@@ -348,8 +333,14 @@ async function connect(id){
      status(roomServerFresh?'Saving to the connected Money Room…':'Waiting for the live Money Room server…');
      return;
     }
+    const received=snap.data();
+    if(!moneyRoomOrder(id,received)){
+     if(firstConfirmed)disconnect('Room play order is unsupported. Scoring has stopped.');
+     else fail(Error('Room play order is unsupported. Ask the scorekeeper for a fresh invitation.'));
+     return;
+    }
     roomServerFresh=true;
-    room=snap.data();
+    room=received;
     if(!firstConfirmed&&room.archived){fail(Error('This Money Room has already finished. Ask the host for a new QR code.'));return;}
     firstConfirmed=true;
     if(room.archived){archiveLocal();forgetRoom(roomStore,uid,id);}
@@ -381,7 +372,10 @@ async function create(){const attempt=++actionVersion;try{
  const stake=Number($('roomStake').value);if(!Number.isFinite(stake)||stake<0||stake>10000)throw Error('Invalid stake.');
  const selectedRound=readActiveRound(roomStore);
  const roundContext=selectedRound?{round:selectedRound,roundIdentity:selectedRound.selection.course.providerCourseId+'|'+selectedRound.selection.tee.providerTeeId+'|'+selectedRound.selectedAt}:{};
- const {doc,setDoc}=functions;const id=rand(16),code=rand(8);const model={...roundContext,name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
+ const startHole=Number(roomStart.value);
+ if(!Number.isInteger(startHole)||startHole<1||startHole>18)throw Error('Choose a starting hole.');
+ const playOrder=startHole===1?{}:{playOrder:{version:2,startHole}};
+ const {doc,setDoc}=functions;const id=(startHole===1?'':'r2-')+rand(16),code=rand(8);const model={...roundContext,...playOrder,name:'Dagger Country Club Money Room',hostUid:user.uid,hostName:me,players,format,stake,invite:code,holes:{},archived:false,created:Date.now(),lastChange:Date.now(),lastEditor:me};
  await readWithDeadline(()=>setDoc(doc(db,'rooms',id),model));assertOperation(attempt,operationUid);await readWithDeadline(()=>setDoc(doc(db,'rooms',id,'members',user.uid),{uid:user.uid,name:me,invite:code,joined:Date.now()}));assertOperation(attempt,operationUid);invite=code;room=model;$('roomCode').value=id+':'+code;await connect(id);assertOperation(attempt,operationUid);status('Money Room created and LIVE. You are the ONLY scorekeeper. Share the QR invitation.');
  }catch(e){if(attempt===actionVersion)status('Could not confirm room creation: '+e.message+(e.code==='unavailable'?' The network timed out; check your connection before starting another room.':'')+' No new room was confirmed on this phone.');}}
 async function join(){
@@ -396,7 +390,7 @@ async function join(){
   if(!session)throw Error('Live syncing is not configured. Follow SETUP_FIREBASE.md.');
  user=await session.current();const operationUid=user.uid;
   const {id,code}=parseInvite($('roomCode').value);
-  if(!/^[0-9a-f]{32}$/.test(id)||!/^[0-9a-f]{16}$/.test(code))throw Error('Paste the complete invitation link or ID:code.');
+  if(!validRoomId(id)||!/^[0-9a-f]{16}$/.test(code))throw Error('Paste the complete invitation link or ID:code.');
   const name=$('roomMe').value.trim()||'Guest';if(name.length>24)throw Error('Name is too long.');
   if(!user?.uid)throw Error('Anonymous authentication did not finish. Reload the app.');
   stage='member-registration';status('Verifying invitation and registering your membership…');
@@ -450,9 +444,11 @@ $('roomSaveHole').onclick=singleFlight(async()=>{
  if(roomId===savingRoomId&&auth.currentUser?.uid===scorekeeperUid){
   // Advance only when the scorekeeper still has the saved hole selected.
   // Never jump away from a correction or a hole the user switched to mid-save.
-  if(hole<18&&Number($('roomHole').value)===hole){
-   $('roomHole').value=String(hole+1);
-   buildInputs(hole+1);
+  const order=moneyRoomOrder(savingRoomId,room);
+  const next=order[order.indexOf(hole)+1];
+  if(next&&Number($('roomHole').value)===hole){
+   $('roomHole').value=String(next);
+   buildInputs(next);
   }
   status('Hole '+hole+' recorded and sent to connected members.');
  }
@@ -461,8 +457,8 @@ $('roomSaveHole').onclick=singleFlight(async()=>{
 $('roomUndoHole').onclick=singleFlight(async()=>{
  const id=roomId,uid=auth?.currentUser?.uid;
  if(!host||!room||room.archived||!roomServerFresh||uid!==room.hostUid)return;
- const recorded=Object.keys(room.holes||{}).map(Number).filter(h=>Number.isInteger(h)&&h>=1&&h<=18&&Array.isArray(room.holes[h]));
- const last=Math.max(0,...recorded);
+ const order=moneyRoomOrder(id,room);
+ const last=order.findLast(hole=>Array.isArray(room.holes?.[hole]));
  if(!last)return;
  if(!confirm('Undo hole '+last+'? Its scores and wager result will be removed for everyone.'))return;
  try{
@@ -489,8 +485,8 @@ $('roomFinish').onclick=singleFlight(async()=>{
    const current=snap.data();
    if(current.hostUid!==uid)throw Error('Only the current scorekeeper may finish this match.');
    if(current.archived)throw Error('This Money Room is already archived.');
-   if(current.format==='nassau'&&compute(current).settled!==18)throw Error('Nassau still has unscored holes. Refresh the room before finishing.');
-   if(current.format==='skins'&&compute(current).skinsPending)throw Error('Skins has an unscored hole before a later result. Complete the missing hole first.');
+   if(current.format==='nassau'&&compute(current,id).settled!==18)throw Error('Nassau still has unscored holes. Refresh the room before finishing.');
+   if(current.format==='skins'&&compute(current,id).skinsPending)throw Error('Skins has an unscored hole before a later result. Complete the missing hole first.');
    transaction.update(ref,{archived:true,lastChange:Date.now(),lastEditor:current.hostName||'Scorekeeper'});
   });
   if(roomId===id&&auth.currentUser?.uid===uid)status('Match archived on the server. Final settlement will appear after the confirmed room update.');
